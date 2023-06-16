@@ -1,0 +1,60 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.InterestLevelFeature.Commands.DeleteInterestLevelCommand;
+using SMART.ERP.Application.Features.InterestLevelFeature.Queries;
+using SMART.ERP.Application.Parameters;
+using SMART.ERP.API.Controllers;
+using SMART.ERP.Application.Features.InterestLevelFeature.Commands.CreateInterestLevelCommand;
+using SMART.ERP.Application.Features.InterestLevelFeature.Commands.UpdateInterestLevelCommand;
+
+namespace SMART.ERP.API.Controllers.v1
+{
+    [ApiVersion("1.0")]
+    public class InterestLevelController : BaseApiController
+    {
+        [HttpGet("GetById/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetById(int id)
+        {
+            return Ok(await Mediator.Send(new GetInterestLevelByIdQuery { Id = id }));
+        }
+
+        [HttpGet("GetAll")]
+        [Authorize]
+        public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
+        {
+            return Ok(await Mediator.Send(new GetAllInterestLevelsQuery()
+            {
+                Parameter = filter.Parameter,
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize,
+                Order = filter.Order,
+                Column = filter.Column,
+                All = filter.All
+            }));
+        }
+
+        [HttpPost("Create")]
+        [Authorize(Roles = "SuperAdmin, Manager, CommunityManager, SalesAdvisor, Admin")]
+        public async Task<IActionResult> Create([FromBody] CreateInterestLevelCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
+        [HttpPut("Update/{id}")]
+        [Authorize(Roles = "SuperAdmin, Manager, CommunityManager, SalesAdvisor, Admin")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateInterestLevelCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest(new { message = "Ocurrio un problema con el id de este registro" });
+            return Ok(await Mediator.Send(command));
+        }
+
+        [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return Ok(await Mediator.Send(new DeleteInterestLevelCommand { Id = id }));
+        }
+    }
+}

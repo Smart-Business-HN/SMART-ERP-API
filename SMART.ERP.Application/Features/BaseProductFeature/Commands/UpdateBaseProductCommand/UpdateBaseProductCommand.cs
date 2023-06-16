@@ -1,0 +1,119 @@
+﻿using AutoMapper;
+using MediatR;
+using SMART.ERP.Application.DTOs.Product;
+using SMART.ERP.Application.Exceptions;
+using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.JwtService;
+using SMART.ERP.Application.Specifications.ProductSpecification;
+using SMART.ERP.Application.Wrappers;
+using SMART.ERP.Domain.Entities;
+
+namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseProductCommand
+{
+    public class UpdateBaseProductCommand : IRequest<Response<ProductDto>>
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = null!;
+        public string? Description { get; set; }
+        public string? Brochure { get; set; }
+        public string? VirtualTour { get; set; }
+        public string? UrlYoutube { get; set; }
+        public bool IsFatherProduct { get; set; }
+        public int MinStock { get; set; }
+        public int BrandId { get; set; }
+        public int UnitOfMeasurementId { get; set; }
+        public int SubCategoryId { get; set; }
+        public int StatusId { get; set; }
+        public int ProviderId { get; set; }
+        public bool IsActive { get; set; }
+    }
+
+    public class UpdateBaseProductCommandHandler : IRequestHandler<UpdateBaseProductCommand, Response<ProductDto>>
+    {
+        private readonly IMapper _mapper;
+        private readonly IRepositoryAsync<Product> _repositoryAsync;
+        private readonly IJwtService _jwtService;
+        private readonly IRepositoryAsync<Subcategory> _subcategoryRepositoryAsync;
+        private readonly IRepositoryAsync<Status> _statusRepositoryAsync;
+        private readonly IRepositoryAsync<Provider> _providerRepositoryAsync;
+        private readonly IRepositoryAsync<Brand> _brandRepositoryAsync;
+        private readonly IRepositoryAsync<UnitOfMeasurement> _measurementRepositoryAsync;
+
+        public UpdateBaseProductCommandHandler(IMapper mapper, IRepositoryAsync<Product> repositoryAsync,
+            IJwtService jwtService, IRepositoryAsync<Subcategory> subcategoryRepositoryAsync,
+            IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Provider> providerRepositoryAsync,
+            IRepositoryAsync<Brand> brandRepositoryAsync,
+            IRepositoryAsync<UnitOfMeasurement> measurementRepositoryAsync)
+        {
+            _repositoryAsync = repositoryAsync;
+            _jwtService = jwtService;
+            _subcategoryRepositoryAsync = subcategoryRepositoryAsync;
+            _statusRepositoryAsync = statusRepositoryAsync;
+            _providerRepositoryAsync = providerRepositoryAsync;
+            _brandRepositoryAsync = brandRepositoryAsync;
+            _measurementRepositoryAsync = measurementRepositoryAsync;
+            _mapper = mapper;
+        }
+        public async Task<Response<ProductDto>> Handle(UpdateBaseProductCommand request, CancellationToken cancellationToken)
+        {
+            var product = await _repositoryAsync.GetByIdAsync(request.Id);
+            if (product == null)
+            {
+                throw new KeyNotFoundException($"No se encontro ningun registro con el id {request.Id}");
+            }
+            var checkSubcategory = await _subcategoryRepositoryAsync.GetByIdAsync(request.SubCategoryId);
+            if (checkSubcategory == null)
+            {
+                throw new KeyNotFoundException($"No se encontro la subcategoria con id {request.SubCategoryId}");
+            }
+            var checkStatus = await _statusRepositoryAsync.GetByIdAsync(request.StatusId);
+            if (checkStatus == null)
+            {
+                throw new KeyNotFoundException($"No se encontro el estado con id {request.StatusId}");
+            }
+            var checkProvider = await _providerRepositoryAsync.GetByIdAsync(request.ProviderId);
+            if (checkProvider == null)
+            {
+                throw new KeyNotFoundException($"No se encontro el proveedor con id {request.ProviderId}");
+            }
+            var checkBrand = await _brandRepositoryAsync.GetByIdAsync(request.BrandId);
+            if (checkBrand == null)
+            {
+                throw new KeyNotFoundException($"No se encontro la marca con id {request.BrandId}");
+            }
+            var checkMeasurement = await _measurementRepositoryAsync.GetByIdAsync(request.UnitOfMeasurementId);
+            if (checkMeasurement == null)
+            {
+                throw new KeyNotFoundException($"No se encontro la unidad de medida con id {request.UnitOfMeasurementId}");
+            }
+            var filterByName = await _repositoryAsync.FirstOrDefaultAsync(
+                    new FilterProductSpecification(request.Name, request.Id));
+            if (filterByName != null)
+            {
+                throw new ApiException($"Ya existe un registro con el nombre {request.Name}");
+            }
+            else
+            {
+                product.Name = request.Name;
+                product.Description = request.Description;
+                product.BrandId = request.BrandId;
+                product.Brochure = request.Brochure;
+                product.VirtualTour = request.VirtualTour;
+                product.UrlYoutube = request.UrlYoutube;
+                product.ProviderId = request.ProviderId;
+                product.MinStock = request.MinStock;
+                product.StatusId = request.StatusId;
+                product.UnitOfMeasurementId = request.UnitOfMeasurementId;
+                product.SubCategoryId = request.SubCategoryId;
+                product.IsActive = request.IsActive;
+                product.IsFatherProduct = request.IsFatherProduct;
+                product.ModificatedBy = _jwtService.GetSubjectToken();
+                product.ModificationDate = DateTime.Now;
+                await _repositoryAsync.UpdateAsync(product);
+                await _repositoryAsync.SaveChangesAsync();
+                var dto = _mapper.Map<ProductDto>(product);
+                return new Response<ProductDto>(dto, message: $"{product.Name} actualizado correctamente");
+            }
+        }
+    }
+}

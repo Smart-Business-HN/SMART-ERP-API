@@ -1,0 +1,875 @@
+﻿using Microsoft.EntityFrameworkCore;
+using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Entities;
+
+namespace SMART.ERP.Infrastructure
+{
+    public class DatabaseContext : DbContext
+    {
+        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
+        {
+            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        }
+
+        public DbSet<AdvisorDepartment> AdvisorDepartments { get; set; } = null!;
+        public DbSet<Brand> Brands { get; set; } = null!;
+        public DbSet<Banner> Banners { get; set; } = null!;
+        public DbSet<BranchOffices> BranchOffices { get; set; } = null!;
+        public DbSet<City> Cities { get; set; } = null!;
+        public DbSet<Company> Companies { get; set; } = null!;
+        public DbSet<Currency> Currencies { get; set; } = null!;
+        public DbSet<Customer> Customers { get; set; } = null!;
+        public DbSet<DataSheet> DataSheets { get; set; } = null!;
+        public DbSet<Department> Departments { get; set; } = null!;
+        public DbSet<ExchangeRate> ExchangeRates { get; set; } = null!;
+        public DbSet<FinancingPlan> FinancingPlans { get; set; } = null!;
+        public DbSet<Gender> Genders { get; set; } = null!;
+        public DbSet<Country> Countries { get; set; } = null!;
+        public DbSet<Region> Regions { get; set; } = null!;
+        public DbSet<Message> Messages { get; set; } = null!;
+        public DbSet<MetaConversations> MetaConversations { get; set; } = null!;
+        public DbSet<MetaAdCampaign> MetaAdCampaigns { get; set; } = null!;
+        public DbSet<Opinion> Opinions { get; set; } = null!;
+        public DbSet<Product> Products { get; set; } = null!;
+        public DbSet<Category> Categories { get; set; } = null!;
+        public DbSet<ProductDataSheet> ProductDataSheets { get; set; } = null!;
+        public DbSet<ProductFeature> ProductFeatures { get; set; } = null!;
+        public DbSet<ProductImage> ProductImages { get; set; } = null!;
+        public DbSet<ProductPart> ProductParts { get; set; } = null!;
+        public DbSet<Subcategory> Subcategories { get; set; } = null!;
+        public DbSet<Provider> Providers { get; set; } = null!;
+        public DbSet<Prospect> Prospects { get; set; } = null!;
+        public DbSet<ProspectStep> ProspectSteps { get; set; } = null!;
+        public DbSet<ProspectQuoteProduct> ProspectQuoteProducts { get; set; } = null!;
+        public DbSet<QuoteProduct> QuoteProducts { get; set; } = null!;
+        public DbSet<Role> Roles { get; set; } = null!;
+        public DbSet<SaleOrder> SaleOrders { get; set; } = null!;
+        public DbSet<Opportunity> Opportunities { get; set; } = null!;
+        public DbSet<Status> Statuses { get; set; } = null!;
+        public DbSet<TypeStatus> TypeStatuses { get; set; } = null!;
+        public DbSet<UnitOfMeasurement> UnitOfMeasurements { get; set; } = null!;
+        public DbSet<User> Users { get; set; } = null!;
+        public DbSet<WishList> WishLists { get; set; } = null!;
+        public DbSet<WishListProduct> WishListProducts { get; set; } = null!;
+        public DbSet<LogSession> LogSessions { get; set; } = null!;
+        public DbSet<LogRecovery> LogRecoveries { get; set; } = null!;
+        public DbSet<HeroSlider> HeroSliders { get; set; } = null!;
+        public DbSet<Notification> Notificactions { get; set; } = null!;
+        public DbSet<SaleOrderProduct> SaleOrderProducts { get; set; } = null!;
+        public DbSet<TypeOrigin> TypeOrigins { get; set; } = null!;
+        public DbSet<DocumentType> DocumentTypes { get; set; } = null!;
+        public DbSet<InterestLevel> InterestLevels { get; set; } = null!;
+        public DbSet<OpportunityActivity> OpportunityActivities { get; set; } = null!;
+        public DbSet<OpportunityComment> OpportunityComments { get; set; } = null!;
+        public DbSet<OpportunityDocument> OpportunityDocuments { get; set; } = null!;
+        public DbSet<OpportunitySchedules> OpportunitySchedules { get; set; } = null!;
+        public DbSet<TypeActivity> TypeActivities { get; set; } = null!;
+        public DbSet<LossReason> LossReasons { get; set; } = null!;
+        public DbSet<WinReason> WinReasons { get; set; } = null!;
+        public DbSet<CustomerMachinery> CustomerMachinery { get; set; } = null!;
+        public DbSet<RootcloudSession> RootcloudSessions { get; set; } = null!;
+        public DbSet<AdvisorGoal> AdvisorGoals { get; set; } = null!;
+        public DbSet<Machinery> Machineries { get; set; } = null!;
+        public DbSet<MachineryFailureReport> MachineryFailureReports { get; set; } = null!;
+        public DbSet<MachineryMaintenance> MachineryMaintenances { get; set; } = null!;
+        public DbSet<MachineryFailure> MachineryFailures { get; set; } = null!;
+        public DbSet<MachineryRootcloudHistorical> MachineryRootcloudHistoricals { get; set; } = null!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //AdvisorGoal
+            modelBuilder.Entity<AdvisorGoal>().ToTable("AdvisorGoal");
+            modelBuilder.Entity<AdvisorGoal>().HasKey(o => o.Id);
+
+            modelBuilder.Entity<AdvisorGoal>()
+                .HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Prospects
+            modelBuilder.Entity<Prospect>().ToTable("Prospect");
+            modelBuilder.Entity<Prospect>().HasKey(x => x.Id);
+
+            modelBuilder.Entity<Prospect>()
+                .HasOne(x => x.ProspectStep)
+                .WithMany()
+                .HasForeignKey(x => x.ProspectStepId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Prospect>()
+                .HasMany(x => x.ProspectQuoteProducts)
+                .WithOne(x => x.Prospect)
+                .HasForeignKey(x => x.ProspectId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Prospect>()
+                .HasOne(x => x.MetaAdCampaign)
+                .WithMany()
+                .HasForeignKey(x => x.MetaAdCampaignId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Prospect>()
+                .HasOne(x => x.Department)
+                .WithMany()
+                .HasForeignKey(x => x.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Prospect>()
+                .HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //ProspectQuoteProduct
+            modelBuilder.Entity<ProspectQuoteProduct>().ToTable("ProspectQuoteProduct");
+            modelBuilder.Entity<ProspectQuoteProduct>().HasKey(x => x.Id);
+
+            modelBuilder.Entity<ProspectQuoteProduct>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId);
+
+            //ProspectStep
+            modelBuilder.Entity<ProspectStep>().ToTable("ProspectStep");
+            modelBuilder.Entity<Prospect>().HasKey(x => x.Id);
+
+            //Country
+            modelBuilder.Entity<Country>().ToTable("Country");
+            modelBuilder.Entity<Country>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<Country>()
+                .HasMany(p => p.Regions)
+                .WithOne(x => x.Country)
+                .HasForeignKey(x => x.CountryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Country>()
+                .Navigation(b => b.Regions)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            modelBuilder.Entity<Country>()
+                .HasMany(p => p.Departments)
+                .WithOne(x => x.Country)
+                .HasForeignKey(x => x.CountryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Country>()
+                .Navigation(b => b.Departments)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            //Region
+            modelBuilder.Entity<Region>().ToTable("Region");
+            modelBuilder.Entity<Region>().HasKey(x => x.Id);
+
+            modelBuilder.Entity<Region>()
+                .HasMany(x => x.Departments)
+                .WithOne(x => x.Region)
+                .HasForeignKey(x => x.RegionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Region>()
+                .Navigation(b => b.Departments)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            //OpportunitySchedules
+            modelBuilder.Entity<OpportunitySchedules>().ToTable("OpportunitySchedules");
+            modelBuilder.Entity<OpportunitySchedules>().HasKey(o => o.Id);
+
+            modelBuilder.Entity<OpportunitySchedules>()
+                .HasOne(x => x.User)
+                .WithOne()
+                .HasForeignKey<OpportunitySchedules>(x => x.UserId);
+
+            //AdvisorDepartment
+            modelBuilder.Entity<AdvisorDepartment>().ToTable("AdvisorDepartment");
+            modelBuilder.Entity<AdvisorDepartment>().HasKey(o => o.Id);
+
+            modelBuilder.Entity<AdvisorDepartment>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.Departments)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AdvisorDepartment>()
+                .HasOne(x => x.Department)
+                .WithMany(x => x.Users)
+                .HasForeignKey(x => x.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Brand
+            modelBuilder.Entity<Brand>().ToTable("Brand");
+            modelBuilder.Entity<Brand>(o => o.HasKey(x => x.Id));
+
+            //Banner
+            modelBuilder.Entity<Banner>().ToTable("Banner");
+            modelBuilder.Entity<Banner>(o => o.HasKey(x => x.Id));
+
+            //BranchOffice
+            modelBuilder.Entity<BranchOffices>().ToTable("BranchOffice");
+            modelBuilder.Entity<BranchOffices>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<BranchOffices>()
+                .HasOne(x => x.City)
+                .WithMany()
+                .HasForeignKey(x => x.CityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //City
+            modelBuilder.Entity<City>().ToTable("City");
+            modelBuilder.Entity<City>(o => o.HasKey(x => x.Id));
+
+            //Company
+            modelBuilder.Entity<Company>().ToTable("Company");
+            modelBuilder.Entity<Company>(o =>
+                o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<Company>()
+                .HasMany(p => p.BranchOffices)
+                .WithOne(p => p.Company)
+                .HasForeignKey(x => x.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Company>()
+                .Navigation(b => b.BranchOffices)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            modelBuilder.Entity<Company>()
+                .HasMany(p => p.Banners)
+                .WithOne(p => p.Company)
+                .HasForeignKey(x => x.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Company>()
+                .Navigation(b => b.Banners)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            modelBuilder.Entity<Company>()
+                .HasMany(p => p.Opinions)
+                .WithOne(p => p.Company)
+                .HasForeignKey(x => x.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Company>()
+                .Navigation(b => b.Opinions)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            //Currency
+            modelBuilder.Entity<Currency>().ToTable("Currency");
+            modelBuilder.Entity<Currency>(o => o.HasKey(x => x.Id));
+
+
+            //Customer
+            modelBuilder.Entity<Customer>().ToTable("Customer");
+            modelBuilder.Entity<Customer>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<Customer>()
+                .HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Customer>()
+                .HasMany(x => x.CustomerMachinery)
+                .WithOne(x => x.Customer)
+                .HasForeignKey(p => p.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Customer>()
+                .Navigation(b => b.CustomerMachinery)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            //DataSheet
+            modelBuilder.Entity<DataSheet>().ToTable("DataSheet");
+            modelBuilder.Entity<DataSheet>(o => o.HasKey(x => x.Id));
+
+            //Department
+            modelBuilder.Entity<Department>().ToTable("Department");
+            modelBuilder.Entity<Department>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<Department>()
+                .HasMany(x => x.Cities)
+                .WithOne(x => x.Department)
+                .HasForeignKey(x => x.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Department>()
+                .Navigation(b => b.Cities)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            //ExchangeRate
+            modelBuilder.Entity<ExchangeRate>().ToTable("ExchangeRate");
+            modelBuilder.Entity<ExchangeRate>(o => o.HasKey(x => x.Id));
+
+            //FinancingPlan
+            modelBuilder.Entity<FinancingPlan>().ToTable("FinancingPlan");
+            modelBuilder.Entity<FinancingPlan>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<FinancingPlan>()
+                .HasOne(x => x.Provider)
+                .WithMany()
+                .HasForeignKey(x => x.ProviderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Gender
+            modelBuilder.Entity<Gender>().ToTable("Gender");
+            modelBuilder.Entity<Gender>(o => o.HasKey(x => x.Id));
+
+            //Message
+            modelBuilder.Entity<Message>().ToTable("Message");
+            modelBuilder.Entity<Message>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<Message>()
+                .HasOne(x => x.Department)
+                .WithMany()
+                .HasForeignKey(x => x.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(x => x.Country)
+                .WithMany()
+                .HasForeignKey(x => x.CountryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //MetaConversations
+            modelBuilder.Entity<MetaConversations>().ToTable("MetaConversations");
+            modelBuilder.Entity<MetaConversations>(o => o.HasKey(x => x.Phone));
+
+            //MetAdCampaigns
+            modelBuilder.Entity<MetaAdCampaign>().ToTable("MetaAdCampaign");
+            modelBuilder.Entity<MetaAdCampaign>(x => x.HasKey(y => y.Id));
+
+            //Opinion
+            modelBuilder.Entity<Opinion>().ToTable("Opinion");
+            modelBuilder.Entity<Opinion>(o => o.HasKey(x => x.Id));
+
+            //Product
+            modelBuilder.Entity<Product>().ToTable("Product");
+            modelBuilder.Entity<Product>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<Product>()
+                .HasMany(p => p.ProductFeatures)
+                .WithOne(x => x.Product)
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .Navigation(b => b.ProductFeatures)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            modelBuilder.Entity<Product>()
+                .HasMany(p => p.ProductDataSheets)
+                .WithOne(x => x.Product)
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .Navigation(b => b.ProductDataSheets)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            modelBuilder.Entity<Product>()
+                .HasMany(p => p.ProductImages)
+                .WithOne(x => x.Product)
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .Navigation(b => b.ProductImages)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(x => x.Brand)
+                .WithMany()
+                .HasForeignKey(x => x.BrandId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(x => x.UnitOfMeasurement)
+                .WithMany()
+                .HasForeignKey(x => x.UnitOfMeasurementId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(x => x.SubCategory)
+                .WithMany()
+                .HasForeignKey(x => x.SubCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(x => x.Provider)
+                .WithMany()
+                .HasForeignKey(x => x.ProviderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(x => x.Status)
+                .WithMany()
+                .HasForeignKey(x => x.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Category
+            modelBuilder.Entity<Category>().ToTable("Category");
+            modelBuilder.Entity<Category>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<Category>()
+                .HasMany(p => p.HeroSliders)
+                .WithOne(x => x.Category)
+                .HasForeignKey(x => x.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Category>()
+                .Navigation(b => b.HeroSliders)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            modelBuilder.Entity<Category>()
+                .HasMany(p => p.Subcategories)
+                .WithOne(x => x.Category)
+                .HasForeignKey(x => x.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Category>()
+                .Navigation(b => b.Subcategories)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            //ProductDataSheet
+            modelBuilder.Entity<ProductDataSheet>().ToTable("ProductDataSheet");
+            modelBuilder.Entity<ProductDataSheet>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<ProductDataSheet>()
+                .HasOne(x => x.DataSheet)
+                .WithMany()
+                .HasForeignKey(x => x.DataSheetId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //ProductFeature
+            modelBuilder.Entity<ProductFeature>().ToTable("ProductFeature");
+            modelBuilder.Entity<ProductFeature>(o => o.HasKey(x => x.Id));
+
+            //ProductImage
+            modelBuilder.Entity<ProductImage>().ToTable("ProductImage");
+            modelBuilder.Entity<ProductImage>(o => o.HasKey(x => x.Id));
+
+            //Subcategory
+            modelBuilder.Entity<Subcategory>().ToTable("Subcategory");
+            modelBuilder.Entity<Subcategory>(o => o.HasKey(x => x.Id));
+
+            //Provider
+            modelBuilder.Entity<Provider>().ToTable("Provider");
+            modelBuilder.Entity<Provider>(o => o.HasKey(x => x.Id));
+
+            //QuoteProduct
+            modelBuilder.Entity<QuoteProduct>().ToTable("QuoteProduct");
+            modelBuilder.Entity<QuoteProduct>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<QuoteProduct>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Role
+            modelBuilder.Entity<Role>().ToTable("Role");
+            modelBuilder.Entity<Role>(o => o.HasKey(x => x.Id));
+
+            //SaleOrder
+            modelBuilder.Entity<SaleOrder>().ToTable("SaleOrder");
+            modelBuilder.Entity<SaleOrder>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<SaleOrder>()
+                .HasOne(x => x.Status)
+                .WithMany()
+                .HasForeignKey(x => x.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SaleOrder>()
+                .HasOne(x => x.Customer)
+                .WithMany()
+                .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SaleOrder>()
+               .HasOne(x => x.Opportunity)
+               .WithMany()
+               .HasForeignKey(x => x.OpportunityId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SaleOrder>()
+               .HasOne(x => x.FinancingPlan)
+               .WithMany()
+               .HasForeignKey(x => x.FinancingPlanId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SaleOrder>()
+                .HasMany(p => p.SaleOrderProducts)
+                .WithOne(x => x.SaleOrder)
+                .HasForeignKey(x => x.SaleOrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SaleOrder>()
+                .Navigation(b => b.SaleOrderProducts)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            //SaleOrderProduct
+            modelBuilder.Entity<SaleOrderProduct>().ToTable("SaleOrderProduct");
+            modelBuilder.Entity<SaleOrderProduct>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<SaleOrderProduct>()
+               .HasOne(x => x.Product)
+               .WithMany()
+               .HasForeignKey(x => x.ProductId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            //TypeOrigin
+            modelBuilder.Entity<TypeOrigin>().ToTable("TypeOrigin");
+            modelBuilder.Entity<TypeOrigin>(o => o.HasKey(x => x.Id));
+
+            //Opportunity
+            modelBuilder.Entity<Opportunity>().ToTable("Opportunity");
+            modelBuilder.Entity<Opportunity>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<Opportunity>()
+                .HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Opportunity>()
+                .HasOne(x => x.LossReason)
+                .WithMany()
+                .HasForeignKey(x => x.LossReasonId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Opportunity>()
+                .HasOne(x => x.WinReason)
+                .WithMany()
+                .HasForeignKey(x => x.WinReasonId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Opportunity>()
+                .HasOne(x => x.InterestLevel)
+                .WithMany()
+                .HasForeignKey(x => x.InterestLevelId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Opportunity>()
+                .HasOne(x => x.TypeOrigin)
+                .WithMany()
+                .HasForeignKey(x => x.TypeOriginId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Opportunity>()
+                .HasOne(x => x.OpportunityStep)
+                .WithMany()
+                .HasForeignKey(x => x.OpportunityStepId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Opportunity>()
+                .HasOne(x => x.Customer)
+                .WithMany()
+                .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Opportunity>()
+                .HasMany(p => p.QuoteProducts)
+                .WithOne(x => x.Opportunity)
+                .HasForeignKey(x => x.OpportunityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Opportunity>()
+                .Navigation(b => b.QuoteProducts)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            modelBuilder.Entity<Opportunity>()
+                .HasMany(p => p.OpportunityActivities)
+                .WithOne(x => x.Opportunity)
+                .HasForeignKey(x => x.OpportunityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Opportunity>()
+                .Navigation(b => b.OpportunityActivities)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            modelBuilder.Entity<Opportunity>()
+                .HasMany(p => p.OpportunityComments)
+                .WithOne(x => x.Opportunity)
+                .HasForeignKey(x => x.OpportunityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Opportunity>()
+                .Navigation(b => b.OpportunityComments)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            modelBuilder.Entity<Opportunity>()
+                .HasMany(p => p.OpportunityDocuments)
+                .WithOne(x => x.Opportunity)
+                .HasForeignKey(x => x.OpportunityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Opportunity>()
+                .Navigation(b => b.OpportunityDocuments)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            //Status
+            modelBuilder.Entity<Status>().ToTable("Status");
+            modelBuilder.Entity<Status>(o => o.HasKey(x => x.Id));
+
+            //TypeStatus
+            modelBuilder.Entity<TypeStatus>().ToTable("TypeStatus");
+            modelBuilder.Entity<TypeStatus>(o => o.HasKey(x => x.Id));
+
+            //UnitOfMeasurement
+            modelBuilder.Entity<UnitOfMeasurement>().ToTable("UnitOfMeasurement");
+            modelBuilder.Entity<UnitOfMeasurement>(o => o.HasKey(x => x.Id));
+
+            //User
+            modelBuilder.Entity<User>().ToTable("User");
+            modelBuilder.Entity<User>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<User>()
+               .HasOne(x => x.Gender)
+               .WithMany()
+               .HasForeignKey(x => x.GenderId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<User>()
+               .HasOne(x => x.Role)
+               .WithMany()
+               .HasForeignKey(x => x.RoleId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<User>()
+               .HasOne(x => x.BranchOffice)
+               .WithMany()
+               .HasForeignKey(x => x.BranchOfficeId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+
+            //WishList
+            modelBuilder.Entity<WishList>().ToTable("WishList");
+            modelBuilder.Entity<WishList>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<WishList>()
+               .HasOne(x => x.Status)
+               .WithMany()
+               .HasForeignKey(x => x.StatusId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<WishList>()
+               .HasOne(x => x.Customer)
+               .WithMany()
+               .HasForeignKey(x => x.CustomerId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<WishList>()
+                .HasMany(p => p.WishListProducts)
+                .WithOne(x => x.WishList)
+                .HasForeignKey(x => x.WishListId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<WishList>()
+                .Navigation(b => b.WishListProducts)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            //WishListProduct
+            modelBuilder.Entity<WishListProduct>().ToTable("WishListProduct");
+            modelBuilder.Entity<WishListProduct>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<WishListProduct>()
+               .HasOne(x => x.Product)
+               .WithMany()
+               .HasForeignKey(x => x.ProductId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<WishListProduct>()
+               .HasOne(x => x.Status)
+               .WithMany()
+               .HasForeignKey(x => x.StatusId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            //LogSession
+            modelBuilder.Entity<LogSession>().ToTable("LogSession");
+            modelBuilder.Entity<LogSession>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<LogSession>()
+               .HasOne(x => x.User)
+               .WithMany()
+               .HasForeignKey(x => x.UserId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            //LogRecovery
+            modelBuilder.Entity<LogRecovery>().ToTable("LogRecovery");
+            modelBuilder.Entity<LogRecovery>(o => o.HasKey(x => x.Id));
+
+            //HeroSlider
+            modelBuilder.Entity<HeroSlider>().ToTable("HeroSlider");
+            modelBuilder.Entity<HeroSlider>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<HeroSlider>()
+               .HasOne(x => x.Product)
+               .WithMany()
+               .HasForeignKey(x => x.ProductId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            //Notification
+            modelBuilder.Entity<Notification>().ToTable("Notification");
+            modelBuilder.Entity<Notification>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<Notification>()
+               .HasOne(x => x.User)
+               .WithMany()
+               .HasForeignKey(x => x.UserId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            //DocumentType
+            modelBuilder.Entity<DocumentType>().ToTable("DocumentType");
+            modelBuilder.Entity<DocumentType>(o => o.HasKey(x => x.Id));
+
+            //InterestLevel
+            modelBuilder.Entity<InterestLevel>().ToTable("InterestLevel");
+            modelBuilder.Entity<InterestLevel>(o => o.HasKey(x => x.Id));
+
+            //OpportunityActivity
+            modelBuilder.Entity<OpportunityActivity>().ToTable("OpportunityActivity");
+            modelBuilder.Entity<OpportunityActivity>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<OpportunityActivity>()
+               .HasOne(x => x.Status)
+               .WithMany()
+               .HasForeignKey(x => x.StatusId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OpportunityActivity>()
+               .HasOne(x => x.User)
+               .WithMany()
+               .HasForeignKey(x => x.UserId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OpportunityActivity>()
+               .HasOne(x => x.TypeActivity)
+               .WithMany()
+               .HasForeignKey(x => x.TypeActivityId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            //OpportunityComment
+            modelBuilder.Entity<OpportunityComment>().ToTable("OpportunityComment");
+            modelBuilder.Entity<OpportunityComment>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<OpportunityComment>()
+               .HasOne(x => x.User)
+               .WithMany()
+               .HasForeignKey(x => x.UserId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            //OpportunityDocument
+            modelBuilder.Entity<OpportunityDocument>().ToTable("OpportunityDocument");
+            modelBuilder.Entity<OpportunityDocument>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<OpportunityDocument>()
+               .HasOne(x => x.User)
+               .WithMany()
+               .HasForeignKey(x => x.UserId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OpportunityDocument>()
+               .HasOne(x => x.DocumentType)
+               .WithMany()
+               .HasForeignKey(x => x.DocumentTypeId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            //OpportunityStep
+            modelBuilder.Entity<OpportunityStep>().ToTable("OpportunityStep");
+            modelBuilder.Entity<OpportunityStep>(o => o.HasKey(x => x.Id));
+
+            //TypeActivity
+            modelBuilder.Entity<TypeActivity>().ToTable("TypeActivity");
+            modelBuilder.Entity<TypeActivity>(o => o.HasKey(x => x.Id));
+
+            //LossReason
+            modelBuilder.Entity<LossReason>().ToTable("LossReason");
+            modelBuilder.Entity<LossReason>(o => o.HasKey(x => x.Id));
+
+            //WinReason
+            modelBuilder.Entity<WinReason>().ToTable("WinReason");
+            modelBuilder.Entity<WinReason>(o => o.HasKey(x => x.Id));
+
+            //CustomerMachinery
+            modelBuilder.Entity<CustomerMachinery>().ToTable("CustomerMachinery");
+            modelBuilder.Entity<CustomerMachinery>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<CustomerMachinery>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId);
+
+            //RootcloudSession
+            modelBuilder.Entity<RootcloudSession>().ToTable("RootcloudSession");
+            modelBuilder.Entity<RootcloudSession>(o => o.HasKey(x => x.Id));
+
+            //Machinery
+            modelBuilder.Entity<Machinery>().ToTable("Machinery");
+            modelBuilder.Entity<Machinery>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<Machinery>()
+                .HasMany(p => p.MachineryMaintenances)
+                .WithOne(x => x.Machinery)
+                .HasForeignKey(x => x.MachineryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Machinery>()
+               .HasOne(x => x.Subcategory)
+               .WithMany()
+               .HasForeignKey(x => x.SubcategoryId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Machinery>()
+                .Navigation(b => b.MachineryMaintenances)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            modelBuilder.Entity<Machinery>()
+                .HasMany(p => p.MachineyRootcloudHistoricals)
+                .WithOne(x => x.Machinery)
+                .HasForeignKey(x => x.MachineryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Machinery>()
+                .Navigation(b => b.MachineyRootcloudHistoricals)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            modelBuilder.Entity<Machinery>()
+                .HasMany(p => p.MachineryFailureReports)
+                .WithOne(x => x.Machinery)
+                .HasForeignKey(x => x.MachineryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Machinery>()
+                .Navigation(b => b.MachineryFailureReports)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            //MachineryFailure
+            modelBuilder.Entity<MachineryFailure>().ToTable("MachineryFailure");
+            modelBuilder.Entity<MachineryFailure>(o => o.HasKey(x => x.Id));
+
+            //MachineryFailureReport
+            modelBuilder.Entity<MachineryFailureReport>().ToTable("MachineryFailureReport");
+            modelBuilder.Entity<MachineryFailureReport>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<MachineryFailureReport>()
+                .HasOne(x => x.MachineryFailure)
+                .WithMany()
+                .HasForeignKey(x => x.MachineryFailureId);
+
+            modelBuilder.Entity<MachineryFailureReport>()
+                .HasOne(x => x.Status)
+                .WithMany()
+                .HasForeignKey(x => x.StatusId);
+
+            //MachineryMaintenance
+            modelBuilder.Entity<MachineryMaintenance>().ToTable("MachineryMaintenance");
+            modelBuilder.Entity<MachineryMaintenance>(o => o.HasKey(x => x.Id));
+
+            //MachineryRootcloudHistorical
+            modelBuilder.Entity<MachineryRootcloudHistorical>().ToTable("MachineryRootcloudHistorical");
+            modelBuilder.Entity<MachineryRootcloudHistorical>(o => o.HasKey(x => x.Id));
+
+            base.OnModelCreating(modelBuilder);
+        }
+    }
+}

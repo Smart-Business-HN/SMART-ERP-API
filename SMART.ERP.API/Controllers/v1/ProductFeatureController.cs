@@ -1,0 +1,54 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.ProductFtrFeature.Commands.DeleteProductFtrCommand;
+using SMART.ERP.Application.Features.ProductFtrFeature.Queries;
+using SMART.ERP.API.Controllers;
+using SMART.ERP.Application.Features.ProductFtrFeature.Commands.CreateProductFtrCommand;
+using SMART.ERP.Application.Features.ProductFtrFeature.Commands.UpdateProductFtrCommand;
+
+namespace SMART.ERP.API.Controllers.v1
+{
+    [ApiVersion("1.0")]
+    public class ProductFeatureController : BaseApiController
+    {
+        [HttpGet("GetById/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetById(int id)
+        {
+            return Ok(await Mediator.Send(new GetProductFtrByIdQuery { Id = id }));
+        }
+
+        [HttpGet("GetAll")]
+        [Authorize]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await Mediator.Send(new GetAllProductFtrsQuery()));
+        }
+
+        [HttpPost("Create")]
+        [Authorize(Roles = "SuperAdmin, Manager, CommunityManager")]
+        public async Task<IActionResult> Create([FromBody] CreateProductFtrCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
+        [HttpPut("Update/{id}")]
+        [Authorize(Roles = "SuperAdmin, Manager, CommunityManager")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateProductFtrCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest(new
+                {
+                    message = "Ocurrio un problema con el id de este regitro"
+                });
+            return Ok(await Mediator.Send(command));
+        }
+
+        [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "SuperAdmin, Manager, CommunityManager")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return Ok(await Mediator.Send(new DeleteProductFtrCommand { Id = id }));
+        }
+    }
+}
