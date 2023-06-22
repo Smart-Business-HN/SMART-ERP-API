@@ -20,5 +20,6 @@
         public DateTime? ModificationDate { get; set; }
         public string? ModificatedBy { get; set; }
         public bool IsMainBranchOffice { get; set; }
+        public List<Cai>? Cais { get; set; }
     }
 }

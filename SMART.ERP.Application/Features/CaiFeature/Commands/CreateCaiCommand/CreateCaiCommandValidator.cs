@@ -1,0 +1,36 @@
+﻿using FluentValidation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SMART.ERP.Application.Features.CaiFeature.Commands.CreateCaiCommand
+{
+    public class CreateCaiCommandValidator : AbstractValidator<CreateCaiCommand>
+    {
+        public CreateCaiCommandValidator() {
+            RuleFor(p => p.Identificator)
+                    .NotEmpty().WithMessage("{PropertyName} no puede ser vacio")
+                    .MaximumLength(37).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres")
+                    .MinimumLength(37).WithMessage("{PropertyName} no debe ser menor  {MinLength} caracteres");
+            RuleFor(p => p.Name)
+                    .NotEmpty().WithMessage("{PropertyName} no puede ser vacio")
+                    .MaximumLength(50).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres");
+            RuleFor(p => p.StartCorrelative)
+                    .NotNull().WithMessage("{PropertyName} no puede ser vacio");
+            RuleFor(p => p.EndCorrelative)
+                  .NotNull().WithMessage("{PropertyName} no puede ser vacio")
+                  .When(x=>x.EndCorrelative < x.StartCorrelative).WithMessage("{PropertyName} no puede ser menor que el inicio del correlativo");
+            RuleFor(p => p.ValidFrom)
+                    .NotNull().WithMessage("{PropertyName} no puede ser vacio");
+            RuleFor(p => p.ValidUntil)
+                    .NotNull().WithMessage("{PropertyName} no puede ser vacio");
+            RuleFor(p => p.IsGeneralCai)
+                    .NotNull().WithMessage("{PropertyName} no puede ser vacio");
+            RuleFor(p => p.IsActive)
+                    .NotNull().WithMessage("{PropertyName} no puede ser vacio");
+
+        }
+    }
+}

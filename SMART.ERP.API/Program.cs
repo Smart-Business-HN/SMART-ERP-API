@@ -42,7 +42,7 @@ builder.Services.AddSwaggerGen(options =>
         Contact = new OpenApiContact
         {
             Name = "Contacto",
-            Url = new Uri("https://github.com/grupoplatino")
+            Url = new Uri("https://github.com/Smart-Business-HN")
         },
     });
     // using System.Reflection;
@@ -73,18 +73,18 @@ builder.Services.AddDbContext<BaseContext>(options =>
 
 builder.Services.AddTransient(typeof(IRepositoryAsync<>), typeof(CustomRepositoryAsync<>));
 builder.Services.AddTransient(typeof(IRepositoryHNAsync<>), typeof(BaseRepositoryAsync<>));
-builder.WebHost.UseSentry(opts =>
-{
-    opts.BeforeSend = @event =>
-    {
-        @event.ServerName = null;
-        return @event;
-    };
-});
+//builder.WebHost.UseSentry(opts =>
+//{
+//    opts.BeforeSend = @event =>
+//    {
+//        @event.ServerName = null;
+//        return @event;
+//    };
+//});
 
 var app = builder.Build();
 
-app.UseSentryTracing();
+//app.UseSentryTracing();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -42,12 +42,12 @@ namespace SMART.ERP.Application
             services.AddQuartz(x =>
             {
                 x.UseMicrosoftDependencyInjectionJobFactory();
-                x.AddJob<RootcloudJob>(rootcloud => rootcloud.WithIdentity(RootcloudJob.Key));
+               // x.AddJob<RootcloudJob>(rootcloud => rootcloud.WithIdentity(RootcloudJob.Key));
                 x.AddJob<AdvisorGoalJob>(opts => opts.WithIdentity(AdvisorGoalJob.Key));
                 x.AddJob<LongLivedOpportunitiesJob>(opts => opts.WithIdentity(LongLivedOpportunitiesJob.Key));
                 x.AddJob<LogSessionJob>(opts => opts.WithIdentity(LogSessionJob.LogJobKey));
-                x.AddJob<LocationJob>(opts => opts.WithIdentity(LocationJob.Key));
-                x.AddJob<RegisterMachineryJob>(opts => opts.WithIdentity(RegisterMachineryJob.Key));
+                //x.AddJob<LocationJob>(opts => opts.WithIdentity(LocationJob.Key));
+               // x.AddJob<RegisterMachineryJob>(opts => opts.WithIdentity(RegisterMachineryJob.Key));
 
                 x.AddTrigger(opts => opts
                 .ForJob(AdvisorGoalJob.Key)
@@ -64,45 +64,45 @@ namespace SMART.ERP.Application
                 .WithIdentity("log-session-job-trigger")
                 .WithCronSchedule("0 59 16 1/1 * ? *"));
 
-                x.AddTrigger(rootcloud => rootcloud
-                .ForJob(RootcloudJob.Key)
-                .WithIdentity("rootcloud-job-trigger-xs")
-                .WithCronSchedule("0 30 07 * * ?"));
+                //x.AddTrigger(rootcloud => rootcloud
+                //.ForJob(RootcloudJob.Key)
+                //.WithIdentity("rootcloud-job-trigger-xs")
+                //.WithCronSchedule("0 30 07 * * ?"));
 
-                x.AddTrigger(rootcloud => rootcloud
-                .ForJob(RootcloudJob.Key)
-                .WithIdentity("rootcloud-job-trigger-xm")
-                .WithCronSchedule("0 30 10 * * ?"));
+                //x.AddTrigger(rootcloud => rootcloud
+                //.ForJob(RootcloudJob.Key)
+                //.WithIdentity("rootcloud-job-trigger-xm")
+                //.WithCronSchedule("0 30 10 * * ?"));
 
-                x.AddTrigger(rootcloud => rootcloud
-                .ForJob(RootcloudJob.Key)
-                .WithIdentity("rootcloud-job-trigger-md")
-                .WithCronSchedule("0 30 12 * * ?"));
+                //x.AddTrigger(rootcloud => rootcloud
+                //.ForJob(RootcloudJob.Key)
+                //.WithIdentity("rootcloud-job-trigger-md")
+                //.WithCronSchedule("0 30 12 * * ?"));
 
-                x.AddTrigger(rootcloud => rootcloud
-                .ForJob(RootcloudJob.Key)
-                .WithIdentity("rootcloud-job-trigger-lg")
-                .WithCronSchedule("0 30 14 * * ?"));
+                //x.AddTrigger(rootcloud => rootcloud
+                //.ForJob(RootcloudJob.Key)
+                //.WithIdentity("rootcloud-job-trigger-lg")
+                //.WithCronSchedule("0 30 14 * * ?"));
 
-                x.AddTrigger(rootcloud => rootcloud
-                .ForJob(RootcloudJob.Key)
-                .WithIdentity("rootcloud-job-trigger-xl")
-                .WithCronSchedule("0 30 16 * * ?"));
+                //x.AddTrigger(rootcloud => rootcloud
+                //.ForJob(RootcloudJob.Key)
+                //.WithIdentity("rootcloud-job-trigger-xl")
+                //.WithCronSchedule("0 30 16 * * ?"));
 
-                x.AddTrigger(rootcloud => rootcloud
-                .ForJob(RootcloudJob.Key)
-                .WithIdentity("rootcloud-job-trigger-xxl")
-                .WithCronSchedule("0 30 18 * * ?"));
+                //x.AddTrigger(rootcloud => rootcloud
+                //.ForJob(RootcloudJob.Key)
+                //.WithIdentity("rootcloud-job-trigger-xxl")
+                //.WithCronSchedule("0 30 18 * * ?"));
 
-                x.AddTrigger(register => register
-                .ForJob(RegisterMachineryJob.Key)
-                .WithIdentity("register-job-trigger")
-                .WithCronSchedule("0 30 01 * * ?"));
+                //x.AddTrigger(register => register
+                //.ForJob(RegisterMachineryJob.Key)
+                //.WithIdentity("register-job-trigger")
+                //.WithCronSchedule("0 30 01 * * ?"));
 
-                x.AddTrigger(location => location
-                .ForJob(LocationJob.Key)
-                .WithIdentity("location-job-trigger-large")
-                .WithCronSchedule("0 0 23 ? * MON,WED,FRI *"));
+                //x.AddTrigger(location => location
+                //.ForJob(LocationJob.Key)
+                //.WithIdentity("location-job-trigger-large")
+                //.WithCronSchedule("0 0 23 ? * MON,WED,FRI *"));
             });
             services.AddQuartzHostedService(x => x.WaitForJobsToComplete = true);
             // ---------------- End -----------------

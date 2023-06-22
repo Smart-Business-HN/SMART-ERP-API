@@ -1,4 +1,6 @@
-﻿namespace SMART.ERP.Application.DTOs.Company
+﻿using SMART.ERP.Application.DTOs.Cai;
+
+namespace SMART.ERP.Application.DTOs.Company
 {
     public class BranchOfficeDto
     {
@@ -11,5 +13,6 @@
         public float Lng { get; set; }
         public bool IsActive { get; set; }
         public bool IsMainBranchOffice { get; set; }
+        public List<CaiDto>? Cais { get; set; }
     }
 }

@@ -7,7 +7,6 @@ namespace SMART.ERP.Application.Jobs.RootcloudJob
     {
         public static readonly JobKey Key = new JobKey("rootcloud-job", "remote-jobs");
         private readonly IRootcloudHistoricalService _rootcloudService;
-
         public RootcloudJob(IRootcloudHistoricalService rootcloudService)
         {
             _rootcloudService = rootcloudService;

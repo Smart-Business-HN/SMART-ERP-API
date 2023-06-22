@@ -62,6 +62,8 @@ using SMART.ERP.Application.Features.WishListFeature.Commands.CreateWishListComm
 using SMART.ERP.Application.Features.WishListProductFeature.Commands.CreateWishListProductCommand;
 using SMART.ERP.Domain.Entities;
 using SMART.MASTER.Domain.Entities;
+using SMART.ERP.Application.DTOs.Cai;
+using SMART.ERP.Application.Features.CaiFeature.Commands.CreateCaiCommand;
 
 namespace SMART.ERP.Application.Mappings
 {
@@ -159,6 +161,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<MachineryResumeDto, MachineryNoListObjectsDto>();
             CreateMap<Machinery, MachineryNoListObjectsDto>();
             CreateMap<TypeStatus, ResumeTypeStatusDto>();
+            CreateMap<Cai, CaiDto>();
             #endregion
 
             #region Commands
@@ -212,6 +215,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateFailureReportCommand, MachineryFailureReport>();
             CreateMap<CreateMaintenanceCommand, MachineryMaintenance>();
             CreateMap<CreateMachineryCommand, Machinery>();
+            CreateMap<CreateCaiCommand,Cai>();
             #endregion
         }
     }

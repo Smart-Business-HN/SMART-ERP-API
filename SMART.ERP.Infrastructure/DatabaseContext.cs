@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Infrastructure
 {
@@ -74,6 +73,7 @@ namespace SMART.ERP.Infrastructure
         public DbSet<MachineryMaintenance> MachineryMaintenances { get; set; } = null!;
         public DbSet<MachineryFailure> MachineryFailures { get; set; } = null!;
         public DbSet<MachineryRootcloudHistorical> MachineryRootcloudHistoricals { get; set; } = null!;
+        public DbSet<Cai> Cais { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -215,6 +215,15 @@ namespace SMART.ERP.Infrastructure
                 .HasForeignKey(x => x.CityId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<BranchOffices>()
+                .HasMany(x => x.Cais)
+                .WithOne(x => x.BranchOffice)
+                .HasForeignKey(x => x.BranchOfficeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BranchOffices>()
+                .Navigation(x => x.Cais)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
             //City
             modelBuilder.Entity<City>().ToTable("City");
             modelBuilder.Entity<City>(o => o.HasKey(x => x.Id));
@@ -868,7 +877,13 @@ namespace SMART.ERP.Infrastructure
             //MachineryRootcloudHistorical
             modelBuilder.Entity<MachineryRootcloudHistorical>().ToTable("MachineryRootcloudHistorical");
             modelBuilder.Entity<MachineryRootcloudHistorical>(o => o.HasKey(x => x.Id));
-
+            //CAIs
+            modelBuilder.Entity<Cai>().ToTable("Cai");
+            modelBuilder.Entity<Cai>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<Cai>()
+                .HasOne(x => x.BranchOffice)
+                .WithMany()
+                .HasForeignKey(x => x.BranchOfficeId);
             base.OnModelCreating(modelBuilder);
         }
     }
