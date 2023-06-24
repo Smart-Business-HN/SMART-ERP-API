@@ -17,6 +17,8 @@
         public DateTime? ModificationDate { get; set; }
         public string? ModificatedBy { get; set; }
         public bool IsActive { get; set; }
+        public int? CaiId { get; set; }
+        public virtual Cai? Cai { get; set; }
         public List<BranchOffices>? BranchOffices { get; set; }
         public List<Opinion>? Opinions { get; set; }
         public List<Banner>? Banners { get; set; }

@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.Specifications.CaiSpecification
 {
-    public class FilterCaiByIdentificatorSpecification  : Specification<Cai>
+    public class FilterCaiByBranchOfficeIdSpecification : Specification<Cai>
     {
-        public FilterCaiByIdentificatorSpecification(string identificator)
+        public FilterCaiByBranchOfficeIdSpecification(int branchOfficeId)
         {
-            Query.Where(x => x.Identificator == identificator).AsNoTracking();
+            Query.Where(x=>x.BranchOfficeId == branchOfficeId);
         }
     }
 }

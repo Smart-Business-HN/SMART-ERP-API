@@ -222,8 +222,9 @@ namespace SMART.ERP.Infrastructure
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<BranchOffices>()
-                .Navigation(x => x.Cais)
+                .Navigation(b => b.Cais)
                 .UsePropertyAccessMode(PropertyAccessMode.Property);
+
             //City
             modelBuilder.Entity<City>().ToTable("City");
             modelBuilder.Entity<City>(o => o.HasKey(x => x.Id));
@@ -880,10 +881,7 @@ namespace SMART.ERP.Infrastructure
             //CAIs
             modelBuilder.Entity<Cai>().ToTable("Cai");
             modelBuilder.Entity<Cai>(o => o.HasKey(x => x.Id));
-            modelBuilder.Entity<Cai>()
-                .HasOne(x => x.BranchOffice)
-                .WithMany()
-                .HasForeignKey(x => x.BranchOfficeId);
+           
             base.OnModelCreating(modelBuilder);
         }
     }
