@@ -63,7 +63,10 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.UpdateCaiCommand
                     new FilterCaiByIdentificatorSpecification(request.Identificator));
             if(checkIfExist != null)
             {
-                throw new ApiException($"Ya existe un CAI con el identificador {request.Identificator}");
+                if(checkIfExist.Id != request.Id)
+                {
+                    throw new ApiException($"Ya existe un CAI con el identificador {request.Identificator}");
+                }
             }
             cai.Name = request.Name;
             cai.AvailableInvoices = request.EndCorrelative - request.CurrentCorrelative;

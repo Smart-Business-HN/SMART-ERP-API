@@ -7,7 +7,7 @@ namespace SMART.ERP.Application.Specifications.CompanySpecification
     {
         public CompanyIncludesSpecification()
         {
-            Query.Include(x => x.Banners).Include(x => x.BranchOffices).Include(x => x.Opinions).AsNoTracking();
+            Query.Include(x => x.Banners).Include(x => x.BranchOffices).Include(x => x.Opinions).Include(x=> x.Cai).AsNoTracking();
         }
     }
 }

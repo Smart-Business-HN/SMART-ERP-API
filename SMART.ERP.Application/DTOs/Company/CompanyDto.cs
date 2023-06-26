@@ -1,4 +1,6 @@
-﻿namespace SMART.ERP.Application.DTOs.Company
+﻿using SMART.ERP.Application.DTOs.Cai;
+
+namespace SMART.ERP.Application.DTOs.Company
 {
     public class CompanyDto
     {
@@ -14,6 +16,8 @@
         public string YoutubeUrl { get; set; } = null!;
         public int TypeEntityId { get; set; }
         public bool IsActive { get; set; }
+        public int? CaiId { get; set; }
+        public CaiDto? Cai { get; set; }
         public List<BranchOfficeDto>? BranchOffices { get; set; }
         public List<BannerDto>? Banners { get; set; }
         public List<OpinionDto>? Opinions { get; set; }

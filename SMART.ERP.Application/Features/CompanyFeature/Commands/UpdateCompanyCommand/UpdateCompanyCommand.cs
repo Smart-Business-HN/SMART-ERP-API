@@ -20,6 +20,7 @@ namespace SMART.ERP.Application.Features.CompanyFeature.Commands.UpdateCompanyCo
         public string? TwitterUrl { get; set; }
         public string? InstagramUrl { get; set; }
         public string? YoutubeUrl { get; set; }
+        public int? CaiId { get; set; }
         public bool IsActive { get; set; }
     }
 
@@ -42,6 +43,10 @@ namespace SMART.ERP.Application.Features.CompanyFeature.Commands.UpdateCompanyCo
             if (company == null)
             {
                 throw new KeyNotFoundException($"No se encontro ningun registro con el id {request.Id}");
+            }
+            if(request.CaiId != null)
+            {
+                company.CaiId = request.CaiId;
             }
             company.Name = request.Name;
             company.IsActive = request.IsActive;
