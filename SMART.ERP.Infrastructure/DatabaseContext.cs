@@ -74,6 +74,8 @@ namespace SMART.ERP.Infrastructure
         public DbSet<MachineryFailure> MachineryFailures { get; set; } = null!;
         public DbSet<MachineryRootcloudHistorical> MachineryRootcloudHistoricals { get; set; } = null!;
         public DbSet<Cai> Cais { get; set; } = null!;
+        public DbSet<InternalDocument> InternalDocuments { get; set; } = null!;
+        public DbSet<Prefix> Prefixes { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -881,7 +883,17 @@ namespace SMART.ERP.Infrastructure
             //CAIs
             modelBuilder.Entity<Cai>().ToTable("Cai");
             modelBuilder.Entity<Cai>(o => o.HasKey(x => x.Id));
-           
+            //InternalDocuments
+            modelBuilder.Entity<InternalDocument>().ToTable("InternalDocument");
+            modelBuilder.Entity<InternalDocument>(o => o.HasKey(x => x.Id));
+            //Prefixes
+            modelBuilder.Entity<Prefix>().ToTable("Prefix");
+            modelBuilder.Entity<Prefix>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<Prefix>()
+                .HasOne(x=>x.InternalDocument)
+                .WithMany()
+                .HasForeignKey(x => x.InternalDocumentId);
+
             base.OnModelCreating(modelBuilder);
         }
     }
