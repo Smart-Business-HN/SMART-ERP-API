@@ -18,7 +18,7 @@ namespace SMART.ERP.Application.Features.PrefixFeature.Command.CreatePrefixComma
 {
     public class CreatePrefixCommand : IRequest<Response<PrefixDto>>
     {
-        public string Prefix { get; set; } = null!;
+        public string Format { get; set; } = null!;
         public int InternalDocumentId { get; set; }
         public bool ItIsTaken { get; set; }
     }
@@ -46,9 +46,9 @@ namespace SMART.ERP.Application.Features.PrefixFeature.Command.CreatePrefixComma
             }
 
             var newRecord = _mapper.Map<Prefix>(request);
-            var response = await _repositoryAsync.AddAsync(newRecord);
+            var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
-            var dto = _mapper.Map<PrefixDto>(response);
+            var dto = _mapper.Map<PrefixDto>(data);
             return new Response<PrefixDto>(dto, "Agregado correctamente");
         }
     }

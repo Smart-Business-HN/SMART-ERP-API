@@ -16,7 +16,7 @@ namespace SMART.ERP.Application.Features.PrefixFeature.Command.UpdatePrefixComma
     public class UpdatePrefixCommand : IRequest<Response<PrefixDto>>
     {
         public int Id { get; set; }
-        public string Prefix { get; set; } = null!;
+        public string Format { get; set; } = null!;
         public int InternalDocumentId { get; set; }
         public bool ItIsTaken { get; set; }
     }
@@ -48,7 +48,7 @@ namespace SMART.ERP.Application.Features.PrefixFeature.Command.UpdatePrefixComma
                 throw new KeyNotFoundException($"No se encontro el documento interno con id {request.InternalDocumentId}");
             }
 
-            prefix.Prefixes = request.Prefix;
+            prefix.Format = request.Format;
             prefix.InternalDocumentId = request.InternalDocumentId;
             prefix.ItIsTaken= request.ItIsTaken;
             await _repositoryAsync.UpdateAsync(prefix);

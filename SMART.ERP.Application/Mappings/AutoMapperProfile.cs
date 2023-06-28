@@ -64,6 +64,7 @@ using SMART.ERP.Domain.Entities;
 using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Cai;
 using SMART.ERP.Application.Features.CaiFeature.Commands.CreateCaiCommand;
+using SMART.ERP.Application.Features.PrefixFeature.Command.CreatePrefixCommand;
 
 namespace SMART.ERP.Application.Mappings
 {
@@ -162,6 +163,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Machinery, MachineryNoListObjectsDto>();
             CreateMap<TypeStatus, ResumeTypeStatusDto>();
             CreateMap<Cai, CaiDto>();
+            CreateMap<Prefix, PrefixDto>();
             #endregion
 
             #region Commands
@@ -216,6 +218,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateMaintenanceCommand, MachineryMaintenance>();
             CreateMap<CreateMachineryCommand, Machinery>();
             CreateMap<CreateCaiCommand,Cai>();
+            CreateMap<CreatePrefixCommand,Prefix>();
             #endregion
         }
     }
