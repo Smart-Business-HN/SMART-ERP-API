@@ -4,9 +4,8 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.CustomerSpecification;
 using SMART.ERP.Application.Wrappers;
-using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Customer;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.CustomerFeature.Queries
 {
@@ -21,15 +20,12 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Queries
         public class GetAllCustomersQueryHandler : IRequestHandler<GetAllCustomersQuery, PagedResponse<List<CustomerDto>>>
         {
             private readonly IMapper _mapper;
-            private readonly IRepositoryHNAsync<Client> _repositoryHNAsync;
             private readonly IRepositoryAsync<Customer> _repositoryAsync;
 
             public GetAllCustomersQueryHandler(IMapper mapper,
-                IRepositoryHNAsync<Client> repositoryHNAsync,
                 IRepositoryAsync<Customer> repositoryAsync)
             {
                 _mapper = mapper;
-                _repositoryHNAsync = repositoryHNAsync;
                 _repositoryAsync = repositoryAsync;
             }
             public async Task<PagedResponse<List<CustomerDto>>> Handle(GetAllCustomersQuery request, CancellationToken cancellationToken)
@@ -41,37 +37,48 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Queries
                 }
 
                 var response = new List<CustomerDto>();
-                var customers = await _repositoryAsync.ListAsync(new CustomerIncludesSpecification());
-                if (customers.Count > 0)
+                try
                 {
-                    if (!string.IsNullOrEmpty(request.Parameter)
-                            || !string.IsNullOrEmpty(request.Order) && !string.IsNullOrEmpty(request.Column))
+
+                var customers = await _repositoryAsync.ListAsync(new CustomerIncludesSpecification());
+               
+               
+                    if (customers != null)
                     {
-                        var listWithFilters = await _repositoryHNAsync.ListAsync(new PaginationClientSpecification(request.Parameter, null, request.Order, request.Column));
-                        foreach (var client in listWithFilters)
+
+                        if (!string.IsNullOrEmpty(request.Parameter)
+                                || !string.IsNullOrEmpty(request.Order) && !string.IsNullOrEmpty(request.Column))
                         {
-                            var findById = customers.FirstOrDefault(x => x.MasterId == client.Id);
-                            if (findById != null)
+                            var listWithFilters = await _repositoryAsync.ListAsync(new PaginationClientSpecification(request.Parameter, null, request.Order, request.Column));
+                            foreach (var client in listWithFilters)
                             {
-                                var dto = _mapper.Map<CustomerDto>(client);
-                                response.Add(dto);
+                                var findById = customers.FirstOrDefault(x => x.Id == client.Id);
+                                if (findById != null)
+                                {
+                                    var dto = _mapper.Map<CustomerDto>(client);
+                                    response.Add(dto);
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        List<Guid> guids = new();
-                        foreach (var item in customers)
+                        else
                         {
-                            guids.Add(item.MasterId);
-                        }
+                            List<Guid> guids = new();
+                            foreach (var item in customers)
+                            {
+                                guids.Add(item.Id);
+                            }
 
-                        var clients = await _repositoryHNAsync.ListAsync(new FilterClientFromMotors(guids));
-                        response = _mapper.Map<List<CustomerDto>>(clients);
+                            var clients = await _repositoryAsync.ListAsync(new FilterClientFromMotors(guids));
+                            response = _mapper.Map<List<CustomerDto>>(clients);
+                        }
                     }
+                    response = response.Skip(request.PageNumber * request.PageSize).Take(request.PageSize).ToList();
+                    return new PagedResponse<List<CustomerDto>>(response, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync());
+                
                 }
-                response = response.Skip(request.PageNumber * request.PageSize).Take(request.PageSize).ToList();
-                return new PagedResponse<List<CustomerDto>>(response, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync());
+                catch (Exception ex) {
+                    throw new Exception(ex.Message);
+                }
             }
         }
     }

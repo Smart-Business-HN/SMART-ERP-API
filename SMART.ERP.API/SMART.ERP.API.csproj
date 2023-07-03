@@ -20,7 +20,6 @@
   <ItemGroup>
     <ProjectReference Include="..\SMART.ERP.Application\SMART.ERP.Application.csproj" />
     <ProjectReference Include="..\SMART.ERP.Infrastructure\SMART.ERP.Infrastructure.csproj" />
-    <ProjectReference Include="..\SMART.MASTER.Infrastructure\SMART.MASTER.Infrastructure.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

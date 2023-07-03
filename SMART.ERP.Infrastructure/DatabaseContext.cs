@@ -76,6 +76,7 @@ namespace SMART.ERP.Infrastructure
         public DbSet<Cai> Cais { get; set; } = null!;
         public DbSet<InternalDocument> InternalDocuments { get; set; } = null!;
         public DbSet<Prefix> Prefixes { get; set; } = null!;
+        public DbSet<CustomerType> CustomerTypes { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -276,20 +277,51 @@ namespace SMART.ERP.Infrastructure
             modelBuilder.Entity<Customer>(o => o.HasKey(x => x.Id));
 
             modelBuilder.Entity<Customer>()
+                .HasOne(x => x.CustomerType)
+                .WithMany()
+                .HasForeignKey(x => x.CustomerTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Customer>()
                 .HasOne(x => x.User)
                 .WithMany()
-                .HasForeignKey(o => o.UserId)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Customer>()
+                .HasOne(x => x.CustomerType)
+                .WithMany()
+                .HasForeignKey(x => x.CustomerTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Customer>()
-                .HasMany(x => x.CustomerMachinery)
-                .WithOne(x => x.Customer)
-                .HasForeignKey(p => p.CustomerId)
+                .HasOne(x => x.Department)
+                .WithMany()
+                .HasForeignKey(x => x.DepartmentId)
                 .OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<Customer>()
-                .Navigation(b => b.CustomerMachinery)
-                .UsePropertyAccessMode(PropertyAccessMode.Property);
+                .HasOne(x => x.Country)
+                .WithMany()
+                .HasForeignKey(x => x.CountryId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Customer>()
+                .HasOne(x => x.Heading)
+                .WithMany()
+                .HasForeignKey(x => x.HeadingId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Customer>()
+                .HasOne(x => x.SocialReason)
+                .WithMany()
+                .HasForeignKey(x => x.SocialReasonId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Customer>()
+                .HasOne(x => x.Currency)
+                .WithMany()
+                .HasForeignKey(x => x.CurrencyId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Customer>()
+                .HasOne(x => x.Gender)
+                .WithMany()
+                .HasForeignKey(x => x.GenderId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             //DataSheet
             modelBuilder.Entity<DataSheet>().ToTable("DataSheet");
@@ -893,6 +925,12 @@ namespace SMART.ERP.Infrastructure
                 .HasOne(x=>x.InternalDocument)
                 .WithMany()
                 .HasForeignKey(x => x.InternalDocumentId);
+            //Taxes
+            modelBuilder.Entity<Tax>().ToTable("Tax");
+            modelBuilder.Entity<Tax>(o=>o.HasKey(x=> x.Id));
+            //Taxes
+            modelBuilder.Entity<CustomerType>().ToTable("CustomerType");
+            modelBuilder.Entity<CustomerType>(o => o.HasKey(x => x.Id));
 
             base.OnModelCreating(modelBuilder);
         }

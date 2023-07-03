@@ -2,8 +2,9 @@
 using MediatR;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
-using SMART.MASTER.Domain.Entities;
+        
 using SMART.ERP.Application.DTOs.Customer;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.ClientDeliveryDirectionFeature.Commands.UpdateDeliveryDirectionCommand
 {
@@ -21,11 +22,11 @@ namespace SMART.ERP.Application.Features.ClientDeliveryDirectionFeature.Commands
 
     public class UpdateDeliveryDirectionCommandHandler : IRequestHandler<UpdateDeliveryDirectionCommand, Response<DeliveryDirectionDto>>
     {
-        private readonly IRepositoryHNAsync<DeliveryDirection> _repositoryHNAsync;
-        private readonly IRepositoryHNAsync<ClientCity> _cityRepositoryHNAsync;
+        private readonly IRepositoryAsync<DeliveryDirection> _repositoryHNAsync;
+        private readonly IRepositoryAsync<City> _cityRepositoryHNAsync;
         private readonly IMapper _mapper;
 
-        public UpdateDeliveryDirectionCommandHandler(IRepositoryHNAsync<DeliveryDirection> repositoryHNAsync, IRepositoryHNAsync<ClientCity> cityRepositoryHNAsync, IMapper mapper)
+        public UpdateDeliveryDirectionCommandHandler(IRepositoryAsync<DeliveryDirection> repositoryHNAsync, IRepositoryAsync<City> cityRepositoryHNAsync, IMapper mapper)
         {
             _repositoryHNAsync = repositoryHNAsync;
             _cityRepositoryHNAsync = cityRepositoryHNAsync;

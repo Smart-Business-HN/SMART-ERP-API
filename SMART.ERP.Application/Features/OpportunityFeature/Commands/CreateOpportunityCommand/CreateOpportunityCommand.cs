@@ -16,7 +16,6 @@ using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Domain.Enums;
-using SMART.MASTER.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.OpportunityFeature.Commands.CreateOpportunityCommand
 {
@@ -37,13 +36,13 @@ namespace SMART.ERP.Application.Features.OpportunityFeature.Commands.CreateOppor
         private readonly IRepositoryAsync<InterestLevel> _interesteLevelRepositoryAsync;
         private readonly IJwtService _jwtService;
         private readonly IHubContext<NotificationHub> _notificationHub;
-        private readonly IRepositoryHNAsync<Client> _clientRepositoryAsync;
+        private readonly IRepositoryAsync<Customer> _clientRepositoryAsync;
         private readonly IRepositoryAsync<Notification> _notificationRepositoryAsync;
         private readonly IMailService _mailService;
 
         public CreateOpportunityCommandHandler(IMapper mapper, IRepositoryAsync<Opportunity> repositoryAsync, IRepositoryAsync<Customer> repositoryCustomerAsync
             , IRepositoryAsync<OpportunityStep> stepRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<InterestLevel> interesteLevelRepositoryAsync,
-            IJwtService jwtService, IHubContext<NotificationHub> notificationHub, IRepositoryHNAsync<Client> clientRepositoryAsync,
+            IJwtService jwtService, IHubContext<NotificationHub> notificationHub, IRepositoryAsync<Customer> clientRepositoryAsync,
             IRepositoryAsync<Notification> notificationRepositoryAsync, IMailService mailService)
         {
             _mapper = mapper;

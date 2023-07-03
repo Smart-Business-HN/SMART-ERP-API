@@ -5,7 +5,6 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.SaleOrderSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.SaleOrderFeature.Queries
 {
@@ -20,10 +19,10 @@ namespace SMART.ERP.Application.Features.SaleOrderFeature.Queries
         {
             private readonly IMapper _mapper;
             private readonly IRepositoryAsync<SaleOrder> _repositoryAsync;
-            private readonly IRepositoryHNAsync<Client> _repositoryHNAsync;
+            private readonly IRepositoryAsync<Customer> _repositoryHNAsync;
 
             public GetAllSaleOrdersQueryHandler(IMapper mapper, IRepositoryAsync<SaleOrder> repositoryAsync,
-                IRepositoryHNAsync<Client> repositoryHNAsync)
+                IRepositoryAsync<Customer> repositoryHNAsync)
             {
                 _mapper = mapper;
                 _repositoryAsync = repositoryAsync;
@@ -36,7 +35,7 @@ namespace SMART.ERP.Application.Features.SaleOrderFeature.Queries
                 var dto = _mapper.Map<List<SaleOrderDto>>(saleOrders);
                 for (int index = 0; index < dto.Count; index++)
                 {
-                    var customer = await _repositoryHNAsync.GetByIdAsync(dto[index]!.Customer!.MasterId);
+                    var customer = await _repositoryHNAsync.GetByIdAsync(dto[index]!.Customer!.MotorsId);
                     if (customer != null)
                     {
                         dto[index].Customer!.FullName = customer.FullName;

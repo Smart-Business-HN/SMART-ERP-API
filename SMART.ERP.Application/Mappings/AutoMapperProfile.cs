@@ -61,10 +61,10 @@ using SMART.ERP.Application.Features.WinReasonFeature.Commands.CreateWinReasonCo
 using SMART.ERP.Application.Features.WishListFeature.Commands.CreateWishListCommand;
 using SMART.ERP.Application.Features.WishListProductFeature.Commands.CreateWishListProductCommand;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Cai;
 using SMART.ERP.Application.Features.CaiFeature.Commands.CreateCaiCommand;
 using SMART.ERP.Application.Features.PrefixFeature.Command.CreatePrefixCommand;
+using SMART.ERP.Application.Features.TaxFeature.Commands.CreateTaxCommand;
 
 namespace SMART.ERP.Application.Mappings
 {
@@ -88,7 +88,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<ProductDataSheet, ProductDataSheetDto>();
             CreateMap<ProductImage, ProductImageDto>();
             CreateMap<City, CityDto>();
-            CreateMap<ClientCurrency, CurrencyDto>();
+            CreateMap<Currency, CurrencyDto>();
             CreateMap<User, UserDto>();
             CreateMap<User, UserWalletDto>();
             CreateMap<User, OpportunityAdvisorDto>();
@@ -98,7 +98,6 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Country, CountryDto>()
                 .ForMember(x => x.Departments, opt => opt.MapFrom(x => x.Regions.Count > 0 ? x.Regions.SelectMany(z => z.Departments).ToList() : x.Departments));
             CreateMap<Department, DepartmentDto>();
-            CreateMap<ClientDepartment, DepartmentDto>();
             CreateMap<ProductFeature, ProductFeatureDto>();
             CreateMap<Company, CompanyDto>();
             CreateMap<Banner, BannerDto>();
@@ -106,22 +105,20 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<BranchOffices, BranchOfficeDto>();
             CreateMap<Opinion, OpinionDto>();
             CreateMap<MetaAdCampaign, MetaAdCampaignDto>();
-            CreateMap<ClientHeading, HeadingDto>();
-            CreateMap<ClientSocialReason, SocialReasonDto>();
-            CreateMap<ClientType, ClientTypeDto>();
-            CreateMap<ClientGender, GenderDto>();
-            CreateMap<ClientCity, ClientCityDto>();
-            CreateMap<ClientDepartment, ClientDepartmentDto>();
-            CreateMap<ClientCountry, ClientCountryDto>();
-            CreateMap<Client, CustomerDto>();
-            CreateMap<Client, BasicInfoCustomerDto>();
-            CreateMap<Client, ClientWalletDto>();
+            CreateMap<Heading, HeadingDto>();
+            CreateMap<SocialReason, SocialReasonDto>();
+            CreateMap<CustomerType, CustomerTypeDto>();
+            CreateMap<Gender, GenderDto>();
+            CreateMap<City, CityDto>();
+            CreateMap<Department, ClientDepartmentDto>();
+            CreateMap<Customer, CustomerDto>();
+            CreateMap<Customer, BasicInfoCustomerDto>();
+            CreateMap<Customer, ClientWalletDto>();
             CreateMap<OpportunityStep, OpportunityStepDto>();
             CreateMap<Opportunity, OpportunityDto>();
             CreateMap<Opportunity, OpportunityWalletDto>();
             CreateMap<Opportunity, ActiveOpportunityDto>();
             CreateMap<DeliveryDirection, DeliveryDirectionDto>();
-            CreateMap<Customer, BasicInfoCustomerDto>();
             CreateMap<FinancingPlan, FinancingPlanDto>();
             CreateMap<Opportunity, OpportunityDto>();
             CreateMap<QuoteProduct, QuoteProductDto>();
@@ -164,13 +161,14 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<TypeStatus, ResumeTypeStatusDto>();
             CreateMap<Cai, CaiDto>();
             CreateMap<Prefix, PrefixDto>();
+            CreateMap<Tax, TaxDto>();
             #endregion
 
             #region Commands
             CreateMap<CreateBrandCommand, Brand>();
             CreateMap<CreateCategoryCommand, Category>();
             CreateMap<CreateSubcategoryCommand, Subcategory>();
-            CreateMap<CreateCustomerCommand, Client>();
+            CreateMap<CreateCustomerCommand, Customer>();
             CreateMap<CreateProviderCommand, Provider>();
             CreateMap<CreateDataSheetCommand, DataSheet>();
             CreateMap<CreateBaseProductCommand, Product>();
@@ -219,6 +217,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateMachineryCommand, Machinery>();
             CreateMap<CreateCaiCommand,Cai>();
             CreateMap<CreatePrefixCommand,Prefix>();
+            CreateMap<CreateTaxCommand, Tax>();
             #endregion
         }
     }

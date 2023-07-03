@@ -6,7 +6,6 @@ using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Dashboard;
 
 namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorDashboard
@@ -24,10 +23,10 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorDashboa
         private readonly IRepositoryAsync<OpportunityStep> _stepRepositoryAsync;
         private readonly IJwtService _jwtService;
         private readonly IMapper _mapper;
-        private readonly IRepositoryHNAsync<Client> _clientRepositoryAsync;
+        private readonly IRepositoryAsync<Customer> _clientRepositoryAsync;
 
         public AdvisorDashboardOpportunityStepMetricsQueryHandler(IRepositoryAsync<Opportunity> repositoryAsync, IRepositoryAsync<User> userRepositoryAsync,
-            IRepositoryAsync<OpportunityStep> stepRepositoryAsync, IJwtService jwtService, IMapper mapper, IRepositoryHNAsync<Client> clientRepositoryAsync)
+            IRepositoryAsync<OpportunityStep> stepRepositoryAsync, IJwtService jwtService, IMapper mapper, IRepositoryAsync<Customer> clientRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
             _userRepositoryAsync = userRepositoryAsync;
@@ -73,7 +72,7 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorDashboa
                     opportunityStepMetric.Opportunities = _mapper.Map<List<OpportunityDto>>(opportunitiesInStep);
                     for (int index = 0; index < opportunityStepMetric.Opportunities.Count; index++)
                     {
-                        var client = clients.Find(x => x.Id == opportunityStepMetric.Opportunities[index].Customer!.MasterId);
+                        var client = clients.Find(x => x.Id == opportunityStepMetric.Opportunities[index].Customer!.MotorsId);
                         if (client != null)
                         {
                             opportunityStepMetric.Opportunities[index].Customer!.MotorsId = opportunityStepMetric.Opportunities[index].CustomerId;

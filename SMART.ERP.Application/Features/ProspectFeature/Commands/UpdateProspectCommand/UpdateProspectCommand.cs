@@ -8,7 +8,6 @@ using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.ProspectSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using System.Text.RegularExpressions;
 
 namespace SMART.ERP.Application.Features.ProspectFeature.Commands.UpdateProspectCommand
@@ -40,20 +39,20 @@ namespace SMART.ERP.Application.Features.ProspectFeature.Commands.UpdateProspect
     {
         private readonly IRepositoryAsync<Prospect> _repositoryAsync;
         private readonly IRepositoryAsync<TypeOrigin> _originRepositoryAsync;
-        private readonly IRepositoryHNAsync<ClientHeading> _headingRepositoryAsync;
-        private readonly IRepositoryHNAsync<ClientSocialReason> _socialReasonRepositoryAsync;
+        private readonly IRepositoryAsync<Heading> _headingRepositoryAsync;
+        private readonly IRepositoryAsync<SocialReason> _socialReasonRepositoryAsync;
         private readonly IRepositoryAsync<Gender> _genderRepositoryAsync;
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<City> _cityRepositoryAsync;
         private readonly IJwtService _jwtService;
-        private readonly IRepositoryHNAsync<Client> _repositoryHNAsync;
+        private readonly IRepositoryAsync<Customer> _repositoryHNAsync;
         private readonly IRepositoryAsync<Country> _countryRepositoryAsync;
         private readonly IRepositoryAsync<MetaAdCampaign> _adCampaignRepositoryAsync;
 
         public UpdateProspectCommandHandler(IRepositoryAsync<Prospect> repositoryAsync, IRepositoryAsync<TypeOrigin> originRepositoryAsync,
-            IRepositoryHNAsync<ClientHeading> headingRepositoryAsync, IRepositoryHNAsync<ClientSocialReason> socialReasonRepositoryAsync, IRepositoryAsync<Gender> genderRepositoryAsync,
+            IRepositoryAsync<Heading> headingRepositoryAsync, IRepositoryAsync<SocialReason> socialReasonRepositoryAsync, IRepositoryAsync<Gender> genderRepositoryAsync,
             IMapper mapper, IRepositoryAsync<City> cityRepositoryAsync, IJwtService jwtService,
-            IRepositoryHNAsync<Client> repositoryHNAsync, IRepositoryAsync<Country> countryRepositoryAsync,
+            IRepositoryAsync<Customer> repositoryHNAsync, IRepositoryAsync<Country> countryRepositoryAsync,
             IRepositoryAsync<MetaAdCampaign> adCampaignRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;

@@ -2,8 +2,8 @@
 using MediatR;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Customer;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.ClientSocialReasonFeature.Queries
 {
@@ -11,10 +11,10 @@ namespace SMART.ERP.Application.Features.ClientSocialReasonFeature.Queries
     {
         public class GetAllSocialReasonQueryHandler : IRequestHandler<GetAllSocialReasonQuery, Response<List<SocialReasonDto>>>
         {
-            private readonly IRepositoryHNAsync<ClientSocialReason> _repositoryHNAsync;
+            private readonly IRepositoryAsync<SocialReason> _repositoryHNAsync;
             private readonly IMapper _mapper;
 
-            public GetAllSocialReasonQueryHandler(IRepositoryHNAsync<ClientSocialReason> repositoryHNAsync, IMapper mapper)
+            public GetAllSocialReasonQueryHandler(IRepositoryAsync<SocialReason> repositoryHNAsync, IMapper mapper)
             {
                 _repositoryHNAsync = repositoryHNAsync;
                 _mapper = mapper;

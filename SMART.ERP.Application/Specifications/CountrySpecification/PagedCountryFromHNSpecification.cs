@@ -1,9 +1,9 @@
 ﻿using Ardalis.Specification;
-using SMART.MASTER.Domain.Entities;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.CountrySpecification
 {
-    public class PagedCountryFromHNSpecification : Specification<ClientCountry>
+    public class PagedCountryFromHNSpecification : Specification<Country>
     {
         public PagedCountryFromHNSpecification(string? parameter, int pageNumber,
             int pageSize, string? order, string? column)

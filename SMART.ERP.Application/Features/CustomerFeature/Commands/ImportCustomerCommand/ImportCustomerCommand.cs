@@ -8,7 +8,6 @@ using SMART.ERP.Application.Specifications.DepartmentSpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 using SMART.ERP.Application.Services.RegisterClientService;
@@ -22,19 +21,19 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.ImportCustomer
 
     public class ImportCustomerCommandHandler : IRequestHandler<ImportCustomerCommand, Response<CustomerDto>>
     {
-        private readonly IRepositoryHNAsync<Client> _repositoryHNAsync;
+        private readonly IRepositoryAsync<Customer> _repositoryHNAsync;
         private readonly IRepositoryAsync<Customer> _repositoryAsync;
         private readonly IMapper _mapper;
         private readonly IRegisterClientService _registerClientService;
         private readonly IRepositoryAsync<Department> _departmentRepositoryAsync;
         private readonly IAssignUserToOpportunityService _assignUserToOpportunityService;
-        private readonly IRepositoryHNAsync<ClientDepartment> _clientDepartmentRepositoryAsync;
+        private readonly IRepositoryAsync<Department> _clientDepartmentRepositoryAsync;
         private readonly IJwtService _jwtService;
         private readonly IRepositoryAsync<User> _userRepositoryAsync;
 
-        public ImportCustomerCommandHandler(IRepositoryHNAsync<Client> repositoryHNAsync, IRepositoryAsync<Customer> repositoryAsync,
+        public ImportCustomerCommandHandler(IRepositoryAsync<Customer> repositoryHNAsync, IRepositoryAsync<Customer> repositoryAsync,
             IMapper mapper, IRegisterClientService registerClientService, IRepositoryAsync<Department> departmentRepositoryAsync,
-            IAssignUserToOpportunityService assignUserToOpportunityService, IRepositoryHNAsync<ClientDepartment> clientDepartmentRepositoryAsync,
+            IAssignUserToOpportunityService assignUserToOpportunityService, IRepositoryAsync<Department> clientDepartmentRepositoryAsync,
             IJwtService jwtService, IRepositoryAsync<User> userRepositoryAsync)
         {
             _repositoryHNAsync = repositoryHNAsync;

@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Http;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.MailService;
-using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Mail;
 
 namespace SMART.ERP.Application.Features.AdCampaignFeature.Commands.SendAdCampaignCommand
@@ -25,19 +23,17 @@ namespace SMART.ERP.Application.Features.AdCampaignFeature.Commands.SendAdCampai
     public class SendAdCampaignCommandHandler : IRequestHandler<SendAdCampaignCommand, Response<string>>
     {
         private readonly IMailService _mailService;
-        private readonly IRepositoryHNAsync<Client> _clientRepositoryAsync;
         private readonly IRepositoryAsync<Customer> _customerRepositoryAsync;
-        private readonly IRepositoryHNAsync<ClientHeading> _headingRepositoryAsync;
-        private readonly IRepositoryHNAsync<ClientType> _clientTypeRepositoryAsync;
+        private readonly IRepositoryAsync<Heading> _headingRepositoryAsync;
+        private readonly IRepositoryAsync<CustomerType> _customerTypeRepositoryAsync;
 
-        public SendAdCampaignCommandHandler(IMailService mailService, IRepositoryHNAsync<Client> clientRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync,
-            IRepositoryHNAsync<ClientHeading> headingRepositoryAsync, IRepositoryHNAsync<ClientType> clientTypeRepositoryAsync)
+        public SendAdCampaignCommandHandler(IMailService mailService, IRepositoryAsync<Customer> customerRepositoryAsync,
+            IRepositoryAsync<Heading> headingRepositoryAsync, IRepositoryAsync<CustomerType> customerTypeRepositoryAsync)
         {
             _mailService = mailService;
-            _clientRepositoryAsync = clientRepositoryAsync;
             _customerRepositoryAsync = customerRepositoryAsync;
             _headingRepositoryAsync = headingRepositoryAsync;
-            _clientTypeRepositoryAsync = clientTypeRepositoryAsync;
+            _customerTypeRepositoryAsync = customerTypeRepositoryAsync;
         }
 
         public async Task<Response<string>> Handle(SendAdCampaignCommand request, CancellationToken cancellationToken)
@@ -46,24 +42,21 @@ namespace SMART.ERP.Application.Features.AdCampaignFeature.Commands.SendAdCampai
             {
                 if (request.All)
                 {
-                    var hnCustomers = await _clientRepositoryAsync.ListAsync();
                     var customers = await _customerRepositoryAsync.ListAsync();
-                    var selectedCustomers = new List<Client>();
-
-                    selectedCustomers = hnCustomers.FindAll(x => customers.Exists(y => y.MasterId == x.Id));
-                    foreach (var customer in selectedCustomers)
+                   
+                    foreach (var customer in customers)
                     {
                         if (customer.Email is null)
                         {
-                            throw new ApiException("Un cliente o mas no contienen correos asignados.");
+                            throw new ApiException("Un customer o mas no contienen correos asignados.");
                         }
                     }
 
-                    foreach (var client in selectedCustomers)
+                    foreach (var customer in customers)
                     {
                         MailRequestDto mailRequest = new MailRequestDto();
                         mailRequest.Attachment = request.File;
-                        mailRequest.ToEmail = client.Email!;
+                        mailRequest.ToEmail = customer.Email!;
                         mailRequest.Body = request.Message;
                         mailRequest.Subject = request.Subject;
                         try
@@ -79,15 +72,13 @@ namespace SMART.ERP.Application.Features.AdCampaignFeature.Commands.SendAdCampai
                 }
                 else
                 {
-                    var hnCustomers = await _clientRepositoryAsync.ListAsync();
-                    var customers = await _customerRepositoryAsync.ListAsync();
-                    var selectedCustomers = new List<Client>();
+                    var selectedCustomers = new List<Customer>();
                     for (int i = 0; i < request.SelectedCustomers!.Count; i++)
                     {
-                        var checkIfExist = await _clientRepositoryAsync.GetByIdAsync(request.SelectedCustomers[i]);
+                        var checkIfExist = await _customerRepositoryAsync.GetByIdAsync(request.SelectedCustomers[i]);
                         if (checkIfExist == null)
                         {
-                            throw new KeyNotFoundException($"No se encontro el cliente con id {request.SelectedCustomers[i]}");
+                            throw new KeyNotFoundException($"No se encontro el customere con id {request.SelectedCustomers[i]}");
                         }
                         selectedCustomers.Add(checkIfExist);
                     }
@@ -95,14 +86,14 @@ namespace SMART.ERP.Application.Features.AdCampaignFeature.Commands.SendAdCampai
                     {
                         if (customer.Email is null)
                         {
-                            throw new ApiException("Un cliente o mas no contienen correos asignados.");
+                            throw new ApiException("Un customere o mas no contienen correos asignados.");
                         }
                     }
-                    foreach (var client in selectedCustomers)
+                    foreach (var customer in selectedCustomers)
                     {
                         MailRequestDto mailRequest = new MailRequestDto();
                         mailRequest.Attachment = request.File;
-                        mailRequest.ToEmail = client.Email!;
+                        mailRequest.ToEmail = customer.Email!;
                         mailRequest.Body = request.Message;
                         mailRequest.Subject = request.Subject;
                         try
@@ -122,7 +113,7 @@ namespace SMART.ERP.Application.Features.AdCampaignFeature.Commands.SendAdCampai
             {
                 if (request.All)
                 {
-                    var selectedCustomers = new List<Client>();
+                    var selectedCustomers = new List<Customer>();
                     if (request.CustomerTypeId != null && request.HeadingId != null)
                     {
                         var checkIfHeadingExist = await _headingRepositoryAsync.GetByIdAsync(int.Parse(request.HeadingId));
@@ -130,24 +121,24 @@ namespace SMART.ERP.Application.Features.AdCampaignFeature.Commands.SendAdCampai
                         {
                             throw new KeyNotFoundException($"No existe el rubro con id {request.HeadingId}");
                         }
-                        var checkIfClientTypeExist = await _clientTypeRepositoryAsync.GetByIdAsync(int.Parse(request.CustomerTypeId));
-                        if (checkIfClientTypeExist == null)
+                        var checkIfcustomerTypeExist = await _customerTypeRepositoryAsync.GetByIdAsync(int.Parse(request.CustomerTypeId));
+                        if (checkIfcustomerTypeExist == null)
                         {
-                            throw new KeyNotFoundException($"No existe el tipo de cliente con id {request.CustomerTypeId}");
+                            throw new KeyNotFoundException($"No existe el tipo de customere con id {request.CustomerTypeId}");
                         }
-                        selectedCustomers = await _clientRepositoryAsync.ListAsync(new FilterClientAdCampaignSpecification(int.Parse(request.CustomerTypeId), int.Parse(request.HeadingId)));
+                        //selectedCustomers = await _customerRepositoryAsync.ListAsync(new FilterCustomerAdCampaignSpecification(int.Parse(request.CustomerTypeId), int.Parse(request.HeadingId)));
                         foreach (var customer in selectedCustomers)
                         {
                             if (customer.Email is null)
                             {
-                                throw new ApiException("Un cliente o mas no contienen correos asignados.");
+                                throw new ApiException("Un customere o mas no contienen correos asignados.");
                             }
                         }
-                        foreach (var client in selectedCustomers)
+                        foreach (var customer in selectedCustomers)
                         {
                             MailRequestDto mailRequest = new MailRequestDto();
                             mailRequest.Attachment = request.File;
-                            mailRequest.ToEmail = client.Email!;
+                            mailRequest.ToEmail = customer.Email!;
                             mailRequest.Body = request.Message;
                             mailRequest.Subject = request.Subject;
                             try
@@ -165,24 +156,24 @@ namespace SMART.ERP.Application.Features.AdCampaignFeature.Commands.SendAdCampai
                     {
                         if (request.HeadingId != null)
                         {
-                            selectedCustomers = await _clientRepositoryAsync.ListAsync(new FilterClientAdCampaignSpecification(null, int.Parse(request.HeadingId)));
+                            //selectedCustomers = await _customerRepositoryAsync.ListAsync(new FiltercustomerAdCampaignSpecification(null, int.Parse(request.HeadingId)));
                         }
                         else
                         {
-                            selectedCustomers = await _clientRepositoryAsync.ListAsync(new FilterClientAdCampaignSpecification(int.Parse(request.CustomerTypeId!), null));
+                            //selectedCustomers = await _customerRepositoryAsync.ListAsync(new FiltercustomerAdCampaignSpecification(int.Parse(request.CustomerTypeId!), null));
                         }
                         foreach (var customer in selectedCustomers)
                         {
                             if (customer.Email is null)
                             {
-                                throw new ApiException("Un cliente o mas no contienen correos asignados.");
+                                throw new ApiException("Un customere o mas no contienen correos asignados.");
                             }
                         }
-                        foreach (var client in selectedCustomers)
+                        foreach (var customer in selectedCustomers)
                         {
                             MailRequestDto mailRequest = new MailRequestDto();
                             mailRequest.Attachment = request.File;
-                            mailRequest.ToEmail = client.Email!;
+                            mailRequest.ToEmail = customer.Email!;
                             mailRequest.Body = request.Message;
                             mailRequest.Subject = request.Subject;
                             try
@@ -200,13 +191,13 @@ namespace SMART.ERP.Application.Features.AdCampaignFeature.Commands.SendAdCampai
                 }
                 else
                 {
-                    var selectedCustomers = new List<Client>();
+                    var selectedCustomers = new List<Customer>();
                     for (int i = 0; i < request.SelectedCustomers!.Count; i++)
                     {
-                        var checkIfExist = await _clientRepositoryAsync.GetByIdAsync(request.SelectedCustomers[i]);
+                        var checkIfExist = await _customerRepositoryAsync.GetByIdAsync(request.SelectedCustomers[i]);
                         if (checkIfExist == null)
                         {
-                            throw new KeyNotFoundException($"No se encontro el cliente con id {request.SelectedCustomers[i]}");
+                            throw new KeyNotFoundException($"No se encontro el customere con id {request.SelectedCustomers[i]}");
                         }
                         selectedCustomers.Add(checkIfExist);
                     }
@@ -214,14 +205,14 @@ namespace SMART.ERP.Application.Features.AdCampaignFeature.Commands.SendAdCampai
                     {
                         if (customer.Email is null)
                         {
-                            throw new ApiException("Un cliente o mas no contienen correos asignados.");
+                            throw new ApiException("Un customere o mas no contienen correos asignados.");
                         }
                     }
-                    foreach (var client in selectedCustomers)
+                    foreach (var customer in selectedCustomers)
                     {
                         MailRequestDto mailRequest = new MailRequestDto();
                         mailRequest.Attachment = request.File;
-                        mailRequest.ToEmail = client.Email!;
+                        mailRequest.ToEmail = customer.Email!;
                         mailRequest.Body = request.Message;
                         mailRequest.Subject = request.Subject;
                         try

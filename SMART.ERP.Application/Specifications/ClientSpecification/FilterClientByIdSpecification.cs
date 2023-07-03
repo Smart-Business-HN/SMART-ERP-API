@@ -1,9 +1,9 @@
 ﻿using Ardalis.Specification;
-using SMART.MASTER.Domain.Entities;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.ClientSpecification
 {
-    public class FilterClientByIdSpecification : Specification<Client>
+    public class FilterClientByIdSpecification : Specification<Customer>
     {
         public FilterClientByIdSpecification(Guid? id)
         {

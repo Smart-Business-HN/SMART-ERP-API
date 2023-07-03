@@ -35,22 +35,6 @@ namespace SMART.ERP.API.Controllers.v1
             }));
         }
 
-        [HttpGet("GetAllFromHN")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAllFromHN([FromQuery] RequestParameter filter)
-        {
-
-            return Ok(await Mediator.Send(new GetAllDepartmentsFromHNQuery
-            {
-                Parameter = filter.Parameter,
-                PageNumber = filter.PageNumber,
-                PageSize = filter.PageSize,
-                Order = filter.Order,
-                Column = filter.Column,
-                All = filter.All
-            }));
-        }
-
         [HttpPost("Create")]
         [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateDepartmentCommand command)

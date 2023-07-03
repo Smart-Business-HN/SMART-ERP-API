@@ -18,7 +18,7 @@ namespace SMART.ERP.Application.Services.RegisterClientService
             {
                 var client = new Customer()
                 {
-                    MasterId = clientId,
+                    Id = clientId,
                     RegistrationDate = DateTime.Now,
                     UserId = userId != null ? userId : null
                 };

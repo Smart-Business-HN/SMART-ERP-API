@@ -8,7 +8,6 @@ using SMART.ERP.Application.Specifications.CustomerSpecification;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Customer;
 
 namespace SMART.ERP.Application.Features.CustomerMachineryFeature.Commands.CreateCustomerMachineryCommand

@@ -11,7 +11,6 @@ using SMART.ERP.Application.Specifications.TypeOriginSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Domain.Enums;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 
 namespace SMART.ERP.Application.Features.ProspectFeature.Commands.CreateProspectXpressCommand
@@ -38,7 +37,7 @@ namespace SMART.ERP.Application.Features.ProspectFeature.Commands.CreateProspect
         private readonly IRepositoryAsync<OpportunityStep> _stepRepositoryAsync;
         private readonly IRepositoryAsync<InterestLevel> _interestRepositoryAsync;
         private readonly IAssignUserToOpportunityService _assignUserToOpportunityService;
-        private readonly IRepositoryHNAsync<Client> _clientRepositoryAsync;
+        private readonly IRepositoryAsync<Customer> _clientRepositoryAsync;
         private readonly IRepositoryAsync<ProspectStep> _prospectStepRepositoryAsync;
         private readonly IRepositoryAsync<Country> _countryRepositoryAsync;
         private readonly IRepositoryAsync<TypeOrigin> _originRepositoryAsync;
@@ -48,7 +47,7 @@ namespace SMART.ERP.Application.Features.ProspectFeature.Commands.CreateProspect
             IRepositoryAsync<Opportunity> opportunityRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync,
             IRepositoryAsync<QuoteProduct> quoteProductRepositoryAsync, IRepositoryAsync<OpportunityStep> stepRepositoryAsync,
             IRepositoryAsync<InterestLevel> interestRepositoryAsync, IAssignUserToOpportunityService assignUserToOpportunityService,
-            IRepositoryHNAsync<Client> clientRepositoryAsync, IRepositoryAsync<ProspectStep> prospectStepRepositoryAsync,
+            IRepositoryAsync<Customer> clientRepositoryAsync, IRepositoryAsync<ProspectStep> prospectStepRepositoryAsync,
             IRepositoryAsync<Country> countryRepositoryAsync, IRepositoryAsync<TypeOrigin> originRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;

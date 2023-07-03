@@ -9,7 +9,6 @@ using SMART.ERP.Application.Specifications.CustomerSpecification;
 using SMART.ERP.Application.Specifications.WishListSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Auth;
 using SMART.ERP.Domain.Settings;
 using System.IdentityModel.Tokens.Jwt;
@@ -27,13 +26,13 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.LoginCustomerC
 
     public class LoginCustomerCommandHandler : IRequestHandler<LoginCustomerCommand, Response<SesionCustomerDto>>
     {
-        private readonly IRepositoryHNAsync<Client> _repositoryHNAsync;
+        private readonly IRepositoryAsync<Customer> _repositoryHNAsync;
         private readonly IRepositoryAsync<Customer> _repositoryAsync;
         private readonly IHeaderService _headerService;
         private readonly IRepositoryAsync<WishList> _wishListRepositoryAsync;
         private readonly JWTSettings _jwtSettings;
 
-        public LoginCustomerCommandHandler(IRepositoryHNAsync<Client> repositoryHNAsync, IRepositoryAsync<WishList> wishListRepositoryAsync,
+        public LoginCustomerCommandHandler(IRepositoryAsync<Customer> repositoryHNAsync, IRepositoryAsync<WishList> wishListRepositoryAsync,
             IOptions<JWTSettings> jwtSettings, IRepositoryAsync<Customer> repositoryAsync, IHeaderService headerService)
         {
             _wishListRepositoryAsync = wishListRepositoryAsync;
@@ -57,7 +56,6 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.LoginCustomerC
             {
                 var registerCustomer = new Customer();
                 registerCustomer!.RegistrationDate = DateTime.Now;
-                registerCustomer!.MasterId = customer.Id;
                 await _repositoryAsync.AddAsync(registerCustomer);
                 await _repositoryAsync.SaveChangesAsync();
             }
@@ -81,7 +79,7 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.LoginCustomerC
             return true;
         }
 
-        private async Task<SesionCustomerDto> Authenticated(Client customer, LoginCustomerCommand request)
+        private async Task<SesionCustomerDto> Authenticated(Customer customer, LoginCustomerCommand request)
         {
             if (request.Password != null && customer.PasswordHash != null && customer.PasswordSalt != null)
             {

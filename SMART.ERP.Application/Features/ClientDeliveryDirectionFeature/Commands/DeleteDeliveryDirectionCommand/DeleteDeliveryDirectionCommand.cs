@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
-using SMART.MASTER.Domain.Entities;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.ClientDeliveryDirectionFeature.Commands.DeleteDeliveryDirectionCommand
 {
@@ -12,9 +12,9 @@ namespace SMART.ERP.Application.Features.ClientDeliveryDirectionFeature.Commands
 
     public class DeleteDeliveryDirectionCommandHandler : IRequestHandler<DeleteDeliveryDirectionCommand, Response<string>>
     {
-        private readonly IRepositoryHNAsync<DeliveryDirection> _repositoryHNAsync;
+        private readonly IRepositoryAsync<DeliveryDirection> _repositoryHNAsync;
 
-        public DeleteDeliveryDirectionCommandHandler(IRepositoryHNAsync<DeliveryDirection> repositoryHNAsync)
+        public DeleteDeliveryDirectionCommandHandler(IRepositoryAsync<DeliveryDirection> repositoryHNAsync)
         {
             _repositoryHNAsync = repositoryHNAsync;
         }

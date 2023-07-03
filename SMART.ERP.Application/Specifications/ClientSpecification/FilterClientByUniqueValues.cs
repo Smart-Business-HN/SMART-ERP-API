@@ -1,9 +1,9 @@
 ﻿using Ardalis.Specification;
-using SMART.MASTER.Domain.Entities;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.ClientSpecification
 {
-    public class FilterClientByUniqueValues : Specification<Client>
+    public class FilterClientByUniqueValues : Specification<Customer>
     {
         public FilterClientByUniqueValues(string fullName, string phone, string? email, Guid? Id)
         {

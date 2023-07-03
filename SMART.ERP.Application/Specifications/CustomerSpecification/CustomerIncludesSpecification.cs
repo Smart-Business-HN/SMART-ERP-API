@@ -7,7 +7,7 @@ namespace SMART.ERP.Application.Specifications.CustomerSpecification
     {
         public CustomerIncludesSpecification()
         {
-            Query.Include(x => x.CustomerMachinery).AsNoTracking();
+            Query.Include(x => x.CustomerType).AsNoTracking();
         }
     }
 }

@@ -41,11 +41,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SMART.ERP.Domain\SMART.ERP.Domain.csproj" />
-    <ProjectReference Include="..\SMART.MASTER.Domain\SMART.MASTER.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Features\OpinionFeature\Commands\" />
+    <Folder Include="Features\TaxFeature\Queries\" />
     <Folder Include="Features\WishListFeature\Commands\UpdateWishListCommand\" />
     <Folder Include="Features\WishListProductFeature\Commands\UpdateWishListProductCommand\" />
     <Folder Include="Specifications\TypeEntitySpecification\" />

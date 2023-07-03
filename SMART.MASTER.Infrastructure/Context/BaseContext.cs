@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SMART.ERP.Domain.Entities;
 using SMART.MASTER.Domain.Entities;
 
 namespace SMART.MASTER.Infrastructure.Context
@@ -16,9 +17,9 @@ namespace SMART.MASTER.Infrastructure.Context
         public DbSet<ClientSocialReason> SocialReasons { get; set; } = null!;
         public DbSet<ClientCurrency> Currencies { get; set; } = null!;
         public DbSet<ClientType> CustomerTypes { get; set; } = null!;
-        public DbSet<ClientCity> ClientCities { get; set; } = null!;
-        public DbSet<ClientDepartment> ClientDepartments { get; set; } = null!;
-        public DbSet<ClientCountry> ClientCountries { get; set; } = null!;
+        public DbSet<City> ClientCities { get; set; } = null!;
+        public DbSet<Department> ClientDepartments { get; set; } = null!;
+        public DbSet<Country> ClientCountries { get; set; } = null!;
         public DbSet<DeliveryDirection> DeliveryDirections { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -69,12 +70,6 @@ namespace SMART.MASTER.Infrastructure.Context
                 .HasForeignKey(x => x.DepartmentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Client>()
-                .HasMany(x => x.DeliveryDirections)
-                .WithOne(x => x.Customer)
-                .HasForeignKey(x => x.CustomerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             //Gender
             modelBuilder.Entity<ClientGender>().ToTable("Gender");
             modelBuilder.Entity<ClientGender>(o => o.HasKey(x => x.Id));
@@ -115,19 +110,6 @@ namespace SMART.MASTER.Infrastructure.Context
                 .HasForeignKey(x => x.CountryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //Department
-            modelBuilder.Entity<ClientDepartment>().ToTable("Department");
-            modelBuilder.Entity<ClientDepartment>(o => o.HasKey(x => x.Id));
-
-            modelBuilder.Entity<ClientDepartment>()
-                .HasMany(x => x.Cities)
-                .WithOne()
-                .HasForeignKey(x => x.DepartmentId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            //City
-            modelBuilder.Entity<ClientCity>().ToTable("City");
-            modelBuilder.Entity<ClientCity>(o => o.HasKey(x => x.Id));
         }
     }
 }

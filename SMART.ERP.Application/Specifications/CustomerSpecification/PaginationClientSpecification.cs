@@ -1,9 +1,9 @@
 ﻿using Ardalis.Specification;
-using SMART.MASTER.Domain.Entities;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.CustomerSpecification
 {
-    public class PaginationClientSpecification : Specification<Client>
+    public class PaginationClientSpecification : Specification<Customer>
     {
         public PaginationClientSpecification(string? parameter, int? pageSize, string? order, string? column)
         {

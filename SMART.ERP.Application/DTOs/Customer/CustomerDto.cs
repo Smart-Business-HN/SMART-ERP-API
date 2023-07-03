@@ -23,7 +23,7 @@ namespace SMART.ERP.Application.DTOs.Customer
         public string? SecondaryPhoneNumber { get; set; }
         public string? CivilStatus { get; set; }
         public int CustomerTypeId { get; set; }
-        public ClientTypeDto? CustomerType { get; set; }
+        public CustomerTypeDto? CustomerType { get; set; }
         public int GenderId { get; set; }
         public GenderDto? Gender { get; set; }
         public int SocialReasonId { get; set; }

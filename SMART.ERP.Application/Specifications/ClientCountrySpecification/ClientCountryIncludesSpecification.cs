@@ -1,9 +1,9 @@
 ﻿using Ardalis.Specification;
-using SMART.MASTER.Domain.Entities;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.ClientCountrySpecification
 {
-    public class ClientCountryIncludesSpecification : Specification<ClientCountry>
+    public class ClientCountryIncludesSpecification : Specification<Country>
     {
         public ClientCountryIncludesSpecification()
         {

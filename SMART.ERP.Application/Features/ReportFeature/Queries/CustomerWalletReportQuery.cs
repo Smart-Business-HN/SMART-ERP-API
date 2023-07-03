@@ -9,7 +9,6 @@ using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Customer;
 
 namespace SMART.ERP.Application.Features.ReportFeature.Queries
@@ -24,13 +23,13 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
 
     public class CustomerWalletReportQueryHandler : IRequestHandler<CustomerWalletReportQuery, PagedResponse<List<UserWalletDto>>>
     {
-        private readonly IRepositoryHNAsync<Client> _repositoryHNAsync;
+        private readonly IRepositoryAsync<Customer> _repositoryHNAsync;
         private readonly IRepositoryAsync<Customer> _repositoryAsync;
         private readonly IRepositoryAsync<User> _userRepositoryAsync;
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Opportunity> _opportunityRepositoryAsync;
 
-        public CustomerWalletReportQueryHandler(IRepositoryHNAsync<Client> repositoryHNAsync, IRepositoryAsync<Customer> repositoryAsync, IRepositoryAsync<User> userRepositoryAsync,
+        public CustomerWalletReportQueryHandler(IRepositoryAsync<Customer> repositoryHNAsync, IRepositoryAsync<Customer> repositoryAsync, IRepositoryAsync<User> userRepositoryAsync,
             IMapper mapper, IRepositoryAsync<Opportunity> opportunityRepositoryAsync)
         {
             _repositoryHNAsync = repositoryHNAsync;
@@ -62,7 +61,7 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                 var assignedClients = await _repositoryAsync.ListAsync(new FilterCustomerByUserSpecification((Guid)request.Id));
                 foreach (var customer in assignedClients)
                 {
-                    var client = clients.FirstOrDefault(x => x.Id == customer.MasterId);
+                    var client = clients.FirstOrDefault(x => x.Id == customer.Id);
                     var assignedClientOpportunities = allOpportunities.FindAll(x => x.CustomerId == customer.Id);
                     assignedClientOpportunities = assignedClientOpportunities.FindAll(x => x.UserId == request.Id);
                     var clientWallet = _mapper.Map<ClientWalletDto>(client);
@@ -85,14 +84,14 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                 }
                 foreach (var opp in activeUserOpportunities)
                 {
-                    if (userWallet.Clients.Exists(x => x.Id == opp.Customer.MasterId))
+                    if (userWallet.Clients.Exists(x => x.Id == opp.Customer.Id))
                     {
                         continue;
                     }
-                    var client = clients.FirstOrDefault(x => x.Id == opp.Customer.MasterId);
+                    var client = clients.FirstOrDefault(x => x.Id == opp.Customer.Id);
                     if (client == null)
                     {
-                        throw new KeyNotFoundException($"No se encontro el cliente con id {opp.Customer.MasterId}");
+                        throw new KeyNotFoundException($"No se encontro el cliente con id {opp.Customer.Id}");
                     }
                     var clientWallet = _mapper.Map<ClientWalletDto>(client);
                     var customerOpportunities = allOpportunities.FindAll(x => x.CustomerId == opp.CustomerId && x.UserId == request.Id);
@@ -134,7 +133,7 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                     var assignedClients = await _repositoryAsync.ListAsync(new FilterCustomerByUserSpecification(user.Id));
                     foreach (var customer in assignedClients)
                     {
-                        var client = clients.FirstOrDefault(x => x.Id == customer.MasterId);
+                        var client = clients.FirstOrDefault(x => x.Id == customer.Id);
                         var assignedClientOpportunities = allOpportunities.FindAll(x => x.CustomerId == customer.Id);
                         assignedClientOpportunities = assignedClientOpportunities.FindAll(x => x.UserId == user.Id);
                         var clientWallet = _mapper.Map<ClientWalletDto>(client);
@@ -157,14 +156,14 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                     }
                     foreach (var opp in activeUserOpportunities)
                     {
-                        if (userWallet.Clients.Exists(x => x.Id == opp.Customer.MasterId))
+                        if (userWallet.Clients.Exists(x => x.Id == opp.Customer.Id))
                         {
                             continue;
                         }
-                        var client = clients.FirstOrDefault(x => x.Id == opp.Customer.MasterId);
+                        var client = clients.FirstOrDefault(x => x.Id == opp.Customer.Id);
                         if (client == null)
                         {
-                            throw new KeyNotFoundException($"No se encontro el cliente con id {opp.Customer.MasterId}");
+                            throw new KeyNotFoundException($"No se encontro el cliente con id {opp.Customer.Id}");
                         }
                         var clientWallet = _mapper.Map<ClientWalletDto>(client);
                         var customerOpportunities = allOpportunities.FindAll(x => x.CustomerId == opp.CustomerId && x.UserId == user.Id);

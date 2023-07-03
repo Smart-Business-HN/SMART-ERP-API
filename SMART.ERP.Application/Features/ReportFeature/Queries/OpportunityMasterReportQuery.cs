@@ -7,7 +7,6 @@ using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.ReportFeature.Queries
 {
@@ -30,12 +29,12 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
         private readonly IRepositoryAsync<OpportunityStep> _stepRepositoryAsync;
         private readonly IRepositoryAsync<Customer> _customerRepositoryAsync;
         private readonly IMapper _mapper;
-        private readonly IRepositoryHNAsync<Client> _clientRepositoryAsync;
+        private readonly IRepositoryAsync<Customer> _clientRepositoryAsync;
 
         public OpportunityMasterReportQueryHandler(IRepositoryAsync<Opportunity> repositoryAsync, IRepositoryAsync<BranchOffices> branchRepositoryAsync,
             IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<OpportunityStep> stepRepositoryAsync,
             IRepositoryAsync<Customer> customerRepositoryAsync, IMapper mapper,
-            IRepositoryHNAsync<Client> clientRepositoryAsync)
+            IRepositoryAsync<Customer> clientRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
             _branchRepositoryAsync = branchRepositoryAsync;
@@ -107,7 +106,7 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
             var response = new List<ReportOpportunityMasterDto>();
             foreach (var opportunity in opportunities)
             {
-                var client = clients.Find(x => x.Id == customers.Find(y => y.Id == opportunity.CustomerId)!.MasterId);
+                var client = clients.Find(x => x.Id == customers.Find(y => y.Id == opportunity.CustomerId)!.Id);
                 string ProductNames = "";
                 for (int i = 0; i < opportunity.QuoteProducts!.Count; i++)
                 {

@@ -9,7 +9,6 @@ namespace SMART.ERP.Application.Features.SubcategoryFeature.Commands.DeleteSubca
     {
         public int Id { get; set; }
     }
-
     public class DeleteSubcategoryCommandHandler : IRequestHandler<DeleteSubcategoryCommand, Response<string>>
     {
         private readonly IRepositoryAsync<Subcategory> _repositoryAsync;

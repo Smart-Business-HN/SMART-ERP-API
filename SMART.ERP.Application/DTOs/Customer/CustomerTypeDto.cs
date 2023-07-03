@@ -1,6 +1,6 @@
 ﻿namespace SMART.ERP.Application.DTOs.Customer
 {
-    public class ClientTypeDto
+    public class CustomerTypeDto
     {
         public int Id { get; init; }
         public string Name { get; set; } = null!;

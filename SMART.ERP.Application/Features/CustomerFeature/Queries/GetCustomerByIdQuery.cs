@@ -6,7 +6,6 @@ using SMART.ERP.Application.Specifications.CustomerMachinerySpecification;
 using SMART.ERP.Application.Specifications.CustomerSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Customer;
 
 namespace SMART.ERP.Application.Features.CustomerFeature.Queries
@@ -17,11 +16,11 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Queries
     }
     public class GetCustomerByIdQueryHandler : IRequestHandler<GetCustomerByIdQuery, Response<CustomerDto>>
     {
-        private readonly IRepositoryHNAsync<Client> _repositoryHNAsync;
+        private readonly IRepositoryAsync<Customer> _repositoryHNAsync;
         private readonly IRepositoryAsync<Customer> _repositoryAsync;
         private readonly IRepositoryAsync<CustomerMachinery> _repositoryCustomerMachinery;
         private readonly IMapper _mapper;
-        public GetCustomerByIdQueryHandler(IRepositoryHNAsync<Client> repositoryHNAsync,
+        public GetCustomerByIdQueryHandler(IRepositoryAsync<Customer> repositoryHNAsync,
             IRepositoryAsync<Customer> repositoryAsync, IMapper mapper, IRepositoryAsync<CustomerMachinery> repositoryCustomerMachinery)
         {
             _repositoryHNAsync = repositoryHNAsync;
@@ -36,7 +35,7 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Queries
             {
                 throw new KeyNotFoundException($"Registro no encontrado con el id {request.Id}");
             }
-            var getRemoteCustomer = await _repositoryHNAsync.FirstOrDefaultAsync(new FilterClientByIdSpecification(getLocalCustomer!.MasterId));
+            var getRemoteCustomer = await _repositoryHNAsync.FirstOrDefaultAsync(new FilterClientByIdSpecification(getLocalCustomer!.Id));
             if (getRemoteCustomer == null)
             {
                 throw new KeyNotFoundException($"Ocurrio un problema al buscar este cliente");

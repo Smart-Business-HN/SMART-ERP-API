@@ -1,4 +1,10 @@
-﻿namespace SMART.MASTER.Domain.Entities
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SMART.ERP.Domain.Entities
 {
     public class DeliveryDirection
     {
@@ -8,10 +14,10 @@
         public string AdditionalInformation { get; set; } = null!;
         public string PostalCode { get; set; } = null!;
         public int CityId { get; set; }
-        public virtual ClientCity? City { get; set; }
+        public virtual City? City { get; set; }
         public bool IsActive { get; set; }
         public bool IsFavorite { get; set; }
         public Guid CustomerId { get; set; }
-        public virtual Client? Customer { get; set; }
+        public virtual Customer? Customer { get; set; }
     }
 }

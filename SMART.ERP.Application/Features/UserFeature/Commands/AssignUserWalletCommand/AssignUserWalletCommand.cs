@@ -10,7 +10,6 @@ using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Customer;
 
 namespace SMART.ERP.Application.Features.UserFeature.Commands.AssignUserWalletCommand
@@ -26,11 +25,11 @@ namespace SMART.ERP.Application.Features.UserFeature.Commands.AssignUserWalletCo
         private readonly IRepositoryAsync<Customer> _repositoryAsync;
         private readonly IRepositoryAsync<User> _userRepositoryAsync;
         private readonly IMapper _mapper;
-        private readonly IRepositoryHNAsync<Client> _repositoryHNAsync;
+        private readonly IRepositoryAsync<Customer> _repositoryHNAsync;
         private readonly IRepositoryAsync<Opportunity> _opportunityRepositoryAsync;
 
         public AssignUserWalletCommandHandler(IRepositoryAsync<Customer> repositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IMapper mapper,
-            IRepositoryHNAsync<Client> repositoryHNAsync, IRepositoryAsync<Opportunity> opportunityRepositoryAsync)
+            IRepositoryAsync<Customer> repositoryHNAsync, IRepositoryAsync<Opportunity> opportunityRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
             _userRepositoryAsync = userRepositoryAsync;
@@ -85,7 +84,7 @@ namespace SMART.ERP.Application.Features.UserFeature.Commands.AssignUserWalletCo
             var assignedClients = await _repositoryAsync.ListAsync(new FilterCustomerByUserSpecification(request.UserId));
             foreach (var customer in assignedClients)
             {
-                var client = clients.FirstOrDefault(x => x.Id == customer.MasterId);
+                var client = clients.FirstOrDefault(x => x.Id == customer.Id);
                 var assignedClientActiveOpportunities = await _opportunityRepositoryAsync.ListAsync(new FilterActiveOpportunitiesByCustomerSpecification(customer.Id, true));
                 var clientWallet = _mapper.Map<ClientWalletDto>(client);
                 clientWallet.Assigned = true;
@@ -107,14 +106,14 @@ namespace SMART.ERP.Application.Features.UserFeature.Commands.AssignUserWalletCo
             }
             foreach (var opp in activeUserOpportunities)
             {
-                if (userWallet.Clients.Exists(x => x.Id == opp.Customer!.MasterId))
+                if (userWallet.Clients.Exists(x => x.Id == opp.Customer!.Id))
                 {
                     continue;
                 }
-                var client = clients.FirstOrDefault(x => x.Id == opp.Customer!.MasterId);
+                var client = clients.FirstOrDefault(x => x.Id == opp.Customer!.Id);
                 if (client == null)
                 {
-                    throw new KeyNotFoundException($"No se encontro el cliente con id {opp.Customer!.MasterId}");
+                    throw new KeyNotFoundException($"No se encontro el cliente con id {opp.Customer!.Id}");
                 }
                 var clientWallet = _mapper.Map<ClientWalletDto>(client);
                 var customerOpportunities = activeOpportunities.FindAll(x => x.CustomerId == opp.CustomerId && x.UserId == request.UserId);

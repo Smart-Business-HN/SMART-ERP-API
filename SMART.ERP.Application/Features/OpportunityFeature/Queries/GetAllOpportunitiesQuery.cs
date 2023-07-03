@@ -5,7 +5,6 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.OpportunityFeature.Queries
 {
@@ -21,9 +20,9 @@ namespace SMART.ERP.Application.Features.OpportunityFeature.Queries
         {
             private readonly IMapper _mapper;
             private readonly IRepositoryAsync<Opportunity> _repositoryAsync;
-            private readonly IRepositoryHNAsync<Client> _clientRepositoryAsync;
+            private readonly IRepositoryAsync<Customer> _clientRepositoryAsync;
             public GetAllOpportunitiesQueryHandler(IMapper mapper, IRepositoryAsync<Opportunity> repositoryAsync,
-                IRepositoryHNAsync<Client> clientRepositoryAsync)
+                IRepositoryAsync<Customer> clientRepositoryAsync)
             {
                 _mapper = mapper;
                 _repositoryAsync = repositoryAsync;
@@ -44,7 +43,7 @@ namespace SMART.ERP.Application.Features.OpportunityFeature.Queries
                 var dto = _mapper.Map<List<OpportunityDto>>(opportunities);
                 for (int index = 0; index < dto.Count; index++)
                 {
-                    var client = clients.Find(x => x.Id == dto[index].Customer!.MasterId);
+                    var client = clients.Find(x => x.Id == dto[index].Customer!.MotorsId);
                     if (client != null)
                     {
                         dto[index].Customer!.FullName = client.FullName;

@@ -5,7 +5,6 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.WishListSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Customer;
 
 namespace SMART.ERP.Application.Features.WishListFeature.Queries
@@ -22,15 +21,13 @@ namespace SMART.ERP.Application.Features.WishListFeature.Queries
         {
             private readonly IMapper _mapper;
             private readonly IRepositoryAsync<WishList> _repositoryAsync;
-            private readonly IRepositoryHNAsync<Client> _repositoryHNAsync;
             private readonly IRepositoryAsync<Customer> _customerRepositoryAsync;
 
-            public GetAllWishListsQueryHandler(IMapper mapper, IRepositoryAsync<WishList> repositoryAsync, IRepositoryHNAsync<Client> repositoryHNAsync,
+            public GetAllWishListsQueryHandler(IMapper mapper, IRepositoryAsync<WishList> repositoryAsync,
                 IRepositoryAsync<Customer> customerRepositoryAsync)
             {
                 _mapper = mapper;
                 _repositoryAsync = repositoryAsync;
-                _repositoryHNAsync = repositoryHNAsync;
                 _customerRepositoryAsync = customerRepositoryAsync;
             }
 
@@ -48,8 +45,7 @@ namespace SMART.ERP.Application.Features.WishListFeature.Queries
                 foreach (var wish in dto)
                 {
                     var customer = await _customerRepositoryAsync.GetByIdAsync(wish.CustomerId);
-                    var client = await _repositoryHNAsync.GetByIdAsync(customer!.MasterId);
-                    wish.Customer = _mapper.Map<BasicInfoCustomerDto>(client);
+                    wish.Customer = _mapper.Map<BasicInfoCustomerDto>(customer);
                 }
                 return new PagedResponse<List<WishListDto>>(dto, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync());
             }

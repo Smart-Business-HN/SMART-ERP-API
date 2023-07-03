@@ -16,7 +16,6 @@ using SMART.ERP.Application.Specifications.ProspectQuoteProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Domain.Enums;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.Services.RegisterClientService;
 using System.Security.Cryptography;
 using System.Text;
@@ -36,11 +35,11 @@ namespace SMART.ERP.Application.Features.ProspectFeature.Commands.ConvertProspec
         private readonly IRepositoryAsync<ProspectStep> _prospectStepRepositoryAsync;
         private readonly IRepositoryAsync<OpportunityStep> _stepRepositoryAsync;
         private readonly IRepositoryAsync<ProspectQuoteProduct> _prospectQuoteRepositoryAsync;
-        private readonly IRepositoryHNAsync<ClientHeading> _headingRepositoryAsync;
-        private readonly IRepositoryHNAsync<ClientSocialReason> _reasonRepositoryAsync;
+        private readonly IRepositoryAsync<Heading> _headingRepositoryAsync;
+        private readonly IRepositoryAsync<SocialReason> _reasonRepositoryAsync;
         private readonly IRepositoryAsync<TypeOrigin> _originRepositoryAsync;
-        private readonly IRepositoryHNAsync<ClientType> _clientTypeRepositoryAsync;
-        private readonly IRepositoryHNAsync<Client> _clientRepositoryAsync;
+        private readonly IRepositoryAsync<CustomerType> _clientTypeRepositoryAsync;
+        private readonly IRepositoryAsync<Customer> _clientRepositoryAsync;
         private readonly IRegisterClientService _registerClientService;
         private readonly IRepositoryAsync<Opportunity> _opportunityRepositoryAsync;
         private readonly INewEncryptionService _newEncryptionService;
@@ -50,18 +49,18 @@ namespace SMART.ERP.Application.Features.ProspectFeature.Commands.ConvertProspec
         private readonly IRepositoryAsync<QuoteProduct> _quoteRepositoryAsync;
         private readonly IJwtService _jwtService;
         private readonly IRepositoryAsync<Country> _countryRepositoryAsync;
-        private readonly IRepositoryHNAsync<ClientCountry> _clientCountryHNAsync;
+        private readonly IRepositoryAsync<Country> _clientCountryHNAsync;
 
         public ConvertProspectCommandHandler(IRepositoryAsync<Prospect> repositoryAsync,
             IMapper mapper,
             IRepositoryAsync<ProspectStep> prospectStepRepositoryAsync,
             IRepositoryAsync<OpportunityStep> stepRepositoryAsync,
             IRepositoryAsync<ProspectQuoteProduct> prospectQuoteRepositoryAsync,
-            IRepositoryHNAsync<ClientHeading> headingRepositoryAsync,
-            IRepositoryHNAsync<ClientSocialReason> reasonRepositoryAsync,
+            IRepositoryAsync<Heading> headingRepositoryAsync,
+            IRepositoryAsync<SocialReason> reasonRepositoryAsync,
             IRepositoryAsync<TypeOrigin> originRepositoryAsync,
-            IRepositoryHNAsync<ClientType> clientTypeRepositoryAsync,
-            IRepositoryHNAsync<Client> clientRepositoryAsync,
+            IRepositoryAsync<CustomerType> clientTypeRepositoryAsync,
+            IRepositoryAsync<Customer> clientRepositoryAsync,
             IRegisterClientService registerClientService,
             IRepositoryAsync<Opportunity> opportunityRepositoryAsync,
             INewEncryptionService newEncryptionService,
@@ -71,7 +70,7 @@ namespace SMART.ERP.Application.Features.ProspectFeature.Commands.ConvertProspec
             IRepositoryAsync<QuoteProduct> quoteRepositoryAsync,
             IJwtService jwtService,
             IRepositoryAsync<Country> countryRepositoryAsync,
-            IRepositoryHNAsync<ClientCountry> clientCountryHNAsync)
+            IRepositoryAsync<Country> clientCountryHNAsync)
         {
             _repositoryAsync = repositoryAsync;
             _mapper = mapper;
@@ -135,7 +134,7 @@ namespace SMART.ERP.Application.Features.ProspectFeature.Commands.ConvertProspec
                     throw new ApiException("Ya existe un cliente con este número telefónico");
                 }
             }
-            var newClient = new Client();
+            var newClient = new Customer();
             var getMotorsCountry = await _countryRepositoryAsync.FirstOrDefaultAsync(new
                 IncludeCountrySpecification(checkProspect.CountryId));
             var prospectRegion = getMotorsCountry.Regions.Find(x => x.Departments!.Any(y => y.Id == checkProspect.DepartmentId));

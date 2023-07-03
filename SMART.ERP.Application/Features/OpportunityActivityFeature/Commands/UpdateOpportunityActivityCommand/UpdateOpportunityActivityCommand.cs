@@ -8,7 +8,6 @@ using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.OpportunityActivityFeature.Commands.UpdateOpportunityActivityCommand
 {
@@ -29,7 +28,7 @@ namespace SMART.ERP.Application.Features.OpportunityActivityFeature.Commands.Upd
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<OpportunityActivity> _repositoryAsync;
         private readonly IJwtService _jwtService;
-        private readonly IRepositoryHNAsync<Client> _clientRepositoryAsync;
+        private readonly IRepositoryAsync<Customer> _clientRepositoryAsync;
         private readonly IRepositoryAsync<Opportunity> _oportunityRepositoryAsync;
         private readonly IRepositoryAsync<TypeActivity> _typeActivityRepositoryAsync;
         private readonly IGoogleCalendarService _googleCalendarService;
@@ -38,7 +37,7 @@ namespace SMART.ERP.Application.Features.OpportunityActivityFeature.Commands.Upd
             IMapper mapper,
             IRepositoryAsync<OpportunityActivity> repositoryAsync,
             IJwtService jwtService,
-            IRepositoryHNAsync<Client> clientRepositoryAsync,
+            IRepositoryAsync<Customer> clientRepositoryAsync,
             IRepositoryAsync<Opportunity> oportunityRepositoryAsync,
             IRepositoryAsync<TypeActivity> typeActivityRepositoryAsync,
             IGoogleCalendarService googleCalendarService)
@@ -60,7 +59,7 @@ namespace SMART.ERP.Application.Features.OpportunityActivityFeature.Commands.Upd
             var getOpportunity = await _oportunityRepositoryAsync.FirstOrDefaultAsync(new GetOpportunityCustomerSpecification(request.OpportunityId));
             if (getOpportunity != null)
             {
-                var client = await _clientRepositoryAsync.GetByIdAsync(getOpportunity.Customer!.MasterId);
+                var client = await _clientRepositoryAsync.GetByIdAsync(getOpportunity.Customer!.Id);
                 if (client != null)
                 {
                     customerName = client.FullName;

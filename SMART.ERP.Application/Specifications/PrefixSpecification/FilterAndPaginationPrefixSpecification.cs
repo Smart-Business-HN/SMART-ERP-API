@@ -18,18 +18,18 @@ namespace SMART.ERP.Application.Specifications.PrefixSpecification
 
             if (!string.IsNullOrEmpty(parameter))
             {
-                Query.Where(x => x.Format.Contains(parameter));
+                Query.Include(x=> x.InternalDocument).Where(x => x.Format.Contains(parameter));
             }
 
             if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))
             {
                 if (order == "desc")
                 {
-                    Query.OrderByDescending(x => column == "Name" ? x.Format : null);
+                    Query.Include(x=>x.InternalDocument).OrderByDescending(x => column == "Name" ? x.Format : null);
                 }
                 else
                 {
-                    Query.OrderBy(x => column == "Name" ? x.Format : null);
+                    Query.Include(x => x.InternalDocument).OrderBy(x => column == "Name" ? x.Format : null);
                 }
             }
         }

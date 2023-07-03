@@ -17,7 +17,6 @@ using SMART.ERP.Application.Specifications.ProspectStepSpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.ProspectFeature.Commands.CreateProspectCommand
 {
@@ -48,10 +47,10 @@ namespace SMART.ERP.Application.Features.ProspectFeature.Commands.CreateProspect
     public class CreateProspectCommandHandler : IRequestHandler<CreateProspectCommand, Response<ProspectDto>>
     {
         private readonly IRepositoryAsync<Prospect> _repositoryAsync;
-        private readonly IRepositoryHNAsync<ClientHeading> _headingRepositoryAsync;
-        private readonly IRepositoryHNAsync<ClientSocialReason> _socialReasonRepositoryAsync;
+        private readonly IRepositoryAsync<Heading> _headingRepositoryAsync;
+        private readonly IRepositoryAsync<SocialReason> _socialReasonRepositoryAsync;
         private readonly IRepositoryAsync<TypeOrigin> _originRepositoryAsync;
-        private readonly IRepositoryHNAsync<Client> _clientRepositoryAsync;
+        private readonly IRepositoryAsync<Customer> _clientRepositoryAsync;
         private readonly IRepositoryAsync<Department> _departmentRepositoryAsync;
         private readonly IAssignUserToProspectService _assignUser;
         private readonly IRepositoryAsync<ProspectStep> _stepRepositoryAsync;
@@ -68,9 +67,9 @@ namespace SMART.ERP.Application.Features.ProspectFeature.Commands.CreateProspect
         private readonly IRepositoryAsync<ProspectQuoteProduct> _quoteProductRepositoryAsync;
         private readonly IRepositoryAsync<MetaAdCampaign> _metaAdRepositoryAsync;
 
-        public CreateProspectCommandHandler(IRepositoryAsync<Prospect> repositoryAsync, IRepositoryHNAsync<ClientHeading> headingRepositoryAsync,
-            IRepositoryHNAsync<ClientSocialReason> socialReasonRepositoryAsync, IRepositoryAsync<TypeOrigin> originRepositoryAsync,
-            IRepositoryHNAsync<Client> clientRepositoryAsync, IRepositoryAsync<Department> departmentRepositoryAsync,
+        public CreateProspectCommandHandler(IRepositoryAsync<Prospect> repositoryAsync, IRepositoryAsync<Heading> headingRepositoryAsync,
+            IRepositoryAsync<SocialReason> socialReasonRepositoryAsync, IRepositoryAsync<TypeOrigin> originRepositoryAsync,
+            IRepositoryAsync<Customer> clientRepositoryAsync, IRepositoryAsync<Department> departmentRepositoryAsync,
             IAssignUserToProspectService assignUser, IRepositoryAsync<ProspectStep> stepRepositoryAsync, IMapper mapper,
             IRepositoryAsync<City> cityRepositoryAsync, IRepositoryAsync<Country> countryRepositoryAsync, IRepositoryAsync<Gender> genderRepositoryAsync,
             IJwtService jwtService, IRepositoryAsync<User> userRepositoryAsync, IMailService mailService,

@@ -23,8 +23,6 @@ using SMART.ERP.Application.Wrappers;
 using Quartz;
 using SMART.ERP.Application.Behaviours;
 using SMART.ERP.Application.Jobs.LogSessionJob;
-using SMART.ERP.Application.Jobs.RootcloudJob;
-using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 using SMART.ERP.Application.Services.RegisterClientService;
 using SMART.ERP.Application.Services.Rootcloud;
 using SMART.ERP.Domain.Settings;

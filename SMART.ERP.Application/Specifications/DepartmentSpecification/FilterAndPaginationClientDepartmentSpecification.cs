@@ -1,9 +1,9 @@
 ﻿using Ardalis.Specification;
-using SMART.MASTER.Domain.Entities;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.DepartmentSpecification
 {
-    public class FilterAndPaginationClientDepartmentSpecification : Specification<ClientDepartment>
+    public class FilterAndPaginationClientDepartmentSpecification : Specification<Department>
     {
         public FilterAndPaginationClientDepartmentSpecification(string? parameter, int pageNumber,
             int pageSize, string? order, string? column)

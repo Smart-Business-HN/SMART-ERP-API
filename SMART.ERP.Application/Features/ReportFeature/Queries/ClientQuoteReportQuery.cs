@@ -7,7 +7,6 @@ using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.ReportFeature.Queries
 {
@@ -24,11 +23,11 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
     {
         private readonly IRepositoryAsync<Customer> _repositoryAsync;
         private readonly IRepositoryAsync<Opportunity> _opportunityRepositoryAsync;
-        private readonly IRepositoryHNAsync<Client> _repositoryHNAsync;
+        private readonly IRepositoryAsync<Customer> _repositoryHNAsync;
         private readonly IMapper _mapper;
 
         public ClientQuoteReportQueryHandler(IRepositoryAsync<Customer> repositoryAsync, IRepositoryAsync<Opportunity> opportunityRepositoryAsync,
-            IRepositoryHNAsync<Client> repositoryHNAsync, IMapper mapper)
+            IRepositoryAsync<Customer> repositoryHNAsync, IMapper mapper)
         {
             _repositoryAsync = repositoryAsync;
             _opportunityRepositoryAsync = opportunityRepositoryAsync;
@@ -54,7 +53,7 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
             List<Guid> guids = new();
             foreach (var customer in customers)
             {
-                guids.Add(customer.MasterId);
+                guids.Add(customer.Id);
             }
             var motorClients = await _repositoryHNAsync.ListAsync(new FilterClientFromMotors(guids));
             var response = new List<ReportClientQuoteDto>();
@@ -62,7 +61,7 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
             {
                 ReportClientQuoteDto dto = new();
                 dto.FullName = customer.FullName;
-                Guid customerMotorId = customers.Find(x => x.MasterId == customer.Id)!.Id;
+                Guid customerMotorId = customers.Find(x => x.Id == customer.Id)!.Id;
                 var customerOpportunities = opportunities.FindAll(x => x.CustomerId == customerMotorId);
                 foreach (var opportunity in customerOpportunities)
                 {

@@ -7,7 +7,7 @@ namespace SMART.ERP.Application.Specifications.CustomerSpecification
     {
         public FilterCustomerByMasterIdSpecification(Guid id)
         {
-            Query.Where(x => x.MasterId == id).AsNoTracking();
+            Query.Where(x => x.Id == id).AsNoTracking();
         }
     }
 }

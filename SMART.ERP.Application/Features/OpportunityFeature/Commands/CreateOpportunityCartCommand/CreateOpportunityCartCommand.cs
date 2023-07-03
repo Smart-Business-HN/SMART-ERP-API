@@ -16,7 +16,6 @@ using SMART.ERP.Application.Specifications.WishListProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Domain.Enums;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 
 namespace SMART.ERP.Application.Features.OpportunityFeature.Commands.CreateOpportunityCartCommand
@@ -32,7 +31,7 @@ namespace SMART.ERP.Application.Features.OpportunityFeature.Commands.CreateOppor
         private readonly IRepositoryAsync<QuoteProduct> _quoteRepositoryAsync;
         private readonly IRepositoryAsync<User> _userRepositoryAsync;
         private readonly IRepositoryAsync<Customer> _customerRepositoryAsync;
-        private readonly IRepositoryHNAsync<Client> _clientRepositoryAsync;
+        private readonly IRepositoryAsync<Customer> _clientRepositoryAsync;
         private readonly IRepositoryAsync<InterestLevel> _interestRepositoryAsync;
         private readonly IRepositoryAsync<OpportunityStep> _stepRepositoryAsync;
         private readonly IRepositoryAsync<TypeOrigin> _originRepositoryAsync;
@@ -47,7 +46,7 @@ namespace SMART.ERP.Application.Features.OpportunityFeature.Commands.CreateOppor
         private readonly IMapper _mapper;
 
         public CreateOpportunityCartCommandHandler(IRepositoryAsync<Opportunity> repositoryAsync, IRepositoryAsync<QuoteProduct> quoteRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync,
-            IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryHNAsync<Client> clientRepositoryAsync, IRepositoryAsync<InterestLevel> interestRepositoryAsync,
+            IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<Customer> clientRepositoryAsync, IRepositoryAsync<InterestLevel> interestRepositoryAsync,
             IRepositoryAsync<OpportunityStep> stepRepositoryAsync, IRepositoryAsync<TypeOrigin> originRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync,
             IAssignUserToOpportunityService assignUser, IRepositoryAsync<WishList> wishListRepositoryAsync, IRepositoryAsync<WishListProduct> wishProductRepositoryAsync,
             IRepositoryAsync<Status> statusRepositoryAsync, IMailService mailService, IHubContext<NotificationHub> hubContext,
@@ -87,10 +86,10 @@ namespace SMART.ERP.Application.Features.OpportunityFeature.Commands.CreateOppor
                 throw new KeyNotFoundException("No se encontro el cliente de Motors vinculado a esta lista de deseos.");
             }
 
-            var HNClient = await _clientRepositoryAsync.GetByIdAsync(checkIfMotorsCustomerExist.MasterId);
+            var HNClient = await _clientRepositoryAsync.GetByIdAsync(checkIfMotorsCustomerExist.Id);
             if (HNClient == null)
             {
-                throw new KeyNotFoundException($"No se encontro el cliente HN con id {checkIfMotorsCustomerExist.MasterId}");
+                throw new KeyNotFoundException($"No se encontro el cliente HN con id {checkIfMotorsCustomerExist.Id}");
             }
 
             var processedStatus = await _statusRepositoryAsync.FirstOrDefaultAsync(new FilterStatusFromNameSpecification("Procesada"));

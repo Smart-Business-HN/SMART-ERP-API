@@ -54,7 +54,7 @@ namespace SMART.ERP.Application.Features.PrefixFeature.Command.UpdatePrefixComma
             await _repositoryAsync.UpdateAsync(prefix);
             await _repositoryAsync.SaveChangesAsync();
             var dto = _mapper.Map<PrefixDto>(prefix);
-            return new Response<PrefixDto>(dto, message: $"{dto.Prefix} actualizado correctamente");
+            return new Response<PrefixDto>(dto, message: $"{dto.Format} actualizado correctamente");
         }
     }
 }

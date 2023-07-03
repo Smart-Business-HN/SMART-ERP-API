@@ -11,7 +11,6 @@ using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.MessageFeature.Commands.CreateMessageCommand
 {
@@ -32,7 +31,7 @@ namespace SMART.ERP.Application.Features.MessageFeature.Commands.CreateMessageCo
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Message> _repositoryAsync;
-        private readonly IRepositoryHNAsync<Client> _repositoryHNAsync;
+        private readonly IRepositoryAsync<Customer> _customerRepositoryAsync;
         private readonly IRepositoryAsync<User> _userRepositoryAsync;
         private readonly IRepositoryAsync<Country> _countryRepositoryAsync;
         private readonly IRepositoryAsync<Department> _departmentRepositoryAsync;
@@ -42,7 +41,7 @@ namespace SMART.ERP.Application.Features.MessageFeature.Commands.CreateMessageCo
 
         public CreateMessageCommandHandler(IMapper mapper,
             IRepositoryAsync<Message> repositoryAsync,
-            IRepositoryHNAsync<Client> repositoryHNAsync,
+            IRepositoryAsync<Customer> customerRepositoryAsync,
             IRepositoryAsync<User> userRepositoryAsync,
             IRepositoryAsync<Country> countryRepositoryAsync,
             IRepositoryAsync<Department> departmentRepositoryAsync,
@@ -52,7 +51,7 @@ namespace SMART.ERP.Application.Features.MessageFeature.Commands.CreateMessageCo
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
-            _repositoryHNAsync = repositoryHNAsync;
+            _customerRepositoryAsync =customerRepositoryAsync;
             _userRepositoryAsync = userRepositoryAsync;
             _countryRepositoryAsync = countryRepositoryAsync;
             _departmentRepositoryAsync = departmentRepositoryAsync;
@@ -76,7 +75,7 @@ namespace SMART.ERP.Application.Features.MessageFeature.Commands.CreateMessageCo
             var newRecord = _mapper.Map<Message>(request);
             if (request.CustomerId != null)
             {
-                var customer = await _repositoryHNAsync.FirstOrDefaultAsync(
+                var customer = await _customerRepositoryAsync.FirstOrDefaultAsync(
                     new FilterClientByIdSpecification(request.CustomerId));
                 if (customer != null)
                 {

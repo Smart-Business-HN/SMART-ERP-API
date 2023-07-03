@@ -11,7 +11,6 @@ using SMART.ERP.Application.Specifications.ProspectSpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 using SMART.ERP.Application.Services.RegisterClientService;
@@ -38,29 +37,27 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomer
 
     public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, Response<CustomerDto>>
     {
-        private readonly IRepositoryHNAsync<Client> _repositoryAsync;
+        private readonly IRepositoryAsync<Customer> _repositoryAsync;
         private readonly IMapper _mapper;
-        private readonly IRepositoryHNAsync<ClientType> _clientTypeRepositoryAsync;
-        private readonly IRepositoryHNAsync<ClientDepartment> _clientDepartmentRepositoryAsync;
+        private readonly IRepositoryAsync<CustomerType> _clientTypeRepositoryAsync;
         private readonly IRepositoryAsync<User> _userRepositoryAsync;
         private readonly IJwtService _jwtService;
         private readonly IRepositoryAsync<Department> _departmentRepositoryAsync;
         private readonly IAssignUserToOpportunityService _assignUserToOpportunityService;
         private readonly IRepositoryAsync<Prospect> _prospectRepositoryAsync;
-        private readonly IRepositoryHNAsync<ClientCountry> _clientCountryRepositoryAsync;
-        private readonly IRepositoryHNAsync<ClientHeading> _clientHeadingRepositoryAsync;
+        private readonly IRepositoryAsync<Country> _clientCountryRepositoryAsync;
+        private readonly IRepositoryAsync<Heading> _clientHeadingRepositoryAsync;
         private readonly INewEncryptionService _newEncryptionService;
         private readonly IRegisterClientService _registerClient;
-        private readonly IRepositoryHNAsync<ClientSocialReason> _clientSocialReasonRepositoryAsync;
+        private readonly IRepositoryAsync<SocialReason> _clientSocialReasonRepositoryAsync;
 
-        public CreateCustomerCommandHandler(IRepositoryHNAsync<Client> repositoryAsync, IMapper mapper,
-            IRepositoryHNAsync<ClientType> clientTypeRepositoryAsync,
-            IRepositoryHNAsync<ClientHeading> clientHeadingRepositoryAsync,
+        public CreateCustomerCommandHandler(IRepositoryAsync<Customer> repositoryAsync, IMapper mapper,
+            IRepositoryAsync<CustomerType> clientTypeRepositoryAsync,
+            IRepositoryAsync<Heading> clientHeadingRepositoryAsync,
             INewEncryptionService newEncryptionService,
             IRegisterClientService registerClient,
-            IRepositoryHNAsync<ClientSocialReason> clientSocialReasonRepositoryAsync,
-            IRepositoryHNAsync<ClientCountry> clientCountryRepositoryAsync,
-            IRepositoryHNAsync<ClientDepartment> clientDepartmentRepositoryAsync,
+            IRepositoryAsync<SocialReason> clientSocialReasonRepositoryAsync,
+            IRepositoryAsync<Country> clientCountryRepositoryAsync,
             IRepositoryAsync<User> userRepositoryAsync,
             IJwtService jwtService,
             IRepositoryAsync<Department> departmentRepositoryAsync,
@@ -68,7 +65,6 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomer
             IRepositoryAsync<Prospect> prospectRepositoryAsync)
         {
             _clientCountryRepositoryAsync = clientCountryRepositoryAsync;
-            _clientDepartmentRepositoryAsync = clientDepartmentRepositoryAsync;
             _userRepositoryAsync = userRepositoryAsync;
             _jwtService = jwtService;
             _departmentRepositoryAsync = departmentRepositoryAsync;
@@ -124,14 +120,14 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomer
             {
                 throw new KeyNotFoundException($"No se encontro el pais con el id ${request.CountryId}");
             }
-            var customerDepartment = await _clientDepartmentRepositoryAsync.GetByIdAsync(request.DepartmentId);
+            var customerDepartment = await _departmentRepositoryAsync.GetByIdAsync(request.DepartmentId);
             if (customerDepartment == null)
             {
                 throw new KeyNotFoundException($"No se encontro el departamento con el id ${request.DepartmentId}");
             }
 
 
-            var newRecord = _mapper.Map<Client>(request);
+            var newRecord = _mapper.Map<Customer>(request);
             byte[] passwordHash, passwordSalt;
             string tempPassword = RandomString(8);
             _newEncryptionService.CreatePasswordHash(tempPassword, out passwordHash, out passwordSalt);
@@ -183,7 +179,7 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomer
             newRecord.Email = string.IsNullOrWhiteSpace(newRecord.Email) ? null : request.Email;
             newRecord.PhoneNumber = string.IsNullOrWhiteSpace(newRecord.PhoneNumber) ? null : newRecord.PhoneNumber;
             newRecord.CurrencyId = newRecord.CurrencyId == 0 ? null : newRecord.CurrencyId;
-
+            newRecord.RegistrationDate = DateTime.Now;
             var response = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
 
@@ -204,17 +200,15 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomer
             {
                 assignedUserId = checkUser!.Id;
             }
-
-
-            if (await _registerClient.RegiterClient(response.Id, assignedUserId))
+            if(assignedUserId != null)
             {
+                response.UserId = assignedUserId != null ? assignedUserId : null;
+                await _repositoryAsync.UpdateAsync(response);
+                await _repositoryAsync.SaveChangesAsync();
+            }
                 var dto = _mapper.Map<CustomerDto>(response);
                 return new Response<CustomerDto>(dto);
-            }
-            else
-            {
-                throw new ApiException("Ocurrio un error al tratar de guardar este cliente, consulta a soporte tecnico.");
-            }
+           
         }
 
         static string RandomString(int length)

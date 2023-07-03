@@ -1,4 +1,6 @@
-﻿namespace SMART.MASTER.Domain.Entities
+﻿using SMART.ERP.Domain.Entities;
+
+namespace SMART.MASTER.Domain.Entities
 {
     public class Client
     {
@@ -35,7 +37,7 @@
         public int? CountryId { get; set; }
         public virtual ClientCountry? Country { get; set; }
         public int? DepartmentId { get; set; }
-        public virtual ClientDepartment? Department { get; set; }
+        public virtual Department? Department { get; set; }
         public bool IsHisOwnContactPerson { get; set; }
         public string? ContactPerson { get; set; }
         public string? ContactPersonPhone { get; set; }

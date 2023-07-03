@@ -8,8 +8,6 @@ using SMART.ERP.Application.Services.SignalRHub;
 using Quartz;
 using SMART.ERP.Infrastructure;
 using SMART.ERP.Infrastructure.Repository;
-using SMART.MASTER.Infrastructure.Context;
-using SMART.MASTER.Infrastructure.Repository;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +19,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             //policy.WithOrigins("https://motors.platino.hn", "https://adminpm.platino.hn").AllowAnyHeader().AllowAnyMethod();
-            policy.WithOrigins("https://*.vercel.app").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+            //policy.WithOrigins("https://*.vercel.app").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod().AllowCredentials();
             policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
             .AllowAnyHeader().AllowAnyMethod().AllowCredentials();
         });
@@ -62,17 +60,17 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
         });
 });
 
-builder.Services.AddDbContext<BaseContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("PHNDatabase"),
-        sqlServerOptionsAction: sqlOptions =>
-        {
-            sqlOptions.EnableRetryOnFailure();
-        });
-});
+//builder.Services.AddDbContext<BaseContext>(options =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("PHNDatabase"),
+//        sqlServerOptionsAction: sqlOptions =>
+//        {
+//            sqlOptions.EnableRetryOnFailure();
+//        });
+//});
 
 builder.Services.AddTransient(typeof(IRepositoryAsync<>), typeof(CustomRepositoryAsync<>));
-builder.Services.AddTransient(typeof(IRepositoryHNAsync<>), typeof(BaseRepositoryAsync<>));
+//builder.Services.AddTransient(typeof(IRepositoryAsync<>), typeof(BaseRepositoryAsync<>));
 //builder.WebHost.UseSentry(opts =>
 //{
 //    opts.BeforeSend = @event =>

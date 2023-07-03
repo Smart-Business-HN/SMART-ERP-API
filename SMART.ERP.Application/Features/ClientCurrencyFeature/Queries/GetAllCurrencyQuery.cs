@@ -3,7 +3,6 @@ using MediatR;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Customer;
 using System.Collections.Generic;
 
@@ -13,10 +12,10 @@ namespace SMART.ERP.Application.Features.ClientCurrencyFeature.Queries
     {
         public class GetAllCurrencyQueryHandler : IRequestHandler<GetAllCurrencyQuery, Response<List<CurrencyDto>>>
         {
-            private readonly IRepositoryHNAsync<ClientCurrency> _repositoryHNAsync;
+            private readonly IRepositoryAsync<Currency> _repositoryHNAsync;
             private readonly IMapper _mapper;
 
-            public GetAllCurrencyQueryHandler(IRepositoryHNAsync<ClientCurrency> repositoryHNAsync, IMapper mapper)
+            public GetAllCurrencyQueryHandler(IRepositoryAsync<Currency> repositoryHNAsync, IMapper mapper)
             {
                 _repositoryHNAsync = repositoryHNAsync;
                 _mapper = mapper;

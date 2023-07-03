@@ -6,7 +6,6 @@ using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.ReportSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Customer;
 
 namespace SMART.ERP.Application.Features.ReportFeature.Queries
@@ -24,10 +23,10 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
     public class ClientByQuoteProductReportQueryHandler : IRequestHandler<ClientByQuoteProductReportQuery, PagedResponse<List<ClientByQuoteProductDto>>>
     {
         private readonly IRepositoryAsync<Opportunity> _repositoryAsync;
-        private readonly IRepositoryHNAsync<Client> _repositoryHNAsync;
+        private readonly IRepositoryAsync<Customer> _repositoryHNAsync;
         private readonly IMapper _mapper;
 
-        public ClientByQuoteProductReportQueryHandler(IRepositoryAsync<Opportunity> repositoryAsync, IRepositoryHNAsync<Client> repositoryHNAsync,
+        public ClientByQuoteProductReportQueryHandler(IRepositoryAsync<Opportunity> repositoryAsync, IRepositoryAsync<Customer> repositoryHNAsync,
             IMapper mapper)
         {
             _repositoryAsync = repositoryAsync;
@@ -50,16 +49,16 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
             List<Guid> guids = new List<Guid>();
             foreach (var opportunity in opportunities)
             {
-                if (!guids.Exists(x => x == opportunity.Customer.MasterId))
+                if (!guids.Exists(x => x == opportunity.Customer.Id))
                 {
-                    guids.Add(opportunity.Customer.MasterId);
+                    guids.Add(opportunity.Customer.Id);
                 }
             }
             var clients = await _repositoryHNAsync.ListAsync(new FilterClientFromMotors(guids));
             List<ClientByQuoteProductDto> response = new();
             foreach (var client in clients)
             {
-                var clientOpportunities = opportunities.FindAll(x => x.Customer.MasterId == client.Id);
+                var clientOpportunities = opportunities.FindAll(x => x.Customer.Id == client.Id);
                 foreach (var opp in clientOpportunities)
                 {
                     ClientByQuoteProductDto dto = new();

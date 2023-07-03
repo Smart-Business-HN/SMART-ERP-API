@@ -7,7 +7,6 @@ using SMART.ERP.Application.Specifications.CustomerSpecification;
 using SMART.ERP.Application.Specifications.ProspectSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Customer;
 
 namespace SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomerCommand
@@ -45,18 +44,18 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomer
 
     public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerCommand, Response<CustomerDto>>
     {
-        private readonly IRepositoryHNAsync<Client> _repositoryHNAsync;
+        private readonly IRepositoryAsync<Customer> _repositoryHNAsync;
         private readonly IRepositoryAsync<Customer> _customerRepositoryAsync;
-        private readonly IRepositoryHNAsync<ClientGender> _genderRepositoryHNAsync;
-        private readonly IRepositoryHNAsync<ClientHeading> _headingRepositoryHNAsync;
-        private readonly IRepositoryHNAsync<ClientSocialReason> _socialReasonRepositoryHNAsync;
-        private readonly IRepositoryHNAsync<ClientCurrency> _currencyRepositoryHNAsync;
+        private readonly IRepositoryAsync<Gender> _genderRepositoryHNAsync;
+        private readonly IRepositoryAsync<Heading> _headingRepositoryHNAsync;
+        private readonly IRepositoryAsync<SocialReason> _socialReasonRepositoryHNAsync;
+        private readonly IRepositoryAsync<Currency> _currencyRepositoryHNAsync;
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Prospect> _prospectRepositoryAsync;
 
-        public UpdateCustomerCommandHandler(IRepositoryHNAsync<Client> repositoryHNAsync, IRepositoryAsync<Customer> customerRepositoryAsync,
-            IRepositoryHNAsync<ClientGender> genderRepositoryHNAsync, IRepositoryHNAsync<ClientHeading> headingRepositoryHNAsync,
-            IRepositoryHNAsync<ClientSocialReason> socialReasonRepositoryHNAsync, IRepositoryHNAsync<ClientCurrency> currencyRepositoryHNAsync, IMapper mapper,
+        public UpdateCustomerCommandHandler(IRepositoryAsync<Customer> repositoryHNAsync, IRepositoryAsync<Customer> customerRepositoryAsync,
+            IRepositoryAsync<Gender> genderRepositoryHNAsync, IRepositoryAsync<Heading> headingRepositoryHNAsync,
+            IRepositoryAsync<SocialReason> socialReasonRepositoryHNAsync, IRepositoryAsync<Currency> currencyRepositoryHNAsync, IMapper mapper,
             IRepositoryAsync<Prospect> prospectRepositoryAsync)
         {
             _repositoryHNAsync = repositoryHNAsync;

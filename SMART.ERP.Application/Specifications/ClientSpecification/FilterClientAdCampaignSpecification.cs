@@ -1,9 +1,9 @@
 ﻿using Ardalis.Specification;
-using SMART.MASTER.Domain.Entities;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.ClientSpecification
 {
-    public class FilterClientAdCampaignSpecification : Specification<Client>
+    public class FilterClientAdCampaignSpecification : Specification<Customer>
     {
         public FilterClientAdCampaignSpecification(int? headingId, int? customerTypeId)
         {

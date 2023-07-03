@@ -3,29 +3,29 @@ using MediatR;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.ClientCountrySpecification;
 using SMART.ERP.Application.Wrappers;
-using SMART.MASTER.Domain.Entities;
-using SMART.ERP.Application.DTOs.Address;
+using SMART.ERP.Domain.Entities;
+using SMART.ERP.Application.DTOs.Customer;
 
 namespace SMART.ERP.Application.Features.ClientCountryFeature.Queries
 {
-    public class GetAllClientCountryQuery : IRequest<Response<List<ClientCountryDto>>>
+    public class GetAllClientCountryQuery : IRequest<Response<List<CountryDto>>>
     {
-        public class GetAllClientCountryQueryHandler : IRequestHandler<GetAllClientCountryQuery, Response<List<ClientCountryDto>>>
+        public class GetAllClientCountryQueryHandler : IRequestHandler<GetAllClientCountryQuery, Response<List<CountryDto>>>
         {
-            private readonly IRepositoryHNAsync<ClientCountry> _repositoryAsync;
+            private readonly IRepositoryAsync<Country> _repositoryAsync;
             private readonly IMapper _mapper;
 
-            public GetAllClientCountryQueryHandler(IRepositoryHNAsync<ClientCountry> repositoryAsync, IMapper mapper)
+            public GetAllClientCountryQueryHandler(IRepositoryAsync<Country> repositoryAsync, IMapper mapper)
             {
                 _repositoryAsync = repositoryAsync;
                 _mapper = mapper;
             }
 
-            public async Task<Response<List<ClientCountryDto>>> Handle(GetAllClientCountryQuery request, CancellationToken cancellationToken)
+            public async Task<Response<List<CountryDto>>> Handle(GetAllClientCountryQuery request, CancellationToken cancellationToken)
             {
                 var countryList = await _repositoryAsync.ListAsync(new ClientCountryIncludesSpecification());
-                var response = _mapper.Map<List<ClientCountryDto>>(countryList);
-                return new Response<List<ClientCountryDto>>(response);
+                var response = _mapper.Map<List<CountryDto>>(countryList);
+                return new Response<List<CountryDto>>(response);
             }
         }
     }

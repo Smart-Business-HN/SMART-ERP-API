@@ -6,7 +6,6 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.UserFeature.Commands.UpdateUserCommand
 {

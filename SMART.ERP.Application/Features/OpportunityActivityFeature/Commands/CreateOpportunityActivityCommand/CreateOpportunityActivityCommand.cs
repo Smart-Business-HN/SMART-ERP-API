@@ -8,7 +8,6 @@ using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.OpportunityActivityFeature.Commands.CreateOpportunityActivityCommand
 {
@@ -29,7 +28,7 @@ namespace SMART.ERP.Application.Features.OpportunityActivityFeature.Commands.Cre
         private readonly IRepositoryAsync<OpportunityActivity> _repositoryAsync;
         private readonly IRepositoryAsync<User> _userRepositoryAsync;
         private readonly IRepositoryAsync<Status> _statusRepositoryAsync;
-        private readonly IRepositoryHNAsync<Client> _clientRepositoryAsync;
+        private readonly IRepositoryAsync<Customer> _clientRepositoryAsync;
         private readonly IRepositoryAsync<Opportunity> _oportunityRepositoryAsync;
         private readonly IRepositoryAsync<TypeActivity> _typeActivityRepositoryAsync;
         private readonly IJwtService _jwtService;
@@ -40,7 +39,7 @@ namespace SMART.ERP.Application.Features.OpportunityActivityFeature.Commands.Cre
             IRepositoryAsync<OpportunityActivity> repositoryAsync,
             IRepositoryAsync<User> userRepositoryAsync,
             IRepositoryAsync<Status> statusRepositoryAsync,
-            IRepositoryHNAsync<Client> clientRepositoryAsync,
+            IRepositoryAsync<Customer> clientRepositoryAsync,
             IRepositoryAsync<Opportunity> oportunityRepositoryAsync,
             IRepositoryAsync<TypeActivity> typeActivityRepositoryAsync,
             IJwtService jwtService,
@@ -77,7 +76,7 @@ namespace SMART.ERP.Application.Features.OpportunityActivityFeature.Commands.Cre
             var getOpportunity = await _oportunityRepositoryAsync.FirstOrDefaultAsync(new GetOpportunityCustomerSpecification(request.OpportunityId));
             if (getOpportunity != null)
             {
-                var client = await _clientRepositoryAsync.GetByIdAsync(getOpportunity.Customer!.MasterId);
+                var client = await _clientRepositoryAsync.GetByIdAsync(getOpportunity.Customer!.Id);
                 if (client != null)
                 {
                     customerName = client.FullName;

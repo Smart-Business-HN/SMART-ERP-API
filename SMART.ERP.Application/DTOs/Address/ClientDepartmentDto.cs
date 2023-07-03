@@ -1,5 +1,4 @@
-﻿using SMART.MASTER.Domain.Entities;
-
+﻿
 namespace SMART.ERP.Application.DTOs.Address
 {
     public class ClientDepartmentDto

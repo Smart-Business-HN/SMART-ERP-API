@@ -5,7 +5,6 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.DashboardFeature.Queries.OpportunityMetrics
 {
@@ -17,11 +16,11 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.OpportunityMet
     public class TopActiveOpportunitiesMetricHandler : IRequestHandler<TopActiveOpportunitiesMetric, Response<List<OpportunityDto>>>
     {
         private readonly IRepositoryAsync<Opportunity> _repositoryAsync;
-        private readonly IRepositoryHNAsync<Client> _clientRepositoryAsync;
+        private readonly IRepositoryAsync<Customer> _clientRepositoryAsync;
         private readonly IMapper _mapper;
 
         public TopActiveOpportunitiesMetricHandler(IRepositoryAsync<Opportunity> repositoryAsync,
-            IRepositoryHNAsync<Client> clientRepositoryAsync, IMapper mapper)
+            IRepositoryAsync<Customer> clientRepositoryAsync, IMapper mapper)
         {
             _repositoryAsync = repositoryAsync;
             _clientRepositoryAsync = clientRepositoryAsync;
@@ -34,7 +33,7 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.OpportunityMet
             var dto = _mapper.Map<List<OpportunityDto>>(topOpp);
             for (int index = 0; index < dto.Count; index++)
             {
-                var client = await _clientRepositoryAsync.GetByIdAsync(dto[index].Customer!.MasterId);
+                var client = await _clientRepositoryAsync.GetByIdAsync(dto[index].Customer!.MotorsId);
                 if (client != null)
                 {
                     dto[index].Customer!.FullName = client.FullName;

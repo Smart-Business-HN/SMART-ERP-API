@@ -1,9 +1,9 @@
 ﻿using Ardalis.Specification;
-using SMART.MASTER.Domain.Entities;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.ClientSpecification
 {
-    public class FilterClientFromPhoneSpecification : Specification<Client>
+    public class FilterClientFromPhoneSpecification : Specification<Customer>
     {
         public FilterClientFromPhoneSpecification(string phone)
         {

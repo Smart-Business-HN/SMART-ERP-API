@@ -5,7 +5,6 @@ using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Specifications.ProspectSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 using SMART.ERP.Application.DTOs.Dashboard;
 
 namespace SMART.ERP.Application.Features.DashboardFeature.Queries.ProspectMetrics
@@ -19,12 +18,12 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.ProspectMetric
     {
         private readonly IRepositoryAsync<MetaAdCampaign> _repositoryAsync;
         private readonly IRepositoryAsync<Prospect> _prospectRepositoryAsync;
-        private readonly IRepositoryHNAsync<Client> _repositoryHNAsync;
+        private readonly IRepositoryAsync<Customer> _repositoryHNAsync;
         private readonly IRepositoryAsync<Customer> _customerRepositoryAsync;
         private readonly IRepositoryAsync<Opportunity> _opportunityRepositoryAsync;
 
         public AdCampaignRoiQueryHandler(IRepositoryAsync<MetaAdCampaign> repositoryAsync, IRepositoryAsync<Prospect> prospectRepositoryAsync,
-            IRepositoryHNAsync<Client> repositoryHNAsync, IRepositoryAsync<Customer> customerRepositoryAsync,
+            IRepositoryAsync<Customer> repositoryHNAsync, IRepositoryAsync<Customer> customerRepositoryAsync,
             IRepositoryAsync<Opportunity> opportunityRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
@@ -43,9 +42,9 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.ProspectMetric
             }
             var prospects = await _prospectRepositoryAsync.ListAsync(new FilterProspectByCampaignIdSpecification(request.Id, true));
             var customers = await _customerRepositoryAsync.ListAsync();
-            var clients = await _repositoryHNAsync.ListAsync(new FilterClientFromMotors(customers.Select(x => x.MasterId).ToList()));
+            var clients = await _repositoryHNAsync.ListAsync(new FilterClientFromMotors(customers.Select(x => x.Id).ToList()));
             var prospectClients = clients.FindAll(x => prospects.Any(y => y.FullName == x.FullName && x.PhoneNumber == y.PhoneNumber));
-            var prospectCustomers = customers.FindAll(x => prospectClients.Any(y => y.Id == x.MasterId));
+            var prospectCustomers = customers.FindAll(x => prospectClients.Any(y => y.Id == x.Id));
             var opportunities = await _opportunityRepositoryAsync.ListAsync(new FilterWonOpportunitiesSpecification(null));
             MetaAdCampaignRoiDto dto = new();
             dto.Budget = campaign.Lifetime_Budget;

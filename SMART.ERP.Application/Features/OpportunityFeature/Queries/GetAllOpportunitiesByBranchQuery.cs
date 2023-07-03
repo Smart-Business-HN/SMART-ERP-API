@@ -8,7 +8,6 @@ using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.MASTER.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.OpportunityFeature.Queries
 {
@@ -26,10 +25,10 @@ namespace SMART.ERP.Application.Features.OpportunityFeature.Queries
         private readonly IJwtService _jwtService;
         private readonly IRepositoryAsync<User> _userRepositoryAsync;
         private readonly IMapper _mapper;
-        private readonly IRepositoryHNAsync<Client> _clientRepositoryAsync;
+        private readonly IRepositoryAsync<Customer> _clientRepositoryAsync;
 
         public GetAllOpportunitiesByBranchQueryHandler(IRepositoryAsync<Opportunity> repositoryAsync, IJwtService jwtService,
-            IRepositoryAsync<User> userRepositoryAsync, IMapper mapper, IRepositoryHNAsync<Client> clientRepositoryAsync)
+            IRepositoryAsync<User> userRepositoryAsync, IMapper mapper, IRepositoryAsync<Customer> clientRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
             _jwtService = jwtService;
@@ -59,7 +58,7 @@ namespace SMART.ERP.Application.Features.OpportunityFeature.Queries
             var clients = await _clientRepositoryAsync.ListAsync();
             for (int index = 0; index < dto.Count; index++)
             {
-                var client = clients.Find(x => x.Id == dto[index].Customer!.MasterId);
+                var client = clients.Find(x => x.Id == dto[index].Customer!.MotorsId);
                 if (client != null)
                 {
                     dto[index].Customer!.FullName = client.FullName;
