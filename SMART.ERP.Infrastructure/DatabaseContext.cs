@@ -77,6 +77,8 @@ namespace SMART.ERP.Infrastructure
         public DbSet<InternalDocument> InternalDocuments { get; set; } = null!;
         public DbSet<Prefix> Prefixes { get; set; } = null!;
         public DbSet<CustomerType> CustomerTypes { get; set; } = null!;
+        public DbSet<Quotation> Quotations { get; set; } = null!;
+        public DbSet<ProductOffered> ProductOffereds { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -931,6 +933,50 @@ namespace SMART.ERP.Infrastructure
             //Taxes
             modelBuilder.Entity<CustomerType>().ToTable("CustomerType");
             modelBuilder.Entity<CustomerType>(o => o.HasKey(x => x.Id));
+            //Quotation
+            modelBuilder.Entity<Quotation>().ToTable("Quotation");
+            modelBuilder.Entity<Quotation>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<Quotation>()
+                .HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Quotation>()
+               .HasOne(x => x.Customer)
+               .WithMany()
+               .HasForeignKey(x => x.CustomerId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Quotation>()
+               .HasOne(x => x.Status)
+               .WithMany()
+               .HasForeignKey(x => x.StatusId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Quotation>()
+               .HasOne(x => x.BranchOffice)
+               .WithMany()
+               .HasForeignKey(x => x.BranchOfficeId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Quotation>()
+               .HasOne(x => x.Prefix)
+               .WithMany()
+               .HasForeignKey(x => x.PrefixId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Quotation>()
+                .HasMany(p => p.ProductsOffered)
+                .WithOne(x => x.Quotation)
+                .HasForeignKey(x => x.QuotationId)
+                .OnDelete(DeleteBehavior.Restrict);
+            //ProductOffered
+            modelBuilder.Entity<ProductOffered>().ToTable("ProductOffered");
+            modelBuilder.Entity<ProductOffered>(o => o.HasKey(x => x.Id));
+
+            
 
             base.OnModelCreating(modelBuilder);
         }

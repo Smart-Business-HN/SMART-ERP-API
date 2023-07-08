@@ -65,6 +65,8 @@ using SMART.ERP.Application.DTOs.Cai;
 using SMART.ERP.Application.Features.CaiFeature.Commands.CreateCaiCommand;
 using SMART.ERP.Application.Features.PrefixFeature.Command.CreatePrefixCommand;
 using SMART.ERP.Application.Features.TaxFeature.Commands.CreateTaxCommand;
+using SMART.ERP.Application.DTOs.Quotation;
+using SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotationCommand;
 
 namespace SMART.ERP.Application.Mappings
 {
@@ -162,6 +164,10 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Cai, CaiDto>();
             CreateMap<Prefix, PrefixDto>();
             CreateMap<Tax, TaxDto>();
+            CreateMap<Quotation, QuotationDto>();
+            CreateMap<ProductOffered, ProductOfferedDto>();
+            CreateMap<ProductToOfferdDto, ProductOffered>();
+            CreateMap<InternalDocument, InternalDocumentDto>();
             #endregion
 
             #region Commands
@@ -218,6 +224,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateCaiCommand,Cai>();
             CreateMap<CreatePrefixCommand,Prefix>();
             CreateMap<CreateTaxCommand, Tax>();
+            CreateMap<CreateQuotationCommand, Quotation>();
             #endregion
         }
     }
