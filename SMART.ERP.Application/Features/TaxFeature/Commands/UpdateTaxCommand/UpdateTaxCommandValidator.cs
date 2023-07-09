@@ -20,7 +20,7 @@ namespace SMART.ERP.Application.Features.TaxFeature.Commands.UpdateTaxCommand
               .MaximumLength(50).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres");
             RuleFor(p => p.Rate)
               .NotNull().WithMessage("{PropertyName} no puede ser null")
-              .LessThan(0).WithMessage("\"{PropertyName} no puede ser menor a cero.");
+              .GreaterThan(-1).WithMessage("\"{PropertyName} no puede ser menor a cero.");
         }
     }
 }

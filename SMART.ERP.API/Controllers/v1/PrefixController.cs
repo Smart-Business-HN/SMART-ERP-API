@@ -12,7 +12,7 @@ namespace SMART.ERP.API.Controllers.v1
     {
         [HttpPost("Create")]
         [AllowAnonymous]
-        //[Authorize(Roles = "SuperAdmin, Manager, CommunityManager, Admin")]
+        [Authorize(Roles = "SuperAdmin, Manager, CommunityManager, Admin")]
         public async Task<IActionResult> Create([FromBody] CreatePrefixCommand command)
         {
             return Ok(await Mediator.Send(command));
@@ -31,6 +31,12 @@ namespace SMART.ERP.API.Controllers.v1
                 Column = filter.Column,
                 All = filter.All
             }));
+        }
+        [HttpGet("GetByInternalDocumentId/{internalDocumentId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetByInternalDocumentId(int internalDocumentId)
+        {
+            return Ok(await Mediator.Send(new GetPrefixByInternalDocumentIdQuery{ InternalDocumentId = internalDocumentId }));
         }
         [HttpPut("Update/{id}")]
         [Authorize(Roles = "SuperAdmin, Manager, CommunityManager, Admin")]

@@ -45,7 +45,6 @@
 
   <ItemGroup>
     <Folder Include="Features\OpinionFeature\Commands\" />
-    <Folder Include="Features\TaxFeature\Queries\" />
     <Folder Include="Features\WishListFeature\Commands\UpdateWishListCommand\" />
     <Folder Include="Features\WishListProductFeature\Commands\UpdateWishListProductCommand\" />
     <Folder Include="Specifications\TypeEntitySpecification\" />
