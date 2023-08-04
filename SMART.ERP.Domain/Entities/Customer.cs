@@ -23,11 +23,11 @@
         public byte[]? PasswordHash { get; set; } = null!;
         public byte[]? PasswordSalt { get; set; } = null!;
         public int CustomerTypeId { get; set; }
-        public virtual CustomerType? CustomerType { get; }
+        public virtual CustomerType? CustomerType { get; set; }
         public int? GenderId { get; set; }
-        public virtual Gender? Gender { get; }
+        public virtual Gender? Gender { get; set; }
         public int? CurrencyId { get; set; }
-        public virtual Currency? Currency { get; }
+        public virtual Currency? Currency { get; set; }
         public int? SocialReasonId { get; set; }
         public virtual SocialReason? SocialReason { get; set; }
         public int HeadingId { get; set; }
