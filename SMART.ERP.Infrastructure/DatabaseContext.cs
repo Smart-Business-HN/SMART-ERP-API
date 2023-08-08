@@ -9,7 +9,7 @@ namespace SMART.ERP.Infrastructure
         {
             ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
-
+        public DbSet<User> Users { get; set; } = null!;
         public DbSet<AdvisorDepartment> AdvisorDepartments { get; set; } = null!;
         public DbSet<Brand> Brands { get; set; } = null!;
         public DbSet<Banner> Banners { get; set; } = null!;
@@ -47,7 +47,6 @@ namespace SMART.ERP.Infrastructure
         public DbSet<Status> Statuses { get; set; } = null!;
         public DbSet<TypeStatus> TypeStatuses { get; set; } = null!;
         public DbSet<UnitOfMeasurement> UnitOfMeasurements { get; set; } = null!;
-        public DbSet<User> Users { get; set; } = null!;
         public DbSet<WishList> WishLists { get; set; } = null!;
         public DbSet<WishListProduct> WishListProducts { get; set; } = null!;
         public DbSet<LogSession> LogSessions { get; set; } = null!;
