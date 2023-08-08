@@ -1,5 +1,5 @@
-# PlatinoMotors-API
-Desarrollo Backend del CRM **Platino Motors** desarrollado en **C#** con **.Net Core 6**. Sirva la siguiente documentación para conocer la arquitectura general del sistema, las dependencias necesarias y las funciones que cumplen los servicios descritos a continuación.
+# SMART ERP-API
+Desarrollo Backend del CRM **SMART BUSINESS** desarrollado en **C#** con **.Net Core 7**. Sirva la siguiente documentación para conocer la arquitectura general del sistema, las dependencias necesarias y las funciones que cumplen los servicios descritos a continuación.
 
 ## Arquitectura
 El sistema fue desarrollado bajo una combinación de patrón de diseño DDD (*Domain Driven Design*), CQRS (*Command and Query Responsibility Segregation*) y arquitectura Onion. La aplicación cuenta con cuatro carpetas principales (API, Application, Domain, Infrastructure). 
@@ -50,3 +50,64 @@ Platino Motors fue desarrollado en conjunto con la plataforma Platino HN, por lo
 <p align="center">
 <img width="30%" src="https://grupoplatino.github.io/PlatinoHN/static/media/icons.91fd43b49334b5df02da05fae0a3efe8.svg">
 </p>
+
+Comandos en la base de datos:
+
+Primer comando: Este es para crear el seed de la compañia
+
+  INSERT INTO [SmartERP].[dbo].[Company] (Name,Email,PhoneNumber,Address, AboutUs, CreationDate, CreatedBy, ModificationDate, ModificatedBy,IsActive) VALUES ('Smart Business S. de R.L.','ventas@smartbusiness.site','8817-7765','Jutiapa, Atlantida, Aldea Agua Dulce Fte. A Esc. Danubia Ramirez','','2023-07-29','Jose Cubas','2023-07-29','Jose Cubas',1)
+
+Segundo comando: Seeds de los Roles de usuario
+    INSERT INTO [SmartERP].[dbo].[Role] (Name, Selector, IsActive) VALUES ('SuperAdmin',	'SuperAdmin',	1)
+    INSERT INTO [SmartERP].[dbo].[Role] (Name, Selector, IsActive) VALUES ('Comunity Manager',	'Comunity Manager',	1)
+    INSERT INTO [SmartERP].[dbo].[Role] (Name, Selector, IsActive) VALUES ('Sales Advisor',	'SalesAdvisor',	1)
+    INSERT INTO [SmartERP].[dbo].[Role] (Name, Selector, IsActive) VALUES ('Manager',	'Manager',	1)
+    INSERT INTO [SmartERP].[dbo].[Role] (Name, Selector, IsActive) VALUES ('After Sale',	'AfterSale',	1)
+    INSERT INTO [SmartERP].[dbo].[Role] (Name, Selector, IsActive) VALUES ('Credit Manager',	'CreditManager',	1)
+    INSERT INTO [SmartERP].[dbo].[Role] (Name, Selector, IsActive) VALUES ('Admin',	'Admin',	1)
+
+Tercer Comando: Seed de Genero
+
+    INSERT INTO [SmartERP].[dbo].[Gender] (Name, IsActive) Values ('Masculino',1)
+    INSERT INTO [SmartERP].[dbo].[Gender] (Name, IsActive) Values ('Femenino',1)
+
+Cuarto Comando: Seed de Tipos de Estado
+    INSERT INTO [SmartERP].[dbo].[TypeStatus] (Name,IsActive) VALUES ('Producto',1)
+    INSERT INTO [SmartERP].[dbo].[TypeStatus] (Name,IsActive) VALUES ('Cotización',1)
+    INSERT INTO [SmartERP].[dbo].[TypeStatus] (Name,IsActive) VALUES ('Lista de Deseos',1)
+    INSERT INTO [SmartERP].[dbo].[TypeStatus] (Name,IsActive) VALUES ('Actividad',1)
+    INSERT INTO [SmartERP].[dbo].[TypeStatus] (Name,IsActive) VALUES ('Factura',1)
+    INSERT INTO [SmartERP].[dbo].[TypeStatus] (Name,IsActive) VALUES ('Orden de Compra',1)
+
+Quinto Comando: Seed de Estados con sus respectivos tipos de estado
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Nuevo',1,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Por Encargo',1,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Disponible',1,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('No Disponible',1,1)
+
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Guardada',2,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Enviada',2,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Aceptada',2,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Rechazada',2,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Cancelada',2,1)
+
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('En Carrito',3,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Solicitada la Cotizacion',3,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Cancelada',3,1)
+
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('En Proceso',4,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Cancelada',4,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Finalizada',4,1)
+
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Guardada',5,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Enviada',5,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Pendiente de Pago',5,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Pagada',5,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Cancelada',6,1)
+
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Guardada',6,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Enviada',6,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Pendiente de Pago',6,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Pagada',6,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Recibida',6,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Cancelada',6,1)
