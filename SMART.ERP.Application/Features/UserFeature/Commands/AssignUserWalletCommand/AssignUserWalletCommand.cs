@@ -43,7 +43,7 @@ namespace SMART.ERP.Application.Features.UserFeature.Commands.AssignUserWalletCo
             var checkCustomer = await _repositoryAsync.GetByIdAsync(request.CustomerId);
             if (checkCustomer == null)
             {
-                throw new KeyNotFoundException($"No se encontro el cliente de Motors con id {request.CustomerId}");
+                throw new KeyNotFoundException($"No se encontro el cliente con id {request.CustomerId}");
             }
             var checkUser = await _userRepositoryAsync.FirstOrDefaultAsync(new UserIncludesSpecification(request.UserId, null));
             if (checkUser == null)

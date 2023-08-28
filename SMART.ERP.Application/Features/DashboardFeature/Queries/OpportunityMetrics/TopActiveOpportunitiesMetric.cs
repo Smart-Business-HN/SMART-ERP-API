@@ -33,7 +33,7 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.OpportunityMet
             var dto = _mapper.Map<List<OpportunityDto>>(topOpp);
             for (int index = 0; index < dto.Count; index++)
             {
-                var client = await _clientRepositoryAsync.GetByIdAsync(dto[index].Customer!.MotorsId);
+                var client = await _clientRepositoryAsync.GetByIdAsync(dto[index].Customer!.Id);
                 if (client != null)
                 {
                     dto[index].Customer!.FullName = client.FullName;

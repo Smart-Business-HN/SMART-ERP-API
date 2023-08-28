@@ -34,7 +34,7 @@ namespace SMART.ERP.Application.Features.SaleOrderFeature.Queries
                 throw new KeyNotFoundException($"Registro no encontrado con el id {request.Id}");
             }
             var dto = _mapper.Map<SaleOrderDto>(saleOrder);
-            var customer = await _repositoryHNAsync.GetByIdAsync(dto.Customer!.MotorsId);
+            var customer = await _repositoryHNAsync.GetByIdAsync(dto.Customer!.Id);
             if (customer != null)
             {
                 dto.Customer!.FullName = customer.FullName;

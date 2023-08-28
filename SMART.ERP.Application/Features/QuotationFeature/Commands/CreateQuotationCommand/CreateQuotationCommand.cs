@@ -84,6 +84,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             var productsOffered = new List<ProductOfferedDto>();
             var currentCuotations = await _repositoryAsync.ListAsync();
             var newRecord = _mapper.Map<Quotation>(request);
+            //TODO: refactorizin this to: print a different correlative for each prefix.
             newRecord.QuotationCode = CreateQuotationCode(prefixExist, currentCuotations.Last());
             newRecord.Profitability = 0;
             newRecord.SubTotal = 0;
@@ -146,7 +147,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             {
                 decimal currentTaxAmount = 0;
                 KindOfTaxDto newTaxAmount = new KindOfTaxDto();
-                Tax tax = new Tax();
+                Tax tax = new();
                 foreach (var product in products)
                 {
                     if (item == product.TaxId)
@@ -194,8 +195,8 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
         }
         public async Task<string> CheckMasterDataOfProductsToOffered(List<ProductToOfferdDto> request)
         {
-            List<int> taxesIds = new List<int>();
-            List<int> productsId = new List<int>();
+            List<int> taxesIds = new();
+            List<int> productsId = new();
             foreach (var productToOfferdDto in request)
             {
                 if(!taxesIds.Contains(productToOfferdDto.TaxId))
@@ -204,7 +205,10 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                 }
                 if(productToOfferdDto.ProductId != null)
                 {
-                    if (!productsId.Contains((int)productToOfferdDto.ProductId)) ;
+                    if (!productsId.Contains((int)productToOfferdDto.ProductId))
+                    {
+                        productsId.Add((int)productToOfferdDto.ProductId);
+                    }
                 }
             }
             if (taxesIds.Count > 0)

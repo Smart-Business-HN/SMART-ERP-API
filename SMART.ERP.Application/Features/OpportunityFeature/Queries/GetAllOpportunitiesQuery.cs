@@ -43,7 +43,7 @@ namespace SMART.ERP.Application.Features.OpportunityFeature.Queries
                 var dto = _mapper.Map<List<OpportunityDto>>(opportunities);
                 for (int index = 0; index < dto.Count; index++)
                 {
-                    var client = clients.Find(x => x.Id == dto[index].Customer!.MotorsId);
+                    var client = clients.Find(x => x.Id == dto[index].Customer!.Id);
                     if (client != null)
                     {
                         dto[index].Customer!.FullName = client.FullName;

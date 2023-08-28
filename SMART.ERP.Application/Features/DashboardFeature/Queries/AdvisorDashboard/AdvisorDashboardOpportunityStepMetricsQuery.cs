@@ -72,10 +72,10 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorDashboa
                     opportunityStepMetric.Opportunities = _mapper.Map<List<OpportunityDto>>(opportunitiesInStep);
                     for (int index = 0; index < opportunityStepMetric.Opportunities.Count; index++)
                     {
-                        var client = clients.Find(x => x.Id == opportunityStepMetric.Opportunities[index].Customer!.MotorsId);
+                        var client = clients.Find(x => x.Id == opportunityStepMetric.Opportunities[index].Customer!.Id);
                         if (client != null)
                         {
-                            opportunityStepMetric.Opportunities[index].Customer!.MotorsId = opportunityStepMetric.Opportunities[index].CustomerId;
+                            opportunityStepMetric.Opportunities[index].Customer!.Id = opportunityStepMetric.Opportunities[index].CustomerId;
                             opportunityStepMetric.Opportunities[index].Customer!.FullName = client.FullName;
                             opportunityStepMetric.Opportunities[index].Customer!.PhoneNumber = client.PhoneNumber;
                             opportunityStepMetric.Opportunities[index].Customer!.Email = client.Email;

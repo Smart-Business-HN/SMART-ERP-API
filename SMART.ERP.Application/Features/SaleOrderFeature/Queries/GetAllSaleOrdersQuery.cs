@@ -35,7 +35,7 @@ namespace SMART.ERP.Application.Features.SaleOrderFeature.Queries
                 var dto = _mapper.Map<List<SaleOrderDto>>(saleOrders);
                 for (int index = 0; index < dto.Count; index++)
                 {
-                    var customer = await _repositoryHNAsync.GetByIdAsync(dto[index]!.Customer!.MotorsId);
+                    var customer = await _repositoryHNAsync.GetByIdAsync(dto[index]!.Customer!.Id);
                     if (customer != null)
                     {
                         dto[index].Customer!.FullName = customer.FullName;

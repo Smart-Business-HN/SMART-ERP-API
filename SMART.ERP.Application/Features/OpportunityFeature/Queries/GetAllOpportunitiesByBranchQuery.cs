@@ -58,7 +58,7 @@ namespace SMART.ERP.Application.Features.OpportunityFeature.Queries
             var clients = await _clientRepositoryAsync.ListAsync();
             for (int index = 0; index < dto.Count; index++)
             {
-                var client = clients.Find(x => x.Id == dto[index].Customer!.MotorsId);
+                var client = clients.Find(x => x.Id == dto[index].Customer!.Id);
                 if (client != null)
                 {
                     dto[index].Customer!.FullName = client.FullName;

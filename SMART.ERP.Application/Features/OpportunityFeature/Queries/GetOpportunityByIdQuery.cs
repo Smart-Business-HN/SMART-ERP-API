@@ -35,7 +35,7 @@ namespace SMART.ERP.Application.Features.OpportunityFeature.Queries
             }
             opportunity.QuoteProducts = opportunity.QuoteProducts!.FindAll(x => x.IsActive);
             var dto = _mapper.Map<OpportunityDto>(opportunity);
-            var client = await _clientRepositoryAsync.GetByIdAsync(dto.Customer!.MotorsId);
+            var client = await _clientRepositoryAsync.GetByIdAsync(dto.Customer!.Id);
             if (client != null)
             {
                 dto.Customer!.FullName = client.FullName;

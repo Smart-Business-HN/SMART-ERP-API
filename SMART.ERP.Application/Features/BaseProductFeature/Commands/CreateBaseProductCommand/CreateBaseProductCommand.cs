@@ -35,7 +35,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Product> _repositoryAsync;
-        private readonly IRepositoryAsync<DataSheet> _dataSheetRepositoryAsync;
         private readonly IJwtService _jwtService;
         private readonly IRepositoryAsync<Subcategory> _subcategoryRepositoryAsync;
         private readonly IRepositoryAsync<Status> _statusRepositoryAsync;

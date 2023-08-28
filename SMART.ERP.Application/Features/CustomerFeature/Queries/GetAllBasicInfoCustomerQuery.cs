@@ -30,7 +30,7 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Queries
                     foreach (var item in customers)
                     {
                             var dto = _mapper.Map<BasicInfoCustomerDto>(item);
-                            dto.MotorsId = item.Id;
+                            dto.Id = item.Id;
                             dto.AssignedUserId = item.UserId;
                             response.Add(dto);
                     }
