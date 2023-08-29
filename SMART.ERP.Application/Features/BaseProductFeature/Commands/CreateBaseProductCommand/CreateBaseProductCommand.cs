@@ -7,6 +7,7 @@ using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using System.Text.RegularExpressions;
 
 namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseProductCommand
 {
@@ -92,6 +93,8 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
                 throw new KeyNotFoundException($"No se encontro la unidad de medida con id {request.UnitOfMeasurementId}");
             }
             var newRecord = _mapper.Map<Product>(request);
+            newRecord.Slug = CreateSlug(newRecord.Name);
+           
             newRecord.CreatedBy = _jwtService.GetSubjectToken();
             newRecord.CreationDate = DateTime.Now;
             var data = await _repositoryAsync.AddAsync(newRecord);
@@ -100,6 +103,10 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
             var dto = _mapper.Map<ProductDto>(data);
 
             return new Response<ProductDto>(dto, message: $"{request.Name} creado exitosamente");
+        }
+        static string CreateSlug(string chain)
+        {
+            return Regex.Replace(Regex.Replace(chain, @"[^a-zA-Z0-9\s]", "").Trim().ToLower(), @"\s+", "-");
         }
     }
 }
