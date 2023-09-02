@@ -78,6 +78,8 @@ namespace SMART.ERP.Infrastructure
         public DbSet<CustomerType> CustomerTypes { get; set; } = null!;
         public DbSet<Quotation> Quotations { get; set; } = null!;
         public DbSet<ProductOffered> ProductOffereds { get; set; } = null!;
+        public DbSet<Warehouse> Warehouses { get; set; } = null!;
+        public DbSet<InventoryDistribution> InventoryDistributions { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -974,8 +976,37 @@ namespace SMART.ERP.Infrastructure
             //ProductOffered
             modelBuilder.Entity<ProductOffered>().ToTable("ProductOffered");
             modelBuilder.Entity<ProductOffered>(o => o.HasKey(x => x.Id));
-
-            
+            //Warehouse
+            modelBuilder.Entity<Warehouse>().ToTable("Warehouse");
+            modelBuilder.Entity<Warehouse>(o=>o.HasKey(x => x.Id));
+            modelBuilder.Entity<Warehouse>()
+               .HasOne(x => x.User)
+               .WithMany()
+               .HasForeignKey(x => x.UserId)
+               .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Warehouse>()
+              .HasOne(x => x.City)
+              .WithMany()
+              .HasForeignKey(x => x.CityId)
+              .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Warehouse>()
+              .HasOne(x => x.BranchOffice)
+              .WithMany()
+              .HasForeignKey(x => x.BranchOfficeId)
+              .OnDelete(DeleteBehavior.Restrict);
+            //Inventory Distribution
+            modelBuilder.Entity<InventoryDistribution>().ToTable("InventoryDistribution");
+            modelBuilder.Entity<InventoryDistribution>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<InventoryDistribution>()
+               .HasOne(x => x.Warehouse)
+               .WithMany()
+               .HasForeignKey(x => x.WarehouseId)
+               .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<InventoryDistribution>()
+              .HasOne(x => x.Product)
+              .WithMany()
+              .HasForeignKey(x => x.ProductId)
+              .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }
