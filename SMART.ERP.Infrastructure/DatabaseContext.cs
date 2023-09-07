@@ -80,6 +80,9 @@ namespace SMART.ERP.Infrastructure
         public DbSet<ProductOffered> ProductOffereds { get; set; } = null!;
         public DbSet<Warehouse> Warehouses { get; set; } = null!;
         public DbSet<InventoryDistribution> InventoryDistributions { get; set; } = null!;
+        public DbSet<InventoryInput> InventoryInputs { get; set; }
+        public DbSet<InventoryInputType> InventoryInputTypes { get; set; } = null!;
+        public DbSet<ProductEntry> ProductEntries { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1003,6 +1006,40 @@ namespace SMART.ERP.Infrastructure
                .HasForeignKey(x => x.WarehouseId)
                .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<InventoryDistribution>()
+              .HasOne(x => x.Product)
+              .WithMany()
+              .HasForeignKey(x => x.ProductId)
+              .OnDelete(DeleteBehavior.Restrict);
+            //Inventory Entry
+            modelBuilder.Entity<InventoryInput>().ToTable("InventoryInput");
+            modelBuilder.Entity<InventoryInput>(o=>o.HasKey(x => x.Id));
+            modelBuilder.Entity<InventoryInput>()
+               .HasOne(x => x.Warehouse)
+               .WithMany()
+               .HasForeignKey(x => x.WarehouseId)
+               .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<InventoryInput>()
+              .HasOne(x => x.Prefix)
+              .WithMany()
+              .HasForeignKey(x => x.PrefixId)
+              .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<InventoryInput>()
+               .HasOne(x => x.InventoryInputType)
+               .WithMany()
+               .HasForeignKey(x => x.InventoryInputTypeId)
+               .OnDelete(DeleteBehavior.Restrict);
+            //Inventory Input Type
+            modelBuilder.Entity<InventoryInputType>().ToTable("InventoryInputType");
+            modelBuilder.Entity<InventoryInputType>(o => o.HasKey(x => x.Id));
+            //Product Entry
+            modelBuilder.Entity<ProductEntry>().ToTable("ProductEntry");
+            modelBuilder.Entity<ProductEntry>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<ProductEntry>()
+              .HasOne(x => x.InventoryInput)
+              .WithMany()
+              .HasForeignKey(x => x.InventoryInputId)
+              .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ProductEntry>()
               .HasOne(x => x.Product)
               .WithMany()
               .HasForeignKey(x => x.ProductId)

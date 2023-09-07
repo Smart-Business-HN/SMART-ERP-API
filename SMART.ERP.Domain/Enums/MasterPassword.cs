@@ -2,6 +2,6 @@
 {
     public enum MasterPassword
     {
-        Pl4tin0HN2022
+        WakeUpNe0
     }
 }
