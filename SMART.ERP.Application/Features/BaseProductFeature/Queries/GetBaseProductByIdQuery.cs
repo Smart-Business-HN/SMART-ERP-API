@@ -25,7 +25,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
 
         public async Task<Response<ProductDto>> Handle(GetBaseProductByIdQuery request, CancellationToken cancellationToken)
         {
-            var product = await _repositoryAsync.FirstOrDefaultAsync(new ProductIncludesSpecification(id: request.Id));
+            var product = await _repositoryAsync.FirstOrDefaultAsync(new ProductIncludesSpecification(id: request.Id,slug:null));
             if (product == null)
             {
                 throw new KeyNotFoundException($"Registro no encontrado con el id {request.Id}");

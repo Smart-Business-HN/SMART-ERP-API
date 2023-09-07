@@ -133,7 +133,6 @@ namespace SMART.ERP.Application
             services.AddTransient<IRootcloudMachineryService, RootcloudMachineryService>();
             services.AddTransient<IRootcloudSessionService, RootcloudSessionService>();
             services.AddTransient<IRootcloudHistoricalService, RootcloudHistoricalService>();
-
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

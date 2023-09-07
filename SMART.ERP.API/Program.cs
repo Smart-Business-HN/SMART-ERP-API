@@ -9,6 +9,7 @@ using Quartz;
 using SMART.ERP.Infrastructure;
 using SMART.ERP.Infrastructure.Repository;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddApplicationLayer(builder.Configuration);
 builder.Services.AddApiVersioningExtension();
+builder.Services.AddVersionedApiExplorer(setup =>
+{
+    setup.GroupNameFormat = "'v'VVV";
+    setup.SubstituteApiVersionInUrl = true;
+});
+
 builder.Services.AddSignalR();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -36,7 +43,18 @@ builder.Services.AddSwaggerGen(options =>
     {
         Version = "v1",
         Title = "SMART ERP",
-        Description = "Una API web de ASP.NET Core para gestionar el ERP del lado del cliente y administrativo ",
+        Description = "Una API web de ASP.NET Core para gestionar el ERP del lado administrativo ",
+        Contact = new OpenApiContact
+        {
+            Name = "Contacto",
+            Url = new Uri("https://github.com/Smart-Business-HN")
+        },
+    });
+    options.SwaggerDoc("v2", new OpenApiInfo
+    {
+        Version = "v2",
+        Title = "SMART ERP",
+        Description = "Una API web de ASP.NET Core para gestionar el E-Commerce ",
         Contact = new OpenApiContact
         {
             Name = "Contacto",
@@ -83,12 +101,19 @@ builder.Services.AddTransient(typeof(IRepositoryAsync<>), typeof(CustomRepositor
 var app = builder.Build();
 
 //app.UseSentryTracing();
-
+var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+                description.GroupName.ToUpperInvariant());
+        }
+    });
 }
 
 if (!app.Environment.IsDevelopment())
@@ -118,11 +143,12 @@ if (!app.Environment.IsDevelopment())
         ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
     });
 }
+app.UseStaticFiles();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
-app.MapHub<NotificationHub>("hub/notification");
-
+//app.UseEndpoints(endpoints =>
+//{
+//    endpoints.MapControllers();
+//});
+app.MapHub<NotificationHub>("hub/notification"); 
+app.MapControllers();
 app.Run();

@@ -37,7 +37,7 @@ namespace SMART.ERP.Application.Features.HeroSliderFeature.Commands.CreateHeroSl
             var category = await _categoryRepositoryAsync.GetByIdAsync(request.CategoryId);
             if (category == null)
                 throw new ApiException($"No existe ninguna categoria con el Id {request.CategoryId}");
-            var product = await _productRepositoryAsync.FirstOrDefaultAsync(new ProductIncludesSpecification(request.ProductId));
+            var product = await _productRepositoryAsync.FirstOrDefaultAsync(new ProductIncludesSpecification(request.ProductId, slug: null));
             if (product == null)
                 throw new ApiException($"No existe ningun producto con el Id {request.ProductId}");
             if (category != null && product != null)

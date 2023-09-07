@@ -173,7 +173,7 @@ namespace SMART.ERP.Application.Features.ProspectFeature.Commands.CreateProspect
             }
 
             Guid? assignedUser = null;
-            var products = await _productRepositoryAsync.ListAsync(new ProductIncludesSpecification(null));
+            var products = await _productRepositoryAsync.ListAsync(new ProductIncludesSpecification(null, slug: null));
             List<ProspectQuoteProduct> productsProspect = new();
             foreach (var productId in request.Products)
             {
