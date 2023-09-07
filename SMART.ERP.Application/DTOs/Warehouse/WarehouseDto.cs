@@ -22,5 +22,9 @@ namespace SMART.ERP.Application.DTOs.Warehouse
         public bool IsGeneralWarehouse { get; set; }
         public int? CityId { get; set; }
         public CityDto? City { get; set; }
+        public DateTime CreationDate { get; set; }
+        public string CreatedBy { get; set; } = null!;
+        public DateTime? ModificationDate { get; set; }
+        public string? ModificatedBy { get; set; }
     }
 }

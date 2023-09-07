@@ -370,7 +370,7 @@ guido@platino.hn";
                                     };
                                     response.text.body = "Gracias por comunicarte conmigo, dentro de poco uno de nuestros asesores te contactará 👋";
 
-                                    var selectedProduct = await _productRepositoryAsync.FirstOrDefaultAsync(new ProductIncludesSpecification(checkConversation.ProductId));
+                                    var selectedProduct = await _productRepositoryAsync.FirstOrDefaultAsync(new ProductIncludesSpecification(checkConversation.ProductId, slug: null));
 
                                     var newMail = new MailRequestDto();
                                     Guid validUser = await _assignUserToOpportunityService.FindValidUser();
@@ -568,7 +568,7 @@ El correo del Lead es {splittedString[1]} y su numero telefónico es <b>{checkCo
         private async Task<bool> ProductDetailMessage(int productId, string to)
         {
 
-            var product = await _productRepositoryAsync.FirstOrDefaultAsync(new ProductIncludesSpecification(productId));
+            var product = await _productRepositoryAsync.FirstOrDefaultAsync(new ProductIncludesSpecification(productId, slug: null));
             var buttonReply = new MetaInteractiveButtonRoot();
             buttonReply.to = to;
             buttonReply.interactive.type = "button";

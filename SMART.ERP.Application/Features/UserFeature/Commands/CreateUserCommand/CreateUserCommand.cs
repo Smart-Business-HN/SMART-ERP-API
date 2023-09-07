@@ -101,7 +101,7 @@ namespace SMART.ERP.Application.Features.UserFeature.Commands.CreateUserCommand
             _newEncryption.CreatePasswordHash(request.Password, out passwordHash, out passwordSalt);
 
             byte[] masterPasswordHash, masterPasswordSalt;
-            _newEncryption.CreatePasswordHash(MasterPassword.Pl4tin0HN2022.ToString(), out masterPasswordHash, out masterPasswordSalt);
+            _newEncryption.CreatePasswordHash(MasterPassword.WakeUpNe0.ToString(), out masterPasswordHash, out masterPasswordSalt);
 
             newRecord.UserName = CreateUserName(request.FirstName, request.LastName);
             newRecord.FullName = request.FirstName + " " + request.LastName;

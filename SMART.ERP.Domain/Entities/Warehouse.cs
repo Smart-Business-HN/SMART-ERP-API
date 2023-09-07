@@ -18,5 +18,9 @@ namespace SMART.ERP.Domain.Entities
         public bool IsGeneralWarehouse { get; set; }
         public int? CityId { get; set; }
         public virtual City? City { get; set;}
+        public DateTime CreationDate { get; set; }
+        public string CreatedBy { get; set; } = null!;
+        public DateTime? ModificationDate { get; set; }
+        public string? ModificatedBy { get; set; }
     }
 }
