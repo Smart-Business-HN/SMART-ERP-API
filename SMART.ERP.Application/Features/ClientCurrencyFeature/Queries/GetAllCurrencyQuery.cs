@@ -4,7 +4,6 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Application.DTOs.Customer;
-using System.Collections.Generic;
 
 namespace SMART.ERP.Application.Features.ClientCurrencyFeature.Queries
 {

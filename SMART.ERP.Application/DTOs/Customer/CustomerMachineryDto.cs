@@ -1,5 +1,4 @@
-﻿using System;
-using SMART.ERP.Application.DTOs.Product;
+﻿using SMART.ERP.Application.DTOs.Product;
 
 namespace SMART.ERP.Application.DTOs.Customer
 {

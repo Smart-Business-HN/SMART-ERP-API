@@ -1,9 +1,4 @@
-﻿using System;
-using FluentValidation;
-using MediatR;
-using SMART.ERP.Application.DTOs.Opportunity;
-using SMART.ERP.Application.DTOs.WishList;
-using SMART.ERP.Application.Wrappers;
+﻿using FluentValidation;
 
 namespace SMART.ERP.Application.Features.WishListFeature.Commands.UpdateWishListCommand
 {

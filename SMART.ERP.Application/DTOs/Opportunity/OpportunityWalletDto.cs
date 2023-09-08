@@ -1,12 +1,4 @@
-﻿using SMART.ERP.Application.DTOs.Customer;
-using SMART.ERP.Application.DTOs.User;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SMART.ERP.Application.DTOs.Opportunity
+﻿namespace SMART.ERP.Application.DTOs.Opportunity
 {
     public class OpportunityWalletDto
     {

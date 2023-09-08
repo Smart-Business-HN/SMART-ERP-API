@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.InterestLevelFeature.Commands.DeleteInterestLevelCommand;
 using SMART.ERP.Application.Features.InterestLevelFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.InterestLevelFeature.Commands.CreateInterestLevelCommand;
 using SMART.ERP.Application.Features.InterestLevelFeature.Commands.UpdateInterestLevelCommand;
 

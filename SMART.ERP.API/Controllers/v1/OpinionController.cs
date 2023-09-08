@@ -4,7 +4,6 @@ using SMART.ERP.Application.Features.OpinionFeature.Commands.DeleteOpinionComman
 using SMART.ERP.Application.Features.OpinionFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Services.HeaderService;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.OpinionFeature.Commands.CreateOpinionCommand;
 using SMART.ERP.Application.Features.OpinionFeature.Commands.UpdateOpinionCommand;
 

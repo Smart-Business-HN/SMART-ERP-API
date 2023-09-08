@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.ProductFtrFeature.Commands.DeleteProductFtrCommand;
 using SMART.ERP.Application.Features.ProductFtrFeature.Queries;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.ProductFtrFeature.Commands.CreateProductFtrCommand;
 using SMART.ERP.Application.Features.ProductFtrFeature.Commands.UpdateProductFtrCommand;
 

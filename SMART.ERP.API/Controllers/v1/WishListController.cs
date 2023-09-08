@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.WishListFeature.Commands.DeleteWishListCommand;
 using SMART.ERP.Application.Features.WishListFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.WishListFeature.Commands.CreateWishListCommand;
 using SMART.ERP.Application.Features.WishListFeature.Commands.UpdateWishListCommand;
 

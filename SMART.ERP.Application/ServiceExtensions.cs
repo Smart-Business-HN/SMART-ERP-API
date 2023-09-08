@@ -9,7 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 using SMART.ERP.Application.DTOs.Rootcloud;
 using SMART.ERP.Application.Jobs.AdvisorGoalJob;
 using SMART.ERP.Application.Jobs.LongLivedOpportunitiesJob;
-using SMART.ERP.Application.Jobs.RootcloudJob;
 using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 using SMART.ERP.Application.Services.AssignUserToProspectService;
 using SMART.ERP.Application.Services.BlobStorageService;

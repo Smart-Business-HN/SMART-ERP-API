@@ -5,7 +5,6 @@ using SMART.ERP.Application.Features.UserFeature.Commands.DeleteUserCommand;
 using SMART.ERP.Application.Features.UserFeature.Commands.RemoveSessionCommand;
 using SMART.ERP.Application.Features.UserFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.UserFeature.Commands.AssignUserWalletCommand;
 using SMART.ERP.Application.Features.UserFeature.Commands.ChangeUserPasswordCommand;
 using SMART.ERP.Application.Features.UserFeature.Commands.CreateForgotCodeCommand;

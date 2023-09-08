@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.CityFeature.Commands.DeleteCityCommand;
 using SMART.ERP.Application.Features.CityFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.CityFeature.Commands.CreateCityCommand;
 using SMART.ERP.Application.Features.CityFeature.Commands.UpdateCityCommand;
 

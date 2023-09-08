@@ -5,7 +5,6 @@ using SMART.ERP.Application.Features.DashboardFeature.Queries.OpportunityMetrics
 using SMART.ERP.Application.Features.DashboardFeature.Queries.ProductMetrics;
 using SMART.ERP.Application.Features.DashboardFeature.Queries.ProspectMetrics;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.DashboardFeature.Queries;
 
 namespace SMART.ERP.API.Controllers.v1

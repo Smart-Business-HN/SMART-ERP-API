@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.TypeOriginFeature.Commands.DeleteTypeOriginCommand;
 using SMART.ERP.Application.Features.TypeOriginFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.TypeOriginFeature.Commands.CreateTypeOriginCommand;
 using SMART.ERP.Application.Features.TypeOriginFeature.Commands.UpdateTypeOriginCommand;
 

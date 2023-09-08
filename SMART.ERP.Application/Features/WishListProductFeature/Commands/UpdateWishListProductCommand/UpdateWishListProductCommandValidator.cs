@@ -1,6 +1,4 @@
-﻿using System;
-using FluentValidation;
-using SMART.ERP.Application.Features.QuoteProductFeature.Commands.UpdateQuoteProductCommand;
+﻿using FluentValidation;
 
 namespace SMART.ERP.Application.Features.WishListProductFeature.Commands.UpdateWishListProductCommand
 {

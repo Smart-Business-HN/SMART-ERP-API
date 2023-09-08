@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.MetaFeature.Commands.ConversationCommand;
 
 namespace SMART.ERP.API.Controllers.v1

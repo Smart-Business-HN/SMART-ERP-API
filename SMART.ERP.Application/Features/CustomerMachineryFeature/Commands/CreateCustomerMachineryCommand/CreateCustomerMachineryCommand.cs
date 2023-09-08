@@ -3,7 +3,6 @@ using AutoMapper;
 using MediatR;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
-using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.CustomerSpecification;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;

@@ -1028,17 +1028,22 @@ namespace SMART.ERP.Infrastructure
                .WithMany()
                .HasForeignKey(x => x.InventoryInputTypeId)
                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<InventoryInput>()
+                .HasMany(p => p.ProductEntries)
+                .WithOne(x => x.InventoryInput)
+                .HasForeignKey(x => x.InventoryInputId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<InventoryInput>()
+                .Navigation(b => b.ProductEntries)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
             //Inventory Input Type
             modelBuilder.Entity<InventoryInputType>().ToTable("InventoryInputType");
             modelBuilder.Entity<InventoryInputType>(o => o.HasKey(x => x.Id));
             //Product Entry
             modelBuilder.Entity<ProductEntry>().ToTable("ProductEntry");
             modelBuilder.Entity<ProductEntry>(o => o.HasKey(x => x.Id));
-            modelBuilder.Entity<ProductEntry>()
-              .HasOne(x => x.InventoryInput)
-              .WithMany()
-              .HasForeignKey(x => x.InventoryInputId)
-              .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ProductEntry>()
               .HasOne(x => x.Product)
               .WithMany()

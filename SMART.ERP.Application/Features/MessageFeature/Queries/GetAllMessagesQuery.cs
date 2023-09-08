@@ -3,7 +3,6 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.MessageSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using System.Drawing.Printing;
 
 namespace SMART.ERP.Application.Features.MessageFeature.Queries
 {

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.BaseProductFeature.Queries;
-using SMART.ERP.Application.Services.HeaderService;
 
 namespace SMART.ERP.API.Controllers.v2
 {

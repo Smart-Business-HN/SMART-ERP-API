@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.MessageFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Services.HeaderService;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.MessageFeature.Commands.CreateMessageCommand;
 using SMART.ERP.Application.Features.MessageFeature.Commands.SendMessageCommand;
 

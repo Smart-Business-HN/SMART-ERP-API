@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.UserFeature.Queries;
-using SMART.ERP.API.Controllers;
 
 namespace SMART.ERP.API.Controllers.v1
 {

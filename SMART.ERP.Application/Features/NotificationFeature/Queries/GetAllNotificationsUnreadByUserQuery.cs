@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.SignalR;
 using SMART.ERP.Application.DTOs.Notification;
 using SMART.ERP.Application.Repository;
-using SMART.ERP.Application.Services.SignalRHub;
 using SMART.ERP.Application.Specifications.NotificationSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;

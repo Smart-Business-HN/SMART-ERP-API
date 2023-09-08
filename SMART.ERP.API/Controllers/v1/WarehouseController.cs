@@ -1,11 +1,9 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.WarehouseFeature.Commands.CreateWarehouseCommand;
 using SMART.ERP.Application.Features.WarehouseFeature.Commands.UpdateWarehouseCommand;
 using SMART.ERP.Application.Features.WarehouseFeature.Queries;
 using SMART.ERP.Application.Features.WinReasonFeature.Commands.DeleteWinReasonCommand;
-using SMART.ERP.Application.Features.WinReasonFeature.Commands.UpdateWinReasonCommand;
 using SMART.ERP.Application.Parameters;
 
 namespace SMART.ERP.API.Controllers.v1

@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SMART.ERP.Application.Features.BrandFeature.Commands.CreateBrandCommand;
-using SMART.ERP.Application.Features.BrandFeature.Queries;
 using SMART.ERP.Application.Features.InternalDocumentFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
