@@ -4,7 +4,6 @@ using SMART.ERP.Application.Features.CategoryFeature.Commands.DeleteCategoryComm
 using SMART.ERP.Application.Features.CategoryFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Services.HeaderService;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.CategoryFeature.Commands.CreateCategoryCommand;
 using SMART.ERP.Application.Features.CategoryFeature.Commands.UpdateCategoryCommand;
 

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using SMART.ERP.Application.Features.OpportunityFeature.Queries;
+﻿using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotationCommand;
 using SMART.ERP.Application.Features.QuotationFeature.Queries;
 using SMART.ERP.Application.Parameters;

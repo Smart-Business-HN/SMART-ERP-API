@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.ProspectFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.ProspectFeature.Commands.ConvertProspectCommand;
 using SMART.ERP.Application.Features.ProspectFeature.Commands.CreateProspectCommand;
 using SMART.ERP.Application.Features.ProspectFeature.Commands.CreateProspectXpressCommand;

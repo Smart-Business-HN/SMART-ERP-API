@@ -2,7 +2,6 @@
 using SMART.ERP.Application.Features.RegionFeature.Commands.DeleteRegionCommand;
 using SMART.ERP.Application.Features.RegionFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.RegionFeature.Commands.AssignRegionDepartmentCommand;
 using SMART.ERP.Application.Features.RegionFeature.Commands.CreateRegionCommand;
 using SMART.ERP.Application.Features.RegionFeature.Commands.RemoveRegionDepartmentCommand;

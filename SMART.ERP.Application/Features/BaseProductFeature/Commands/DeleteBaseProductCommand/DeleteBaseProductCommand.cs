@@ -1,10 +1,8 @@
 ﻿using MediatR;
-using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.ProductDataSheetSpecification;
 using SMART.ERP.Application.Specifications.ProductFeatureSpecification;
 using SMART.ERP.Application.Specifications.ProductImageSpecification;
-using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 

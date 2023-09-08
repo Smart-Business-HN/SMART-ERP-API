@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
 using SMART.ERP.Application.DTOs.Product;
-using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;

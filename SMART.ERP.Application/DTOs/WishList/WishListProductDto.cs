@@ -1,5 +1,4 @@
-﻿using SMART.ERP.Application.DTOs.Customer;
-using SMART.ERP.Application.DTOs.Product;
+﻿using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.DTOs.Status;
 
 namespace SMART.ERP.Application.DTOs.WishList

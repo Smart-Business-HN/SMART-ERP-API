@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.ProductImageFeature.Commands.DeleteProductImageCommand;
 using SMART.ERP.Application.Features.ProductImageFeature.Queries;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.ProductImageFeature.Commands.CreateProductImageCommand;
 using SMART.ERP.Application.Features.ProductImageFeature.Commands.UpdateProductImageCommand;
 

@@ -55,6 +55,5 @@ namespace SMART.ERP.API.Controllers.v1
         {
             return Ok(await Mediator.Send(new DeleteInventoryInputTypeCommand { Id = id }));
         }
-
     }
 }

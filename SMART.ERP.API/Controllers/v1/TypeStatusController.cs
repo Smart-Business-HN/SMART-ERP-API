@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.TypeStatusFeature.Commands.DeleteTypeStatusCommand;
 using SMART.ERP.Application.Features.TypeStatusFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.TypeStatusFeature.Commands.CreateTypeStatusCommand;
 using SMART.ERP.Application.Features.TypeStatusFeature.Commands.UpdateTypeStatusCommand;
 

@@ -4,7 +4,6 @@ using SMART.ERP.Application.Features.BaseProductFeature.Queries;
 using SMART.ERP.Application.Features.HeroSliderFeature.Commands.DeleteHeroSliderCommand;
 using SMART.ERP.Application.Features.HeroSliderFeature.Commands.DeleteProductSliderCommand;
 using SMART.ERP.Application.Features.HeroSliderFeature.Queries;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.HeroSliderFeature.Commands.CreateHeroSliderCommand;
 using SMART.ERP.Application.Features.HeroSliderFeature.Commands.UpdateCategoryPositionCommand;
 using SMART.ERP.Application.Features.HeroSliderFeature.Commands.UpdateHeroSliderCommand;

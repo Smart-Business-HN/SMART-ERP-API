@@ -1,20 +1,11 @@
 ﻿using AutoMapper;
 using MediatR;
 using SMART.ERP.Application.DTOs.InventoryInputType;
-using SMART.ERP.Application.DTOs.Opportunity;
 using SMART.ERP.Application.Exceptions;
-using SMART.ERP.Application.Features.LossReasonFeature.Commands.CreateLossReasonCommand;
 using SMART.ERP.Application.Repository;
-using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.InventoryInputTypeSpecification;
-using SMART.ERP.Application.Specifications.LossReasonSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.Features.InventoryInputTypeFeature.Commands.CreateInventoryInputTypeCommand
 {

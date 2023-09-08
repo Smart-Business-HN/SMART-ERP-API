@@ -4,7 +4,6 @@ using SMART.ERP.Application.Features.MachineryFeature.Commands.CreateRootcloudHi
 using SMART.ERP.Application.Features.MachineryFeature.Commands.UpdateRootcloudHistoricalCommand;
 using SMART.ERP.Application.Features.MachineryFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.MachineryFeature.Commands.CreateFailureReportCommand;
 using SMART.ERP.Application.Features.MachineryFeature.Commands.CreateHourmeterCommand;
 using SMART.ERP.Application.Features.MachineryFeature.Commands.CreateMachineryByCsvCommand;

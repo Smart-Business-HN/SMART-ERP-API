@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.CustomerFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomerCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.ImportCustomerCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.LoginCustomerCommand;

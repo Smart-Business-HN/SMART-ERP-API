@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.ProspectStepFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 
 namespace SMART.ERP.API.Controllers.v1
 {

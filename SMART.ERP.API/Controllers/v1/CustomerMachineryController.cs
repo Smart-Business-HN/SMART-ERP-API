@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.CustomerMachineryFeature.Commands.DeleteCustomerMachineryCommand;
 using SMART.ERP.Application.Features.CustomerMachineryFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.CustomerMachineryFeature.Commands.CreateCustomerMachineryCommand;
 using SMART.ERP.Application.Features.CustomerMachineryFeature.Commands.UpdateCustomerMachineryCommand;
 

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.ProviderFeature.Commands.DeleteProviderCommand;
 using SMART.ERP.Application.Features.ProviderFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.ProviderFeature.Commands.CreateProviderCommand;
 using SMART.ERP.Application.Features.ProviderFeature.Commands.UpdateProviderCommand;
 

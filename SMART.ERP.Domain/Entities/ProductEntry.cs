@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SMART.ERP.Domain.Entities
+﻿namespace SMART.ERP.Domain.Entities
 {
     public class ProductEntry
     {
@@ -13,8 +7,8 @@ namespace SMART.ERP.Domain.Entities
         public virtual InventoryInput? InventoryInput { get; set; }
         public int ProductId { get; set; }
         public virtual Product? Product { get; set; }
-        public double Quantity { get; set; }
-        public double UnitProductPrice { get; set; }
-        public double Total { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal UnitProductPrice { get; set; }
+        public decimal Total { get; set; }
     }
 }
