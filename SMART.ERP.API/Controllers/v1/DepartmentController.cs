@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.DepartmentFeature.Commands.DeleteDepartmentCommand;
 using SMART.ERP.Application.Features.DepartmentFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.DepartmentFeature.Commands.CreateDepartmentCommand;
 using SMART.ERP.Application.Features.DepartmentFeature.Commands.UpdateDepartmentCommand;
 

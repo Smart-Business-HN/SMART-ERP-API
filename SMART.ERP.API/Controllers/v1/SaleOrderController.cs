@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.SaleOrderFeature.Commands.DeleteSaleOrderCommand;
 using SMART.ERP.Application.Features.SaleOrderFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.SaleOrderFeature.Commands.CreateSaleOrderCommand;
 
 namespace SMART.ERP.API.Controllers.v1

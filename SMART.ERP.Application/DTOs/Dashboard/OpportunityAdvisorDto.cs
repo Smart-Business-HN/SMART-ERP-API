@@ -1,6 +1,4 @@
-﻿using SMART.ERP.Application.DTOs.Company;
-
-namespace SMART.ERP.Application.DTOs.Dashboard
+﻿namespace SMART.ERP.Application.DTOs.Dashboard
 {
     public class OpportunityAdvisorDto
     {

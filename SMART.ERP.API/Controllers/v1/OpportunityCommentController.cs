@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.OpportunityCommentFeature.Commands.DeleteOpportunityCommentCommand;
 using SMART.ERP.Application.Features.OpportunityCommentFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.OpportunityCommentFeature.Commands.CreateOpportunityCommentCommand;
 using SMART.ERP.Application.Features.OpportunityCommentFeature.Commands.UpdateOpportunityCommentCommand;
 

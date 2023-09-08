@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SMART.ERP.Domain.Entities
+﻿namespace SMART.ERP.Domain.Entities
 {
     public class InventoryInput
     {
@@ -26,5 +20,6 @@ namespace SMART.ERP.Domain.Entities
         public string CreatedBy { get; set; } = null!;
         public DateTime? ModificationDate { get; set; }
         public string? ModifiedBy { get; set; }
+        public List<ProductEntry>? ProductEntries { get; set; }
     }
 }

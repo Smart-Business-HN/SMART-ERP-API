@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.FinancingPlanFeature.Commands.DeleteFinancingPlanCommand;
 using SMART.ERP.Application.Features.FinancingPlanFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.FinancingPlanFeature.Commands.CreateFinancingPlanCommand;
 using SMART.ERP.Application.Features.FinancingPlanFeature.Commands.UpdateFinancingPlanCommand;
 

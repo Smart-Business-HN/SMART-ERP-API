@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.LossReasonFeature.Commands.DeleteLossReasonCommand;
 using SMART.ERP.Application.Features.LossReasonFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.LossReasonFeature.Commands.CreateLossReasonCommand;
 using SMART.ERP.Application.Features.LossReasonFeature.Commands.UpdateLossReasonCommand;
 

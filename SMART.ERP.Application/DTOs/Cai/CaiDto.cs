@@ -1,6 +1,4 @@
-﻿using SMART.ERP.Application.DTOs.Company;
-
-namespace SMART.ERP.Application.DTOs.Cai
+﻿namespace SMART.ERP.Application.DTOs.Cai
 {
     public class CaiDto
     {

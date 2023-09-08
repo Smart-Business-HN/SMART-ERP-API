@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
 using SMART.ERP.Application.Repository;
-using SMART.ERP.Application.Specifications.BrandSpecification;
 using SMART.ERP.Application.Specifications.CitySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;

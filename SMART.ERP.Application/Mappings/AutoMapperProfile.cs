@@ -67,9 +67,13 @@ using SMART.ERP.Application.Features.PrefixFeature.Command.CreatePrefixCommand;
 using SMART.ERP.Application.Features.TaxFeature.Commands.CreateTaxCommand;
 using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotationCommand;
-using SMART.ERP.Application.DTOs.InventoryDistribution;
 using SMART.ERP.Application.Features.InventoryInputTypeFeature.Commands.CreateInventoryInputTypeCommand;
 using SMART.ERP.Application.DTOs.InventoryInputType;
+using SMART.ERP.Application.DTOs.InventoryInput;
+using SMART.ERP.Application.DTOs.ProductEntry;
+using SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateInventoryInputCommand;
+using SMART.ERP.Application.DTOs.Warehouse;
+using SMART.ERP.Application.Features.WarehouseFeature.Commands.CreateWarehouseCommand;
 
 namespace SMART.ERP.Application.Mappings
 {
@@ -171,7 +175,13 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<ProductOffered, ProductOfferedDto>();
             CreateMap<ProductToOfferdDto, ProductOffered>();
             CreateMap<InternalDocument, InternalDocumentDto>();
+            CreateMap<Warehouse,WarehouseDto>();
             CreateMap<InventoryInputType, InventoryInputTypeDto>();
+            CreateMap<InventoryInput,InventoryInputDto>();
+            CreateMap<ProductEntry, ProductEntryDto>();
+            CreateMap<CreateProductEntryDto, ProductEntryDto>();
+            CreateMap<ProductEntryDto, CreateProductEntryDto>();
+            CreateMap<CreateProductEntryDto, ProductEntry>();
             #endregion
 
             #region Commands
@@ -230,6 +240,8 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateTaxCommand, Tax>();
             CreateMap<CreateQuotationCommand, Quotation>();
             CreateMap<CreateInventoryInputTypeCommand, InventoryInputType>();
+            CreateMap<CreateInventoryInputCommand, InventoryInput>();
+            CreateMap<CreateWarehouseCommand, Warehouse>();
             #endregion
         }
     }

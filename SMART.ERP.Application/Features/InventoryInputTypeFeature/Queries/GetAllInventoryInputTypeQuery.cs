@@ -1,18 +1,10 @@
 ﻿using AutoMapper;
 using MediatR;
 using SMART.ERP.Application.DTOs.InventoryInputType;
-using SMART.ERP.Application.DTOs.Opportunity;
-using SMART.ERP.Application.Features.LossReasonFeature.Queries;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.InventoryInputTypeSpecification;
-using SMART.ERP.Application.Specifications.LossReasonSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.Features.InventoryInputTypeFeature.Queries
 {
@@ -42,7 +34,6 @@ namespace SMART.ERP.Application.Features.InventoryInputTypeFeature.Queries
                     request.PageNumber = 0;
                     request.PageSize = await _repositoryAsync.CountAsync();
                 }
-
                 var inventoryInputTypes = await _repositoryAsync.ListAsync(
                     new FilterAndPaginationInventoryInputTypeSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
                 var dto = _mapper.Map<List<InventoryInputTypeDto>>(inventoryInputTypes);

@@ -2,7 +2,6 @@
 using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 
 namespace SMART.ERP.Application.Services.AssignUserToOpportunityService
 {

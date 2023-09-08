@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.NotificationFeature.Commands.UpdateNotificationCommand;
 using SMART.ERP.Application.Features.NotificationFeature.Queries;
-using SMART.ERP.API.Controllers;
 
 namespace SMART.ERP.API.Controllers.v1
 {

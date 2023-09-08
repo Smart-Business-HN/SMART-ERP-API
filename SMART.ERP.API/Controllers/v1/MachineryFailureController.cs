@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.MachineryFailureFeature.Commands.DeleteMachineryFailureCommand;
 using SMART.ERP.Application.Features.MachineryFailureFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.MachineryFailureFeature.Commands.CreateMachineryFailureCommand;
 using SMART.ERP.Application.Features.MachineryFailureFeature.Commands.UpdateMachineryFailureCommand;
 

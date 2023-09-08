@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.WishListProductFeature.Commands.DeleteWishListProductCommand;
 using SMART.ERP.Application.Features.WishListProductFeature.Queries;
-using SMART.ERP.API.Controllers;
 using SMART.ERP.Application.Features.WishListProductFeature.Commands.CreateWishListProductCommand;
 using SMART.ERP.Application.Features.WishListProductFeature.Commands.UpdateWishListProductCommand;
 
