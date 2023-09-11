@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotationCommand;
 using SMART.ERP.Application.Features.QuotationFeature.Queries;
 using SMART.ERP.Application.Parameters;
@@ -9,19 +10,19 @@ namespace SMART.ERP.API.Controllers.v1
     public class QuotationController : BaseApiController
     {
         [HttpGet("GetById/{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetById(int id)
         {
             return Ok(await Mediator.Send(new GetQuotationByIdQuery { Id = id }));
         }
         [HttpPost("Create")]
-        //[Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
+        [Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
         public async Task<IActionResult> Create([FromBody] CreateQuotationCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
         [HttpGet("GetAll")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllQuotationQuery()

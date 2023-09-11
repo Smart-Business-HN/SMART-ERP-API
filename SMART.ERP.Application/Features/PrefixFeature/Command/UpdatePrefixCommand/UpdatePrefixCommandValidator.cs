@@ -16,7 +16,7 @@ namespace SMART.ERP.Application.Features.PrefixFeature.Command.UpdatePrefixComma
               .NotEmpty().WithMessage("{PropertyName} no puede ser nulo")
               .NotEqual(0).WithMessage("{PropertyName} no puede ser igual a cero");
             RuleFor(p => p.ItIsTaken)
-              .NotEmpty().WithMessage("{PropertyName} no puede ser nulo");
+              .NotNull().WithMessage("{PropertyName} no puede ser nulo");
         }
     }
 }

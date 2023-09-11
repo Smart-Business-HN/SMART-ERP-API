@@ -85,7 +85,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             var currentCuotations = await _repositoryAsync.ListAsync();
             var newRecord = _mapper.Map<Quotation>(request);
             //TODO: refactorizin this to: print a different correlative for each prefix.
-            newRecord.QuotationCode = CreateQuotationCode(prefixExist, currentCuotations.Last());
+            newRecord.QuotationCode = CreateQuotationCode(prefix: prefixExist, lastQuotation: currentCuotations.Count > 0 ? currentCuotations.Last().Id : 0);
             newRecord.Profitability = 0;
             newRecord.SubTotal = 0;
             newRecord.Total = 0;
@@ -109,7 +109,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                 {
                     taxesAmount += taxis.Amount;
                 }
-                newRecord.Total = taxesAmount + newRecord.SubTotal ;
+                newRecord.Total = taxesAmount + newRecord.SubTotal;
                 await _repositoryAsync.UpdateAsync(newRecord);
                 await _repositoryAsync.SaveChangesAsync();
                 quoteResponse.Total = newRecord.Total;
@@ -154,7 +154,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                     {
                         tax = await _taxRepositoryAsync.GetByIdAsync(item);
                         decimal subTotalAmount = product.Quantity * product.UnitPrice;
-                        decimal rates = 1+ (tax.Rate/100);
+                        decimal rates = 1 + (tax.Rate / 100);
                         decimal totalAmountWithTaxes = subTotalAmount * rates;
                         currentTaxAmount += (totalAmountWithTaxes - subTotalAmount);
                     }
@@ -166,30 +166,30 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             return Taxes;
         }
 
-        static public string CheckDescriptionsAndNamesOfProductsToOffered (List<ProductToOfferdDto> request)
+        static public string CheckDescriptionsAndNamesOfProductsToOffered(List<ProductToOfferdDto> request)
         {
             foreach (var item in request)
             {
-                if(item.ProductId == null && item.ProductName == null)
+                if (item.ProductId == null && item.ProductName == null)
                 {
                     return "El Producto y/o nombre del producto es requerido";
                 }
             }
             return "true";
         }
-        public static string CreateQuotationCode (Prefix prefix, Quotation lastQuotation)
-        {  
+        public static string CreateQuotationCode(Prefix prefix, int lastQuotation)
+        {
             var numberOfCharacters = prefix.Format.ToCharArray().Length;
-            var numberOfCharactersInId = lastQuotation.Id.ToString().ToCharArray().Length;
+            var numberOfCharactersInId = lastQuotation.ToString().ToCharArray().Length;
             var code = "";
             if (numberOfCharacters + numberOfCharactersInId < 8)
             {
-                int characterOffset = 8-(numberOfCharacters + numberOfCharactersInId);
-                code = prefix.Format + new string('0', characterOffset) + (lastQuotation.Id + 1).ToString();
+                int characterOffset = 8 - (numberOfCharacters + numberOfCharactersInId);
+                code = prefix.Format + new string('0', characterOffset) + (lastQuotation + 1).ToString();
             }
             else
             {
-                code = prefix.Format + (lastQuotation.Id + 1).ToString();
+                code = prefix.Format + (lastQuotation + 1).ToString();
             }
             return code;
         }
@@ -199,11 +199,11 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             List<int> productsId = new();
             foreach (var productToOfferdDto in request)
             {
-                if(!taxesIds.Contains(productToOfferdDto.TaxId))
-                { 
+                if (!taxesIds.Contains(productToOfferdDto.TaxId))
+                {
                     taxesIds.Add(productToOfferdDto.TaxId);
                 }
-                if(productToOfferdDto.ProductId != null)
+                if (productToOfferdDto.ProductId != null)
                 {
                     if (!productsId.Contains((int)productToOfferdDto.ProductId))
                     {
@@ -213,11 +213,11 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             }
             if (taxesIds.Count > 0)
             {
-                
+
                 foreach (var tax in taxesIds)
                 {
                     var taxExist = await _taxRepositoryAsync.GetByIdAsync(tax);
-                    if(taxExist == null)
+                    if (taxExist == null)
                     {
                         return "Ha habido un problema con el Id del Impuesto de uno de los productos";
                     }
