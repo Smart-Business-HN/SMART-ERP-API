@@ -414,6 +414,12 @@ namespace SMART.ERP.Infrastructure
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Product>()
+                .HasMany(a => a.InventoryDistributions)
+                .WithOne(a => a.Product)
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
                 .Navigation(b => b.ProductDataSheets)
                 .UsePropertyAccessMode(PropertyAccessMode.Property);
 
@@ -997,19 +1003,15 @@ namespace SMART.ERP.Infrastructure
               .WithMany()
               .HasForeignKey(x => x.BranchOfficeId)
               .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Warehouse>()
+                .HasMany(a=>a.InventoryDistributions)
+                .WithOne(a=>a.Warehouse)
+                .HasForeignKey(x => x.WarehouseId)
+                .OnDelete(DeleteBehavior.Restrict);
             //Inventory Distribution
             modelBuilder.Entity<InventoryDistribution>().ToTable("InventoryDistribution");
             modelBuilder.Entity<InventoryDistribution>(o => o.HasKey(x => x.Id));
-            modelBuilder.Entity<InventoryDistribution>()
-               .HasOne(x => x.Warehouse)
-               .WithMany()
-               .HasForeignKey(x => x.WarehouseId)
-               .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<InventoryDistribution>()
-              .HasOne(x => x.Product)
-              .WithMany()
-              .HasForeignKey(x => x.ProductId)
-              .OnDelete(DeleteBehavior.Restrict);
+
             //Inventory Entry
             modelBuilder.Entity<InventoryInput>().ToTable("InventoryInput");
             modelBuilder.Entity<InventoryInput>(o=>o.HasKey(x => x.Id));

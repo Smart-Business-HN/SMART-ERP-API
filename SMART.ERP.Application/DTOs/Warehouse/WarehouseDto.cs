@@ -1,5 +1,6 @@
 ﻿using SMART.ERP.Application.DTOs.Address;
 using SMART.ERP.Application.DTOs.Company;
+using SMART.ERP.Application.DTOs.InventoryDistribution;
 using SMART.ERP.Application.DTOs.User;
 
 namespace SMART.ERP.Application.DTOs.Warehouse
@@ -20,5 +21,6 @@ namespace SMART.ERP.Application.DTOs.Warehouse
         public string CreatedBy { get; set; } = null!;
         public DateTime? ModificationDate { get; set; }
         public string? ModificatedBy { get; set; }
+        public List<InventoryDistributionDto>? InventoryDistributions { get; set; }
     }
 }
