@@ -4,6 +4,7 @@ using SMART.ERP.Application.Features.WarehouseFeature.Commands.CreateWarehouseCo
 using SMART.ERP.Application.Features.WarehouseFeature.Commands.UpdateWarehouseCommand;
 using SMART.ERP.Application.Features.WarehouseFeature.Queries;
 using SMART.ERP.Application.Features.WinReasonFeature.Commands.DeleteWinReasonCommand;
+using SMART.ERP.Application.Features.WishListFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
 namespace SMART.ERP.API.Controllers.v1
@@ -11,6 +12,12 @@ namespace SMART.ERP.API.Controllers.v1
 
     public class WarehouseController : BaseApiController
     {
+        [HttpPost("Create")]
+        [Authorize(Roles = "SuperAdmin, Manager")]
+        public async Task<IActionResult> Create([FromBody] CreateWarehouseCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
         [HttpGet("GetAll")]
         [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
@@ -26,11 +33,10 @@ namespace SMART.ERP.API.Controllers.v1
             }));
         }
 
-        [HttpPost("Create")]
-        [Authorize(Roles = "SuperAdmin, Manager")]
-        public async Task<IActionResult> Create([FromBody] CreateWarehouseCommand command)
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            return Ok(await Mediator.Send(command));
+            return Ok(await Mediator.Send(new GetWarehouseByIdQuery { Id = id }));
         }
 
         [HttpPut("Update/{id}")]
@@ -48,6 +54,7 @@ namespace SMART.ERP.API.Controllers.v1
         {
             return Ok(await Mediator.Send(new DeleteWinReasonCommand { Id = id }));
         }
-    
+       
+
     }
 }
