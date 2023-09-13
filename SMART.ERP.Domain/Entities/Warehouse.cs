@@ -9,6 +9,7 @@
         public virtual User? User { get; set; }
         public int? BranchOfficeId { get; set; }
         public virtual BranchOffices? BranchOffice { get; set; }
+        public List<InventoryDistribution>? InventoryDistributions { get; set; }
         public bool IsGeneralWarehouse { get; set; }
         public int? CityId { get; set; }
         public virtual City? City { get; set;}

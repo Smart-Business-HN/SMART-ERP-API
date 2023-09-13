@@ -39,5 +39,6 @@
         public List<ProductDataSheet>? ProductDataSheets { get; set; }
         public List<ProductFeature>? ProductFeatures { get; set; }
         public List<ProductImage>? ProductImages { get; set; }
+        public List<InventoryDistribution>? InventoryDistributions { get; set; }
     }
 }
