@@ -7,6 +7,6 @@ namespace SMART.ERP.Application.DTOs.Address
         public int CountryId { get; set; }
         public string Name { get; set; } = null!;
         public bool IsActive { get; set; }
-        public List<ClientCityDto>? Cities { get; set; }
+        public List<CityDto>? Cities { get; set; }
     }
 }

@@ -1,7 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using QuestPDF.Fluent;
+using SMART.ERP.Application.DTOs.Quotation;
+using SMART.ERP.Application.DTOs.Status;
 using SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotationCommand;
+using SMART.ERP.Application.Features.QuotationFeature.Commands.DownloadPDFQuotationCommand;
 using SMART.ERP.Application.Features.QuotationFeature.Queries;
 using SMART.ERP.Application.Parameters;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.API.Controllers.v1
 {
@@ -20,8 +26,18 @@ namespace SMART.ERP.API.Controllers.v1
         {
             return Ok(await Mediator.Send(command));
         }
+        //[HttpPost("DownloadPDF")]
+        ////[Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
+        //public async Task<IActionResult> DownloadPDF([FromBody] QuotationDto command)
+        //{
+        //    var filePath = "invoice.pdf";
+        //    var doc = new InvoiceDocument(command);
+        //    doc.GeneratePdf(filePath);
+
+        //    return Ok(doc);
+        //}
         [HttpGet("GetAll")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllQuotationQuery()
