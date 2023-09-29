@@ -15,27 +15,17 @@ namespace SMART.ERP.API.Controllers.v1
     public class QuotationController : BaseApiController
     {
         [HttpGet("GetById/{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetById(int id)
         {
             return Ok(await Mediator.Send(new GetQuotationByIdQuery { Id = id }));
         }
         [HttpPost("Create")]
-        //[Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
+        [Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
         public async Task<IActionResult> Create([FromBody] CreateQuotationCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
-        //[HttpPost("DownloadPDF")]
-        ////[Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
-        //public async Task<IActionResult> DownloadPDF([FromBody] QuotationDto command)
-        //{
-        //    var filePath = "invoice.pdf";
-        //    var doc = new InvoiceDocument(command);
-        //    doc.GeneratePdf(filePath);
-
-        //    return Ok(doc);
-        //}
         [HttpGet("GetAll")]
         [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
