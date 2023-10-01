@@ -24,7 +24,7 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Queries
             public async Task<Response<List<BasicInfoCustomerDto>>> Handle(GetAllBasicInfoCustomerQuery request, CancellationToken cancellationToken)
             {
                 var response = new List<BasicInfoCustomerDto>();
-                var customers = await _repositoryAsync.ListAsync(new CustomerIncludesSpecification());
+                var customers = await _repositoryAsync.ListAsync(new BasicCustomerIncludesSpecification());
                 if (customers.Count > 0)
                 {
                     foreach (var item in customers)

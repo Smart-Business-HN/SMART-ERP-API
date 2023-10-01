@@ -26,12 +26,6 @@
         public int ProviderId { get; set; }
         public virtual Provider? Provider { get; set; }
         public bool IsActive { get; set; }
-        public bool ItemInSAP { get; set; }
-        public bool InventoryItem { get; set; }
-        public bool PurchaseItem { get; set; }
-        public bool SalesItem { get; set; }
-        public int ItemGroup { get; set; }
-        public int ItemSerie { get; set; }
         public DateTime CreationDate { get; set; }
         public string CreatedBy { get; set; } = null!;
         public DateTime? ModificationDate { get; set; }

@@ -9,6 +9,7 @@ namespace SMART.ERP.Application.DTOs.Quotation
         public string? ProductName { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal Quantity { get; set; }
+        public decimal recomendedSalePrice { get; set; }
         public int TaxId { get; set; }
         public TaxDto? Tax { get; set; }
         public decimal Taxes { get; set; }

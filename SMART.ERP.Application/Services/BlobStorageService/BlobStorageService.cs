@@ -15,7 +15,7 @@ namespace SMART.ERP.Application.Services.BlobStorageService
 
         public async Task<bool> DeleteFileAsync(string fileName)
         {
-            var blobContainer = _blobServiceClient.GetBlobContainerClient("develop");
+            var blobContainer = _blobServiceClient.GetBlobContainerClient("produccion");
             var blobClient = blobContainer.GetBlobClient(fileName);
             if (await blobClient.ExistsAsync())
             {
@@ -33,7 +33,7 @@ namespace SMART.ERP.Application.Services.BlobStorageService
 
         public string GetFile(string imageName)
         {
-            var blobContainer = _blobServiceClient.GetBlobContainerClient("develop");
+            var blobContainer = _blobServiceClient.GetBlobContainerClient("produccion");
 
             var blobClient = blobContainer.GetBlobClient(imageName);
             return blobClient.Uri.ToString();
@@ -41,7 +41,7 @@ namespace SMART.ERP.Application.Services.BlobStorageService
 
         public async Task UploadFileAsync(IFormFile model)
         {
-            var blobContainer = _blobServiceClient.GetBlobContainerClient("develop");
+            var blobContainer = _blobServiceClient.GetBlobContainerClient("produccion");
 
             var blobClient = blobContainer.GetBlobClient(model.FileName);
 
