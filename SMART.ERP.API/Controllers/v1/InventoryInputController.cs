@@ -10,6 +10,12 @@ namespace SMART.ERP.API.Controllers.v1
     [ApiVersion("1.0")]
     public class InventoryInputController : BaseApiController
     {
+        [HttpPost("Create")]
+        [Authorize(Roles = "SuperAdmin, Manager")]
+        public async Task<IActionResult> Create([FromBody] CreateInventoryInputCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
         [HttpGet("GetById/{id}")]
         [Authorize]
         public async Task<IActionResult> GetById(int id)
@@ -42,12 +48,7 @@ namespace SMART.ERP.API.Controllers.v1
         //    }
         //    return Ok(await Mediator.Send(command));
         //}
-        [HttpPost("Create")]
-        [Authorize(Roles = "SuperAdmin, Manager")]
-        public async Task<IActionResult> Create([FromBody] CreateInventoryInputCommand command)
-        {
-            return Ok(await Mediator.Send(command));
-        }
+       
         [HttpDelete("Delete/{id}")]
         [Authorize(Roles = "SuperAdmin, Manager")]
         public async Task<IActionResult> Delete(int id)

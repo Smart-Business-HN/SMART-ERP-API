@@ -7,7 +7,7 @@ namespace SMART.ERP.Application.DTOs.Company
         public int Id { get; init; }
         public string Format { get; set; } = null!;
         public int InternalDocumentId { get; set; }
-        public virtual InternalDocument InternalDocument { get; set; } = null!;
+        public InternalDocument? InternalDocument { get; set; }
         public bool ItIsTaken { get; set; }
     }
 }

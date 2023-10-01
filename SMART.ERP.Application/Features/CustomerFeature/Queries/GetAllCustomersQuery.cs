@@ -6,6 +6,7 @@ using SMART.ERP.Application.Specifications.CustomerSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Application.DTOs.Quotation;
 
 namespace SMART.ERP.Application.Features.CustomerFeature.Queries
 {
@@ -35,50 +36,10 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Queries
                     request.PageNumber = 0;
                     request.PageSize = await _repositoryAsync.CountAsync();
                 }
+                var customers = await _repositoryAsync.ListAsync(new CustomerIncludesSpecification(request.Parameter,request.PageNumber, request.PageSize, request.Order, request.Column));
+                var dto = _mapper.Map<List<CustomerDto>>(customers);
+                return new PagedResponse<List<CustomerDto>>(dto, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync());
 
-                var response = new List<CustomerDto>();
-                try
-                {
-
-                var customers = await _repositoryAsync.ListAsync(new CustomerIncludesSpecification());
-               
-               
-                    if (customers != null)
-                    {
-
-                        if (!string.IsNullOrEmpty(request.Parameter)
-                                || !string.IsNullOrEmpty(request.Order) && !string.IsNullOrEmpty(request.Column))
-                        {
-                            var listWithFilters = await _repositoryAsync.ListAsync(new PaginationClientSpecification(request.Parameter, null, request.Order, request.Column));
-                            foreach (var client in listWithFilters)
-                            {
-                                var findById = customers.FirstOrDefault(x => x.Id == client.Id);
-                                if (findById != null)
-                                {
-                                    var dto = _mapper.Map<CustomerDto>(client);
-                                    response.Add(dto);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            List<Guid> guids = new();
-                            foreach (var item in customers)
-                            {
-                                guids.Add(item.Id);
-                            }
-
-                            var clients = await _repositoryAsync.ListAsync(new FilterClientFromMotors(guids));
-                            response = _mapper.Map<List<CustomerDto>>(clients);
-                        }
-                    }
-                    response = response.Skip(request.PageNumber * request.PageSize).Take(request.PageSize).ToList();
-                    return new PagedResponse<List<CustomerDto>>(response, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync());
-                
-                }
-                catch (Exception ex) {
-                    throw new Exception(ex.Message);
-                }
             }
         }
     }
