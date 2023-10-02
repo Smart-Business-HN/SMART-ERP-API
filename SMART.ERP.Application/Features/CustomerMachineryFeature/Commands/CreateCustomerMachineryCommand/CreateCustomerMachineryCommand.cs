@@ -39,7 +39,7 @@ namespace SMART.ERP.Application.Features.CustomerMachineryFeature.Commands.Creat
             {
                 throw new ApiException($"No existe un cliente con el id {request.CustomerId}");
             }
-            var product = await _productRepositoryAsync.FirstOrDefaultAsync(new FilterProductSpecification(null, request.ProductId));
+            var product = await _productRepositoryAsync.FirstOrDefaultAsync(new FilterProductSpecification(null, request.ProductId,null));
             if (product == null)
             {
                 throw new ApiException($"No existe un producto con el id {request.ProductId}");
