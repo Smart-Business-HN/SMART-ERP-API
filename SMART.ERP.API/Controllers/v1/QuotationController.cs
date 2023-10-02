@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using QuestPDF.Fluent;
-using SMART.ERP.Application.DTOs.Quotation;
-using SMART.ERP.Application.DTOs.Status;
 using SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotationCommand;
-using SMART.ERP.Application.Features.QuotationFeature.Commands.DownloadPDFQuotationCommand;
 using SMART.ERP.Application.Features.QuotationFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.API.Controllers.v1
 {

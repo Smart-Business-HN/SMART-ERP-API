@@ -7,6 +7,7 @@ using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using System.Text.RegularExpressions;
 
 namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseProductCommand
 {
@@ -87,13 +88,14 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
                 throw new KeyNotFoundException($"No se encontro la unidad de medida con id {request.UnitOfMeasurementId}");
             }
             var filterByName = await _repositoryAsync.FirstOrDefaultAsync(
-                    new FilterProductSpecification(request.Name, request.Id));
+                    new FilterProductSpecification(request.Name, request.Id, null));
             if (filterByName != null)
             {
                 throw new ApiException($"Ya existe un registro con el nombre {request.Name}");
             }
             else
             {
+                product.Slug = Regex.Replace(Regex.Replace(request.Name, @"[^a-zA-Z0-9\s]", "").Trim().ToLower(), @"\s+", "-")
                 product.Name = request.Name;
                 product.Description = request.Description;
                 product.BrandId = request.BrandId;
