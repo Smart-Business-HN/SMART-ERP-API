@@ -95,7 +95,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
             }
             else
             {
-                product.Slug = Regex.Replace(Regex.Replace(request.Name, @"[^a-zA-Z0-9\s]", "").Trim().ToLower(), @"\s+", "-")
+                product.Slug = Regex.Replace(Regex.Replace(request.Name, @"[^a-zA-Z0-9\s]", "").Trim().ToLower(), @"\s+", "-");
                 product.Name = request.Name;
                 product.Description = request.Description;
                 product.BrandId = request.BrandId;

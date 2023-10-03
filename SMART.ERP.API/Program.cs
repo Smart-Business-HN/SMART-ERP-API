@@ -55,7 +55,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Version = "v2",
         Title = "SMART ERP",
-        Description = "Una API web de ASP.NET Core para gestionar el E-Commerce ",
+        Description = "Una API web de ASP.NET Core para gestionar el E-Commerce",
         Contact = new OpenApiContact
         {
             Name = "Contacto",
