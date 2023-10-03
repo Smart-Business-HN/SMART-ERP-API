@@ -95,8 +95,16 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             {
                 quotationExist.PrefixId = request.PrefixId;
             }
+            if (quotationExist.Observations != request.Observations)
+            {
+                quotationExist.Observations = request.Observations;
+            }
+            if (quotationExist.TermsAndConditions != request.TermsAndConditions)
+            {
+                quotationExist.TermsAndConditions = request.TermsAndConditions;
+            }
             //PRODUCS to offered
-            var pre = await CheckProducts(request.ProductsOffered, request.ProductsToOffered);
+            var pre = await CheckProducts(request.ProductsOffered, request.ProductsToOffered, request.Id);
             quotationExist.SubTotal = CalculateSubtotal(pre);
             var taxes = await CalculateTaxes(pre);
             decimal taxesAmount = 0;
@@ -105,9 +113,12 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
                 taxesAmount += taxis.Amount;
             }
             quotationExist.Total = taxesAmount + quotationExist.SubTotal;
+            quotationExist.ProductsOffered = null;
             await _repositoryAsync.UpdateAsync(quotationExist);
             await _repositoryAsync.SaveChangesAsync();
-
+            var dto = _mapper.Map<QuotationDto>(quotationExist);
+            dto.ProductsOffered = pre;
+            return new Response<QuotationDto>(dto, $"Cotizacion {quotationExist.QuotationCode} actualizada exitosamente.");
 
         }
         public async Task<List<KindOfTaxDto>> CalculateTaxes(List<ProductOfferedDto> products)
@@ -143,39 +154,47 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             }
             return Taxes;
         }
-        public async Task<List<ProductOfferedDto>> CheckProducts(List<ProductOfferedDto>productOffered,List<ProductToOfferdDto> productsToOffered)
+        public async Task<List<ProductOfferedDto>> CheckProducts(List<ProductOfferedDto>productOffered,List<ProductToOfferdDto> productsToOffered, int quotationId)
         {
-            var productsToProcess = productsToOffered;
-            var prouductsPreExistence = productOffered;
+            var productsToProcess = new List<ProductToOfferdDto>(productsToOffered);
+            var prouductsPreExistence = new List<ProductOfferedDto>(productOffered);
             var taxesRates = await _taxRepositoryAsync.ListAsync();
             for (int i = 0; i < productOffered.Count; i++)
             {
                 for ( int e = 0; e < productsToOffered.Count; e++)
                 {
-                    if (productsToOffered[i].ProductId == productOffered[e].ProductId)
+                    if (productsToOffered[e].ProductId == productOffered[i].ProductId)
                     {
-                        var product =  await _productOfferedRepositoryAsync.GetByIdAsync(productOffered[i].Id);
+                        var product =  productOffered[i];
                         if(productsToOffered[e].Quantity != productOffered[i].Quantity )
                         {
-                            product!.Quantity = productsToOffered[e].Quantity;
+                            product.Quantity = productsToOffered[e].Quantity;
                         }
                         if(productsToOffered[e].recomendedSalePrice != productOffered[i].UnitPrice)
                         {
-                            product!.UnitPrice = productsToOffered[e].recomendedSalePrice;
+                            product.UnitPrice = productsToOffered[e].recomendedSalePrice;
                         }
-                        product!.TotalLine = productsToOffered[e].Quantity * productsToOffered[e].recomendedSalePrice;
+                        product.TotalLine = productsToOffered[e].Quantity * productsToOffered[e].recomendedSalePrice;
                         product.Taxes = TaxCalculator(productsToOffered[e], taxesRates);
-                        await _productOfferedRepositoryAsync.UpdateAsync(product);
+                        product.Product = null;
+                        product.Tax = null;
+                        product.Quotation = null;
+                        var productSeed = _mapper.Map<ProductOffered>(product);
+                        await _productOfferedRepositoryAsync.UpdateAsync(productSeed);
                         await _productOfferedRepositoryAsync.SaveChangesAsync();
-                        productsToProcess.RemoveAt(e);
-                        prouductsPreExistence.RemoveAt(i);
+                        productsToProcess.RemoveAll(r => r.ProductId == productsToOffered[e].ProductId);
+                        prouductsPreExistence.RemoveAll(r => r.Id == productOffered[i].Id);
                     }
                 }
                 if(prouductsPreExistence.Count > 0 )
                 {
-                    for(int a =0; prouductsPreExistence.Count>0;a++)
+                    for(int a = 0; a<prouductsPreExistence.Count;a++)
                     {
-                        var dtoToDelete = _mapper.Map<ProductOffered>(prouductsPreExistence[a]);
+                        var product = prouductsPreExistence[a];
+                        product.Tax = null;
+                        product.Quotation = null;
+                        product.Product = null;
+                        var dtoToDelete = _mapper.Map<ProductOffered>(product);
                         await _productOfferedRepositoryAsync.DeleteAsync(dtoToDelete);
                         await _productOfferedRepositoryAsync.SaveChangesAsync();
                     }
@@ -186,16 +205,15 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
                 foreach (var item in productsToProcess)
                 {
                     var newProductOffered = _mapper.Map<ProductOffered>(item);
-                    newProductOffered.QuotationId = productOffered[0].QuotationId;
+                    newProductOffered.QuotationId = quotationId;
                     newProductOffered.UnitPrice = item.recomendedSalePrice;
                     newProductOffered.Taxes = TaxCalculator(item, taxesRates);
-                    newProductOffered.TotalLine = newProductOffered.Taxes + (item.Quantity * item.recomendedSalePrice);
-                    var productOfferedResponse = await _productOfferedRepositoryAsync.AddAsync(newProductOffered);
+                    newProductOffered.TotalLine = item.Quantity * item.recomendedSalePrice;
+                    await _productOfferedRepositoryAsync.AddAsync(newProductOffered);
                     await _productOfferedRepositoryAsync.SaveChangesAsync();
-                    var newProductOfferedDto = _mapper.Map<ProductOfferedDto>(productOfferedResponse);
                 }
             }
-            var newProducts = await _productOfferedRepositoryAsync.ListAsync(new ProductOfferedSpecification(productOffered[0].QuotationId));
+            var newProducts = await _productOfferedRepositoryAsync.ListAsync(new ProductOfferedSpecification(quotationId));
             var dtos = _mapper.Map<List<ProductOfferedDto>>(newProducts);
             return dtos;
         }
