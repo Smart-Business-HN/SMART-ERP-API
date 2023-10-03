@@ -173,6 +173,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Tax, TaxDto>();
             CreateMap<Quotation, QuotationDto>();
             CreateMap<ProductOffered, ProductOfferedDto>();
+            CreateMap<ProductOfferedDto, ProductOffered>();
             CreateMap<ProductToOfferdDto, ProductOffered>();
             CreateMap<InternalDocument, InternalDocumentDto>();
             CreateMap<Warehouse,WarehouseDto>();

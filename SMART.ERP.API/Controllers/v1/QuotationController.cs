@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotationCommand;
+using SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotationCommand;
 using SMART.ERP.Application.Features.QuotationFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
@@ -35,16 +36,16 @@ namespace SMART.ERP.API.Controllers.v1
                 All = filter.All
             }));
         }
-        //[HttpPut("Update/{id}")]
-        //[Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
-        //public async Task<IActionResult> Update(Guid id, [FromBody] UpdateQuotationCommand command)
-        //{
-        //    if (id != command.Id)
-        //    {
-        //        return BadRequest("Ocurrio un error con el id de este registro");
-        //    }
-        //    return Ok(await Mediator.Send(command));
-        //}
+        [HttpPut("Update/{id}")]
+        [Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateQuotationCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("Ocurrio un error con el id de este registro");
+            }
+            return Ok(await Mediator.Send(command));
+        }
 
     }
 }

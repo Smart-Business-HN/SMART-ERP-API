@@ -61,8 +61,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
 
         public async Task<Response<ProductDto>> Handle(CreateBaseProductCommand request, CancellationToken cancellationToken)
         {
-            var checkIfExist = await _repositoryAsync.FirstOrDefaultAsync(
-                new FilterProductSpecification(request.Name, null, null));
+            var checkIfExist = await _repositoryAsync.FirstOrDefaultAsync(new FilterProductSpecification(request.Name, null, null));
             if (checkIfExist != null)
             {
                 throw new ApiException($"Ya existe un registro con el nombre {request.Name}");
