@@ -61,7 +61,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
 
         public async Task<Response<ProductDto>> Handle(CreateBaseProductCommand request, CancellationToken cancellationToken)
         {
-            var checkIfExist = await _repositoryAsync.FirstOrDefaultAsync(new FilterProductSpecification(request.Name, null, null));
+            var checkIfExist = await _repositoryAsync.FirstOrDefaultAsync(new FilterProductSpecification(request.Name, null, Regex.Replace(Regex.Replace(request.Name, @"[^a-zA-Z0-9\s]", "").Trim().ToLower(), @"\s+", "-")));
             if (checkIfExist != null)
             {
                 throw new ApiException($"Ya existe un registro con el nombre {request.Name}");
@@ -92,11 +92,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
                 throw new KeyNotFoundException($"No se encontro la unidad de medida con id {request.UnitOfMeasurementId}");
             }
             var slug = Regex.Replace(Regex.Replace(request.Name, @"[^a-zA-Z0-9\s]", "").Trim().ToLower(), @"\s+", "-");
-            var checkIfSlugExist = _repositoryAsync.FirstOrDefaultAsync(new FilterProductSpecification(null, null, slug));
-            if (checkIfSlugExist != null)
-            {
-                slug = slug + GenerateRandomString(6);
-            }
             var newRecord = _mapper.Map<Product>(request);
             newRecord.Slug = slug;
             newRecord.CreatedBy = _jwtService.GetSubjectToken();
@@ -105,19 +100,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
             await _repositoryAsync.SaveChangesAsync();
             var dto = _mapper.Map<ProductDto>(data);
             return new Response<ProductDto>(dto, message: $"{request.Name} creado exitosamente");
-        }
-        static string GenerateRandomString(int longestString)
-        {
-            const string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            Random random = new Random();
-            char[] array = new char[longestString];
-
-            for (int i = 0; i < longestString; i++)
-            {
-                array[i] = characters[random.Next(characters.Length)];
-            }
-
-            return new string(array);
         }
     }
 }
