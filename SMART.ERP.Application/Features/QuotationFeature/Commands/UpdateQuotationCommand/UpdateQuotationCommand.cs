@@ -172,7 +172,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
                         {
                             productToUpdate.Quantity = item.Quantity;
                         }
-                        if (productToUpdate.UnitPrice != item.UnitPrice)
+                        if (productToUpdate.UnitPrice != item.RecomendedSalePrice)
                         {
                             productToUpdate.UnitPrice = item.RecomendedSalePrice;
                         }
