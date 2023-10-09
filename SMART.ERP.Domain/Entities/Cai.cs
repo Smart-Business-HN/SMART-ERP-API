@@ -7,6 +7,7 @@ namespace SMART.ERP.Domain.Entities
         public string Name { get; set; } = null!;
         public int? BranchOfficeId { get; set; }
         public virtual BranchOffices? BranchOffice { get; set; }
+        public string Prefix { get; set; } = null!;
         public string Identificator { get; set; } = null!;
         public int StartCorrelative { get; set; }
         public int EndCorrelative { get; set; }

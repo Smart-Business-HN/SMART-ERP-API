@@ -104,9 +104,10 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
                 quotationExist.TermsAndConditions = request.TermsAndConditions;
             }
             //PRODUCS to offered
-            var pre = await CheckProducts(request.ProductsOffered, request.ProductsToOffered, request.Id);
+            var taxesInDatabase = await _taxRepositoryAsync.ListAsync();
+            var pre = await CheckProducts(request.ProductsOffered, request.ProductsToOffered, request.Id, taxesInDatabase);
             quotationExist.SubTotal = CalculateSubtotal(pre);
-            var taxes = await CalculateTaxes(pre);
+            var taxes = CalculateTaxes(pre,taxesInDatabase);
             decimal taxesAmount = 0;
             foreach (var taxis in taxes)
             {
@@ -121,7 +122,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             return new Response<QuotationDto>(dto, $"Cotizacion {quotationExist.QuotationCode} actualizada exitosamente.");
 
         }
-        public async Task<List<KindOfTaxDto>> CalculateTaxes(List<ProductOfferedDto> products)
+        public List<KindOfTaxDto> CalculateTaxes(List<ProductOfferedDto> products, List<Tax> taxes)
         {
             List<KindOfTaxDto> Taxes = new List<KindOfTaxDto>();
             List<int> kindOfTaxes = new List<int>();
@@ -141,7 +142,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
                 {
                     if (item == product.TaxId)
                     {
-                        tax = await _taxRepositoryAsync.GetByIdAsync(item);
+                        tax = taxes.Find(x=>x.Id == item);
                         decimal subTotalAmount = product.Quantity * product.UnitPrice;
                         decimal rates = 1 + (tax.Rate / 100);
                         decimal totalAmountWithTaxes = subTotalAmount * rates;
@@ -154,80 +155,73 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             }
             return Taxes;
         }
-        public async Task<List<ProductOfferedDto>> CheckProducts(List<ProductOfferedDto>productOffered,List<ProductToOfferdDto> productsToOffered, int quotationId)
+        public async Task<List<ProductOfferedDto>> CheckProducts(List<ProductOfferedDto> productOffered, List<ProductToOfferdDto> productsToOffered, int quotationId, List<Tax> taxesRates)
         {
             var productsToProcess = new List<ProductToOfferdDto>(productsToOffered);
             var prouductsPreExistence = new List<ProductOfferedDto>(productOffered);
-            var taxesRates = await _taxRepositoryAsync.ListAsync();
-            for (int i = 0; i < productOffered.Count; i++)
+
+            foreach (var productExisting in productOffered)
             {
-                for ( int e = 0; e < productsToOffered.Count; e++)
+                //UPDATING EVERY PRODUCT AND REMOVING FROM LOCAL LISTS
+                foreach (var item in productsToOffered)
                 {
-                    if (productsToOffered[e].ProductId == productOffered[i].ProductId)
+                    if(productExisting.ProductId == item.ProductId)
                     {
-                        var product =  productOffered[i];
-                        if(productsToOffered[e].Quantity != productOffered[i].Quantity )
+                        var productToUpdate = productExisting;
+                        if (productToUpdate.Quantity != item.Quantity)
                         {
-                            product.Quantity = productsToOffered[e].Quantity;
+                            productToUpdate.Quantity = item.Quantity;
                         }
-                        if(productsToOffered[e].recomendedSalePrice != productOffered[i].UnitPrice)
+                        if (productToUpdate.UnitPrice != item.UnitPrice)
                         {
-                            product.UnitPrice = productsToOffered[e].recomendedSalePrice;
+                            productToUpdate.UnitPrice = item.RecomendedSalePrice;
                         }
-                        product.TotalLine = productsToOffered[e].Quantity * productsToOffered[e].recomendedSalePrice;
-                        product.Taxes = TaxCalculator(productsToOffered[e], taxesRates);
-                        product.Product = null;
-                        product.Tax = null;
-                        product.Quotation = null;
-                        var productSeed = _mapper.Map<ProductOffered>(product);
+                        productToUpdate.TotalLine = item.Quantity * item.RecomendedSalePrice;
+                        productToUpdate.Taxes = TaxCalculator(item, taxesRates);
+                        productToUpdate.Product = null;
+                        productToUpdate.Tax = null;
+                        productToUpdate.Quotation = null;
+                        var productSeed = _mapper.Map<ProductOffered>(productToUpdate);
                         await _productOfferedRepositoryAsync.UpdateAsync(productSeed);
                         await _productOfferedRepositoryAsync.SaveChangesAsync();
-                        productsToProcess.RemoveAll(r => r.ProductId == productsToOffered[e].ProductId);
-                        prouductsPreExistence.RemoveAll(r => r.Id == productOffered[i].Id);
-                    }
-                }
-                if(prouductsPreExistence.Count > 0 )
-                {
-                    for(int a = 0; a<prouductsPreExistence.Count;a++)
-                    {
-                        var product = prouductsPreExistence[a];
-                        product.Tax = null;
-                        product.Quotation = null;
-                        product.Product = null;
-                        var dtoToDelete = _mapper.Map<ProductOffered>(product);
-                        await _productOfferedRepositoryAsync.DeleteAsync(dtoToDelete);
-                        await _productOfferedRepositoryAsync.SaveChangesAsync();
+                        prouductsPreExistence.RemoveAll(x=>x.ProductId == productExisting.ProductId);
+                        productsToProcess.RemoveAll(x => x.ProductId == item.ProductId);
                     }
                 }
             }
-            if(productsToProcess.Count > 0)
+            //ADD NEW PRODUCTS TO THE QUOTATION
+            foreach (var newProductToQuote in productsToProcess)
             {
-                foreach (var item in productsToProcess)
-                {
-                    var newProductOffered = _mapper.Map<ProductOffered>(item);
-                    newProductOffered.QuotationId = quotationId;
-                    newProductOffered.UnitPrice = item.recomendedSalePrice;
-                    newProductOffered.Taxes = TaxCalculator(item, taxesRates);
-                    newProductOffered.TotalLine = item.Quantity * item.recomendedSalePrice;
-                    await _productOfferedRepositoryAsync.AddAsync(newProductOffered);
-                    await _productOfferedRepositoryAsync.SaveChangesAsync();
-                }
+                var newProductOffered = _mapper.Map<ProductOffered>(newProductToQuote);
+                newProductOffered.QuotationId = quotationId;
+                newProductOffered.UnitPrice = newProductToQuote.RecomendedSalePrice;
+                newProductOffered.Taxes = TaxCalculator(newProductToQuote, taxesRates);
+                newProductOffered.TotalLine = newProductToQuote.Quantity * newProductToQuote.RecomendedSalePrice;
+                await _productOfferedRepositoryAsync.AddAsync(newProductOffered);
+                await _productOfferedRepositoryAsync.SaveChangesAsync();
             }
+            //REMOVING PREVIOUS PRODUCTS FROM THE QUOTATION
+            foreach (var productPreExistence in prouductsPreExistence)
+            {
+                productPreExistence.Tax = null;
+                productPreExistence.Quotation = null;
+                productPreExistence.Product = null;
+
+                var dtoToDelete = _mapper.Map<ProductOffered>(productPreExistence);
+                await _productOfferedRepositoryAsync.DeleteAsync(dtoToDelete);
+                await _productOfferedRepositoryAsync.SaveChangesAsync();
+            }
+            //GETS NEW PRODUCTS FROM THE QUOTATION
             var newProducts = await _productOfferedRepositoryAsync.ListAsync(new ProductOfferedSpecification(quotationId));
             var dtos = _mapper.Map<List<ProductOfferedDto>>(newProducts);
+
             return dtos;
         }
+
         static public decimal TaxCalculator(ProductToOfferdDto product, List<Tax> taxes)
         {
-            Tax productTax = null!;
-            for (int i = 0; i < taxes.Count; i++)
-            {
-                if (product.TaxId == taxes[i].Id)
-                {
-                    productTax = taxes[i];
-                }
-            }
-            decimal gravable = product.Quantity * product.recomendedSalePrice;
+            Tax productTax = taxes.Find(x => x.Id == product.TaxId);
+            decimal gravable = product.Quantity * product.RecomendedSalePrice;
             decimal total = gravable * ((productTax!.Rate / 100) + 1);
             decimal tax = total - gravable;
             return tax;

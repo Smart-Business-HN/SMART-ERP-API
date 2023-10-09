@@ -3,6 +3,7 @@ using MediatR;
 using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Specifications.ProductOfferedSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
@@ -68,9 +69,11 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             {
                 throw new ApiException($"No existe un prefijo con el id {request.PrefixId}");
             }
+            var taxesRates = await _taxRepositoryAsync.ListAsync();
             if (request.ProductsToOffered != null)
             {
-                var checkProducts = await CheckMasterDataOfProductsToOffered(request.ProductsToOffered);
+
+                var checkProducts = await CheckMasterDataOfProductsToOffered(request.ProductsToOffered, taxesRates);
                 if (checkProducts != "true")
                 {
                     throw new ApiException($"{checkProducts}");
@@ -78,7 +81,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                 var checkDescriptios = CheckDescriptionsAndNamesOfProductsToOffered(request.ProductsToOffered);
                 if (checkDescriptios != "true")
                 {
-                    throw new ApiException($"{checkProducts}");
+                    throw new ApiException($"{checkDescriptios}");
                 }
             }
             var productsOffered = new List<ProductOfferedDto>();
@@ -93,21 +96,20 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             await _repositoryAsync.SaveChangesAsync();
             if (request.ProductsToOffered != null && request.ProductsToOffered.Count > 0)
             {
-                var taxesRates = await _taxRepositoryAsync.ListAsync();
                 foreach (var item in request.ProductsToOffered)
                 {
                     var newProductOffered = _mapper.Map<ProductOffered>(item);
                     newProductOffered.QuotationId = quoteResponse.Id;
-                    newProductOffered.UnitPrice = item.recomendedSalePrice;
+                    newProductOffered.UnitPrice = item.RecomendedSalePrice;
                     newProductOffered.Taxes = TaxCalculator(item, taxesRates);
-                    newProductOffered.TotalLine = newProductOffered.Taxes + (item.Quantity * item.recomendedSalePrice);
+                    newProductOffered.TotalLine = newProductOffered.Taxes + (item.Quantity * item.RecomendedSalePrice);
                     var productOfferedResponse = await _productOfferedRepositoryAsync.AddAsync(newProductOffered);
                     await _productOfferedRepositoryAsync.SaveChangesAsync();
                     var newProductOfferedDto = _mapper.Map<ProductOfferedDto>(productOfferedResponse);
                     productsOffered.Add(newProductOfferedDto);
                 }
                 newRecord.SubTotal = CalculateSubtotal(productsOffered);
-                var taxes = await CalculateTaxes(productsOffered);
+                var taxes = CalculateTaxes(productsOffered, taxesRates);
                 decimal taxesAmount = 0;
                 foreach (var taxis in taxes)
                 {
@@ -119,24 +121,17 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                 quoteResponse.Total = newRecord.Total;
                 quoteResponse.SubTotal = newRecord.SubTotal;
             }
-
+            var productsForNewQuotation = await _productOfferedRepositoryAsync.ListAsync(new ProductOfferedSpecification(quoteResponse.Id));
+            var productsDto = _mapper.Map<List<ProductOfferedDto>>(productsForNewQuotation);
             var dto = _mapper.Map<QuotationDto>(quoteResponse);
-            dto.ProductsOffered = productsOffered;
-            return new Response<QuotationDto>(dto);
-
-
+            dto.ProductsOffered = productsDto;
+            return new Response<QuotationDto>(dto,$"Cotización {dto.QuotationCode} creada exitosamente.");
         }
         static public decimal TaxCalculator(ProductToOfferdDto product, List<Tax> taxes)
         {
             Tax productTax = null;
-            for (int i = 0; i < taxes.Count; i++)
-            {
-                if(product.TaxId == taxes[i].Id)
-                {
-                    productTax = taxes[i];
-                }
-            }
-            decimal gravable = product.Quantity * product.recomendedSalePrice;
+            productTax = taxes.Find(x => x.Id == product.TaxId);
+            decimal gravable = product.Quantity * product.RecomendedSalePrice;
             decimal total = gravable * ((productTax.Rate / 100) + 1);
             decimal tax = total - gravable;
             return tax;
@@ -151,7 +146,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             }
             return subtotal;
         }
-        public async Task<List<KindOfTaxDto>> CalculateTaxes(List<ProductOfferedDto> products)
+        public List<KindOfTaxDto> CalculateTaxes(List<ProductOfferedDto> products, List<Tax> taxes)
         {
             List<KindOfTaxDto> Taxes = new List<KindOfTaxDto>();
             List<int> kindOfTaxes = new List<int>();
@@ -171,7 +166,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                 {
                     if (item == product.TaxId)
                     {
-                        tax = await _taxRepositoryAsync.GetByIdAsync(item);
+                        tax = taxes.Find(x => x.Id == item);
                         decimal subTotalAmount = product.Quantity * product.UnitPrice;
                         decimal rates = 1+ (tax.Rate/100);
                         decimal totalAmountWithTaxes = subTotalAmount * rates;
@@ -212,7 +207,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             }
             return code;
         }
-        public async Task<string> CheckMasterDataOfProductsToOffered(List<ProductToOfferdDto> request)
+        public async Task<string> CheckMasterDataOfProductsToOffered(List<ProductToOfferdDto> request, List<Tax> taxes)
         {
             List<int> taxesIds = new();
             List<int> productsId = new();
@@ -235,8 +230,8 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                 
                 foreach (var tax in taxesIds)
                 {
-                    var taxExist = await _taxRepositoryAsync.GetByIdAsync(tax);
-                    if(taxExist == null)
+                    var currentTax = taxes.Exists(x=>x.Id == tax);
+                    if(currentTax == false)
                     {
                         return "Ha habido un problema con el Id del Impuesto de uno de los productos";
                     }
@@ -254,7 +249,6 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                 }
             }
             return "true";
-
         }
     }
 }

@@ -13,6 +13,10 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.UpdateCaiCommand
         RuleFor(p => p.Name)
                 .NotEmpty().WithMessage("{PropertyName} no puede ser vacio")
                 .MaximumLength(50).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres");
+        RuleFor(p => p.Prefix)
+                .NotEmpty().WithMessage("{PropertyName} no puede ser vacio")
+                .MinimumLength(11).WithMessage("{PropertyName} debe tener {MinLength} caracteres")
+                .MaximumLength(11).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres");
         RuleFor(p => p.StartCorrelative)
                 .NotNull().WithMessage("{PropertyName} no puede ser vacio");
         RuleFor(p => p.EndCorrelative)

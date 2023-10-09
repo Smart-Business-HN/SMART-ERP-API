@@ -1,15 +1,25 @@
 ﻿using SMART.ERP.Application.DTOs.Company;
+using SMART.ERP.Application.DTOs.Product;
+using SMART.ERP.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace SMART.ERP.Application.DTOs.Quotation
+namespace SMART.ERP.Application.DTOs.Invoice
 {
-    public class ProductToOfferdDto
+    public class ProductSoldDto
     {
+        public int Id { get; init; }
+        public int InvoiceId { get; set; }
+        public InvoiceDto? Invoice { get; set; }
         public int? ProductId { get; set; }
+        public ProductDto? Product { get; set; }
         public string? ProductCode { get; set; }
         public string? ProductName { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal Quantity { get; set; }
-        public decimal RecomendedSalePrice { get; set; }
         public int TaxId { get; set; }
         public TaxDto? Tax { get; set; }
         public decimal Taxes { get; set; }

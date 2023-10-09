@@ -11,6 +11,7 @@ using SMART.ERP.Infrastructure.Repository;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,8 +21,8 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            //policy.WithOrigins("https://motors.platino.hn", "https://adminpm.platino.hn").AllowAnyHeader().AllowAnyMethod();
             //policy.WithOrigins("https://*.vercel.app").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+            policy.WithOrigins("https://www.smartbusiness.site", "https://admin.smartbusiness.site").AllowAnyHeader().AllowAnyMethod();
             policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
             .AllowAnyHeader().AllowAnyMethod().AllowCredentials();
         });
@@ -68,28 +69,20 @@ builder.Services.AddSwaggerGen(options =>
 
 });
 
-//builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
+builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
 
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("PMDatabase"),
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Database"),
         sqlServerOptionsAction: sqlOptions =>
         {
             sqlOptions.EnableRetryOnFailure();
         });
 });
 
-//builder.Services.AddDbContext<BaseContext>(options =>
-//{
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("PHNDatabase"),
-//        sqlServerOptionsAction: sqlOptions =>
-//        {
-//            sqlOptions.EnableRetryOnFailure();
-//        });
-//});
 
 builder.Services.AddTransient(typeof(IRepositoryAsync<>), typeof(CustomRepositoryAsync<>));
-//builder.Services.AddTransient(typeof(IRepositoryAsync<>), typeof(BaseRepositoryAsync<>));
+
 //builder.WebHost.UseSentry(opts =>
 //{
 //    opts.BeforeSend = @event =>
@@ -98,10 +91,10 @@ builder.Services.AddTransient(typeof(IRepositoryAsync<>), typeof(CustomRepositor
 //        return @event;
 //    };
 //});
+//app.UseSentryTracing();
 
 var app = builder.Build();
 
-//app.UseSentryTracing();
 var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -127,8 +120,8 @@ var webSocketOptions = new WebSocketOptions
     KeepAliveInterval = TimeSpan.FromMinutes(2)
 };
 
-webSocketOptions.AllowedOrigins.Add("http://localhost:4200");
-//webSocketOptions.AllowedOrigins.Add("https://adminpm.platino.hn");
+//webSocketOptions.AllowedOrigins.Add("http://localhost:4200");
+webSocketOptions.AllowedOrigins.Add("https://admin.smartbusiness.site");
 
 app.UseRouting();
 app.UseCors();
@@ -146,10 +139,10 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseStaticFiles();
 
-//app.UseEndpoints(endpoints =>
-//{
-//    endpoints.MapControllers();
-//});
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 app.MapHub<NotificationHub>("hub/notification"); 
 app.MapControllers();
 app.Run();
