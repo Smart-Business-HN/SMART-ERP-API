@@ -1090,6 +1090,11 @@ namespace SMART.ERP.Infrastructure
                 .WithOne(x => x.Invoice)
                 .HasForeignKey(x => x.InvoiceId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Invoice>()
+               .HasOne(x => x.Quotation)
+               .WithMany()
+               .HasForeignKey(x => x.QuotationOriginId)
+               .OnDelete(DeleteBehavior.Restrict);
             //Product Sold
             modelBuilder.Entity<ProductSold>().ToTable("ProductSold");
             modelBuilder.Entity<ProductSold>(o => o.HasKey(x => x.Id));

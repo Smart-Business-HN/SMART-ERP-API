@@ -81,7 +81,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                 var checkDescriptios = CheckDescriptionsAndNamesOfProductsToOffered(request.ProductsToOffered);
                 if (checkDescriptios != "true")
                 {
-                    throw new ApiException($"{checkProducts}");
+                    throw new ApiException($"{checkDescriptios}");
                 }
             }
             var productsOffered = new List<ProductOfferedDto>();
@@ -100,9 +100,9 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                 {
                     var newProductOffered = _mapper.Map<ProductOffered>(item);
                     newProductOffered.QuotationId = quoteResponse.Id;
-                    newProductOffered.UnitPrice = item.recomendedSalePrice;
+                    newProductOffered.UnitPrice = item.RecomendedSalePrice;
                     newProductOffered.Taxes = TaxCalculator(item, taxesRates);
-                    newProductOffered.TotalLine = newProductOffered.Taxes + (item.Quantity * item.recomendedSalePrice);
+                    newProductOffered.TotalLine = newProductOffered.Taxes + (item.Quantity * item.RecomendedSalePrice);
                     var productOfferedResponse = await _productOfferedRepositoryAsync.AddAsync(newProductOffered);
                     await _productOfferedRepositoryAsync.SaveChangesAsync();
                     var newProductOfferedDto = _mapper.Map<ProductOfferedDto>(productOfferedResponse);
@@ -131,7 +131,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
         {
             Tax productTax = null;
             productTax = taxes.Find(x => x.Id == product.TaxId);
-            decimal gravable = product.Quantity * product.recomendedSalePrice;
+            decimal gravable = product.Quantity * product.RecomendedSalePrice;
             decimal total = gravable * ((productTax.Rate / 100) + 1);
             decimal tax = total - gravable;
             return tax;
@@ -249,7 +249,6 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                 }
             }
             return "true";
-
         }
     }
 }
