@@ -174,9 +174,9 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
                         }
                         if (productToUpdate.UnitPrice != item.UnitPrice)
                         {
-                            productToUpdate.UnitPrice = item.recomendedSalePrice;
+                            productToUpdate.UnitPrice = item.RecomendedSalePrice;
                         }
-                        productToUpdate.TotalLine = item.Quantity * item.recomendedSalePrice;
+                        productToUpdate.TotalLine = item.Quantity * item.RecomendedSalePrice;
                         productToUpdate.Taxes = TaxCalculator(item, taxesRates);
                         productToUpdate.Product = null;
                         productToUpdate.Tax = null;
@@ -194,9 +194,9 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             {
                 var newProductOffered = _mapper.Map<ProductOffered>(newProductToQuote);
                 newProductOffered.QuotationId = quotationId;
-                newProductOffered.UnitPrice = newProductToQuote.recomendedSalePrice;
+                newProductOffered.UnitPrice = newProductToQuote.RecomendedSalePrice;
                 newProductOffered.Taxes = TaxCalculator(newProductToQuote, taxesRates);
-                newProductOffered.TotalLine = newProductToQuote.Quantity * newProductToQuote.recomendedSalePrice;
+                newProductOffered.TotalLine = newProductToQuote.Quantity * newProductToQuote.RecomendedSalePrice;
                 await _productOfferedRepositoryAsync.AddAsync(newProductOffered);
                 await _productOfferedRepositoryAsync.SaveChangesAsync();
             }
@@ -221,7 +221,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
         static public decimal TaxCalculator(ProductToOfferdDto product, List<Tax> taxes)
         {
             Tax productTax = taxes.Find(x => x.Id == product.TaxId);
-            decimal gravable = product.Quantity * product.recomendedSalePrice;
+            decimal gravable = product.Quantity * product.RecomendedSalePrice;
             decimal total = gravable * ((productTax!.Rate / 100) + 1);
             decimal tax = total - gravable;
             return tax;

@@ -15,6 +15,7 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.CreateCaiCommand
         public string Name { get; set; } = null!;
         public int? BranchOfficeId { get; set; }
         public string Identificator { get; set; } = null!;
+        public string Prefix { get; set; } = null!;
         public int StartCorrelative { get; set; }
         public int EndCorrelative { get; set; }
         public int? CurrentCorrelative { get; set; }
@@ -38,7 +39,7 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.CreateCaiCommand
         }
         public async Task<Response<CaiDto>> Handle(CreateCaiCommand request, CancellationToken cancellationToken)
         {
-            int avalaibleInvoices = request.EndCorrelative - request.StartCorrelative;
+            
             var filterByIdentificator = await _repositoryAsync.FirstOrDefaultAsync(new FilterCaiByIdentificatorSpecification(request.Identificator));
             if (filterByIdentificator != null)
             {
@@ -51,15 +52,10 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.CreateCaiCommand
                 {
                     throw new ApiException($"No existe una sucursal con el id {request.BranchOfficeId}");
                 }
-
             }
-            if(request.CurrentCorrelative != null)
-            {
-                avalaibleInvoices = request.EndCorrelative - (int)request.CurrentCorrelative;
-            }
-           
             var newRecord = _mapper.Map<Cai>(request);
-            newRecord.AvailableInvoices= avalaibleInvoices;
+            newRecord.AvailableInvoices= request.EndCorrelative - request.StartCorrelative;
+            newRecord.CurrentCorrelative = request.StartCorrelative;
             var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
             var dto = _mapper.Map<CaiDto>(data);

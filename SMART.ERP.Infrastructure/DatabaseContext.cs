@@ -83,6 +83,8 @@ namespace SMART.ERP.Infrastructure
         public DbSet<InventoryInput> InventoryInputs { get; set; }
         public DbSet<InventoryInputType> InventoryInputTypes { get; set; } = null!;
         public DbSet<ProductEntry> ProductEntries { get; set; } = null!;
+        public DbSet<Invoice> Invoices { get; set; } = null!;
+        public DbSet<ProductSold> ProductsSold { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1051,6 +1053,51 @@ namespace SMART.ERP.Infrastructure
               .WithMany()
               .HasForeignKey(x => x.ProductId)
               .OnDelete(DeleteBehavior.Restrict);
+            //Invoice
+            modelBuilder.Entity<Invoice>().ToTable("Invoice");
+            modelBuilder.Entity<Invoice>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<Invoice>()
+                .HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Invoice>()
+               .HasOne(x => x.Customer)
+               .WithMany()
+               .HasForeignKey(x => x.CustomerId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Invoice>()
+               .HasOne(x => x.Status)
+               .WithMany()
+               .HasForeignKey(x => x.StatusId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Invoice>()
+               .HasOne(x => x.BranchOffice)
+               .WithMany()
+               .HasForeignKey(x => x.BranchOfficeId)
+               .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Invoice>()
+               .HasOne(x => x.Cai)
+               .WithMany()
+               .HasForeignKey(x => x.CaiId)
+               .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Invoice>()
+                .HasMany(p => p.ProductsSold)
+                .WithOne(x => x.Invoice)
+                .HasForeignKey(x => x.InvoiceId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Invoice>()
+               .HasOne(x => x.Quotation)
+               .WithMany()
+               .HasForeignKey(x => x.QuotationOriginId)
+               .OnDelete(DeleteBehavior.Restrict);
+            //Product Sold
+            modelBuilder.Entity<ProductSold>().ToTable("ProductSold");
+            modelBuilder.Entity<ProductSold>(o => o.HasKey(x => x.Id));
 
             base.OnModelCreating(modelBuilder);
         }

@@ -15,6 +15,7 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.UpdateCaiCommand
         public string Name { get; set; } = null!;
         public int? BranchOfficeId { get; set; }
         public string Identificator { get; set; } = null!;
+        public string Prefix { get; set; } = null!;
         public int StartCorrelative { get; set; }
         public int EndCorrelative { get; set; }
         public int CurrentCorrelative { get; set; }
@@ -61,8 +62,16 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.UpdateCaiCommand
                     throw new ApiException($"Ya existe un CAI con el identificador {request.Identificator}");
                 }
             }
+            cai.Prefix = request.Prefix;
             cai.Name = request.Name;
-            cai.AvailableInvoices = request.EndCorrelative - request.CurrentCorrelative;
+            if(request.CurrentCorrelative != request.StartCorrelative)
+            {
+                cai.AvailableInvoices = request.EndCorrelative - request.CurrentCorrelative;
+            }
+            else
+            {
+                cai.AvailableInvoices = request.EndCorrelative - request.StartCorrelative;
+            }
             cai.IsGeneralCai = request.IsGeneralCai;
             cai.IsActive = request.IsActive;
             cai.Identificator = request.Identificator;

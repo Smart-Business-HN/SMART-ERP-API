@@ -5,6 +5,7 @@
         public int Id { get; init; }
         public string Name { get; set; } = null!;
         public int? BranchOfficeId { get; set; }
+        public string Prefix { get; set; } = null!;
         public string Identificator { get; set; } = null!;
         public int StartCorrelative { get; set; }
         public int EndCorrelative { get; set; }
