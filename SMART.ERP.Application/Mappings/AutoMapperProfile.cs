@@ -189,6 +189,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<InvoiceDto, Invoice>();
             CreateMap<ProductSold, ProductSoldDto>();
             CreateMap<ProductToSellDto, ProductSold>();
+            CreateMap<ProductOffered, ProductSold>();
             #endregion
 
             #region Commands

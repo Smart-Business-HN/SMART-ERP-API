@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceByQuotationIdCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Queries;
 using SMART.ERP.Application.Features.QuotationFeature.Queries;
@@ -14,6 +15,16 @@ namespace SMART.ERP.API.Controllers.v1
         [Authorize(Roles = "SuperAdmin, Admin, Manager, SalesAdvisor")]
         public async Task<IActionResult> Create([FromBody] CreateInvoiceCommand command)
         {
+            return Ok(await Mediator.Send(command));
+        }
+        [HttpPost("CreateByQuotationId/{quotationId}")]
+        [Authorize(Roles = "SuperAdmin, Admin, Manager, SalesAdvisor")]
+        public async Task<IActionResult> CreateByQuotationId(int quotationId,[FromBody] CreateInvoiceByQuotationIdCommand command)
+        {
+            if (quotationId != command.QuotationId)
+            {
+                return BadRequest("Ocurrio un error con el id de este registro");
+            }
             return Ok(await Mediator.Send(command));
         }
         [HttpGet("GetById/{id}")]
