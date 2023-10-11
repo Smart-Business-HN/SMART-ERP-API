@@ -45,5 +45,7 @@ namespace SMART.ERP.Application.DTOs.Invoice
         public int StatusId { get; set; }
         public StatusDto? Status { get; set; }
         public List<ProductSoldDto>? ProductsSold { get; set; }
+        public int DestinationInvoiceId { get; set; }
+        public InvoiceDto? DestinationInvoice { get; set; }
     }
 }
