@@ -22,6 +22,7 @@
         public int PrefixId { get; set; }
         public virtual Prefix? Prefix { get; set; }
         public decimal? Profitability { get; set; }
-
+        public int? InvoiceDestinationId { get; set; }
+        public virtual Invoice? InvoiceDestination { get; set; }
     }
 }

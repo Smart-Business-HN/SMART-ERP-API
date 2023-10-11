@@ -980,6 +980,12 @@ namespace SMART.ERP.Infrastructure
                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Quotation>()
+              .HasOne(x => x.InvoiceDestination)
+              .WithMany()
+              .HasForeignKey(x => x.InvoiceDestinationId)
+              .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Quotation>()
                 .HasMany(p => p.ProductsOffered)
                 .WithOne(x => x.Quotation)
                 .HasForeignKey(x => x.QuotationId)
@@ -1095,9 +1101,43 @@ namespace SMART.ERP.Infrastructure
                .WithMany()
                .HasForeignKey(x => x.QuotationOriginId)
                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Invoice>()
+              .HasMany(p => p.BillPayments)
+              .WithOne(x => x.Invoice)
+              .HasForeignKey(x => x.InvoiceId)
+              .OnDelete(DeleteBehavior.Restrict);
             //Product Sold
             modelBuilder.Entity<ProductSold>().ToTable("ProductSold");
             modelBuilder.Entity<ProductSold>(o => o.HasKey(x => x.Id));
+            //Bank
+            modelBuilder.Entity<Bank>().ToTable("Bank");
+            modelBuilder.Entity<Bank>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<Bank>()
+               .HasMany(p => p.InternalBankAccounts)
+               .WithOne(x => x.Bank)
+               .HasForeignKey(x => x.BankId)
+               .OnDelete(DeleteBehavior.Restrict);
+            //Internal Bank Account
+            modelBuilder.Entity<InternalBankAccount>().ToTable("InternalBankAccount");
+            modelBuilder.Entity<InternalBankAccount>(o => o.HasKey(x => x.Id));
+            //Bill Payment
+            modelBuilder.Entity<BillPayment>().ToTable("BillPayment");
+            modelBuilder.Entity<BillPayment>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<BillPayment>()
+              .HasOne(x => x.Invoice)
+              .WithMany()
+              .HasForeignKey(x => x.InvoiceId)
+              .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<BillPayment>()
+              .HasOne(x => x.TypeOfPaymentMethod)
+              .WithMany()
+              .HasForeignKey(x => x.TypeOfPaymentMethodId)
+              .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<BillPayment>()
+              .HasOne(x => x.DestinationBankAccount)
+              .WithMany()
+              .HasForeignKey(x => x.DestinationBankAccountId)
+              .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }

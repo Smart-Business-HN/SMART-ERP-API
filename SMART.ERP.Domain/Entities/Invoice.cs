@@ -38,5 +38,6 @@ namespace SMART.ERP.Domain.Entities
         public int StatusId { get; set; }
         public virtual Status? Status { get; set; }
         public List<ProductSold>? ProductsSold { get; set; }
+        public List<BillPayment>? BillPayments { get; set; }
     }
 }
