@@ -36,10 +36,7 @@ namespace SMART.ERP.Application.Features.CityFeature.Queries
                 var cities = await _repositoryAsync.ListAsync(new FilterAndPaginationCitySpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
                 var dto = _mapper.Map<List<CityDto>>(cities);
                 return new PagedResponse<List<CityDto>>(dto, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync());
-
             }
         }
     }
-
-
 }
