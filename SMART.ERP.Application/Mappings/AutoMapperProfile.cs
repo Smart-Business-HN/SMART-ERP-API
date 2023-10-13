@@ -76,6 +76,8 @@ using SMART.ERP.Application.DTOs.Warehouse;
 using SMART.ERP.Application.Features.WarehouseFeature.Commands.CreateWarehouseCommand;
 using SMART.ERP.Application.DTOs.Invoice;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCommand;
+using SMART.ERP.Application.DTOs.Bank;
+using SMART.ERP.Application.Features.BankFeature.Commands.CreateBankCommand;
 
 namespace SMART.ERP.Application.Mappings
 {
@@ -190,6 +192,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<ProductSold, ProductSoldDto>();
             CreateMap<ProductToSellDto, ProductSold>();
             CreateMap<ProductOffered, ProductSold>();
+            CreateMap<Bank, BankDto>();
             #endregion
 
             #region Commands
@@ -251,6 +254,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateInventoryInputCommand, InventoryInput>();
             CreateMap<CreateWarehouseCommand, Warehouse>();
             CreateMap<CreateInvoiceCommand, Invoice>();
+            CreateMap<CreateBankCommand, Bank>();
             #endregion
         }
     }
