@@ -12,7 +12,7 @@ namespace SMART.ERP.Domain.Entities
         public string Name { get; set; } = null!;
         public int BankId { get; set; }
         public Bank? Bank { get; set; }
-        public string AccountNumber { get; set; }
+        public string? AccountNumber { get; set; }
         public decimal CurrentAmount { get; set; }
     }
 }

@@ -85,6 +85,8 @@ namespace SMART.ERP.Infrastructure
         public DbSet<ProductEntry> ProductEntries { get; set; } = null!;
         public DbSet<Invoice> Invoices { get; set; } = null!;
         public DbSet<ProductSold> ProductsSold { get; set; } = null!;
+        public DbSet<Bank> Banks { get; set; } = null!;
+        public DbSet<InternalBankAccount> InternalBankAccounts { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
