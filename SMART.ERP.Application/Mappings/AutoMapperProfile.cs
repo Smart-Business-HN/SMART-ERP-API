@@ -78,6 +78,8 @@ using SMART.ERP.Application.DTOs.Invoice;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCommand;
 using SMART.ERP.Application.DTOs.Bank;
 using SMART.ERP.Application.Features.BankFeature.Commands.CreateBankCommand;
+using SMART.ERP.Application.DTOs.InternalBankAccount;
+using SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.CreateInternalBankAccountCommand;
 
 namespace SMART.ERP.Application.Mappings
 {
@@ -193,6 +195,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<ProductToSellDto, ProductSold>();
             CreateMap<ProductOffered, ProductSold>();
             CreateMap<Bank, BankDto>();
+            CreateMap<InternalBankAccount, InternalBankAccountDto>();
             #endregion
 
             #region Commands
@@ -255,6 +258,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateWarehouseCommand, Warehouse>();
             CreateMap<CreateInvoiceCommand, Invoice>();
             CreateMap<CreateBankCommand, Bank>();
+            CreateMap<CreateInternalBankAccountCommand, InternalBankAccount>();
             #endregion
         }
     }
