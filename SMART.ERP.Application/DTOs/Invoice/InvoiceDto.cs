@@ -1,4 +1,5 @@
-﻿using SMART.ERP.Application.DTOs.Cai;
+﻿using SMART.ERP.Application.DTOs.BillPayment;
+using SMART.ERP.Application.DTOs.Cai;
 using SMART.ERP.Application.DTOs.Company;
 using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Application.DTOs.Quotation;
@@ -45,6 +46,7 @@ namespace SMART.ERP.Application.DTOs.Invoice
         public int StatusId { get; set; }
         public StatusDto? Status { get; set; }
         public List<ProductSoldDto>? ProductsSold { get; set; }
+        public List<BillPaymentDto>? BillPayments { get; set; }
         public int DestinationInvoiceId { get; set; }
         public InvoiceDto? DestinationInvoice { get; set; }
     }

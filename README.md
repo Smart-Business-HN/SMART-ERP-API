@@ -492,3 +492,8 @@ Sexto comando: Datos demograficos de Honduras
       INSERT INTO [SmartERP].[dbo].[InterestLevel] (Name,IsActive,CreationDate) VALUES ('Bajo',1,'2023-07-29')
       INSERT INTO [SmartERP].[dbo].[InterestLevel] (Name,IsActive,CreationDate) VALUES ('Intermedio',1,'2023-07-29')
       INSERT INTO [SmartERP].[dbo].[InterestLevel] (Name,IsActive,CreationDate) VALUES ('Alto',1,'2023-07-29')
+
+      Duodecimo commando: Tipos de Forma de Pago (Para uso interno)
+      INSERT INTO [SmartERP].[dbo].[TypeOfPaymentMethod] (Name,IsActive) VALUES ('Efectivo',1)
+      INSERT INTO [SmartERP].[dbo].[TypeOfPaymentMethod] (Name,IsActive) VALUES ('Transferencia Bancaria',1)
+      INSERT INTO [SmartERP].[dbo].[TypeOfPaymentMethod] (Name,IsActive) VALUES ('Link de pago',1)
