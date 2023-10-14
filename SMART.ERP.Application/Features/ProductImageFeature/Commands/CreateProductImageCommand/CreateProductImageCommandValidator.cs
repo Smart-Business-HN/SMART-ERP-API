@@ -8,7 +8,7 @@ namespace SMART.ERP.Application.Features.ProductImageFeature.Commands.CreateProd
         {
             RuleFor(p => p.FileName)
                 .NotEmpty().WithMessage("{PropertyName} no puede estar vacio")
-                .MaximumLength(50).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres");
+                .MaximumLength(400).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres");
 
             RuleFor(p => p.Url)
                 .NotEmpty().WithMessage("{PropertyName} no puede estar vacio");

@@ -87,6 +87,7 @@ namespace SMART.ERP.Infrastructure
         public DbSet<ProductSold> ProductsSold { get; set; } = null!;
         public DbSet<Bank> Banks { get; set; } = null!;
         public DbSet<InternalBankAccount> InternalBankAccounts { get; set; } = null!;
+        public DbSet<BillPayment> BillPayments { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1126,20 +1127,16 @@ namespace SMART.ERP.Infrastructure
             modelBuilder.Entity<BillPayment>().ToTable("BillPayment");
             modelBuilder.Entity<BillPayment>(o => o.HasKey(x => x.Id));
             modelBuilder.Entity<BillPayment>()
-              .HasOne(x => x.Invoice)
-              .WithMany()
-              .HasForeignKey(x => x.InvoiceId)
-              .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<BillPayment>()
               .HasOne(x => x.TypeOfPaymentMethod)
               .WithMany()
               .HasForeignKey(x => x.TypeOfPaymentMethodId)
               .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<BillPayment>()
-              .HasOne(x => x.DestinationBankAccount)
+              .HasOne(x => x.InternalBankAccount)
               .WithMany()
-              .HasForeignKey(x => x.DestinationBankAccountId)
+              .HasForeignKey(x => x.InternalBankAccountId)
               .OnDelete(DeleteBehavior.Restrict);
+
 
             base.OnModelCreating(modelBuilder);
         }

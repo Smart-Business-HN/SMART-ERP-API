@@ -3,6 +3,7 @@ using MediatR;
 using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.ProductOfferedSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -49,7 +50,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
         }
         public async Task<Response<QuotationDto>> Handle(CreateQuotationCommand request, CancellationToken cancellationToken)
         {
-            var customerExist = await _customerRepositoryAsync.GetByIdAsync(request.CustomerId);
+            var customerExist = await _customerRepositoryAsync.FirstOrDefaultAsync(new FilterClientByIdSpecification(request.CustomerId));
             if (customerExist == null)
             {
                 throw new ApiException($"No existe un cliente con el Id {request.CustomerId}");
