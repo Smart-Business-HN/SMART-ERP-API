@@ -83,17 +83,17 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 
 builder.Services.AddTransient(typeof(IRepositoryAsync<>), typeof(CustomRepositoryAsync<>));
 
-//builder.WebHost.UseSentry(opts =>
-//{
-//    opts.BeforeSend = @event =>
-//    {
-//        @event.ServerName = null;
-//        return @event;
-//    };
-//});
-//app.UseSentryTracing();
+builder.WebHost.UseSentry(opts =>
+{
+    opts.BeforeSend = @event =>
+    {
+        @event.ServerName = null;
+        return @event;
+    };
+});
 
 var app = builder.Build();
+app.UseSentryTracing();
 
 var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 // Configure the HTTP request pipeline.

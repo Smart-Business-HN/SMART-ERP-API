@@ -4,7 +4,7 @@ namespace SMART.ERP.Application.DTOs.ProspectQuoteProduct
 {
     public class ProspectQuoteProductDto
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public int ProductId { get; set; }
         public ProductDto? Product { get; set; }
     }

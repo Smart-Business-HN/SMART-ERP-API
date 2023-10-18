@@ -13,7 +13,7 @@ namespace SMART.ERP.Domain.Entities
         public virtual Cai? Cai { get; set; }
         public string InvoiceNumber { get; set; } = null!;
         public int? QuotationOriginId { get; set; }
-        public virtual Quotation? Quotation { get; set; }
+        public virtual Quotation? QuotationOrigin { get; set; }
         public Guid CustomerId { get; set; }
         public virtual Customer? Customer { get; set; }
         public int BranchOfficeId { get; set; }

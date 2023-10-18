@@ -1100,7 +1100,7 @@ namespace SMART.ERP.Infrastructure
                 .HasForeignKey(x => x.InvoiceId)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Invoice>()
-               .HasOne(x => x.Quotation)
+               .HasOne(x => x.QuotationOrigin)
                .WithMany()
                .HasForeignKey(x => x.QuotationOriginId)
                .OnDelete(DeleteBehavior.Restrict);

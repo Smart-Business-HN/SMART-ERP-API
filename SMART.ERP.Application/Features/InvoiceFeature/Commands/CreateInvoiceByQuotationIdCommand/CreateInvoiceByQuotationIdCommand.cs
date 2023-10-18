@@ -113,7 +113,6 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             }
             await _caiRepositoryAsync.UpdateAsync(caiExist);
             await _caiRepositoryAsync.SaveChangesAsync();
-            quotationExist.ProductsOffered = null;
             quotationExist.Prefix = null;
             quotationExist.BranchOffice = null;
             quotationExist.User = null;
@@ -123,9 +122,10 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             quotationExist.InvoiceDestinationId = invoiceResponse.Id;
             await _quotationRepositoryAsync.UpdateAsync(quotationExist);
             await _quotationRepositoryAsync.SaveChangesAsync();
-            if (quotationExist.ProductsOffered != null && quotationExist.ProductsOffered.Count > 0)
+            var quotationExistDto = _mapper.Map<QuotationDto>(quotationExist);
+            if (quotationExistDto.ProductsOffered != null && quotationExistDto.ProductsOffered.Count > 0)
             {
-                foreach (var productToSell in quotationExist.ProductsOffered)
+                foreach (var productToSell in quotationExistDto.ProductsOffered)
                 {
                     var newProductToSell = new ProductSold { InvoiceId = invoiceResponse.Id,
                         ProductId = productToSell.ProductId,
@@ -202,7 +202,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             }
             return taxes;
         }
-        static public decimal TaxCalculator(ProductOffered product, List<Tax> taxes)
+        static public decimal TaxCalculator(ProductOfferedDto product, List<Tax> taxes)
         {
             Tax productTax = null;
             productTax = taxes.Find(x => x.Id == product.TaxId);

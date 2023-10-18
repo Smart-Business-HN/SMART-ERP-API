@@ -9,7 +9,7 @@ namespace SMART.ERP.Application.DTOs.InternalBankAccount
 {
     public class InternalBankAccountDto
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public string Name { get; set; } = null!;
         public int BankId { get; set; }
         public virtual BankDto? Bank { get; set; }

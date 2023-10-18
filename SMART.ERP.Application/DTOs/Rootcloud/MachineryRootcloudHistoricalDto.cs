@@ -2,7 +2,7 @@
 {
     public class MachineryRootcloudHistoricalDto
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public decimal Hourmeter { get; set; }
         public decimal Milenage { get; set; }
         public float Lat { get; set; }
