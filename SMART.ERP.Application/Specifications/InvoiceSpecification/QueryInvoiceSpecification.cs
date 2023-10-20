@@ -19,22 +19,22 @@ namespace SMART.ERP.Application.Specifications.InvoiceSpecification
               .Include(x => x.User!)
               .Include(x => x.Cai)
               .Include(x => x.Status)
-              .Include(x => x.Customer).Include(x => x.User).Skip((pageNumber) * pageSize).Take(pageSize).OrderBy(x => x.InvoiceNumber).AsNoTracking();
+              .Include(x => x.Customer).Include(x => x.User).Skip((pageNumber) * pageSize).Take(pageSize).OrderByDescending(x => x.Id).AsNoTracking();
 
             if (!string.IsNullOrEmpty(parameter))
             {
-                Query.Where(x => x.InvoiceNumber.Contains(parameter));
+                Query.Where(x => x.InvoiceNumber.Contains(parameter) || x.Customer.FullName.Contains(parameter));
             }
 
             if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))
             {
                 if (order == "desc")
                 {
-                    Query.OrderByDescending(x => column == "QuotationCode" ? x.InvoiceNumber : null);
+                    Query.OrderBy(x => column == "InvoiceNumber" ? x.InvoiceNumber : null);
                 }
                 else
                 {
-                    Query.OrderBy(x => column == "QuotationCode" ? x.InvoiceNumber : null);
+                    Query.OrderBy(x => column == "InvoiceNumber" ? x.InvoiceNumber : null);
                 }
             }
         }

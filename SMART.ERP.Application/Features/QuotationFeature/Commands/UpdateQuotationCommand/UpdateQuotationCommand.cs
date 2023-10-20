@@ -82,6 +82,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             if (quotationExist.CustomerId != request.CustomerId)
             {
                 quotationExist.CustomerId = request.CustomerId;
+                quotationExist.Customer = null;
             }
             if (quotationExist.BranchOfficeId != request.BranchOfficeId)
             {
@@ -117,6 +118,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             quotationExist.ProductsOffered = null;
             await _repositoryAsync.UpdateAsync(quotationExist);
             await _repositoryAsync.SaveChangesAsync();
+            quotationExist.Customer = customerExist;
             var dto = _mapper.Map<QuotationDto>(quotationExist);
             dto.ProductsOffered = pre;
             return new Response<QuotationDto>(dto, $"Cotizacion {quotationExist.QuotationCode} actualizada exitosamente.");

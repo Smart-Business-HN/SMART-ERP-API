@@ -118,6 +118,10 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             quotationExist.User = null;
             quotationExist.Customer = null;
             quotationExist.Status = null;
+            for (int i = 0; i < quotationExist?.ProductsOffered?.Count;i++)
+            {
+                quotationExist.ProductsOffered[i].Tax = null;
+            }
             quotationExist.StatusId = 7;
             quotationExist.InvoiceDestinationId = invoiceResponse.Id;
             await _quotationRepositoryAsync.UpdateAsync(quotationExist);
