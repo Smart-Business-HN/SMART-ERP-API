@@ -35,9 +35,6 @@ using SMART.ERP.Application.Features.HeroSliderFeature.Commands.CreateHeroSlider
 using SMART.ERP.Application.Features.InterestLevelFeature.Commands.CreateInterestLevelCommand;
 using SMART.ERP.Application.Features.LossReasonFeature.Commands.CreateLossReasonCommand;
 using SMART.ERP.Application.Features.MachineryFailureFeature.Commands.CreateMachineryFailureCommand;
-using SMART.ERP.Application.Features.MachineryFeature.Commands.CreateFailureReportCommand;
-using SMART.ERP.Application.Features.MachineryFeature.Commands.CreateMachineryCommand;
-using SMART.ERP.Application.Features.MachineryFeature.Commands.CreateMaintenanceCommand;
 using SMART.ERP.Application.Features.MessageFeature.Commands.CreateMessageCommand;
 using SMART.ERP.Application.Features.OpinionFeature.Commands.CreateOpinionCommand;
 using SMART.ERP.Application.Features.OpportunityActivityFeature.Commands.CreateOpportunityActivityCommand;
@@ -166,16 +163,8 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<LossReason, LossReasonDto>();
             CreateMap<CustomerMachinery, CustomerMachineryDto>();
             CreateMap<Notification, NotificationDto>();
-            CreateMap<MachineryRootcloudHistorical, MachineryRootcloudHistoricalDto>();
             CreateMap<MachineryFailure, MachineryFailureDto>();
-            CreateMap<MachineryFailureReport, MachineryFailureReportDto>();
-            CreateMap<Machinery, MachineryBasicDto>();
-            CreateMap<MachineryMaintenance, MachineryMaintenanceDto>();
-            CreateMap<Machinery, MachineryResumeDto>();
-            CreateMap<MachineryResumeDto, Machinery>();
-            CreateMap<MachineryBasicDto, Machinery>();
             CreateMap<MachineryResumeDto, MachineryNoListObjectsDto>();
-            CreateMap<Machinery, MachineryNoListObjectsDto>();
             CreateMap<TypeStatus, ResumeTypeStatusDto>();
             CreateMap<Cai, CaiDto>();
             CreateMap<Prefix, PrefixDto>();
@@ -251,9 +240,6 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateCityCommand, City>();
             CreateMap<CreateDepartmentCommand, Department>();
             CreateMap<CreateMachineryFailureCommand, MachineryFailure>();
-            CreateMap<CreateFailureReportCommand, MachineryFailureReport>();
-            CreateMap<CreateMaintenanceCommand, MachineryMaintenance>();
-            CreateMap<CreateMachineryCommand, Machinery>();
             CreateMap<CreateCaiCommand,Cai>();
             CreateMap<CreatePrefixCommand,Prefix>();
             CreateMap<CreateTaxCommand, Tax>();
