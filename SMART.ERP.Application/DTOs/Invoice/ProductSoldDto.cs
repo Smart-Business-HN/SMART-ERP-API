@@ -11,7 +11,7 @@ namespace SMART.ERP.Application.DTOs.Invoice
 {
     public class ProductSoldDto
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public int InvoiceId { get; set; }
         public InvoiceDto? Invoice { get; set; }
         public int? ProductId { get; set; }

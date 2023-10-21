@@ -67,11 +67,7 @@ namespace SMART.ERP.Infrastructure
         public DbSet<CustomerMachinery> CustomerMachinery { get; set; } = null!;
         public DbSet<RootcloudSession> RootcloudSessions { get; set; } = null!;
         public DbSet<AdvisorGoal> AdvisorGoals { get; set; } = null!;
-        public DbSet<Machinery> Machineries { get; set; } = null!;
-        public DbSet<MachineryFailureReport> MachineryFailureReports { get; set; } = null!;
-        public DbSet<MachineryMaintenance> MachineryMaintenances { get; set; } = null!;
         public DbSet<MachineryFailure> MachineryFailures { get; set; } = null!;
-        public DbSet<MachineryRootcloudHistorical> MachineryRootcloudHistoricals { get; set; } = null!;
         public DbSet<Cai> Cais { get; set; } = null!;
         public DbSet<InternalDocument> InternalDocuments { get; set; } = null!;
         public DbSet<Prefix> Prefixes { get; set; } = null!;
@@ -864,71 +860,10 @@ namespace SMART.ERP.Infrastructure
             modelBuilder.Entity<RootcloudSession>().ToTable("RootcloudSession");
             modelBuilder.Entity<RootcloudSession>(o => o.HasKey(x => x.Id));
 
-            //Machinery
-            modelBuilder.Entity<Machinery>().ToTable("Machinery");
-            modelBuilder.Entity<Machinery>(o => o.HasKey(x => x.Id));
-
-            modelBuilder.Entity<Machinery>()
-                .HasMany(p => p.MachineryMaintenances)
-                .WithOne(x => x.Machinery)
-                .HasForeignKey(x => x.MachineryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Machinery>()
-               .HasOne(x => x.Subcategory)
-               .WithMany()
-               .HasForeignKey(x => x.SubcategoryId)
-               .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Machinery>()
-                .Navigation(b => b.MachineryMaintenances)
-                .UsePropertyAccessMode(PropertyAccessMode.Property);
-
-            modelBuilder.Entity<Machinery>()
-                .HasMany(p => p.MachineyRootcloudHistoricals)
-                .WithOne(x => x.Machinery)
-                .HasForeignKey(x => x.MachineryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Machinery>()
-                .Navigation(b => b.MachineyRootcloudHistoricals)
-                .UsePropertyAccessMode(PropertyAccessMode.Property);
-
-            modelBuilder.Entity<Machinery>()
-                .HasMany(p => p.MachineryFailureReports)
-                .WithOne(x => x.Machinery)
-                .HasForeignKey(x => x.MachineryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Machinery>()
-                .Navigation(b => b.MachineryFailureReports)
-                .UsePropertyAccessMode(PropertyAccessMode.Property);
-
             //MachineryFailure
             modelBuilder.Entity<MachineryFailure>().ToTable("MachineryFailure");
             modelBuilder.Entity<MachineryFailure>(o => o.HasKey(x => x.Id));
 
-            //MachineryFailureReport
-            modelBuilder.Entity<MachineryFailureReport>().ToTable("MachineryFailureReport");
-            modelBuilder.Entity<MachineryFailureReport>(o => o.HasKey(x => x.Id));
-
-            modelBuilder.Entity<MachineryFailureReport>()
-                .HasOne(x => x.MachineryFailure)
-                .WithMany()
-                .HasForeignKey(x => x.MachineryFailureId);
-
-            modelBuilder.Entity<MachineryFailureReport>()
-                .HasOne(x => x.Status)
-                .WithMany()
-                .HasForeignKey(x => x.StatusId);
-
-            //MachineryMaintenance
-            modelBuilder.Entity<MachineryMaintenance>().ToTable("MachineryMaintenance");
-            modelBuilder.Entity<MachineryMaintenance>(o => o.HasKey(x => x.Id));
-
-            //MachineryRootcloudHistorical
-            modelBuilder.Entity<MachineryRootcloudHistorical>().ToTable("MachineryRootcloudHistorical");
-            modelBuilder.Entity<MachineryRootcloudHistorical>(o => o.HasKey(x => x.Id));
             //CAIs
             modelBuilder.Entity<Cai>().ToTable("Cai");
             modelBuilder.Entity<Cai>(o => o.HasKey(x => x.Id));
@@ -1100,7 +1035,7 @@ namespace SMART.ERP.Infrastructure
                 .HasForeignKey(x => x.InvoiceId)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Invoice>()
-               .HasOne(x => x.Quotation)
+               .HasOne(x => x.QuotationOrigin)
                .WithMany()
                .HasForeignKey(x => x.QuotationOriginId)
                .OnDelete(DeleteBehavior.Restrict);

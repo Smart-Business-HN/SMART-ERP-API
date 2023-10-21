@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-//using Sentry;
+using Sentry;
 using SMART.ERP.Application.Exceptions;
 using System.Net;
 using System.Text.Json;
@@ -53,7 +53,7 @@ namespace SMART.ERP.API.Middlewares
                         response.StatusCode = (int)HttpStatusCode.NotFound;
                         break;
                     case DbUpdateException e:
-                        //SentrySdk.CaptureException(error);
+                        SentrySdk.CaptureException(error);
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
                         LogError newRecord = new();
                         newRecord.Message = e.InnerException.Message;
@@ -80,7 +80,7 @@ namespace SMART.ERP.API.Middlewares
                         break;
                     default:
                         // Unhandled error
-                        //SentrySdk.CaptureException(error);
+                        SentrySdk.CaptureException(error);
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         break;
                 }

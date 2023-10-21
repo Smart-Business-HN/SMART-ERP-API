@@ -21,7 +21,7 @@ namespace SMART.ERP.Application.DTOs.Invoice
         public CaiDto? Cai { get; set; }
         public string InvoiceNumber { get; set; } = null!;
         public int? QuotationOriginId { get; set; }
-        public QuotationDto? Quotation { get; set; }
+        public QuotationDto? QuotationOrigin { get; set; }
         public Guid CustomerId { get; set; }
         public CustomerDto? Customer { get; set; }
         public int BranchOfficeId { get; set; }
@@ -47,7 +47,5 @@ namespace SMART.ERP.Application.DTOs.Invoice
         public StatusDto? Status { get; set; }
         public List<ProductSoldDto>? ProductsSold { get; set; }
         public List<BillPaymentDto>? BillPayments { get; set; }
-        public int DestinationInvoiceId { get; set; }
-        public InvoiceDto? DestinationInvoice { get; set; }
     }
 }

@@ -4,7 +4,7 @@ namespace SMART.ERP.Application.DTOs.Product
 {
     public class ProductDto
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public string Code { get; set; } = null!;
         public string Slug { get; set; } = null!;
         public string Name { get; set; } = null!;

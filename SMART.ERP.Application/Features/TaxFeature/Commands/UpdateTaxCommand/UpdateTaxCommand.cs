@@ -12,7 +12,7 @@ namespace SMART.ERP.Application.Features.TaxFeature.Commands.UpdateTaxCommand
 {
     public class UpdateTaxCommand : IRequest<Response<TaxDto>>
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public string Name { get; set; } = null!;
         public int Rate { get; set; }
         public string TextForDocuments { get; set; } = null!;

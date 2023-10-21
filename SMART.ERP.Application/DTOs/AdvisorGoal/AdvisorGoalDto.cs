@@ -4,7 +4,7 @@ namespace SMART.ERP.Application.DTOs.AdvisorGoal
 {
     public class AdvisorGoalDto
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public Guid UserId { get; set; }
         public UserDto? User { get; set; }
         public decimal Goal { get; set; }

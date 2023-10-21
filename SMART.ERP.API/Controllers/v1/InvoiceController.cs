@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceByQuotationIdCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCommand;
+using SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Queries;
-using SMART.ERP.Application.Features.QuotationFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
 namespace SMART.ERP.API.Controllers.v1
@@ -46,6 +46,16 @@ namespace SMART.ERP.API.Controllers.v1
                 Column = filter.Column,
                 All = filter.All
             }));
+        }
+        [HttpPut("Update/{id}")]
+        [Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateInvoiceCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("Ocurrio un error con el id de este registro");
+            }
+            return Ok(await Mediator.Send(command));
         }
     }
 }

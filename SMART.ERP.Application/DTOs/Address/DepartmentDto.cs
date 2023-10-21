@@ -2,7 +2,7 @@
 {
     public class DepartmentDto
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public string Name { get; set; } = null!;
         public bool IsActive { get; set; }
         public int? RegionId { get; set; }

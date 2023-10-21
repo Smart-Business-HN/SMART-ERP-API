@@ -2,7 +2,7 @@
 {
     public class ProviderDto
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public string Name { get; set; } = null!;
         public string RTN { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;

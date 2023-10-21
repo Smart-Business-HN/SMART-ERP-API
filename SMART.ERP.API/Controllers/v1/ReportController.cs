@@ -148,15 +148,5 @@ namespace SMART.ERP.API.Controllers.v1
                 All = filter.All
             }));
         }
-
-        [HttpGet("Rootcloud")]
-        public async Task<IActionResult> Rootcloud([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
-        {
-            return Ok(await Mediator.Send(new RootcloudQuery
-            {
-                StartDate = startDate,
-                EndDate = endDate,
-            }));
-        }
     }
 }

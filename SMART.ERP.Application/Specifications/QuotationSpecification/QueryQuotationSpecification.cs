@@ -14,18 +14,18 @@ namespace SMART.ERP.Application.Specifications.QuotationSpecification
                .Include(x => x.User!)
                .Include(x=>x.Prefix)
                .Include(x=>x.Status)
-               .Include(x => x.Customer).Include(x => x.User).Skip((pageNumber) * pageSize).Take(pageSize).OrderBy(x => x.QuotationCode).AsNoTracking();
+               .Include(x => x.Customer).Include(x => x.User).Skip((pageNumber) * pageSize).Take(pageSize).OrderByDescending(x => x.Id).AsNoTracking();
 
             if (!string.IsNullOrEmpty(parameter))
             {
-                Query.Where(x => x.QuotationCode.Contains(parameter));
+                Query.Where(x => x.QuotationCode.Contains(parameter) || x.Customer.FullName.Contains(parameter));
             }
 
             if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))
             {
                 if (order == "desc")
                 {
-                    Query.OrderByDescending(x => column == "QuotationCode" ? x.QuotationCode : null);
+                    Query.OrderBy(x => column == "QuotationCode" ? x.QuotationCode : null);
                 }
                 else
                 {

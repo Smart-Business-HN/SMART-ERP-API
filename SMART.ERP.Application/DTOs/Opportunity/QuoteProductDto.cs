@@ -4,7 +4,7 @@ namespace SMART.ERP.Application.DTOs.Opportunity
 {
     public class QuoteProductDto
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public int OpportunityId { get; set; }
         public int ProductId { get; set; }
         public decimal SalePrice { get; set; }

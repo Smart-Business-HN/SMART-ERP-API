@@ -5,7 +5,7 @@ namespace SMART.ERP.Application.DTOs.WishList
 {
     public class WishListDto
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public string Code { get; set; } = null!;
         public int CantItems { get; set; }
         public Guid CustomerId { get; set; }

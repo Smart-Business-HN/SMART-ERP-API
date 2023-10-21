@@ -61,45 +61,6 @@ namespace SMART.ERP.Application
                 .WithIdentity("log-session-job-trigger")
                 .WithCronSchedule("0 59 16 1/1 * ? *"));
 
-                //x.AddTrigger(rootcloud => rootcloud
-                //.ForJob(RootcloudJob.Key)
-                //.WithIdentity("rootcloud-job-trigger-xs")
-                //.WithCronSchedule("0 30 07 * * ?"));
-
-                //x.AddTrigger(rootcloud => rootcloud
-                //.ForJob(RootcloudJob.Key)
-                //.WithIdentity("rootcloud-job-trigger-xm")
-                //.WithCronSchedule("0 30 10 * * ?"));
-
-                //x.AddTrigger(rootcloud => rootcloud
-                //.ForJob(RootcloudJob.Key)
-                //.WithIdentity("rootcloud-job-trigger-md")
-                //.WithCronSchedule("0 30 12 * * ?"));
-
-                //x.AddTrigger(rootcloud => rootcloud
-                //.ForJob(RootcloudJob.Key)
-                //.WithIdentity("rootcloud-job-trigger-lg")
-                //.WithCronSchedule("0 30 14 * * ?"));
-
-                //x.AddTrigger(rootcloud => rootcloud
-                //.ForJob(RootcloudJob.Key)
-                //.WithIdentity("rootcloud-job-trigger-xl")
-                //.WithCronSchedule("0 30 16 * * ?"));
-
-                //x.AddTrigger(rootcloud => rootcloud
-                //.ForJob(RootcloudJob.Key)
-                //.WithIdentity("rootcloud-job-trigger-xxl")
-                //.WithCronSchedule("0 30 18 * * ?"));
-
-                //x.AddTrigger(register => register
-                //.ForJob(RegisterMachineryJob.Key)
-                //.WithIdentity("register-job-trigger")
-                //.WithCronSchedule("0 30 01 * * ?"));
-
-                //x.AddTrigger(location => location
-                //.ForJob(LocationJob.Key)
-                //.WithIdentity("location-job-trigger-large")
-                //.WithCronSchedule("0 0 23 ? * MON,WED,FRI *"));
             });
             services.AddQuartzHostedService(x => x.WaitForJobsToComplete = true);
             // ---------------- End -----------------
@@ -129,9 +90,7 @@ namespace SMART.ERP.Application
             services.AddTransient<IAssignUserToProspectService, AssignUserToProspectService>();
             services.AddTransient<IMetaPostService, MetaPostService>();
             services.AddTransient<IGoogleCalendarService, GoogleCalendarService>();
-            services.AddTransient<IRootcloudMachineryService, RootcloudMachineryService>();
             services.AddTransient<IRootcloudSessionService, RootcloudSessionService>();
-            services.AddTransient<IRootcloudHistoricalService, RootcloudHistoricalService>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

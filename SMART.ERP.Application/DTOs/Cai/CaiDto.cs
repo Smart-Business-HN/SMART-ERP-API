@@ -2,7 +2,7 @@
 {
     public class CaiDto
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
         public string Name { get; set; } = null!;
         public int? BranchOfficeId { get; set; }
         public string Prefix { get; set; } = null!;
