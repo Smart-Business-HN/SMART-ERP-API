@@ -184,6 +184,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Invoice,InvoiceDto>();
             CreateMap<InvoiceDto, Invoice>();
             CreateMap<ProductSold, ProductSoldDto>();
+            CreateMap<ProductSoldDto, ProductSold>();
             CreateMap<ProductToSellDto, ProductSold>();
             CreateMap<ProductOffered, ProductSold>();
             CreateMap<Bank, BankDto>();
