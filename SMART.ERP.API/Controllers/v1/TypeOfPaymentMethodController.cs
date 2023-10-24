@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.TypeOfPaymentMethodFeature.Commands.CreateTypeOfPaymentMethodCommand;
+using SMART.ERP.Application.Features.TypeOfPaymentMethodFeature.Commands.DeleteTypeOfPaymentMethodCommand;
+using SMART.ERP.Application.Features.TypeOfPaymentMethodFeature.Commands.UpdateTypeOfPaymentMethodCommand;
 using SMART.ERP.Application.Features.TypeOfPaymentMethodFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
@@ -24,29 +27,29 @@ namespace SMART.ERP.API.Controllers.v1
             }));
         }
 
-        //[HttpPost("Create")]
-        //[Authorize]
-        //public async Task<IActionResult> Create([FromBody] CreateTypeOfPaymentMethodCommand command)
-        //{
-        //    return Ok(await Mediator.Send(command));
-        //}
+        [HttpPost("Create")]
+        [Authorize]
+        public async Task<IActionResult> Create([FromBody] CreateTypeOfPaymentMethodCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
 
-        //[HttpDelete("Delete/{id}")]
-        //[Authorize(Roles = "SuperAdmin")]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    return Ok(await Mediator.Send(new DeleteTypeOfPaymentMethodCommand { Id = id }));
-        //}
+        [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return Ok(await Mediator.Send(new DeleteTypeOfPaymentMethodCommand { Id = id }));
+        }
 
-        //[HttpPut("Update/{id}")]
-        //[Authorize(Roles = "SuperAdmin")]
-        //public async Task<IActionResult> Update(int id, [FromBody] UpdateTypeOfPaymentMethodCommand command)
-        //{
-        //    if (id != command.Id)
-        //    {
-        //        return BadRequest("Ocurrio un error con el id de este registro");
-        //    }
-        //    return Ok(await Mediator.Send(command));
-        //}
+        [HttpPut("Update/{id}")]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateTypeOfPaymentMethodCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("Ocurrio un error con el id de este registro");
+            }
+            return Ok(await Mediator.Send(command));
+        }
     }
 }
