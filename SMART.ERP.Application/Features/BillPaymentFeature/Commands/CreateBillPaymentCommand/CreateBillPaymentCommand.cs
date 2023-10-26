@@ -77,7 +77,7 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.CreateBillP
                 }
             }
             checkInvoice.Outstanding = checkInvoice.Outstanding - request.Amount;
-            if(checkInvoice.Outstanding - request.Amount == 0)
+            if(checkInvoice.Outstanding == 0)
             {
                 checkInvoice.StatusId = 19;
             }
