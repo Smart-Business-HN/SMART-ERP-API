@@ -27,6 +27,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
         public int StatusId { get; set; }
         public int ProviderId { get; set; }
         public bool IsActive { get; set; }
+        public bool ShowInEcoomerce { get; set; }
     }
 
     public class UpdateBaseProductCommandHandler : IRequestHandler<UpdateBaseProductCommand, Response<ProductDto>>
@@ -105,6 +106,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
                 product.ProviderId = request.ProviderId;
                 product.MinStock = request.MinStock;
                 product.StatusId = request.StatusId;
+                product.ShowInEcommerce = request.ShowInEcoomerce;
                 product.UnitOfMeasurementId = request.UnitOfMeasurementId;
                 product.SubCategoryId = request.SubCategoryId;
                 product.IsActive = request.IsActive;
