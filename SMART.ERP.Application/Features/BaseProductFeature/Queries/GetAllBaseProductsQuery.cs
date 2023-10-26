@@ -38,7 +38,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                 }
                 var categories = await _categoryRepositoryAsync.ListAsync();
                 var products = await _repositoryAsync.ListAsync(
-                    new FilterAndPaginationProductSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
+                    new FilterAndPaginationProductForEcommerceSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
                 var dto = _mapper.Map<List<ProductDto>>(products);
                 foreach (var product in dto)
                 {

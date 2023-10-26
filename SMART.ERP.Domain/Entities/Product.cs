@@ -26,6 +26,7 @@
         public int ProviderId { get; set; }
         public virtual Provider? Provider { get; set; }
         public bool IsActive { get; set; }
+        public bool ShowInEcommerce { get; set; }
         public DateTime CreationDate { get; set; }
         public string CreatedBy { get; set; } = null!;
         public DateTime? ModificationDate { get; set; }
