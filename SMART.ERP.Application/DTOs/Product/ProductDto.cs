@@ -28,6 +28,7 @@ namespace SMART.ERP.Application.DTOs.Product
         public int ProviderId { get; set; }
         public ProviderDto? Provider { get; set; }
         public bool IsActive { get; set; }
+        public bool ShowInEcommerce { get; set; }
         public List<ProductDataSheetDto>? ProductDataSheets { get; set; }
         public List<ProductFeatureDto>? ProductFeatures { get; set; }
         public List<ProductImageDto>? ProductImages { get; set; }

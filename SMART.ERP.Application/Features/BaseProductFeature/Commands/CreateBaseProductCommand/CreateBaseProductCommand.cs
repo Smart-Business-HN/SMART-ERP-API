@@ -30,6 +30,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
         public int StatusId { get; set; }
         public int ProviderId { get; set; }
         public bool IsActive { get; set; }
+        public bool ShowInEcommerce { get; set; }
     }
 
     public class CreateBaseProductCommandHandler : IRequestHandler<CreateBaseProductCommand, Response<ProductDto>>
