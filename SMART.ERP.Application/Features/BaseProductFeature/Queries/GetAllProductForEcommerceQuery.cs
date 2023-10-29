@@ -8,7 +8,7 @@ using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
 {
-    public class GetAllBaseProductsQuery : IRequest<PagedResponse<List<ProductDto>>>
+    public class GetAllProductForEcommerceQuery : IRequest<PagedResponse<List<ProductDto>>>
     {
         public string? Parameter { get; set; }
         public int PageNumber { get; set; }
@@ -16,20 +16,20 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
         public string? Order { get; set; }
         public string? Column { get; set; }
         public bool All { get; set; }
-        public class GetAllBaseProductsQueryHandler : IRequestHandler<GetAllBaseProductsQuery, PagedResponse<List<ProductDto>>>
+        public class GetAllProductForEcommerceQueryHandler : IRequestHandler<GetAllProductForEcommerceQuery, PagedResponse<List<ProductDto>>>
         {
             private readonly IMapper _mapper;
             private readonly IRepositoryAsync<Product> _repositoryAsync;
             private readonly IRepositoryAsync<Category> _categoryRepositoryAsync;
 
-            public GetAllBaseProductsQueryHandler(IMapper mapper, IRepositoryAsync<Product> repositoryAsync,
+            public GetAllProductForEcommerceQueryHandler(IMapper mapper, IRepositoryAsync<Product> repositoryAsync,
                 IRepositoryAsync<Category> categoryRepositoryAsync)
             {
                 _mapper = mapper;
                 _repositoryAsync = repositoryAsync;
                 _categoryRepositoryAsync = categoryRepositoryAsync;
             }
-            public async Task<PagedResponse<List<ProductDto>>> Handle(GetAllBaseProductsQuery request, CancellationToken cancellationToken)
+            public async Task<PagedResponse<List<ProductDto>>> Handle(GetAllProductForEcommerceQuery request, CancellationToken cancellationToken)
             {
                 if (request.All)
                 {
@@ -38,7 +38,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                 }
                 var categories = await _categoryRepositoryAsync.ListAsync();
                 var products = await _repositoryAsync.ListAsync(
-                    new FilterAndPaginationProductSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
+                    new FilterAndPaginationProductForEcommerceSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
                 var dto = _mapper.Map<List<ProductDto>>(products);
                 foreach (var product in dto)
                 {
