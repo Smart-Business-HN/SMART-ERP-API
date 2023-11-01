@@ -1,4 +1,5 @@
 ﻿using SMART.ERP.Application.DTOs.Status;
+using System.Security.Policy;
 
 namespace SMART.ERP.Application.DTOs.Product
 {
@@ -6,6 +7,7 @@ namespace SMART.ERP.Application.DTOs.Product
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
+        public string Slug { get; set; } = null!;
         public string? UrlYoutube { get; set; }
         public BrandDto? Brand { get; set; }
         public StatusDto? Status { get; set; }

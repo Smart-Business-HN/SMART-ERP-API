@@ -18,13 +18,27 @@ namespace SMART.ERP.API.Controllers.v2
 
         [HttpGet("GetBySlug/{slug}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetById(string slug)
+        public async Task<IActionResult> GetBySlug(string slug)
         {
             return Ok(await Mediator.Send(new GetBaseProductBySlugQuery { Slug = slug }));
         }
         [HttpGet("GetAll")]
         [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
+        {
+            return Ok(await Mediator.Send(new GetAllBaseProductsQuery()
+            {
+                Parameter = filter.Parameter,
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize,
+                Order = filter.Order,
+                Column = filter.Column,
+                All = filter.All
+            }));
+        }
+        [HttpGet("GetAllByCategorySlug")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllByCategorySlug(string slug, [FromQuery] RequestParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllBaseProductsQuery()
             {

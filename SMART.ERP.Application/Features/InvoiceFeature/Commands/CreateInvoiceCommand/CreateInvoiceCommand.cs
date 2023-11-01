@@ -162,7 +162,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
                     newRecord.Taxes15Percent = CalculateTaxesValue(productsSold, taxesRates.Find(x => x.Rate == 15));
                     newRecord.Taxes18Percent = CalculateTaxesValue(productsSold, taxesRates.Find(x => x.Rate == 18));
                     newRecord.Exonerated = 0;
-                    newRecord.Total = newRecord.TaxedAt15Percent + newRecord.TaxedAt18Percent + newRecord.Taxes15Percent + newRecord.Taxes18Percent;
+                    newRecord.Total = newRecord.TaxedAt15Percent + newRecord.TaxedAt18Percent + newRecord.Taxes15Percent + newRecord.Taxes18Percent + newRecord.Exempt;
                     newRecord.Outstanding = newRecord.Total;
                 }
                 else
