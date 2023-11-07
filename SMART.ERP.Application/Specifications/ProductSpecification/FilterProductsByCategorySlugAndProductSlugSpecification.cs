@@ -1,0 +1,17 @@
+﻿using Ardalis.Specification;
+using SMART.ERP.Domain.Entities;
+
+namespace SMART.ERP.Application.Specifications.ProductSpecification
+{
+    public class FilterProductsByCategorySlugAndProductSlugSpecification : Specification<Product>
+    {
+        public FilterProductsByCategorySlugAndProductSlugSpecification(string categorySlug, string productSlug) 
+        {
+            Query.Include(x => x.Brand)
+                .Include(x => x.ProductImages)
+                .Include(x => x.SubCategory).ThenInclude(x => x.Category)
+                .Include(x => x.Status)
+                .Where(x => x.SubCategory.Category.Slug == categorySlug && x.Slug != productSlug).AsNoTracking();
+        }
+    }
+}

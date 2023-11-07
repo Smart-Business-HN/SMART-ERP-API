@@ -7,6 +7,7 @@ using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.CategorySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using System.Text.RegularExpressions;
 
 namespace SMART.ERP.Application.Features.CategoryFeature.Commands.CreateCategoryCommand
 {
@@ -41,7 +42,9 @@ namespace SMART.ERP.Application.Features.CategoryFeature.Commands.CreateCategory
             {
                 throw new ApiException($"Ya existe una categoria con el nombre {request.Name}");
             }
+            var slug = Regex.Replace(Regex.Replace(request.Name, @"[^a-zA-Z0-9\s]", "").Trim().ToLower(), @"\s+", "-");
             var newRecord = _mapper.Map<Category>(request);
+            newRecord.Slug = slug;
             newRecord.CreatedBy = _jwtService.GetSubjectToken();
             newRecord.CreationDate = DateTime.Now;
 

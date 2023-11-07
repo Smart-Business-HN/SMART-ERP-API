@@ -36,19 +36,19 @@ namespace SMART.ERP.API.Controllers.v2
                 All = filter.All
             }));
         }
-        [HttpGet("GetAllByCategorySlug")]
+        [HttpGet("GetProductsBySameCategorySlug/{categorySlug}/{productSlug}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllByCategorySlug(string slug, [FromQuery] RequestParameter filter)
+        public async Task<IActionResult> GetProductsBySameCategorySlug(string categorySlug, string productSlug)
         {
-            return Ok(await Mediator.Send(new GetAllBaseProductsQuery()
-            {
-                Parameter = filter.Parameter,
-                PageNumber = filter.PageNumber,
-                PageSize = filter.PageSize,
-                Order = filter.Order,
-                Column = filter.Column,
-                All = filter.All
-            }));
+            return Ok(await Mediator.Send(new GetProductsBySameCategorySlugQuery { CategorySlug = categorySlug, ProductSlug = productSlug }
+            ));
+        }
+        [HttpGet("GetProductsBySameSubCategorySlug/{subCategorySlug}/{productSlug}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetProductsBySameSubCategorySlug(string subCategorySlug, string productSlug)
+        {
+            return Ok(await Mediator.Send(new GetProductsBySameSubCategorySlugQuery { SubCategorySlug = subCategorySlug, ProductSlug = productSlug }
+            ));
         }
 
     }
