@@ -105,8 +105,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
             {
                 throw new ApiException($"Ya existe un registro con el nombre {request.Name}");
             }
-            else
-            {
+            
                 product.Slug = Regex.Replace(Regex.Replace(request.Name, @"[^a-zA-Z0-9\s]", "").Trim().ToLower(), @"\s+", "-");
                 product.Name = request.Name;
                 product.Description = request.Description;
@@ -132,7 +131,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
                 await _repositoryAsync.SaveChangesAsync();
                 var dto = _mapper.Map<ProductDto>(product);
                 return new Response<ProductDto>(dto, message: $"{product.Name} actualizado correctamente");
-            }
+            
         }
     }
 }
