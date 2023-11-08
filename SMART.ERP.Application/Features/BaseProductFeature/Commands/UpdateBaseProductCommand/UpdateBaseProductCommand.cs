@@ -29,6 +29,9 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
         public int ProviderId { get; set; }
         public bool IsActive { get; set; }
         public bool ShowInEcommerce { get; set; }
+        public decimal CostPrice { get; set; }
+        public decimal RecomendedSalePrice { get; set; }
+        public int CurrentStock { get; set;}
     }
 
     public class UpdateBaseProductCommandHandler : IRequestHandler<UpdateBaseProductCommand, Response<ProductDto>>
@@ -122,6 +125,9 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
                 product.IsFatherProduct = request.IsFatherProduct;
                 product.ModificatedBy = _jwtService.GetSubjectToken();
                 product.ModificationDate = DateTime.Now;
+                product.CostPrice = request.CostPrice;
+                product.CurrentStock = request.CurrentStock;
+                product.RecomendedSalePrice = request.RecomendedSalePrice;
                 await _repositoryAsync.UpdateAsync(product);
                 await _repositoryAsync.SaveChangesAsync();
                 var dto = _mapper.Map<ProductDto>(product);
