@@ -7,6 +7,7 @@ using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.SubcategorySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using System.Text.RegularExpressions;
 
 namespace SMART.ERP.Application.Features.SubcategoryFeature.Commands.UpdateSubcategoryCommand
 {
@@ -43,6 +44,7 @@ namespace SMART.ERP.Application.Features.SubcategoryFeature.Commands.UpdateSubca
             {
                 throw new ApiException($"Ya existe una categoria con el nombre {request.Name}");
             }
+            subcategory.Slug = Regex.Replace(Regex.Replace(request.Name, @"[^a-zA-Z0-9\s]", "").Trim().ToLower(), @"\s+", "-");
             subcategory.Name = request.Name;
             subcategory.CategoryId = request.CategoryId;
             subcategory.IsActive = request.IsActive;

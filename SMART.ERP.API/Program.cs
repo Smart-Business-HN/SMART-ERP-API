@@ -22,7 +22,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             //policy.WithOrigins("https://*.vercel.app").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod().AllowCredentials();
-            policy.WithOrigins("https://www.smartbusiness.site", "https://admin.smartbusiness.site").AllowAnyHeader().AllowAnyMethod();
+            policy.WithOrigins("https://www.smartbusiness.site", "https://admin.smartbusiness.site").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod().AllowCredentials();
             policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
             .AllowAnyHeader().AllowAnyMethod().AllowCredentials();
         });

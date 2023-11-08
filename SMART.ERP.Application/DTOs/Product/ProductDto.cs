@@ -1,4 +1,5 @@
-﻿using SMART.ERP.Application.DTOs.Status;
+﻿using SMART.ERP.Application.DTOs.Company;
+using SMART.ERP.Application.DTOs.Status;
 
 namespace SMART.ERP.Application.DTOs.Product
 {
@@ -29,6 +30,8 @@ namespace SMART.ERP.Application.DTOs.Product
         public ProviderDto? Provider { get; set; }
         public bool IsActive { get; set; }
         public bool ShowInEcommerce { get; set; }
+        public int TaxId { get; set; }
+        public TaxDto? Tax { get; set; }
         public List<ProductDataSheetDto>? ProductDataSheets { get; set; }
         public List<ProductFeatureDto>? ProductFeatures { get; set; }
         public List<ProductImageDto>? ProductImages { get; set; }

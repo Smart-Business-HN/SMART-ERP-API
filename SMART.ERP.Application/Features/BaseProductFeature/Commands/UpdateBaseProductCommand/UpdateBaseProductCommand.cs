@@ -22,12 +22,16 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
         public bool IsFatherProduct { get; set; }
         public int MinStock { get; set; }
         public int BrandId { get; set; }
+        public int TaxId { get; set; }
         public int UnitOfMeasurementId { get; set; }
         public int SubCategoryId { get; set; }
         public int StatusId { get; set; }
         public int ProviderId { get; set; }
         public bool IsActive { get; set; }
-        public bool ShowInEcoomerce { get; set; }
+        public bool ShowInEcommerce { get; set; }
+        public decimal CostPrice { get; set; }
+        public decimal RecomendedSalePrice { get; set; }
+        public int CurrentStock { get; set;}
     }
 
     public class UpdateBaseProductCommandHandler : IRequestHandler<UpdateBaseProductCommand, Response<ProductDto>>
@@ -39,9 +43,10 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
         private readonly IRepositoryAsync<Status> _statusRepositoryAsync;
         private readonly IRepositoryAsync<Provider> _providerRepositoryAsync;
         private readonly IRepositoryAsync<Brand> _brandRepositoryAsync;
+        private readonly IRepositoryAsync<Tax> _taxRepositoryAsync;
         private readonly IRepositoryAsync<UnitOfMeasurement> _measurementRepositoryAsync;
 
-        public UpdateBaseProductCommandHandler(IMapper mapper, IRepositoryAsync<Product> repositoryAsync,
+        public UpdateBaseProductCommandHandler(IMapper mapper, IRepositoryAsync<Product> repositoryAsync,IRepositoryAsync<Tax> taxRepositoryAsync,
             IJwtService jwtService, IRepositoryAsync<Subcategory> subcategoryRepositoryAsync,
             IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Provider> providerRepositoryAsync,
             IRepositoryAsync<Brand> brandRepositoryAsync,
@@ -54,6 +59,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
             _providerRepositoryAsync = providerRepositoryAsync;
             _brandRepositoryAsync = brandRepositoryAsync;
             _measurementRepositoryAsync = measurementRepositoryAsync;
+            _taxRepositoryAsync= taxRepositoryAsync;
             _mapper = mapper;
         }
         public async Task<Response<ProductDto>> Handle(UpdateBaseProductCommand request, CancellationToken cancellationToken)
@@ -67,6 +73,11 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
             if (checkSubcategory == null)
             {
                 throw new KeyNotFoundException($"No se encontro la subcategoria con id {request.SubCategoryId}");
+            }
+            var checkTax = await _taxRepositoryAsync.GetByIdAsync(request.TaxId);
+            if (checkTax == null)
+            {
+                throw new KeyNotFoundException($"No se encontro un impuesto con id {request.TaxId}");
             }
             var checkStatus = await _statusRepositoryAsync.GetByIdAsync(request.StatusId);
             if (checkStatus == null)
@@ -102,17 +113,21 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
                 product.BrandId = request.BrandId;
                 product.Brochure = request.Brochure;
                 product.VirtualTour = request.VirtualTour;
+                product.TaxId = request.TaxId;
                 product.UrlYoutube = request.UrlYoutube;
                 product.ProviderId = request.ProviderId;
                 product.MinStock = request.MinStock;
                 product.StatusId = request.StatusId;
-                product.ShowInEcommerce = request.ShowInEcoomerce;
+                product.ShowInEcommerce = request.ShowInEcommerce;
                 product.UnitOfMeasurementId = request.UnitOfMeasurementId;
                 product.SubCategoryId = request.SubCategoryId;
                 product.IsActive = request.IsActive;
                 product.IsFatherProduct = request.IsFatherProduct;
                 product.ModificatedBy = _jwtService.GetSubjectToken();
                 product.ModificationDate = DateTime.Now;
+                product.CostPrice = request.CostPrice;
+                product.CurrentStock = request.CurrentStock;
+                product.RecomendedSalePrice = request.RecomendedSalePrice;
                 await _repositoryAsync.UpdateAsync(product);
                 await _repositoryAsync.SaveChangesAsync();
                 var dto = _mapper.Map<ProductDto>(product);

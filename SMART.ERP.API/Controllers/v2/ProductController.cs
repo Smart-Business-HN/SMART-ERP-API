@@ -18,7 +18,7 @@ namespace SMART.ERP.API.Controllers.v2
 
         [HttpGet("GetBySlug/{slug}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetById(string slug)
+        public async Task<IActionResult> GetBySlug(string slug)
         {
             return Ok(await Mediator.Send(new GetBaseProductBySlugQuery { Slug = slug }));
         }
@@ -35,6 +35,20 @@ namespace SMART.ERP.API.Controllers.v2
                 Column = filter.Column,
                 All = filter.All
             }));
+        }
+        [HttpGet("GetProductsBySameCategorySlug/{categorySlug}/{productSlug}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetProductsBySameCategorySlug(string categorySlug, string productSlug)
+        {
+            return Ok(await Mediator.Send(new GetProductsBySameCategorySlugQuery { CategorySlug = categorySlug, ProductSlug = productSlug }
+            ));
+        }
+        [HttpGet("GetProductsBySameSubCategorySlug/{subCategorySlug}/{productSlug}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetProductsBySameSubCategorySlug(string subCategorySlug, string productSlug)
+        {
+            return Ok(await Mediator.Send(new GetProductsBySameSubCategorySlugQuery { SubCategorySlug = subCategorySlug, ProductSlug = productSlug }
+            ));
         }
 
     }

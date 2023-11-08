@@ -7,6 +7,7 @@ using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.CategorySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using System.Text.RegularExpressions;
 
 namespace SMART.ERP.Application.Features.CategoryFeature.Commands.UpdateCategoryCommand
 {
@@ -46,6 +47,7 @@ namespace SMART.ERP.Application.Features.CategoryFeature.Commands.UpdateCategory
             }
             else
             {
+                category.Slug = Regex.Replace(Regex.Replace(request.Name, @"[^a-zA-Z0-9\s]", "").Trim().ToLower(), @"\s+", "-");
                 category.Name = request.Name;
                 category.Image = request.Image;
                 category.IsPartCategory = request.IsPartCategory;

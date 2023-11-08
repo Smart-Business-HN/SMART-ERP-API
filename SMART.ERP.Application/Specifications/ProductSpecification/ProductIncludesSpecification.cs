@@ -15,7 +15,7 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
             }
             else if( id==null && slug != null)
             {
-                Query.Include(x => x.Brand).Include(x => x.Status).Include(x => x.SubCategory)
+                Query.Include(x => x.Brand).Include(x => x.Status).Include(x => x.SubCategory).ThenInclude(x=>x.Category)
                     .Include(x => x.Provider).Include(x => x.ProductDataSheets!).ThenInclude(x => x.DataSheet).Include(x => x.ProductFeatures)
                     .Include(x => x.ProductImages).Include(x => x.UnitOfMeasurement).Where(x => x.Slug == slug).AsNoTracking();
             }

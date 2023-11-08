@@ -31,6 +31,8 @@
         public string CreatedBy { get; set; } = null!;
         public DateTime? ModificationDate { get; set; }
         public string? ModificatedBy { get; set; }
+        public int TaxId { get; set; }
+        public virtual Tax? Tax { get; set; }
         public List<ProductDataSheet>? ProductDataSheets { get; set; }
         public List<ProductFeature>? ProductFeatures { get; set; }
         public List<ProductImage>? ProductImages { get; set; }

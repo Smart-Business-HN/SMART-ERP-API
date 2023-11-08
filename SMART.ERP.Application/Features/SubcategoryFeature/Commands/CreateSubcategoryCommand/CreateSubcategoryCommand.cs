@@ -7,6 +7,7 @@ using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.SubcategorySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using System.Text.RegularExpressions;
 
 namespace SMART.ERP.Application.Features.SubcategoryFeature.Commands.CreateSubcategoryCommand
 {
@@ -39,7 +40,9 @@ namespace SMART.ERP.Application.Features.SubcategoryFeature.Commands.CreateSubca
             {
                 throw new ApiException($"Ya existe un registro con el nombre {request.Name}");
             }
+            var slug = Regex.Replace(Regex.Replace(request.Name, @"[^a-zA-Z0-9\s]", "").Trim().ToLower(), @"\s+", "-");
             var newRecord = _mapper.Map<Subcategory>(request);
+            newRecord.Slug = slug;
             newRecord.CreationDate = DateTime.Now;
             newRecord.CreatedBy = _jwtService.GetSubjectToken();
             var data = await _repositoryAsync.AddAsync(newRecord);
