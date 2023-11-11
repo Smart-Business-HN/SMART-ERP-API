@@ -14,7 +14,7 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
         public FilterAndPaginationProductsBySubCategorySlugSpecification(string subCategorySlug, string? parameter, int pageNumber, int pageSize,
             string? order, string? column)
         {
-            Query.Include(x => x.SubCategory).Include(x => x.Status).Include(x => x.Brand).Include(x => x.Provider)
+            Query.Include(x => x.SubCategory).ThenInclude(x=>x.Category).Include(x => x.Status).Include(x => x.Brand).Include(x => x.Provider)
                 .Include(x => x.ProductImages).Include(x => x.ProductDataSheets!).ThenInclude(x => x.DataSheet)
             .Skip((pageNumber) * pageSize).Take(pageSize).Where(x => x.ShowInEcommerce && x.SubCategory.Slug == subCategorySlug).AsNoTracking();
 
@@ -30,7 +30,7 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
                 {
                     Query.OrderByDescending(x => column == "Name" ? x.Name
                     : column == "Code" ? x.Code : column == "SubCategory" ? x.SubCategory!.Name
-                    : column == "Brand" ? x.Brand!.Name : null).Where(x => x.ShowInEcommerce && x.Slug == subCategorySlug);
+                    : column == "Brand" ? x.Brand!.Name : null).Where(x => x.ShowInEcommerce && x.SubCategory.Slug == subCategorySlug);
                 }
                 else
                 {

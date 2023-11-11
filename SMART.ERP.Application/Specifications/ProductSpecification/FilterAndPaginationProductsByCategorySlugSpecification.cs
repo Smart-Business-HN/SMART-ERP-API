@@ -14,7 +14,7 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
         public FilterAndPaginationProductsByCategorySlugSpecification(string categorySlug,string? parameter, int pageNumber, int pageSize,
             string? order, string? column)
         {
-            Query.Include(x => x.SubCategory).Include(x => x.Status).Include(x => x.Brand).Include(x => x.Provider)
+            Query.Include(x => x.SubCategory).ThenInclude(x=>x.Category).Include(x => x.Status).Include(x => x.Brand).Include(x => x.Provider)
                 .Include(x => x.ProductImages).Include(x => x.ProductDataSheets!).ThenInclude(x => x.DataSheet)
             .Skip((pageNumber) * pageSize).Take(pageSize).Where(x => x.ShowInEcommerce && x.SubCategory.Category.Slug == categorySlug).AsNoTracking();
 

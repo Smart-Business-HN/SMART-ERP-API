@@ -64,7 +64,7 @@ namespace SMART.ERP.API.Controllers.v2
                 Column = filter.Column
             }));
         }
-        [HttpGet("GetProducsBySubCategorySlug/{subCategorySlug}")]
+        [HttpGet("GetProductsBySubCategorySlug/{subCategorySlug}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetProductsBySubCategorySlug(string subCategorySlug, [FromQuery] RequestParameter filter)
         {
