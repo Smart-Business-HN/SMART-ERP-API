@@ -26,7 +26,7 @@ namespace SMART.ERP.API.Controllers.v2
         [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
-            return Ok(await Mediator.Send(new GetAllBaseProductsQuery()
+            return Ok(await Mediator.Send(new GetAllProductForEcommerceQuery()
             {
                 Parameter = filter.Parameter,
                 PageNumber = filter.PageNumber,
