@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.QuotationFeature.Commands.CopyQuotationFromIdCommand;
 using SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotationCommand;
 using SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotationCommand;
 using SMART.ERP.Application.Features.QuotationFeature.Queries;
@@ -17,9 +18,19 @@ namespace SMART.ERP.API.Controllers.v1
             return Ok(await Mediator.Send(new GetQuotationByIdQuery { Id = id }));
         }
         [HttpPost("Create")]
-        [Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
+        [Authorize(Roles = "SuperAdmin, Admin, Manager, SalesAdvisor")]
         public async Task<IActionResult> Create([FromBody] CreateQuotationCommand command)
         {
+            return Ok(await Mediator.Send(command));
+        }
+        [HttpPost("CopyQuotationFromId/{id}")]
+        [Authorize(Roles = "SuperAdmin, Admin, Manager, SalesAdvisor")]
+        public async Task<IActionResult> CopyQuotationFromId(int id,[FromBody] CopyQuotationFromIdCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("Ocurrio un error con el id de este registro");
+            }
             return Ok(await Mediator.Send(command));
         }
         [HttpGet("GetAll")]
