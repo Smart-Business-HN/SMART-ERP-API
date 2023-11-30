@@ -7,6 +7,7 @@ using SMART.ERP.Application.Specifications.BranchOfficeSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Application.DTOs.Company;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.Application.Features.BranchOfficeFeature.Commands.CreateBranchOfficeCommand
 {
@@ -28,14 +29,16 @@ namespace SMART.ERP.Application.Features.BranchOfficeFeature.Commands.CreateBran
         private readonly IRepositoryAsync<BranchOffices> _repositoryAsync;
         private readonly IRepositoryAsync<Company> _companyRepositoryAsync;
         private readonly IJwtService _jwtService;
+        private readonly IOutputCacheStore _outputCacheStore;
 
         public CreateBranchOfficeCommandHandler(IMapper mapper, IRepositoryAsync<BranchOffices> repositoryAsync,
-            IJwtService jwtService, IRepositoryAsync<Company> companyRepositoryAsync)
+            IJwtService jwtService, IRepositoryAsync<Company> companyRepositoryAsync, IOutputCacheStore outputCacheStore)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
             _companyRepositoryAsync = companyRepositoryAsync;
             _jwtService = jwtService;
+            _outputCacheStore = outputCacheStore;
         }
 
         public async Task<Response<BranchOfficeDto>> Handle(CreateBranchOfficeCommand request, CancellationToken cancellationToken)
@@ -66,6 +69,7 @@ namespace SMART.ERP.Application.Features.BranchOfficeFeature.Commands.CreateBran
             newRecord.CreatedBy = _jwtService.GetSubjectToken();
             var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStore.EvictByTagAsync("cache_branchOffices", cancellationToken);
             var dto = _mapper.Map<BranchOfficeDto>(data);
             return new Response<BranchOfficeDto>(dto, message: $"{request.Name} creado exitosamente");
         }

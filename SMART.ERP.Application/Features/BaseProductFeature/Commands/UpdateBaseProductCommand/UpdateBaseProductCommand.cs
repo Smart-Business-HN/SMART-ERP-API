@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
@@ -45,12 +46,13 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
         private readonly IRepositoryAsync<Brand> _brandRepositoryAsync;
         private readonly IRepositoryAsync<Tax> _taxRepositoryAsync;
         private readonly IRepositoryAsync<UnitOfMeasurement> _measurementRepositoryAsync;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public UpdateBaseProductCommandHandler(IMapper mapper, IRepositoryAsync<Product> repositoryAsync,IRepositoryAsync<Tax> taxRepositoryAsync,
             IJwtService jwtService, IRepositoryAsync<Subcategory> subcategoryRepositoryAsync,
             IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Provider> providerRepositoryAsync,
             IRepositoryAsync<Brand> brandRepositoryAsync,
-            IRepositoryAsync<UnitOfMeasurement> measurementRepositoryAsync)
+            IRepositoryAsync<UnitOfMeasurement> measurementRepositoryAsync, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _jwtService = jwtService;
@@ -61,6 +63,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
             _measurementRepositoryAsync = measurementRepositoryAsync;
             _taxRepositoryAsync= taxRepositoryAsync;
             _mapper = mapper;
+            _outputCacheStored = outputCacheStored;
         }
         public async Task<Response<ProductDto>> Handle(UpdateBaseProductCommand request, CancellationToken cancellationToken)
         {
@@ -129,6 +132,8 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
                 product.RecomendedSalePrice = request.RecomendedSalePrice;
                 await _repositoryAsync.UpdateAsync(product);
                 await _repositoryAsync.SaveChangesAsync();
+                await _outputCacheStored.EvictByTagAsync("cache_products", cancellationToken);
+                await _outputCacheStored.EvictByTagAsync("cache_productsEcommerce", cancellationToken);
                 var dto = _mapper.Map<ProductDto>(product);
                 return new Response<ProductDto>(dto, message: $"{product.Name} actualizado correctamente");
             

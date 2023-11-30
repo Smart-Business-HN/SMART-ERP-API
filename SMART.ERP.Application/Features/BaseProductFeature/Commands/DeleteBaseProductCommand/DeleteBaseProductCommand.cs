@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.ProductDataSheetSpecification;
 using SMART.ERP.Application.Specifications.ProductFeatureSpecification;
@@ -19,16 +20,19 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.DeleteBaseP
         private readonly IRepositoryAsync<ProductDataSheet> _productDataSheetRepositoryAsync;
         private readonly IRepositoryAsync<ProductFeature> _productFeatureRepositoryAsync;
         private readonly IRepositoryAsync<ProductImage> _productImageRepositoryAsync;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public DeleteBaseProductCommandHandler(IRepositoryAsync<Product> repositoryAsync,
             IRepositoryAsync<ProductDataSheet> productDataSheetRepositoryAsync,
             IRepositoryAsync<ProductFeature> productFeatureRepositoryAsync,
-            IRepositoryAsync<ProductImage> productImageRepositoryAsync)
+            IRepositoryAsync<ProductImage> productImageRepositoryAsync,
+            IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _productDataSheetRepositoryAsync = productDataSheetRepositoryAsync;
             _productFeatureRepositoryAsync = productFeatureRepositoryAsync;
             _productImageRepositoryAsync = productImageRepositoryAsync;
+            _outputCacheStored = outputCacheStored;
         }
         public async Task<Response<string>> Handle(DeleteBaseProductCommand request, CancellationToken cancellationToken)
         {
@@ -40,6 +44,8 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.DeleteBaseP
             await DeleteItems(request.Id);
             await _repositoryAsync.DeleteAsync(product);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_products", cancellationToken);
+            await _outputCacheStored.EvictByTagAsync("cache_productsEcommerce", cancellationToken);
             return new Response<string>($"{product.Name} eliminado correctamente", "Eliminado correctamente");
         }
 

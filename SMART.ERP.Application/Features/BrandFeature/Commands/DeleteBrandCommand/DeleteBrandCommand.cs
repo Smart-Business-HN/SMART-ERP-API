@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -13,10 +14,12 @@ namespace SMART.ERP.Application.Features.BrandFeature.Commands.DeleteBrandComman
     public class DeleteBrandCommandHandler : IRequestHandler<DeleteBrandCommand, Response<string>>
     {
         private readonly IRepositoryAsync<Brand> _repositoryAsync;
+        private readonly IOutputCacheStore _outputCacheStored;
 
-        public DeleteBrandCommandHandler(IRepositoryAsync<Brand> repositoryAsync)
+        public DeleteBrandCommandHandler(IRepositoryAsync<Brand> repositoryAsync, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
+            _outputCacheStored = outputCacheStored;
         }
         public async Task<Response<string>> Handle(DeleteBrandCommand request, CancellationToken cancellationToken)
         {
@@ -27,6 +30,7 @@ namespace SMART.ERP.Application.Features.BrandFeature.Commands.DeleteBrandComman
             }
             await _repositoryAsync.DeleteAsync(brand);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_brands", cancellationToken);
             return new Response<string>($"{brand.Name} eliminado correctamente", "Eliminado correctamente");
         }
     }

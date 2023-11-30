@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Features.TaxFeature.Commands.CreateTaxCommand;
 using SMART.ERP.Application.Features.TaxFeature.Commands.DeleteTaxCommand;
 using SMART.ERP.Application.Features.TaxFeature.Commands.UpdateTaxCommand;
@@ -19,6 +20,7 @@ namespace SMART.ERP.API.Controllers.v1
         }
         [HttpGet("GetAll")]
         [AllowAnonymous]
+        [OutputCache(PolicyName = "cache_taxes")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
 

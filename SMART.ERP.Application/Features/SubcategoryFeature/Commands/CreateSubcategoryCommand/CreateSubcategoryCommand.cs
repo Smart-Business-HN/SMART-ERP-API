@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
@@ -23,13 +24,15 @@ namespace SMART.ERP.Application.Features.SubcategoryFeature.Commands.CreateSubca
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Subcategory> _repositoryAsync;
         private readonly IJwtService _jwtService;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public CreateSubcategoryCommandHandler(IMapper mapper, IRepositoryAsync<Subcategory> repositoryAsync,
-            IJwtService jwtService)
+            IJwtService jwtService, IOutputCacheStore outputCacheStored)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
             _jwtService = jwtService;
+            _outputCacheStored = outputCacheStored;
         }
 
         public async Task<Response<SubcategoryDto>> Handle(CreateSubcategoryCommand request, CancellationToken cancellationToken)
@@ -47,6 +50,7 @@ namespace SMART.ERP.Application.Features.SubcategoryFeature.Commands.CreateSubca
             newRecord.CreatedBy = _jwtService.GetSubjectToken();
             var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_subCategories", cancellationToken);
             var dto = _mapper.Map<SubcategoryDto>(data);
 
             return new Response<SubcategoryDto>(dto, message: $"{request.Name} creado exitosamente");

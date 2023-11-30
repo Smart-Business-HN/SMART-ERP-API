@@ -4,6 +4,7 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Application.DTOs.Address;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.Application.Features.CityFeature.Commands.UpdateCityCommand
 {
@@ -20,13 +21,15 @@ namespace SMART.ERP.Application.Features.CityFeature.Commands.UpdateCityCommand
         private readonly IRepositoryAsync<City> _repositoryAsync;
         private readonly IRepositoryAsync<Department> _departmentRepositoryAsync;
         private readonly IMapper _mapper;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public UpdateCityCommandHandler(IRepositoryAsync<City> repositoryAsync, IRepositoryAsync<Department> departmentRepositoryAsync,
-            IMapper mapper)
+            IMapper mapper, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _departmentRepositoryAsync = departmentRepositoryAsync;
             _mapper = mapper;
+            _outputCacheStored = outputCacheStored;
         }
 
         public async Task<Response<CityDto>> Handle(UpdateCityCommand request, CancellationToken cancellationToken)
@@ -49,7 +52,7 @@ namespace SMART.ERP.Application.Features.CityFeature.Commands.UpdateCityCommand
 
             await _repositoryAsync.UpdateAsync(checkCity);
             await _repositoryAsync.SaveChangesAsync();
-
+            await _outputCacheStored.EvictByTagAsync("cache_cities", cancellationToken);
             var dto = _mapper.Map<CityDto>(checkCity);
             return new Response<CityDto>(dto, $"{request.Name} actualizado correctamente");
         }

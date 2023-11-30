@@ -1,10 +1,11 @@
 ﻿using MediatR;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.AdvisorGoalSpecification;
-using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Application.DTOs.Dashboard;
+using SMART.ERP.Application.Specifications.InvoiceSpecification;
+using SMART.ERP.Application.Specifications.OpportunitySpecification;
 
 namespace SMART.ERP.Application.Features.DashboardFeature.Queries.OpportunityMetrics
 {
@@ -16,12 +17,12 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.OpportunityMet
     public class GlobalGoalMetricQueryHandler : IRequestHandler<GlobalGoalMetricQuery, Response<GlobalGoalMetricDto>>
     {
         private readonly IRepositoryAsync<AdvisorGoal> _repositoryAsync;
-        private readonly IRepositoryAsync<Opportunity> _opportunityRepositoryAsync;
+        private readonly IRepositoryAsync<Invoice> _invoiceRepositoryAsync;
 
-        public GlobalGoalMetricQueryHandler(IRepositoryAsync<AdvisorGoal> repositoryAsync, IRepositoryAsync<Opportunity> opportunityRepositoryAsync)
+        public GlobalGoalMetricQueryHandler(IRepositoryAsync<AdvisorGoal> repositoryAsync, IRepositoryAsync<Invoice> invoiceRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
-            _opportunityRepositoryAsync = opportunityRepositoryAsync;
+            _invoiceRepositoryAsync = invoiceRepositoryAsync;
         }
 
         public async Task<Response<GlobalGoalMetricDto>> Handle(GlobalGoalMetricQuery request, CancellationToken cancellationToken)
@@ -44,11 +45,10 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.OpportunityMet
             {
                 response.Global += goal.Goal;
             }
-
-            var monthlyWonOpportunities = await _opportunityRepositoryAsync.ListAsync(new FilterClosedOpportunitiesInMonthYearSpecification(currentDate.Month, currentDate.Year, null, request.BranchOfficeId));
-            foreach (var opportunity in monthlyWonOpportunities)
+            var monthlyInvoices = await _invoiceRepositoryAsync.ListAsync(new FilterInvoicesInMonthAndYearSpecification(currentDate.Month, currentDate.Year, null, request.BranchOfficeId));
+            foreach (var invoice in monthlyInvoices)
             {
-                response.Current += opportunity.Total;
+                response.Current += invoice.Total;
             }
             if (response.Current > 0)
             {
@@ -69,10 +69,10 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.OpportunityMet
                 }
             }
 
-            var yearWonOpportunities = await _opportunityRepositoryAsync.ListAsync(new FilterClosedOpportunitiesInYearByBranchSpecification(DateTime.Now.Year, request.BranchOfficeId, true));
-            foreach (var opportunity in yearWonOpportunities)
+            var yearInvoices = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceInYearByBranchSpecification(DateTime.Now.Year, request.BranchOfficeId));
+            foreach (var invoice in yearInvoices)
             {
-                response.GlobalCurrent += opportunity.Total;
+                response.GlobalCurrent += invoice.Total;
             }
             if (response.GlobalCurrent > 0)
             {

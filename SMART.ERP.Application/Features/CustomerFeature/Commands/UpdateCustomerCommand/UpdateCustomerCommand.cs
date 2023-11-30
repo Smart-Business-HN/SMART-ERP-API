@@ -8,6 +8,7 @@ using SMART.ERP.Application.Specifications.ProspectSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Application.DTOs.Customer;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomerCommand
 {
@@ -52,11 +53,12 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomer
         private readonly IRepositoryAsync<Currency> _currencyRepositoryHNAsync;
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Prospect> _prospectRepositoryAsync;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public UpdateCustomerCommandHandler(IRepositoryAsync<Customer> repositoryHNAsync, IRepositoryAsync<Customer> customerRepositoryAsync,
             IRepositoryAsync<Gender> genderRepositoryHNAsync, IRepositoryAsync<Heading> headingRepositoryHNAsync,
             IRepositoryAsync<SocialReason> socialReasonRepositoryHNAsync, IRepositoryAsync<Currency> currencyRepositoryHNAsync, IMapper mapper,
-            IRepositoryAsync<Prospect> prospectRepositoryAsync)
+            IRepositoryAsync<Prospect> prospectRepositoryAsync, IOutputCacheStore outputCacheStored)
         {
             _repositoryHNAsync = repositoryHNAsync;
             _customerRepositoryAsync = customerRepositoryAsync;
@@ -66,6 +68,7 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomer
             _currencyRepositoryHNAsync = currencyRepositoryHNAsync;
             _mapper = mapper;
             _prospectRepositoryAsync = prospectRepositoryAsync;
+            _outputCacheStored = outputCacheStored;
         }
 
         public async Task<Response<CustomerDto>> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
@@ -192,7 +195,7 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomer
             checkIfExist.DepartmentId = request.DepartmentId;
             await _repositoryHNAsync.UpdateAsync(checkIfExist);
             await _repositoryHNAsync.SaveChangesAsync();
-
+            await _outputCacheStored.EvictByTagAsync("cache_customers", cancellationToken);
             var dto = _mapper.Map<CustomerDto>(checkIfExist);
             return new Response<CustomerDto>(dto, $"{dto.FullName} actualizado correctamente");
         }

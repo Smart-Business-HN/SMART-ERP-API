@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.CityFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.CityFeature.Commands.CreateCityCommand;
 using SMART.ERP.Application.Features.CityFeature.Commands.UpdateCityCommand;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.API.Controllers.v1
 {
@@ -20,6 +21,7 @@ namespace SMART.ERP.API.Controllers.v1
 
         [HttpGet("GetAll")]
         [AllowAnonymous]
+        [OutputCache(PolicyName = "cache_cities")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllCitiesQuery

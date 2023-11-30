@@ -17,6 +17,7 @@ using SMART.ERP.Application.Services.RegisterClientService;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomerCommand
 {
@@ -50,6 +51,7 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomer
         private readonly INewEncryptionService _newEncryptionService;
         private readonly IRegisterClientService _registerClient;
         private readonly IRepositoryAsync<SocialReason> _clientSocialReasonRepositoryAsync;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public CreateCustomerCommandHandler(IRepositoryAsync<Customer> repositoryAsync, IMapper mapper,
             IRepositoryAsync<CustomerType> clientTypeRepositoryAsync,
@@ -62,7 +64,9 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomer
             IJwtService jwtService,
             IRepositoryAsync<Department> departmentRepositoryAsync,
             IAssignUserToOpportunityService assignUserToOpportunityService,
-            IRepositoryAsync<Prospect> prospectRepositoryAsync)
+            IRepositoryAsync<Prospect> prospectRepositoryAsync,
+            IOutputCacheStore outputCacheStored
+            )
         {
             _clientCountryRepositoryAsync = clientCountryRepositoryAsync;
             _userRepositoryAsync = userRepositoryAsync;
@@ -77,6 +81,7 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomer
             _newEncryptionService = newEncryptionService;
             _registerClient = registerClient;
             _clientSocialReasonRepositoryAsync = clientSocialReasonRepositoryAsync;
+            _outputCacheStored = outputCacheStored;
         }
 
         public async Task<Response<CustomerDto>> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
@@ -182,7 +187,7 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomer
             newRecord.RegistrationDate = DateTime.Now;
             var response = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
-
+            await _outputCacheStored.EvictByTagAsync("cache_customers", cancellationToken);
             Guid? assignedUserId;
             if (checkUser.Role!.Name != "Sales Advisor")
             {

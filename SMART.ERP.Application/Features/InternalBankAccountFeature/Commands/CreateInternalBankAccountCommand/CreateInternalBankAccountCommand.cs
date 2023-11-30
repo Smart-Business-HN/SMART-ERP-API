@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Address;
 using SMART.ERP.Application.DTOs.Bank;
 using SMART.ERP.Application.DTOs.InternalBankAccount;
@@ -25,13 +26,15 @@ namespace SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.Cre
         private readonly IRepositoryAsync<InternalBankAccount> _repositoryAsync;
         private readonly IRepositoryAsync<Bank> _bankRepositoryAsync;
         private readonly IMapper _mapper;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public CreateInternalBankAccountCommandHandler(IRepositoryAsync<InternalBankAccount> repositoryAsync, IRepositoryAsync<Bank> bankRepositoryAsync,
-            IMapper mapper)
+            IMapper mapper, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _bankRepositoryAsync = bankRepositoryAsync;
             _mapper = mapper;
+            _outputCacheStored = outputCacheStored;
         }
 
         public async Task<Response<InternalBankAccountDto>> Handle(CreateInternalBankAccountCommand request, CancellationToken cancellationToken)
@@ -51,7 +54,7 @@ namespace SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.Cre
             var newRecord = _mapper.Map<InternalBankAccount>(request);
             var response = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
-
+            await _outputCacheStored.EvictByTagAsync("cache_internalBankAccounts", cancellationToken);
             var dto = _mapper.Map<InternalBankAccountDto>(response);
             return new Response<InternalBankAccountDto>(dto, $"{request.Name} agregada correctamente");
         }

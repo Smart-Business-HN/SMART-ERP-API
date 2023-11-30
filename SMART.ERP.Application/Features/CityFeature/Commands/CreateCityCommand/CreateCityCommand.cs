@@ -6,6 +6,7 @@ using SMART.ERP.Application.Specifications.CitySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Application.DTOs.Address;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.Application.Features.CityFeature.Commands.CreateCityCommand
 {
@@ -21,13 +22,15 @@ namespace SMART.ERP.Application.Features.CityFeature.Commands.CreateCityCommand
         private readonly IRepositoryAsync<City> _repositoryAsync;
         private readonly IRepositoryAsync<Department> _departmentRepositoryAsync;
         private readonly IMapper _mapper;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public CreateCityCommandHandler(IRepositoryAsync<City> repositoryAsync, IRepositoryAsync<Department> departmentRepositoryAsync,
-            IMapper mapper)
+            IMapper mapper, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _departmentRepositoryAsync = departmentRepositoryAsync;
             _mapper = mapper;
+            _outputCacheStored = outputCacheStored;
         }
 
         public async Task<Response<CityDto>> Handle(CreateCityCommand request, CancellationToken cancellationToken)
@@ -47,7 +50,7 @@ namespace SMART.ERP.Application.Features.CityFeature.Commands.CreateCityCommand
             var newRecord = _mapper.Map<City>(request);
             var response = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
-
+            await _outputCacheStored.EvictByTagAsync("cache_cities", cancellationToken);
             var dto = _mapper.Map<CityDto>(response);
             return new Response<CityDto>(dto, $"{request.Name} agregado correctamente");
         }

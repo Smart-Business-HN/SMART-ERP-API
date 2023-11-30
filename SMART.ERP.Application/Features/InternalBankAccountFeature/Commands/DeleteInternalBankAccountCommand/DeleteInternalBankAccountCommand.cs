@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Features.CityFeature.Commands.DeleteCityCommand;
 using SMART.ERP.Application.Repository;
@@ -20,10 +21,12 @@ namespace SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.Del
     public class DeleteInternalBankAccountCommandHandler : IRequestHandler<DeleteInternalBankAccountCommand, Response<string>>
     {
         private readonly IRepositoryAsync<InternalBankAccount> _repositoryAsync;
+        private readonly IOutputCacheStore _outputCacheStored;
 
-        public DeleteInternalBankAccountCommandHandler(IRepositoryAsync<InternalBankAccount> repositoryAsync)
+        public DeleteInternalBankAccountCommandHandler(IRepositoryAsync<InternalBankAccount> repositoryAsync, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
+            _outputCacheStored = outputCacheStored;
         }
 
         public async Task<Response<string>> Handle(DeleteInternalBankAccountCommand request, CancellationToken cancellationToken)
@@ -38,7 +41,7 @@ namespace SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.Del
             {
                 await _repositoryAsync.DeleteAsync(checkInternalBankAccount);
                 await _repositoryAsync.SaveChangesAsync();
-
+                await _outputCacheStored.EvictByTagAsync("cache_internalBankAccounts", cancellationToken);
                 return new Response<string>("Eliminado correctamente");
             }
             catch (Exception)

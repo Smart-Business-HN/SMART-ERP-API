@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
@@ -24,15 +25,18 @@ namespace SMART.ERP.Application.Features.CategoryFeature.Commands.CreateCategory
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Category> _repositoryAsync;
         private readonly IJwtService _jwtService;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public CreateCategoryCommandHandler(
             IMapper mapper,
             IRepositoryAsync<Category> repositoryAsync,
-            IJwtService jwtService)
+            IJwtService jwtService,
+            IOutputCacheStore outputCacheStored)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
             _jwtService = jwtService;
+            _outputCacheStored = outputCacheStored;
         }
 
         public async Task<Response<CategoryDto>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
@@ -50,6 +54,7 @@ namespace SMART.ERP.Application.Features.CategoryFeature.Commands.CreateCategory
 
             var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_categories", cancellationToken);
             var dto = _mapper.Map<CategoryDto>(data);
             return new Response<CategoryDto>(dto, message: $"{request.Name} creado exitosamente");
         }

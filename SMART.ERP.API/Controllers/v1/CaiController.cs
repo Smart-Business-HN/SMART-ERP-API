@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Features.CaiFeature.Commands.CreateCaiCommand;
 using SMART.ERP.Application.Features.CaiFeature.Commands.UpdateCaiCommand;
 using SMART.ERP.Application.Features.CaiFeature.Queries;
@@ -25,6 +26,7 @@ namespace SMART.ERP.API.Controllers.v1
 
         [HttpGet("GetAll")]
         [AllowAnonymous]
+        [OutputCache (PolicyName = "cache_cais")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllCaisQuery

@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.BranchOfficeFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.BranchOfficeFeature.Commands.CreateBranchOfficeCommand;
 using SMART.ERP.Application.Features.BranchOfficeFeature.Commands.UpdateBranchOfficeCommand;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.API.Controllers.v1
 {
@@ -20,6 +21,7 @@ namespace SMART.ERP.API.Controllers.v1
 
         [HttpGet("GetAll")]
         [AllowAnonymous]
+        [OutputCache (PolicyName ="cache_branchOffices")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllBranchOfficesQuery

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Cai;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
@@ -29,13 +30,14 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.CreateCaiCommand
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Cai> _repositoryAsync;
         private readonly IRepositoryAsync<BranchOffices> _branchOfficeRepositoryAsync;
- 
+        private readonly IOutputCacheStore _outputCacheStored;
 
-        public CreateCaiCommandHandler(IMapper mapper, IRepositoryAsync<Cai> repositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync)
+        public CreateCaiCommandHandler(IMapper mapper, IRepositoryAsync<Cai> repositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IOutputCacheStore outputCacheStore)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
             _branchOfficeRepositoryAsync = branchOfficeRepositoryAsync;
+            _outputCacheStored = outputCacheStore;
         }
         public async Task<Response<CaiDto>> Handle(CreateCaiCommand request, CancellationToken cancellationToken)
         {
@@ -58,6 +60,7 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.CreateCaiCommand
             newRecord.CurrentCorrelative = request.StartCorrelative;
             var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_cais", cancellationToken);
             var dto = _mapper.Map<CaiDto>(data);
             return new Response<CaiDto>(dto, message: $"{request.Name} creado exitosamente");
 

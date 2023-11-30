@@ -6,6 +6,7 @@ using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Application.DTOs.Dashboard;
+using SMART.ERP.Application.Specifications.InvoiceSpecification;
 
 namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorMetrics
 {
@@ -18,13 +19,13 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorMetrics
     public class SalesFromYearQueryHandler : IRequestHandler<SalesFromYearQuery, Response<List<SalesByAdvisorDto>>>
     {
         private readonly IRepositoryAsync<User> _repositoryAsync;
-        private readonly IRepositoryAsync<Opportunity> _opportunityRepositoryAsync;
+        private readonly IRepositoryAsync<Invoice> _invoiceRepositoryAsync;
         private readonly IMapper _mapper;
 
-        public SalesFromYearQueryHandler(IRepositoryAsync<User> repositoryAsync, IRepositoryAsync<Opportunity> opportunityRepositoryAsync, IMapper mapper)
+        public SalesFromYearQueryHandler(IRepositoryAsync<User> repositoryAsync, IRepositoryAsync<Invoice> invoiceRepositoryAsync, IMapper mapper)
         {
             _repositoryAsync = repositoryAsync;
-            _opportunityRepositoryAsync = opportunityRepositoryAsync;
+            _invoiceRepositoryAsync = invoiceRepositoryAsync;
             _mapper = mapper;
         }
 
@@ -33,22 +34,19 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorMetrics
 
             string[] months = { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
             var response = new List<SalesByAdvisorDto>();
-            var salesAdvisors = new List<User>();
-            salesAdvisors = await _repositoryAsync.ListAsync(new FilterUserByRoleSpecification("Sales Advisor", request.BranchOfficeId));
+            var salesAdvisors = await _repositoryAsync.ListAsync(new FilterUserByRoleSpecification("Sales Advisor", request.BranchOfficeId));
 
             foreach (var user in salesAdvisors)
             {
-                var dto = new SalesByAdvisorDto();
-                dto = _mapper.Map<SalesByAdvisorDto>(user);
-                var sales = await _opportunityRepositoryAsync.ListAsync(new FilterClosedOpportunitiesInYearByUserSpecification(request.Year, user.Id));
-                sales = sales.FindAll(x => x.OpportunityStep.Name == "Ganado");
+                var dto = _mapper.Map<SalesByAdvisorDto>(user);
+                var sales = await _invoiceRepositoryAsync.ListAsync(new FilterInvoicesInYearByUserSpecification(request.Year, user.Id));
                 foreach (var month in months)
                 {
                     foreach (var sale in sales)
                     {
-                        if (sale.ClosingDate!.Value.Month == Array.IndexOf(months, month) + 1)
+                        if (sale.CreationDate!.Month == Array.IndexOf(months, month) + 1)
                         {
-                            dto.Data[sale.ClosingDate.Value.Month - 1] += sale.Total;
+                            dto.Data[sale.CreationDate.Month - 1] += sale.Total;
                         }
                     }
                 }

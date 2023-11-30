@@ -6,6 +6,7 @@ using SMART.ERP.Application.Specifications.DepartmentSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Application.DTOs.Address;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.Application.Features.DepartmentFeature.Commands.CreateDepartmentCommand
 {
@@ -21,13 +22,15 @@ namespace SMART.ERP.Application.Features.DepartmentFeature.Commands.CreateDepart
         private readonly IRepositoryAsync<Department> _repositoryAsync;
         private readonly IRepositoryAsync<Country> _countryRepositoryAsync;
         private readonly IMapper _mapper;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public CreateDepartmentCommandHandler(IRepositoryAsync<Department> repositoryAsync, IRepositoryAsync<Country> countryRepositoryAsync,
-            IMapper mapper)
+            IMapper mapper, IOutputCacheStore outputCacheStore)
         {
             _repositoryAsync = repositoryAsync;
             _countryRepositoryAsync = countryRepositoryAsync;
             _mapper = mapper;
+            _outputCacheStored = outputCacheStore;
         }
 
         public async Task<Response<DepartmentDto>> Handle(CreateDepartmentCommand request, CancellationToken cancellationToken)
@@ -45,6 +48,7 @@ namespace SMART.ERP.Application.Features.DepartmentFeature.Commands.CreateDepart
 
             var newRecord = _mapper.Map<Department>(request);
             var response = await _repositoryAsync.AddAsync(newRecord);
+            await _outputCacheStored.EvictByTagAsync("cache_departments", cancellationToken);
             var dto = _mapper.Map<DepartmentDto>(response);
             return new Response<DepartmentDto>(dto, "Agregado Correctamente");
         }

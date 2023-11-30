@@ -25,7 +25,7 @@ namespace SMART.ERP.Application.DTOs.Rootcloud
         public int? SubcategoryId { get; set; }
         public string? Status { get; set; }
         public int? BrandId { get; set; }
-        public BrandDto Brand { get; set; }
+        public BrandDto? Brand { get; set; }
         public SubcategoryDto? Subcategory { get; set; }
         public List<MachineryRootcloudHistoricalDto>? MachineyRootcloudHistoricals { get; set; }
         public List<MachineryMaintenanceDto>? MachineryMaintenances { get; set; }
