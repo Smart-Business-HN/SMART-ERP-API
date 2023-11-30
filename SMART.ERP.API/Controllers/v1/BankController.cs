@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Features.BankFeature.Commands.CreateBankCommand;
 using SMART.ERP.Application.Features.BankFeature.Commands.DeleteBankCommand;
 using SMART.ERP.Application.Features.BankFeature.Commands.UpdateBankCommand;
@@ -24,6 +25,7 @@ namespace SMART.ERP.API.Controllers.v1
 
         [HttpGet("GetAll")]
         [AllowAnonymous]
+        [OutputCache (PolicyName = "cache_banks")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllBanksQuery

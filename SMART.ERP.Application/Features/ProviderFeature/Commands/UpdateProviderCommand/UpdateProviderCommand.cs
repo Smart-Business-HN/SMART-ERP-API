@@ -7,6 +7,7 @@ using SMART.ERP.Application.Specifications.ProviderSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Application.DTOs.Product;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.Application.Features.ProviderFeature.Commands.UpdateProviderCommand
 {
@@ -30,13 +31,15 @@ namespace SMART.ERP.Application.Features.ProviderFeature.Commands.UpdateProvider
         private readonly IRepositoryAsync<Provider> _repositoryAsync;
         private readonly IJwtService _jwtService;
         private readonly IMapper _mapper;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public UpdateProviderCommandHandler(IMapper mapper, IRepositoryAsync<Provider> repositoryAsync,
-            IJwtService jwtService)
+            IJwtService jwtService, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _jwtService = jwtService;
             _mapper = mapper;
+            _outputCacheStored = outputCacheStored;
         }
         public async Task<Response<ProviderDto>> Handle(UpdateProviderCommand request, CancellationToken cancellationToken)
         {
@@ -83,6 +86,7 @@ namespace SMART.ERP.Application.Features.ProviderFeature.Commands.UpdateProvider
             dataSheet.ModificatedBy = _jwtService.GetSubjectToken();
             await _repositoryAsync.UpdateAsync(dataSheet);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_providers", cancellationToken);
             var dto = _mapper.Map<ProviderDto>(dataSheet);
             return new Response<ProviderDto>(dto, message: $"{dataSheet.Name} actualizado correctamente");
         }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Cai;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
@@ -30,11 +31,13 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.UpdateCaiCommand
         private readonly IRepositoryAsync<Cai> _repositoryAsync;
         private readonly IRepositoryAsync<BranchOffices> _branchOfficeRepositoryAsync;
         private readonly IMapper _mapper;
-        public UpdateCaiCommandHandler(IRepositoryAsync<Cai> repositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IMapper mapper)
+        private readonly IOutputCacheStore _outputCacheStored;
+        public UpdateCaiCommandHandler(IRepositoryAsync<Cai> repositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IMapper mapper, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _branchOfficeRepositoryAsync = branchOfficeRepositoryAsync;
             _mapper = mapper;
+            _outputCacheStored = outputCacheStored;
         }
         public async Task<Response<CaiDto>> Handle(UpdateCaiCommand request, CancellationToken cancellationToken)
         {
@@ -82,6 +85,7 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.UpdateCaiCommand
             cai.EndCorrelative= request.EndCorrelative;
             await _repositoryAsync.UpdateAsync(cai);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_cais", cancellationToken);
             var dto = _mapper.Map<CaiDto>(cai);
             return new Response<CaiDto>(dto, message: $"{cai.Name} actualizado correctamente");
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.CreateInternalBankAccountCommand;
 using SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.DeleteInternalBankAccountCommand;
 using SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.UpdateInternalBankAccountCommand;
@@ -20,6 +21,7 @@ namespace SMART.ERP.API.Controllers.v1
 
         [HttpGet("GetAll")]
         [AllowAnonymous]
+        [OutputCache(PolicyName = "cache_internalBankAccounts")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllInternalBankAccountsQuery

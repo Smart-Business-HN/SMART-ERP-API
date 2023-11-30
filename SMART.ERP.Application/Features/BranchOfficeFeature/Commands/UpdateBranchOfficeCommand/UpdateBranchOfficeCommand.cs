@@ -7,6 +7,7 @@ using SMART.ERP.Application.Specifications.BranchOfficeSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Application.DTOs.Company;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.Application.Features.BranchOfficeFeature.Commands.UpdateBranchOfficeCommand
 {
@@ -28,13 +29,15 @@ namespace SMART.ERP.Application.Features.BranchOfficeFeature.Commands.UpdateBran
         private readonly IRepositoryAsync<BranchOffices> _repositoryAsync;
         private readonly IMapper _mapper;
         private readonly IJwtService _jwtService;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public UpdateBranchOfficeCommandHandler(IRepositoryAsync<BranchOffices> repositoryAsync, IMapper mapper,
-            IJwtService jwtService)
+            IJwtService jwtService, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _mapper = mapper;
             _jwtService = jwtService;
+            _outputCacheStored = outputCacheStored;
         }
         public async Task<Response<BranchOfficeDto>> Handle(UpdateBranchOfficeCommand request, CancellationToken cancellationToken)
         {
@@ -70,6 +73,7 @@ namespace SMART.ERP.Application.Features.BranchOfficeFeature.Commands.UpdateBran
             branchOffice.IsMainBranchOffice = request.IsMainBranchOffice;
             await _repositoryAsync.UpdateAsync(branchOffice);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_branchOffices", cancellationToken);
             var dto = _mapper.Map<BranchOfficeDto>(branchOffice);
             return new Response<BranchOfficeDto>(dto, message: $"{branchOffice.Name} actualizado correctamente");
         }

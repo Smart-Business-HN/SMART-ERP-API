@@ -5,6 +5,7 @@ using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Application.DTOs.Dashboard;
+using SMART.ERP.Application.Specifications.InvoiceSpecification;
 
 namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorMetrics
 {
@@ -16,12 +17,12 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorMetrics
     public class NumSalesFromYearQueryHandler : IRequestHandler<NumSalesFromYearQuery, Response<List<NumSalesByAdvisorDto>>>
     {
         private readonly IRepositoryAsync<User> _repositoryAsync;
-        private readonly IRepositoryAsync<Opportunity> _opportunityRepositoryAsync;
+        private readonly IRepositoryAsync<Invoice> _invoicesRepositoryAsync;
 
-        public NumSalesFromYearQueryHandler(IRepositoryAsync<User> repositoryAsync, IRepositoryAsync<Opportunity> opportunityRepositoryAsync)
+        public NumSalesFromYearQueryHandler(IRepositoryAsync<User> repositoryAsync, IRepositoryAsync<Invoice> invoiceRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
-            _opportunityRepositoryAsync = opportunityRepositoryAsync;
+            _invoicesRepositoryAsync = invoiceRepositoryAsync;
         }
 
         public async Task<Response<List<NumSalesByAdvisorDto>>> Handle(NumSalesFromYearQuery request, CancellationToken cancellationToken)
@@ -34,8 +35,7 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorMetrics
             {
                 var dto = new NumSalesByAdvisorDto();
                 dto.FullName = user.FullName;
-                var sales = await _opportunityRepositoryAsync.ListAsync(new FilterClosedOpportunitiesInYearByUserSpecification(request.Year, user.Id));
-                sales = sales.FindAll(x => x.OpportunityStep.Name == "Ganado");
+                var sales = await _invoicesRepositoryAsync.ListAsync(new FilterInvoicesInYearByUserSpecification(request.Year, user.Id));
                 dto.NumSales = sales.Count;
                 dto.Total = sales.Sum(a => a.Total);
                 response.Add(dto);

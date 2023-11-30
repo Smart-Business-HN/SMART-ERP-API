@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Address;
 using SMART.ERP.Application.DTOs.Bank;
 using SMART.ERP.Application.Features.CityFeature.Commands.UpdateCityCommand;
@@ -26,12 +27,13 @@ namespace SMART.ERP.Application.Features.BankFeature.Commands.UpdateBankCommand
     {
         private readonly IRepositoryAsync<Bank> _repositoryAsync;
         private readonly IMapper _mapper;
-
+        private readonly IOutputCacheStore _outputCacheStored;
         public UpdateBankCommandHandler(IRepositoryAsync<Bank> repositoryAsync,
-            IMapper mapper)
+            IMapper mapper, IOutputCacheStore outputCacheStore)
         {
             _repositoryAsync = repositoryAsync;
             _mapper = mapper;
+            _outputCacheStored = outputCacheStore;
         }
 
         public async Task<Response<BankDto>> Handle(UpdateBankCommand request, CancellationToken cancellationToken)
@@ -48,7 +50,7 @@ namespace SMART.ERP.Application.Features.BankFeature.Commands.UpdateBankCommand
 
             await _repositoryAsync.UpdateAsync(checkBank);
             await _repositoryAsync.SaveChangesAsync();
-
+            await _outputCacheStored.EvictByTagAsync("cache_banks", cancellationToken);
             var dto = _mapper.Map<BankDto>(checkBank);
             return new Response<BankDto>(dto, $"{request.Name} actualizado correctamente");
         }

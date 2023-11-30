@@ -6,6 +6,7 @@ using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Services.HeaderService;
 using SMART.ERP.Application.Features.BrandFeature.Commands.CreateBrandCommand;
 using SMART.ERP.Application.Features.BrandFeature.Commands.UpdateBrandCommand;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.API.Controllers.v1
 {
@@ -35,10 +36,11 @@ namespace SMART.ERP.API.Controllers.v1
 
         [HttpGet("GetAll")]
         [AllowAnonymous]
+        [OutputCache(PolicyName = "cache_brands")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
-            if (!_headerService.VerificatedSecretKey())
-                return Unauthorized();
+            //if (!_headerService.VerificatedSecretKey())
+            //    return Unauthorized();
 
             return Ok(await Mediator.Send(new GetAllBrandQuery
             {

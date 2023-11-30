@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Company;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
@@ -21,10 +22,12 @@ namespace SMART.ERP.Application.Features.TaxFeature.Commands.UpdateTaxCommand
     {
         private readonly IRepositoryAsync<Tax> _repositoryAsync;
         private readonly IMapper _mapper;
-        public UpdateTaxCommandHandler(IRepositoryAsync<Tax> repositoryAsync, IMapper mapper)
+        private readonly IOutputCacheStore _outputCacheStored;
+        public UpdateTaxCommandHandler(IRepositoryAsync<Tax> repositoryAsync, IMapper mapper, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _mapper = mapper;
+            _outputCacheStored = outputCacheStored;
         }
         public async Task<Response<TaxDto>> Handle(UpdateTaxCommand request, CancellationToken cancellationToken)
         {
@@ -43,6 +46,7 @@ namespace SMART.ERP.Application.Features.TaxFeature.Commands.UpdateTaxCommand
             tax.TextForDocuments = request.TextForDocuments;
             await _repositoryAsync.UpdateAsync(tax);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_taxes", cancellationToken);
             var dto = _mapper.Map<TaxDto>(tax);
             return new Response<TaxDto>(dto, message: $"{tax.Name} actualizado correctamente");
         }

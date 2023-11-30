@@ -6,6 +6,7 @@ using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Services.HeaderService;
 using SMART.ERP.Application.Features.CategoryFeature.Commands.CreateCategoryCommand;
 using SMART.ERP.Application.Features.CategoryFeature.Commands.UpdateCategoryCommand;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.API.Controllers.v1
 {
@@ -28,6 +29,7 @@ namespace SMART.ERP.API.Controllers.v1
 
         [HttpGet("GetAll")]
         [AllowAnonymous]
+        [OutputCache (PolicyName ="cache_categories")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
             if (!_headerService.VerificatedSecretKey())
@@ -42,16 +44,6 @@ namespace SMART.ERP.API.Controllers.v1
                 Column = filter.Column,
                 All = filter.All
             }));
-        }
-
-        [HttpGet("GetAllNavCategory")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAllNavCategory()
-        {
-            if (!_headerService.VerificatedSecretKey())
-                return Unauthorized();
-
-            return Ok(await Mediator.Send(new GetAllNavCategoriesQuery()));
         }
 
         [HttpPost("Create")]

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
@@ -14,10 +15,12 @@ namespace SMART.ERP.Application.Features.StatusFeature.Commands.DeleteStatusComm
     public class DeleteStatusCommandHandler : IRequestHandler<DeleteStatusCommand, Response<string>>
     {
         private readonly IRepositoryAsync<Status> _repositoryAsync;
+        private readonly IOutputCacheStore _outputCacheStored;
 
-        public DeleteStatusCommandHandler(IRepositoryAsync<Status> repositoryAsync)
+        public DeleteStatusCommandHandler(IRepositoryAsync<Status> repositoryAsync, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
+            _outputCacheStored = outputCacheStored;
         }
 
         public async Task<Response<string>> Handle(DeleteStatusCommand request, CancellationToken cancellationToken)
@@ -32,7 +35,7 @@ namespace SMART.ERP.Application.Features.StatusFeature.Commands.DeleteStatusComm
             {
                 await _repositoryAsync.DeleteAsync(checkStatus);
                 await _repositoryAsync.SaveChangesAsync();
-
+                await _outputCacheStored.EvictByTagAsync("cache_statuses", cancellationToken);
                 return new Response<string>("Eliminado correctamente");
             }
             catch (Exception)

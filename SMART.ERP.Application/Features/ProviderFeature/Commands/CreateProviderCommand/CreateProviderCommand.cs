@@ -7,6 +7,7 @@ using SMART.ERP.Application.Specifications.ProviderSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Application.DTOs.Product;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.Application.Features.ProviderFeature.Commands.CreateProviderCommand
 {
@@ -29,13 +30,15 @@ namespace SMART.ERP.Application.Features.ProviderFeature.Commands.CreateProvider
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Provider> _repositoryAsync;
         private readonly IJwtService _jwtService;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public CreateProviderCommandHandler(IMapper mapper, IRepositoryAsync<Provider> repositoryAsync,
-            IJwtService jwtService)
+            IJwtService jwtService, IOutputCacheStore outputCacheStored)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
             _jwtService = jwtService;
+            _outputCacheStored = outputCacheStored;
         }
 
         public async Task<Response<ProviderDto>> Handle(CreateProviderCommand request, CancellationToken cancellationToken)
@@ -71,6 +74,7 @@ namespace SMART.ERP.Application.Features.ProviderFeature.Commands.CreateProvider
 
             var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_providers", cancellationToken);
             var dto = _mapper.Map<ProviderDto>(data);
 
             return new Response<ProviderDto>(dto, message: $"{request.Name} creado exitosamente");

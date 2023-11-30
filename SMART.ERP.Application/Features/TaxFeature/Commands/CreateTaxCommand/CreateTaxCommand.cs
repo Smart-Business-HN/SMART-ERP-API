@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Company;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
@@ -19,10 +20,12 @@ namespace SMART.ERP.Application.Features.TaxFeature.Commands.CreateTaxCommand
     {
         private readonly IRepositoryAsync<Tax> _repositoryAsync;
         private readonly IMapper _mapper;
-        public CreateTaxCommandHandler(IRepositoryAsync<Tax> repositoryAsync, IMapper mapper)
+        private readonly IOutputCacheStore _outputCacheStored;
+        public CreateTaxCommandHandler(IRepositoryAsync<Tax> repositoryAsync, IMapper mapper, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _mapper = mapper;
+            _outputCacheStored = outputCacheStored;
         }
         public async Task<Response<TaxDto>> Handle(CreateTaxCommand request, CancellationToken cancellationToken)
         {
@@ -34,6 +37,7 @@ namespace SMART.ERP.Application.Features.TaxFeature.Commands.CreateTaxCommand
             var newRecord = _mapper.Map<Tax>(request);
             var response = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_taxes", cancellationToken);
             var dto = _mapper.Map<TaxDto>(response);
             return new Response<TaxDto>(dto, $"Impuesto {request.Name} creado exitosamente.");
         }

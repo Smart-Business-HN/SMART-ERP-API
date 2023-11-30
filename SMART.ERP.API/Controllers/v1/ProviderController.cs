@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.ProviderFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.ProviderFeature.Commands.CreateProviderCommand;
 using SMART.ERP.Application.Features.ProviderFeature.Commands.UpdateProviderCommand;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.API.Controllers.v1
 {
@@ -20,6 +21,7 @@ namespace SMART.ERP.API.Controllers.v1
 
         [HttpGet("GetAll")]
         [Authorize]
+        [OutputCache(PolicyName = "cache_providers")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllProvidersQuery()
