@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Status;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
@@ -22,12 +23,14 @@ namespace SMART.ERP.Application.Features.StatusFeature.Commands.UpdateStatusComm
         private readonly IRepositoryAsync<Status> _repositoryAsync;
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<TypeStatus> _typeStatusRepositoryAsync;
+        private readonly IOutputCacheStore _outputCacheStored;
 
-        public UpdateStatusCommandHandler(IRepositoryAsync<Status> repositoryAsync, IMapper mapper, IRepositoryAsync<TypeStatus> typeStatusRepositoryAsync)
+        public UpdateStatusCommandHandler(IRepositoryAsync<Status> repositoryAsync, IMapper mapper, IRepositoryAsync<TypeStatus> typeStatusRepositoryAsync, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _mapper = mapper;
             _typeStatusRepositoryAsync = typeStatusRepositoryAsync;
+            _outputCacheStored = outputCacheStored;
         }
 
         public async Task<Response<StatusDto>> Handle(UpdateStatusCommand request, CancellationToken cancellationToken)
@@ -54,7 +57,7 @@ namespace SMART.ERP.Application.Features.StatusFeature.Commands.UpdateStatusComm
 
             await _repositoryAsync.UpdateAsync(checkStatus);
             await _repositoryAsync.SaveChangesAsync();
-
+            await _outputCacheStored.EvictByTagAsync("cache_statuses",cancellationToken);
             var dto = _mapper.Map<StatusDto>(checkStatus);
 
             return new Response<StatusDto>(dto, $"{request.Name} actualizado correctamente");

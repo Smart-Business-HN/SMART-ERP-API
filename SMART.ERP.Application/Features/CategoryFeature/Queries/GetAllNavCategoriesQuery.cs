@@ -31,12 +31,14 @@ namespace SMART.ERP.Application.Features.CategoryFeature.Queries
                     List<ResumeSubcategoryDto> subcategories = new List<ResumeSubcategoryDto>();
                     nav.Id = item.Id;
                     nav.Category = item.Name;
+                    nav.Slug = item.Slug;
                     foreach (var detail in item.Subcategories)
                     {
                         if (await _productRepositoryAsync.AnyAsync(new FilterNavSpecification(detail.Id)))
                         {
                             ResumeSubcategoryDto subcategory = new ResumeSubcategoryDto();
                             subcategory.Name = detail.Name;
+                            subcategory.Slug = detail.Slug;
                             subcategory.Id = detail.Id;
                             subcategories.Add(subcategory);
                         }

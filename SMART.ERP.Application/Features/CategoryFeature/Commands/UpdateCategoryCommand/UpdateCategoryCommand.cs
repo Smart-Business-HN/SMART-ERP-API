@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
@@ -24,13 +25,15 @@ namespace SMART.ERP.Application.Features.CategoryFeature.Commands.UpdateCategory
         private readonly IRepositoryAsync<Category> _repositoryAsync;
         private readonly IMapper _mapper;
         private readonly IJwtService _jwtService;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public UpdateCategoryCommandHandler(IRepositoryAsync<Category> repositoryAsync, IMapper mapper,
-            IJwtService jwtService)
+            IJwtService jwtService, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _mapper = mapper;
             _jwtService = jwtService;
+            _outputCacheStored = outputCacheStored;
         }
         public async Task<Response<CategoryDto>> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
         {
@@ -56,6 +59,7 @@ namespace SMART.ERP.Application.Features.CategoryFeature.Commands.UpdateCategory
                 category.ModificatedBy = _jwtService.GetSubjectToken();
                 await _repositoryAsync.UpdateAsync(category);
                 await _repositoryAsync.SaveChangesAsync();
+                await _outputCacheStored.EvictByTagAsync("cache_categories", cancellationToken);
                 var dto = _mapper.Map<CategoryDto>(category);
                 return new Response<CategoryDto>(dto, message: $"{category.Name} actualizado correctamente");
             }

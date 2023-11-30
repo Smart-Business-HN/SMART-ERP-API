@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.BrandSpecification;
@@ -21,11 +22,13 @@ namespace SMART.ERP.Application.Features.BrandFeature.Commands.CreateBrandComman
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Brand> _repositoryAsync;
+        private readonly IOutputCacheStore _outputCacheStored;
 
-        public CreateBrandCommandHandler(IMapper mapper, IRepositoryAsync<Brand> repositoryAsync)
+        public CreateBrandCommandHandler(IMapper mapper, IRepositoryAsync<Brand> repositoryAsync, IOutputCacheStore outputCacheStored)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
+            _outputCacheStored = outputCacheStored;
         }
 
         public async Task<Response<Brand>> Handle(CreateBrandCommand request, CancellationToken cancellationToken)
@@ -40,6 +43,7 @@ namespace SMART.ERP.Application.Features.BrandFeature.Commands.CreateBrandComman
 
             var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_brands",cancellationToken);
             return new Response<Brand>(data, message: $"{request.Name} creado exitosamente");
         }
     }

@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.DepartmentFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.DepartmentFeature.Commands.CreateDepartmentCommand;
 using SMART.ERP.Application.Features.DepartmentFeature.Commands.UpdateDepartmentCommand;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.API.Controllers.v1
 {
@@ -20,6 +21,7 @@ namespace SMART.ERP.API.Controllers.v1
 
         [HttpGet("GetAll")]
         [AllowAnonymous]
+        [OutputCache(PolicyName = "cache_departments")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
 

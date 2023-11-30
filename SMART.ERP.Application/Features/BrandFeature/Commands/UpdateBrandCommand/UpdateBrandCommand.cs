@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.BrandSpecification;
@@ -20,10 +21,12 @@ namespace SMART.ERP.Application.Features.BrandFeature.Commands.UpdateBrandComman
     public class UpdateBrandCommandHandler : IRequestHandler<UpdateBrandCommand, Response<Brand>>
     {
         private readonly IRepositoryAsync<Brand> _repositoryAsync;
+        private readonly IOutputCacheStore _outputCacheStored;
 
-        public UpdateBrandCommandHandler(IRepositoryAsync<Brand> repositoryAsync)
+        public UpdateBrandCommandHandler(IRepositoryAsync<Brand> repositoryAsync, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
+            _outputCacheStored = outputCacheStored;
         }
         public async Task<Response<Brand>> Handle(UpdateBrandCommand request, CancellationToken cancellationToken)
         {
@@ -47,6 +50,7 @@ namespace SMART.ERP.Application.Features.BrandFeature.Commands.UpdateBrandComman
                 brand.IsActive = request.IsActive;
                 await _repositoryAsync.UpdateAsync(brand);
                 await _repositoryAsync.SaveChangesAsync();
+                await _outputCacheStored.EvictByTagAsync("cache_brands", cancellationToken);
                 return new Response<Brand>(brand, message: $"{brand.Name} actualizado correctamente");
             }
         }

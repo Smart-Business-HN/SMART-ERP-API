@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Features.GenderFeature.Queries;
 
 namespace SMART.ERP.API.Controllers.v1
@@ -16,6 +17,7 @@ namespace SMART.ERP.API.Controllers.v1
 
         [HttpGet("GetAll")]
         [AllowAnonymous]
+        [OutputCache(PolicyName = "cache_genders")]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await Mediator.Send(new GetAllGendersQuery()));

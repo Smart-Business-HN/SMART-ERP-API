@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.StatusFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.StatusFeature.Commands.CreateStatusCommand;
 using SMART.ERP.Application.Features.StatusFeature.Commands.UpdateStatusCommand;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.API.Controllers.v1
 {
@@ -20,6 +21,7 @@ namespace SMART.ERP.API.Controllers.v1
 
         [HttpGet("GetAll")]
         [Authorize]
+        [OutputCache(PolicyName = "cache_statuses")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllStatusesQuery

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -12,10 +13,12 @@ namespace SMART.ERP.Application.Features.SubcategoryFeature.Commands.DeleteSubca
     public class DeleteSubcategoryCommandHandler : IRequestHandler<DeleteSubcategoryCommand, Response<string>>
     {
         private readonly IRepositoryAsync<Subcategory> _repositoryAsync;
+        private readonly IOutputCacheStore _outputCacheStored;
 
-        public DeleteSubcategoryCommandHandler(IRepositoryAsync<Subcategory> repositoryAsync)
+        public DeleteSubcategoryCommandHandler(IRepositoryAsync<Subcategory> repositoryAsync, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
+            _outputCacheStored = outputCacheStored;
         }
         public async Task<Response<string>> Handle(DeleteSubcategoryCommand request, CancellationToken cancellationToken)
         {
@@ -26,6 +29,7 @@ namespace SMART.ERP.Application.Features.SubcategoryFeature.Commands.DeleteSubca
             }
             await _repositoryAsync.DeleteAsync(subcategory);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_subCategories", cancellationToken);
             return new Response<string>($"{subcategory.Name} eliminado correctamente", "Eliminado correctamente");
         }
     }

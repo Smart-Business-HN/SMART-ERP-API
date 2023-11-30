@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
@@ -45,12 +46,15 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
         private readonly IRepositoryAsync<Brand> _brandRepositoryAsync;
         private readonly IRepositoryAsync<Tax> _taxRepositoryAsync;
         private readonly IRepositoryAsync<UnitOfMeasurement> _measurementRepositoryAsync;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public CreateBaseProductCommandHandler(IMapper mapper, IRepositoryAsync<Product> repositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync,
             IJwtService jwtService, IRepositoryAsync<Subcategory> subcategoryRepositoryAsync,
             IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Provider> providerRepositoryAsync,
             IRepositoryAsync<Brand> brandRepositoryAsync,
-            IRepositoryAsync<UnitOfMeasurement> measurementRepositoryAsync)
+            IRepositoryAsync<UnitOfMeasurement> measurementRepositoryAsync,
+            IOutputCacheStore outputCacheStored
+            )
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
@@ -61,6 +65,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
             _brandRepositoryAsync = brandRepositoryAsync;
             _measurementRepositoryAsync = measurementRepositoryAsync;
             _taxRepositoryAsync = taxRepositoryAsync;
+            _outputCacheStored = outputCacheStored;
         }
 
         public async Task<Response<ProductDto>> Handle(CreateBaseProductCommand request, CancellationToken cancellationToken)
@@ -107,6 +112,8 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
             newRecord.CreationDate = DateTime.Now;
             var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_products", cancellationToken);
+            await _outputCacheStored.EvictByTagAsync("cache_productsEcommerce", cancellationToken);
             var dto = _mapper.Map<ProductDto>(data);
             return new Response<ProductDto>(dto, message: $"{request.Name} creado exitosamente");
         }

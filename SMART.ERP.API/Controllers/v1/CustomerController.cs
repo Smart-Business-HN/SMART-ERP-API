@@ -6,6 +6,7 @@ using SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomerComm
 using SMART.ERP.Application.Features.CustomerFeature.Commands.ImportCustomerCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.LoginCustomerCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomerCommand;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.API.Controllers.v1
 {
@@ -20,6 +21,7 @@ namespace SMART.ERP.API.Controllers.v1
         }
 
         [HttpGet("GetAll")]
+        [OutputCache(PolicyName = "cache_customers")]
         [Authorize(Roles = "SuperAdmin, Manager, Admin, CommunityManager, SalesAdvisor")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {

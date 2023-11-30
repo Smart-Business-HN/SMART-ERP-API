@@ -91,7 +91,40 @@ builder.WebHost.UseSentry(opts =>
         return @event;
     };
 });
-
+builder.Services.AddStackExchangeRedisOutputCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisServer");
+    options.InstanceName = "SB_cache_";
+});
+builder.Services.AddOutputCache(opt =>
+    {
+        //PANEL ADMIN CACHE
+        opt.AddPolicy("cache_brands", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_brands"));
+        opt.AddPolicy("cache_categories", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_categories"));
+        opt.AddPolicy("cache_cities", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_cities"));
+        opt.AddPolicy("cache_departments", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_departments"));
+        opt.AddPolicy("cache_subCategories", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_subCategories"));
+        opt.AddPolicy("cache_salesAdvisors", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_salesAdvisors"));
+        opt.AddPolicy("cache_branchOffices", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_branchOffices"));
+        opt.AddPolicy("cache_cais", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_cais"));
+        opt.AddPolicy("cache_products", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_products"));
+        opt.AddPolicy("cache_banks", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_banks"));
+        opt.AddPolicy("cache_customer", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_customer"));
+        opt.AddPolicy("cache_genders", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_genders"));
+        opt.AddPolicy("cache_headings", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_headings"));
+        opt.AddPolicy("cache_internalBankAccounts", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_internalBankAccounts"));
+        opt.AddPolicy("cache_socialReasons", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_socialReasons"));
+        opt.AddPolicy("cache_providers", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_providers"));
+        opt.AddPolicy("cache_taxes", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_tax"));
+        opt.AddPolicy("cache_typeOfPayment", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_typeOfPayment"));
+        opt.AddPolicy("cache_statuses", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_statuses"));
+        //ECOMMERCE CACHE
+        opt.AddPolicy("cache_getAllNavCategories", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_getAllNavCategories"));
+        opt.AddPolicy("cache_productsEcommerce", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsEcommerce"));
+        opt.AddPolicy("cache_productsBySameCategorySlug", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsBySameCategorySlug"));
+        opt.AddPolicy("cache_producsByCategorySlug", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_producsByCategorySlug"));
+        opt.AddPolicy("cache_productsBySubCategorySlug", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsBySubCategorySlug"));
+    }); 
 var app = builder.Build();
 app.UseSentryTracing();
 
@@ -122,11 +155,11 @@ var webSocketOptions = new WebSocketOptions
 
 //webSocketOptions.AllowedOrigins.Add("http://localhost:4200");
 webSocketOptions.AllowedOrigins.Add("https://admin.smartbusiness.site");
-
 app.UseRouting();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseOutputCache();
 app.UseErrorHandlingMiddleware();
 app.UseWebSockets(webSocketOptions);
 

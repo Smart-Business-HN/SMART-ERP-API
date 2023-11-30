@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
@@ -19,18 +20,20 @@ namespace SMART.ERP.Application.Features.SubcategoryFeature.Commands.UpdateSubca
         public bool IsActive { get; set; }
     }
 
-    public class UpdateCategoryCommandHandler : IRequestHandler<UpdateSubcategoryCommand, Response<SubcategoryDto>>
+    public class UpdateSubCategoryCommandHandler : IRequestHandler<UpdateSubcategoryCommand, Response<SubcategoryDto>>
     {
         private readonly IRepositoryAsync<Subcategory> _repositoryAsync;
         private readonly IJwtService _jwtService;
         private readonly IMapper _mapper;
+        private readonly IOutputCacheStore _outputCacheStored;
 
-        public UpdateCategoryCommandHandler(IMapper mapper, IRepositoryAsync<Subcategory> repositoryAsync,
-            IJwtService jwtService)
+        public UpdateSubCategoryCommandHandler(IMapper mapper, IRepositoryAsync<Subcategory> repositoryAsync,
+            IJwtService jwtService, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _jwtService = jwtService;
             _mapper = mapper;
+            _outputCacheStored = outputCacheStored;
         }
         public async Task<Response<SubcategoryDto>> Handle(UpdateSubcategoryCommand request, CancellationToken cancellationToken)
         {
@@ -52,6 +55,7 @@ namespace SMART.ERP.Application.Features.SubcategoryFeature.Commands.UpdateSubca
             subcategory.ModificatedBy = _jwtService.GetSubjectToken();
             await _repositoryAsync.UpdateAsync(subcategory);
             await _repositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_subCategories", cancellationToken);
             var dto = _mapper.Map<SubcategoryDto>(subcategory);
             return new Response<SubcategoryDto>(dto, message: $"{subcategory.Name} actualizado correctamente");
         }

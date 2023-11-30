@@ -40,11 +40,12 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                 var products = await _repositoryAsync.ListAsync(
                     new FilterAndPaginationProductForEcommerceSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
                 var dto = _mapper.Map<List<ProductDto>>(products);
+                var spec = new ProductsForEcommerceSpecification();
                 foreach (var product in dto)
                 {
                     product.SubCategory!.Category = _mapper.Map<CategoryDto>(categories.Find(y => y.Id == product.SubCategory.CategoryId));
                 }
-                return new PagedResponse<List<ProductDto>>(dto, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync());
+                return new PagedResponse<List<ProductDto>>(dto, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync(spec));
             }
         }
     }

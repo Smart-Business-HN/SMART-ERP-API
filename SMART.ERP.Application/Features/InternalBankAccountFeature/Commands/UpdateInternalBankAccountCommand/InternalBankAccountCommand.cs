@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Address;
 using SMART.ERP.Application.DTOs.InternalBankAccount;
 using SMART.ERP.Application.Features.CityFeature.Commands.UpdateCityCommand;
@@ -28,13 +29,15 @@ namespace SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.Upd
         private readonly IRepositoryAsync<InternalBankAccount> _repositoryAsync;
         private readonly IRepositoryAsync<Bank> _bankRepositoryAsync;
         private readonly IMapper _mapper;
+        private readonly IOutputCacheStore _outputCacheStored;
 
         public UpdateInternalBankAccountCommandHandler(IRepositoryAsync<InternalBankAccount> repositoryAsync, IRepositoryAsync<Bank> bankRepositoryAsync,
-            IMapper mapper)
+            IMapper mapper, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _bankRepositoryAsync = bankRepositoryAsync;
             _mapper = mapper;
+            _outputCacheStored = outputCacheStored;
         }
 
         public async Task<Response<InternalBankAccountDto>> Handle(UpdateInternalBankAccountCommand request, CancellationToken cancellationToken)
@@ -58,7 +61,7 @@ namespace SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.Upd
 
             await _repositoryAsync.UpdateAsync(checkInternalBankAccount);
             await _repositoryAsync.SaveChangesAsync();
-
+            await _outputCacheStored.EvictByTagAsync("cache_interBankAccounts", cancellationToken);
             var dto = _mapper.Map<InternalBankAccountDto>(checkInternalBankAccount);
             return new Response<InternalBankAccountDto>(dto, $"{request.Name} actualizado correctamente");
         }
