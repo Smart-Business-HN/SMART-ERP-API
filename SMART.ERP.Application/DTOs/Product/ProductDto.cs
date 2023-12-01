@@ -1,4 +1,5 @@
 ﻿using SMART.ERP.Application.DTOs.Company;
+using SMART.ERP.Application.DTOs.Provider;
 using SMART.ERP.Application.DTOs.Status;
 
 namespace SMART.ERP.Application.DTOs.Product

@@ -81,6 +81,8 @@ using SMART.ERP.Application.DTOs.BillPayment;
 using SMART.ERP.Application.DTOs.TypeOfPaymentMethod;
 using SMART.ERP.Application.Features.BillPaymentFeature.Commands.CreateBillPaymentCommand;
 using SMART.ERP.Application.Features.QuotationFeature.Commands.CopyQuotationFromIdCommand;
+using SMART.ERP.Application.DTOs.Provider;
+using SMART.ERP.Application.DTOs.TypeProvider;
 
 namespace SMART.ERP.Application.Mappings
 {
@@ -192,6 +194,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<InternalBankAccount, InternalBankAccountDto>();
             CreateMap<BillPayment, BillPaymentDto>();
             CreateMap<TypeOfPaymentMethod, TypeOfPaymentMethodDto>();
+            CreateMap<TypeProvider, TypeProviderDto>();
             #endregion
 
             #region Commands

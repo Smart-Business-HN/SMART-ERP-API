@@ -1,4 +1,6 @@
-﻿namespace SMART.ERP.Application.DTOs.Product
+﻿using SMART.ERP.Application.DTOs.TypeProvider;
+
+namespace SMART.ERP.Application.DTOs.Provider
 {
     public class ProviderDto
     {
@@ -13,5 +15,7 @@
         public string Address { get; set; } = null!;
         public string? WebsiteUrl { get; set; }
         public bool IsActive { get; set; }
+        public int TypeProviderId { get; set; }
+        public TypeProviderDto TypeProvider { get; set; } = null!;
     }
 }

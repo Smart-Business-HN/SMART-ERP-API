@@ -6,8 +6,8 @@ using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.ProviderSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.Product;
 using Microsoft.AspNetCore.OutputCaching;
+using SMART.ERP.Application.DTOs.Provider;
 
 namespace SMART.ERP.Application.Features.ProviderFeature.Commands.CreateProviderCommand
 {
@@ -23,22 +23,25 @@ namespace SMART.ERP.Application.Features.ProviderFeature.Commands.CreateProvider
         public string Address { get; set; } = null!;
         public string? WebsiteUrl { get; set; }
         public bool IsActive { get; set; }
+        public int TypeProviderId { get; set; }
     }
 
     public class CreateProviderCommandHandler : IRequestHandler<CreateProviderCommand, Response<ProviderDto>>
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Provider> _repositoryAsync;
+        private readonly IRepositoryAsync<TypeProvider> _typeProviderRepositoryAsync;
         private readonly IJwtService _jwtService;
         private readonly IOutputCacheStore _outputCacheStored;
 
-        public CreateProviderCommandHandler(IMapper mapper, IRepositoryAsync<Provider> repositoryAsync,
+        public CreateProviderCommandHandler(IMapper mapper, IRepositoryAsync<Provider> repositoryAsync, IRepositoryAsync<TypeProvider> typeProviderRepositoryAsync,
             IJwtService jwtService, IOutputCacheStore outputCacheStored)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
             _jwtService = jwtService;
             _outputCacheStored = outputCacheStored;
+            _typeProviderRepositoryAsync = typeProviderRepositoryAsync;
         }
 
         public async Task<Response<ProviderDto>> Handle(CreateProviderCommand request, CancellationToken cancellationToken)
@@ -66,6 +69,11 @@ namespace SMART.ERP.Application.Features.ProviderFeature.Commands.CreateProvider
             if (checkIfExistByPhoneNumber != null)
             {
                 throw new ApiException($"Ya existe un registro con el numero de telefono {request.PhoneNumber}");
+            }
+            var checkIfExistTypeProvider = await _typeProviderRepositoryAsync.GetByIdAsync(request.TypeProviderId);
+            if (checkIfExistTypeProvider != null)
+            {
+                throw new ApiException($"No existe un tipo de proveedor con el id {request.TypeProviderId}");
             }
 
             var newRecord = _mapper.Map<Provider>(request);

@@ -497,3 +497,8 @@ Sexto comando: Datos demograficos de Honduras
       INSERT INTO [SmartERP].[dbo].[TypeOfPaymentMethod] (Name,IsActive) VALUES ('Efectivo',1)
       INSERT INTO [SmartERP].[dbo].[TypeOfPaymentMethod] (Name,IsActive) VALUES ('Transferencia Bancaria',1)
       INSERT INTO [SmartERP].[dbo].[TypeOfPaymentMethod] (Name,IsActive) VALUES ('Link de pago',1)
+
+      Treceabo commando: Incertar los tipos de proveedores: 
+        INSERT INTO [dbo].[TypeProvider] ([Name]) VALUES ('Proveedor')
+        INSERT INTO [dbo].[TypeProvider] ([Name]) VALUES ('Acreedor')
+        INSERT INTO [dbo].[TypeProvider] ([Name]) VALUES ('Ambos')

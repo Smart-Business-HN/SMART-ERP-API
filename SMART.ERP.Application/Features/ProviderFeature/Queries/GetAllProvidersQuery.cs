@@ -4,7 +4,7 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.ProviderSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.Product;
+using SMART.ERP.Application.DTOs.Provider;
 
 namespace SMART.ERP.Application.Features.ProviderFeature.Queries
 {

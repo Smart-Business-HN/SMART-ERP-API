@@ -8,7 +8,7 @@ namespace SMART.ERP.Application.Specifications.ProviderSpecification
         public FilterAndPaginationProviderSpecification(string? parameter, int pageNumber,
             int pageSize, string? order, string? column)
         {
-            Query.Skip((pageNumber) * pageSize).Take(pageSize).AsNoTracking();
+            Query.Include(x=>x.TypeProvider).Skip((pageNumber) * pageSize).Take(pageSize).AsNoTracking();
 
             if (!string.IsNullOrEmpty(parameter))
             {

@@ -84,6 +84,7 @@ namespace SMART.ERP.Infrastructure
         public DbSet<Bank> Banks { get; set; } = null!;
         public DbSet<InternalBankAccount> InternalBankAccounts { get; set; } = null!;
         public DbSet<BillPayment> BillPayments { get; set; } = null!;
+        public DbSet<TypeProvider> TypeProviders { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -513,6 +514,11 @@ namespace SMART.ERP.Infrastructure
             //Provider
             modelBuilder.Entity<Provider>().ToTable("Provider");
             modelBuilder.Entity<Provider>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<Provider>()
+                .HasOne(x => x.TypeProvider)
+                .WithMany()
+                .HasForeignKey(x => x.TypeProviderId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             //QuoteProduct
             modelBuilder.Entity<QuoteProduct>().ToTable("QuoteProduct");
@@ -1072,7 +1078,9 @@ namespace SMART.ERP.Infrastructure
               .HasForeignKey(x => x.InternalBankAccountId)
               .OnDelete(DeleteBehavior.Restrict);
 
-
+            //Type Provider
+            modelBuilder.Entity<TypeProvider>().ToTable("TypeProvider");
+            modelBuilder.Entity<TypeProvider>(o => o.HasKey(x => x.Id));
             base.OnModelCreating(modelBuilder);
         }
     }
