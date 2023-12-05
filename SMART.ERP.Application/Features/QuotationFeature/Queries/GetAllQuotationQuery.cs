@@ -33,7 +33,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Queries
                 request.PageNumber = 0;
                 request.PageSize = await _repositoryAsync.CountAsync();
             }
-            var quotations = await _repositoryAsync.ListAsync(new QueryQuotationSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
+            var quotations = await _repositoryAsync.ListAsync(new FilterAndPaginationQuotationSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
             var dto = _mapper.Map<List<QuotationDto>>(quotations);
             return new PagedResponse<List<QuotationDto>>(dto, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync());
         }

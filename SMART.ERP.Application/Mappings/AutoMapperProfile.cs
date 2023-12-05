@@ -83,6 +83,9 @@ using SMART.ERP.Application.Features.BillPaymentFeature.Commands.CreateBillPayme
 using SMART.ERP.Application.Features.QuotationFeature.Commands.CopyQuotationFromIdCommand;
 using SMART.ERP.Application.DTOs.Provider;
 using SMART.ERP.Application.DTOs.TypeProvider;
+using SMART.ERP.Application.DTOs.PurchaseOrder;
+using SMART.ERP.Application.DTOs.ProductToPurchase;
+using SMART.ERP.Application.Features.PurchaseOrderFeature.Commands.CreatePurchaseOrderCommand;
 
 namespace SMART.ERP.Application.Mappings
 {
@@ -195,6 +198,10 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<BillPayment, BillPaymentDto>();
             CreateMap<TypeOfPaymentMethod, TypeOfPaymentMethodDto>();
             CreateMap<TypeProvider, TypeProviderDto>();
+            CreateMap<PurchaseOrder, PurchaseOrderDto>();
+            CreateMap<ProductToPurchase, ProductToPurchaseDto>();
+            CreateMap<ProductToPurchaseDto, ProductToPurchase>();
+            CreateMap<ProductToBuyDto, ProductToPurchase>();
             #endregion
 
             #region Commands
@@ -257,6 +264,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateInternalBankAccountCommand, InternalBankAccount>();
             CreateMap<CreateBillPaymentCommand, BillPayment>();
             CreateMap<CopyQuotationFromIdCommand, Quotation>();
+            CreateMap<CreatePurchaseOrderCommand, PurchaseOrder>();
             #endregion
         }
     }
