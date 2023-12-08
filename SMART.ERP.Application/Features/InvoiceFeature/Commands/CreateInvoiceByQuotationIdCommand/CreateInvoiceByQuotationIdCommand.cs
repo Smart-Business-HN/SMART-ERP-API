@@ -104,12 +104,12 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             await _repositoryAsync.SaveChangesAsync();
             if (caiExist.AvailableInvoices < (caiExist.EndCorrelative - caiExist.StartCorrelative))
             {
-                caiExist.AvailableInvoices = caiExist.AvailableInvoices - 1;
-                caiExist.CurrentCorrelative = caiExist.CurrentCorrelative + 1;
+                caiExist.AvailableInvoices--;
+                caiExist.CurrentCorrelative++;
             }
             else
             {
-                caiExist.AvailableInvoices = caiExist.AvailableInvoices - 1;
+                caiExist.AvailableInvoices--;
             }
             await _caiRepositoryAsync.UpdateAsync(caiExist);
             await _caiRepositoryAsync.SaveChangesAsync();
@@ -124,8 +124,11 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             }
             quotationExist.StatusId = 7;
             quotationExist.InvoiceDestinationId = invoiceResponse.Id;
+            var productsOffered = quotationExist.ProductsOffered;
+            quotationExist.ProductsOffered = null;
             await _quotationRepositoryAsync.UpdateAsync(quotationExist);
             await _quotationRepositoryAsync.SaveChangesAsync();
+            quotationExist.ProductsOffered = productsOffered;
             var quotationExistDto = _mapper.Map<QuotationDto>(quotationExist);
             if (quotationExistDto.ProductsOffered != null && quotationExistDto.ProductsOffered.Count > 0)
             {
