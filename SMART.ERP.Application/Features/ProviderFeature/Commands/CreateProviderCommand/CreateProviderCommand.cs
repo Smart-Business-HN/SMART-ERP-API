@@ -71,7 +71,7 @@ namespace SMART.ERP.Application.Features.ProviderFeature.Commands.CreateProvider
                 throw new ApiException($"Ya existe un registro con el numero de telefono {request.PhoneNumber}");
             }
             var checkIfExistTypeProvider = await _typeProviderRepositoryAsync.GetByIdAsync(request.TypeProviderId);
-            if (checkIfExistTypeProvider != null)
+            if (checkIfExistTypeProvider == null)
             {
                 throw new ApiException($"No existe un tipo de proveedor con el id {request.TypeProviderId}");
             }

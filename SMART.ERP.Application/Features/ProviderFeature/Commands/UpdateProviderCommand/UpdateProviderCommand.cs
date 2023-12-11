@@ -46,31 +46,30 @@ namespace SMART.ERP.Application.Features.ProviderFeature.Commands.UpdateProvider
         }
         public async Task<Response<ProviderDto>> Handle(UpdateProviderCommand request, CancellationToken cancellationToken)
         {
-            var dataSheet = await _repositoryAsync.GetByIdAsync(request.Id);
-            if (dataSheet == null)
+            var provider = await _repositoryAsync.FirstOrDefaultAsync( new FilterProviderSpecification(null,request.Id));
+            if (provider == null)
             {
                 throw new KeyNotFoundException($"No se encontro ningun registro con el id {request.Id}");
             }
-            var checkIfExistByName = await _repositoryAsync.FirstOrDefaultAsync(new FilterProviderSpecification(request.Name, request.Id));
-            if (checkIfExistByName != null)
+            var checkIfExistByName = await _repositoryAsync.FirstOrDefaultAsync(new FilterProviderSpecification(request.Name, null));
+            if (checkIfExistByName != null && checkIfExistByName.Id != provider.Id)
             {
                 throw new ApiException($"Ya existe un registro con el nombre {request.Name}");
             }
-            var checkIfExistByEmail = await _repositoryAsync.FirstOrDefaultAsync(
-                new FilterProviderSpecification(request.Email, request.Id));
-            if (checkIfExistByEmail != null)
+            var checkIfExistByEmail = await _repositoryAsync.FirstOrDefaultAsync( new FilterProviderSpecification(request.Email, null));
+            if (checkIfExistByEmail != null && provider.Id != checkIfExistByEmail.Id)
             {
                 throw new ApiException($"Ya existe un registro con el correo {request.Email}");
             }
             var checkIfExistByRTN = await _repositoryAsync.FirstOrDefaultAsync(
-                new FilterProviderSpecification(request.RTN, request.Id));
-            if (checkIfExistByRTN != null)
+                new FilterProviderSpecification(request.RTN, null));
+            if (checkIfExistByRTN != null && provider.Id != checkIfExistByRTN.Id)
             {
                 throw new ApiException($"Ya existe un registro con el RTN {request.RTN}");
             }
             var checkIfExistByPhoneNumber = await _repositoryAsync.FirstOrDefaultAsync(
-                new FilterProviderSpecification(request.PhoneNumber, request.Id));
-            if (checkIfExistByPhoneNumber != null)
+                new FilterProviderSpecification(request.PhoneNumber, null));
+            if (checkIfExistByPhoneNumber != null && provider.Id != checkIfExistByPhoneNumber.Id)
             {
                 throw new ApiException($"Ya existe un registro con el numero de telefono {request.PhoneNumber}");
             }
@@ -80,23 +79,23 @@ namespace SMART.ERP.Application.Features.ProviderFeature.Commands.UpdateProvider
                 throw new ApiException($"No existe un tipo de proveedor con el id {request.TypeProviderId}");
             }
 
-            dataSheet.Name = request.Name;
-            dataSheet.Email = request.Email;
-            dataSheet.RTN = request.RTN;
-            dataSheet.PhoneNumber = request.PhoneNumber;
-            dataSheet.ContactEmail = request.ContactEmail;
-            dataSheet.ContactPerson = request.ContactPerson;
-            dataSheet.ContactPhoneNumber = request.ContactPhoneNumber;
-            dataSheet.WebsiteUrl = request.WebsiteUrl;
-            dataSheet.Address = request.Address;
-            dataSheet.IsActive = request.IsActive;
-            dataSheet.ModificationDate = DateTime.Now;
-            dataSheet.ModificatedBy = _jwtService.GetSubjectToken();
-            await _repositoryAsync.UpdateAsync(dataSheet);
+            provider.Name = request.Name;
+            provider.Email = request.Email;
+            provider.RTN = request.RTN;
+            provider.PhoneNumber = request.PhoneNumber;
+            provider.ContactEmail = request.ContactEmail;
+            provider.ContactPerson = request.ContactPerson;
+            provider.ContactPhoneNumber = request.ContactPhoneNumber;
+            provider.WebsiteUrl = request.WebsiteUrl;
+            provider.Address = request.Address;
+            provider.IsActive = request.IsActive;
+            provider.ModificationDate = DateTime.Now;
+            provider.ModificatedBy = _jwtService.GetSubjectToken();
+            await _repositoryAsync.UpdateAsync(provider);
             await _repositoryAsync.SaveChangesAsync();
             await _outputCacheStored.EvictByTagAsync("cache_providers", cancellationToken);
-            var dto = _mapper.Map<ProviderDto>(dataSheet);
-            return new Response<ProviderDto>(dto, message: $"{dataSheet.Name} actualizado correctamente");
+            var dto = _mapper.Map<ProviderDto>(provider);
+            return new Response<ProviderDto>(dto, message: $"{provider.Name} actualizado correctamente");
         }
     }
 }
