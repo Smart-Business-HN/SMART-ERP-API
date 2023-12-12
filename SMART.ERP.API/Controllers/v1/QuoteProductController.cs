@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.QuoteProductFeature.Queries;
 using SMART.ERP.Application.Features.QuoteProductFeature.Commands.CreateQuoteProductCommand;
 using SMART.ERP.Application.Features.QuoteProductFeature.Commands.UpdateQuoteProductCommand;
 using SMART.ERP.Application.Features.QuoteProductFeature.Commands.UpdateStatusQuoteProductCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

@@ -6,6 +6,7 @@ using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.DTOs.Dashboard;
 using SMART.ERP.Application.Features.OpportunityActivityFeature.Commands.CreateOpportunityActivityCommand;
 using SMART.ERP.Application.Features.OpportunityActivityFeature.Commands.UpdateOpportunityActivityCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

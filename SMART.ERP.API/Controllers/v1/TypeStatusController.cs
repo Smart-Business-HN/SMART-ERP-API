@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.TypeStatusFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.TypeStatusFeature.Commands.CreateTypeStatusCommand;
 using SMART.ERP.Application.Features.TypeStatusFeature.Commands.UpdateTypeStatusCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

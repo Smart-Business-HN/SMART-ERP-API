@@ -7,6 +7,7 @@ using SMART.ERP.Application.Services.HeaderService;
 using SMART.ERP.Application.Features.CategoryFeature.Commands.CreateCategoryCommand;
 using SMART.ERP.Application.Features.CategoryFeature.Commands.UpdateCategoryCommand;
 using Microsoft.AspNetCore.OutputCaching;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

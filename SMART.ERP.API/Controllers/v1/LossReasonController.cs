@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.LossReasonFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.LossReasonFeature.Commands.CreateLossReasonCommand;
 using SMART.ERP.Application.Features.LossReasonFeature.Commands.UpdateLossReasonCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

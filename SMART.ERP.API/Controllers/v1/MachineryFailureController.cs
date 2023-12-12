@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.MachineryFailureFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.MachineryFailureFeature.Commands.CreateMachineryFailureCommand;
 using SMART.ERP.Application.Features.MachineryFailureFeature.Commands.UpdateMachineryFailureCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

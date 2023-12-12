@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.TypeActivityFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.TypeActivityFeature.Commands.CreateTypeActivityCommand;
 using SMART.ERP.Application.Features.TypeActivityFeature.Commands.UpdateTypeActivityCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

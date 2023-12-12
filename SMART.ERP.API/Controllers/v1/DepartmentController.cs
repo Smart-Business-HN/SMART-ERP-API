@@ -6,6 +6,7 @@ using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.DepartmentFeature.Commands.CreateDepartmentCommand;
 using SMART.ERP.Application.Features.DepartmentFeature.Commands.UpdateDepartmentCommand;
 using Microsoft.AspNetCore.OutputCaching;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

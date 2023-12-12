@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.FinancingPlanFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.FinancingPlanFeature.Commands.CreateFinancingPlanCommand;
 using SMART.ERP.Application.Features.FinancingPlanFeature.Commands.UpdateFinancingPlanCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

@@ -6,6 +6,7 @@ using SMART.ERP.Application.Features.RegionFeature.Commands.AssignRegionDepartme
 using SMART.ERP.Application.Features.RegionFeature.Commands.CreateRegionCommand;
 using SMART.ERP.Application.Features.RegionFeature.Commands.RemoveRegionDepartmentCommand;
 using SMART.ERP.Application.Features.RegionFeature.Commands.UpdateRegionCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

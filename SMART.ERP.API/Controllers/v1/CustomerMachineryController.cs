@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.CustomerMachineryFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.CustomerMachineryFeature.Commands.CreateCustomerMachineryCommand;
 using SMART.ERP.Application.Features.CustomerMachineryFeature.Commands.UpdateCustomerMachineryCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {
