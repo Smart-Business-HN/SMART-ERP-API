@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using SMART.ERP.API.Extensions;
 using SMART.ERP.Application;
 using SMART.ERP.Application.Repository;
@@ -8,10 +7,11 @@ using SMART.ERP.Application.Services.SignalRHub;
 using Quartz;
 using SMART.ERP.Infrastructure;
 using SMART.ERP.Infrastructure.Repository;
-using System.Reflection;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Asp.Versioning;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,45 +29,72 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddApplicationLayer(builder.Configuration);
-builder.Services.AddApiVersioningExtension();
-builder.Services.AddVersionedApiExplorer(setup =>
-{
-    setup.GroupNameFormat = "'v'VVV";
-    setup.SubstituteApiVersionInUrl = true;
-});
+builder.Services.AddApiVersioning(
+                    options =>
+                    {
+                        options.ReportApiVersions = true;
+                        options.Policies.Sunset(0.9)
+                                        .Effective(DateTimeOffset.Now.AddDays(60))
+                                        .Link("policy.html")
+                                            .Title("Versioning Policy")
+                                            .Type("text/html");
+                    })
+                .AddMvc()
+                .AddApiExplorer(
+                    options =>
+                    {
+                        options.GroupNameFormat = "'v'VVV";
+                        options.SubstituteApiVersionInUrl = true;
+                    });
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+builder.Services.AddSwaggerGen(
+    options =>
+    {
+        options.OperationFilter<SwaggerDefaultValues>();
+        var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
+        var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
+        options.IncludeXmlComments(filePath);
+    });
+
+//builder.Services.AddApiVersioningExtension();
+//builder.Services.AddVersionedApiExplorer(setup =>
+//{
+//    setup.GroupNameFormat = "'v'VVV";
+//    setup.SubstituteApiVersionInUrl = true;
+//});
 
 builder.Services.AddSignalR();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Version = "v1",
-        Title = "SMART ERP",
-        Description = "Una API web de ASP.NET Core para gestionar el ERP del lado administrativo ",
-        Contact = new OpenApiContact
-        {
-            Name = "Contacto",
-            Url = new Uri("https://github.com/Smart-Business-HN")
-        },
-    });
-    options.SwaggerDoc("v2", new OpenApiInfo
-    {
-        Version = "v2",
-        Title = "SMART ERP",
-        Description = "Una API web de ASP.NET Core para gestionar el E-Commerce",
-        Contact = new OpenApiContact
-        {
-            Name = "Contacto",
-            Url = new Uri("https://github.com/Smart-Business-HN")
-        },
-    });
-    // using System.Reflection;
-    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+//builder.Services.AddSwaggerGen(options =>
+//{
+//    options.SwaggerDoc("v1", new OpenApiInfo
+//    {
+//        Version = "v1",
+//        Title = "SMART ERP",
+//        Description = "Una API web de ASP.NET Core para gestionar el ERP del lado administrativo ",
+//        Contact = new OpenApiContact
+//        {
+//            Name = "Contacto",
+//            Url = new Uri("https://github.com/Smart-Business-HN")
+//        },
+//    });
+//    options.SwaggerDoc("v2", new OpenApiInfo
+//    {
+//        Version = "v2",
+//        Title = "SMART ERP",
+//        Description = "Una API web de ASP.NET Core para gestionar el E-Commerce",
+//        Contact = new OpenApiContact
+//        {
+//            Name = "Contacto",
+//            Url = new Uri("https://github.com/Smart-Business-HN")
+//        },
+//    });
+//    // using System.Reflection;
+//    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+//    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 
-});
+//});
 
 builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
 
@@ -124,23 +151,25 @@ builder.Services.AddOutputCache(opt =>
         opt.AddPolicy("cache_productsBySameCategorySlug", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsBySameCategorySlug"));
         opt.AddPolicy("cache_producsByCategorySlug", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_producsByCategorySlug"));
         opt.AddPolicy("cache_productsBySubCategorySlug", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsBySubCategorySlug"));
-    }); 
+    });
 var app = builder.Build();
 app.UseSentryTracing();
 
-var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+    app.UseSwaggerUI(
+        options =>
         {
-            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
-                description.GroupName.ToUpperInvariant());
-        }
-    });
+            var descriptions = app.DescribeApiVersions();
+            foreach (var description in descriptions)
+            {
+                var url = $"/swagger/{description.GroupName}/swagger.json";
+                var name = description.GroupName.ToUpperInvariant();
+                options.SwaggerEndpoint(url, name);
+            }
+        });
 }
 
 if (!app.Environment.IsDevelopment())
@@ -176,6 +205,6 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
 });
-app.MapHub<NotificationHub>("hub/notification"); 
+app.MapHub<NotificationHub>("hub/notification");
 app.MapControllers();
 app.Run();

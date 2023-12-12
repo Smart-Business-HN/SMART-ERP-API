@@ -67,7 +67,7 @@ namespace SMART.ERP.Application
             services.AddHttpContextAccessor();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            services.AddMediatR(Assembly.GetExecutingAssembly());
+            //services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Startup).Assembly));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             services.Configure<JWTSettings>(configuration.GetSection("JWTSettings"));
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
