@@ -29,7 +29,6 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddApplicationLayer(builder.Configuration);
 builder.Services.AddApiVersioning(
                     options =>
@@ -58,43 +57,7 @@ builder.Services.AddSwaggerGen(
         options.IncludeXmlComments(filePath);
     });
 
-//builder.Services.AddApiVersioningExtension();
-//builder.Services.AddVersionedApiExplorer(setup =>
-//{
-//    setup.GroupNameFormat = "'v'VVV";
-//    setup.SubstituteApiVersionInUrl = true;
-//});
-
 builder.Services.AddSignalR();
-//builder.Services.AddSwaggerGen(options =>
-//{
-//    options.SwaggerDoc("v1", new OpenApiInfo
-//    {
-//        Version = "v1",
-//        Title = "SMART ERP",
-//        Description = "Una API web de ASP.NET Core para gestionar el ERP del lado administrativo ",
-//        Contact = new OpenApiContact
-//        {
-//            Name = "Contacto",
-//            Url = new Uri("https://github.com/Smart-Business-HN")
-//        },
-//    });
-//    options.SwaggerDoc("v2", new OpenApiInfo
-//    {
-//        Version = "v2",
-//        Title = "SMART ERP",
-//        Description = "Una API web de ASP.NET Core para gestionar el E-Commerce",
-//        Contact = new OpenApiContact
-//        {
-//            Name = "Contacto",
-//            Url = new Uri("https://github.com/Smart-Business-HN")
-//        },
-//    });
-//    // using System.Reflection;
-//    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-//    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-
-//});
 
 builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
 
@@ -182,7 +145,7 @@ var webSocketOptions = new WebSocketOptions
     KeepAliveInterval = TimeSpan.FromMinutes(2)
 };
 
-//webSocketOptions.AllowedOrigins.Add("http://localhost:4200");
+webSocketOptions.AllowedOrigins.Add("http://localhost:4200");
 webSocketOptions.AllowedOrigins.Add("https://admin.smartbusiness.site");
 app.UseRouting();
 app.UseCors();
