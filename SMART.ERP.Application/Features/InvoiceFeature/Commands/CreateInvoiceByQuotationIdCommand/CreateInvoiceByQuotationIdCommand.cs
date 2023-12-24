@@ -121,6 +121,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             for (int i = 0; i < quotationExist?.ProductsOffered?.Count;i++)
             {
                 quotationExist.ProductsOffered[i].Tax = null;
+                quotationExist.ProductsOffered[i].Product.Brand = null;
             }
             quotationExist.StatusId = 7;
             quotationExist.InvoiceDestinationId = invoiceResponse.Id;

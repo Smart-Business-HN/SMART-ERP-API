@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿    using Microsoft.EntityFrameworkCore;
 using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Infrastructure
