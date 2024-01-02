@@ -44,13 +44,6 @@ Para poder acceder y conocer las entidades, funciones y dependencias desde otras
 | Infrastructure | Application, Domain |
 | Domain| Ninguna |
 
-## Platino HN
-Platino Motors fue desarrollado en conjunto con la plataforma Platino HN, por lo cual referencias de dicho proyecto se pueden encontrar en la solución. Los proyectos de Platino HN contienen la misma lógica y arquitectura de Platino Motors.
-
-<p align="center">
-<img width="30%" src="https://grupoplatino.github.io/PlatinoHN/static/media/icons.91fd43b49334b5df02da05fae0a3efe8.svg">
-</p>
-
 Comandos en la base de datos:
 
 Primer comando: Este es para crear el seed de la compañia
