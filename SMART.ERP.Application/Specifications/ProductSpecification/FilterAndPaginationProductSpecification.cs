@@ -3,7 +3,7 @@ using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.ProductSpecification
 {
-    partial class FilterAndPaginationProductSpecification : Specification<Product>
+    public class FilterAndPaginationProductSpecification : Specification<Product>
     {
         public FilterAndPaginationProductSpecification(string? parameter, int pageNumber, int pageSize,
             string? order, string? column)
