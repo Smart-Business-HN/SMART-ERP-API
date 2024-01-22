@@ -7,6 +7,7 @@ using SMART.ERP.Application.Features.OpportunityFeature.Commands.CreateOpportuni
 using SMART.ERP.Application.Features.OpportunityFeature.Commands.CreateOpportunityCommand;
 using SMART.ERP.Application.Features.OpportunityFeature.Commands.UpdateOpportunityCommand;
 using SMART.ERP.Application.Features.OpportunityFeature.Commands.UpdateOpportunityPositionCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorDashboard;
 
 namespace SMART.ERP.API.Controllers.v1
 {
     [Authorize]
+    [ApiVersion("1.0")]
     public class AdvisorDashboardController : BaseApiController
     {
         [HttpGet("OpportunityStepMetrics")]

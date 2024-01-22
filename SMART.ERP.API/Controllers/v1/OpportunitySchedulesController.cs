@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.OpportunitySchedulesFeature.Queries;
 using SMART.ERP.Application.Features.OpportunitySchedulesFeature.Commands.UpdateOpportunityScheduleCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

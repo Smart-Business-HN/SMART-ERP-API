@@ -6,6 +6,7 @@ using SMART.ERP.Application.Features.DashboardFeature.Queries.ProductMetrics;
 using SMART.ERP.Application.Features.DashboardFeature.Queries.ProspectMetrics;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.DashboardFeature.Queries;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

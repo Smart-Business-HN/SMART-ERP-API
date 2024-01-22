@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.WishListFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.WishListFeature.Commands.CreateWishListCommand;
 using SMART.ERP.Application.Features.WishListFeature.Commands.UpdateWishListCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

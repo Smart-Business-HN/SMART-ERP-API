@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿    using Microsoft.EntityFrameworkCore;
 using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Infrastructure
@@ -84,6 +84,8 @@ namespace SMART.ERP.Infrastructure
         public DbSet<Bank> Banks { get; set; } = null!;
         public DbSet<InternalBankAccount> InternalBankAccounts { get; set; } = null!;
         public DbSet<BillPayment> BillPayments { get; set; } = null!;
+        public DbSet<TypeProvider> TypeProviders { get; set; } = null!;
+        public DbSet<PurchaseOrder> PurchaseOrders { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -513,6 +515,11 @@ namespace SMART.ERP.Infrastructure
             //Provider
             modelBuilder.Entity<Provider>().ToTable("Provider");
             modelBuilder.Entity<Provider>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<Provider>()
+                .HasOne(x => x.TypeProvider)
+                .WithMany()
+                .HasForeignKey(x => x.TypeProviderId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             //QuoteProduct
             modelBuilder.Entity<QuoteProduct>().ToTable("QuoteProduct");
@@ -1071,6 +1078,64 @@ namespace SMART.ERP.Infrastructure
               .WithMany()
               .HasForeignKey(x => x.InternalBankAccountId)
               .OnDelete(DeleteBehavior.Restrict);
+            //Purchase Order
+            modelBuilder.Entity<PurchaseOrder>().ToTable("PurchaseOrder");
+            modelBuilder.Entity<PurchaseOrder>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<PurchaseOrder>()
+                .HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PurchaseOrder>()
+               .HasOne(x => x.Provider)
+               .WithMany()
+               .HasForeignKey(x => x.ProviderId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PurchaseOrder>()
+               .HasOne(x => x.Status)
+               .WithMany()
+               .HasForeignKey(x => x.StatusId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PurchaseOrder>()
+               .HasOne(x => x.BranchOffice)
+               .WithMany()
+               .HasForeignKey(x => x.BranchOfficeId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PurchaseOrder>()
+               .HasOne(x => x.Prefix)
+               .WithMany()
+               .HasForeignKey(x => x.PrefixId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            //modelBuilder.Entity<Quotation>()
+            //  .HasOne(x => x.InvoiceDestination)
+            //  .WithMany()
+            //  .HasForeignKey(x => x.InvoiceDestinationId)
+            //  .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PurchaseOrder>()
+                .HasMany(p => p.ProductsToPurchase)
+                .WithOne(x => x.PurchaseOrder)
+                .HasForeignKey(x => x.PurchaseOrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+            //Product To Purchase
+            modelBuilder.Entity<ProductToPurchase>().ToTable("ProductToPurchase");
+            modelBuilder.Entity<ProductToPurchase>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<ProductToPurchase>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Type Provider
+            modelBuilder.Entity<TypeProvider>().ToTable("TypeProvider");
+            modelBuilder.Entity<TypeProvider>(o => o.HasKey(x => x.Id));
 
 
             base.OnModelCreating(modelBuilder);

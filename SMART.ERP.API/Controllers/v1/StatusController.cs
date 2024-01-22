@@ -6,6 +6,7 @@ using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.StatusFeature.Commands.CreateStatusCommand;
 using SMART.ERP.Application.Features.StatusFeature.Commands.UpdateStatusCommand;
 using Microsoft.AspNetCore.OutputCaching;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

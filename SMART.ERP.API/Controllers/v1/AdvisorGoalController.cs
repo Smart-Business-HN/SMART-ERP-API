@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.AdvisorGoalFeature.Queries;
 using SMART.ERP.Application.Features.AdvisorGoalFeature.Commands.UpdateAdvisorGoalCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

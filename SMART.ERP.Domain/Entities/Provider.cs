@@ -17,5 +17,7 @@
         public DateTime? ModificationDate { get; set; }
         public string? ModificatedBy { get; set; }
         public bool IsActive { get; set; }
+        public int TypeProviderId { get; set; }
+        public virtual TypeProvider TypeProvider { get; set; } = null!;
     }
 }

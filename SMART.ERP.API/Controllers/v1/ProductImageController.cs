@@ -4,6 +4,7 @@ using SMART.ERP.Application.Features.ProductImageFeature.Commands.DeleteProductI
 using SMART.ERP.Application.Features.ProductImageFeature.Queries;
 using SMART.ERP.Application.Features.ProductImageFeature.Commands.CreateProductImageCommand;
 using SMART.ERP.Application.Features.ProductImageFeature.Commands.UpdateProductImageCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.DocumentTypeFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.DocumentTypeFeature.Commands.CreateDocumentTypeCommand;
 using SMART.ERP.Application.Features.DocumentTypeFeature.Commands.UpdateDocumentTypeCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

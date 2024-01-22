@@ -7,6 +7,7 @@ using SMART.ERP.Application.Features.HeroSliderFeature.Queries;
 using SMART.ERP.Application.Features.HeroSliderFeature.Commands.CreateHeroSliderCommand;
 using SMART.ERP.Application.Features.HeroSliderFeature.Commands.UpdateCategoryPositionCommand;
 using SMART.ERP.Application.Features.HeroSliderFeature.Commands.UpdateHeroSliderCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

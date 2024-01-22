@@ -12,6 +12,7 @@ using SMART.ERP.Application.Features.UserFeature.Commands.CreateUserCommand;
 using SMART.ERP.Application.Features.UserFeature.Commands.ForgotPasswordCommand;
 using SMART.ERP.Application.Features.UserFeature.Commands.LoginUserCommand;
 using SMART.ERP.Application.Features.UserFeature.Commands.UpdateUserCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

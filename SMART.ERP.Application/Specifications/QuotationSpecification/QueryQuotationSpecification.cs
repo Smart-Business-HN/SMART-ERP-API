@@ -3,9 +3,9 @@ using Ardalis.Specification;
 
 namespace SMART.ERP.Application.Specifications.QuotationSpecification
 {
-    public class QueryQuotationSpecification : Specification<Quotation>
+    public class FilterAndPaginationQuotationSpecification : Specification<Quotation>
     {
-        public QueryQuotationSpecification(string? parameter, int pageNumber,
+        public FilterAndPaginationQuotationSpecification(string? parameter, int pageNumber,
             int pageSize, string? order, string? column) 
         {
              Query.Include(x => x.ProductsOffered!).ThenInclude(x => x.Product).ThenInclude(x => x!.Brand)

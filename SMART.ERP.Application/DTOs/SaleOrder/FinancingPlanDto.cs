@@ -1,4 +1,4 @@
-﻿using SMART.ERP.Application.DTOs.Product;
+﻿using SMART.ERP.Application.DTOs.Provider;
 
 namespace SMART.ERP.Application.DTOs.SaleOrder
 {

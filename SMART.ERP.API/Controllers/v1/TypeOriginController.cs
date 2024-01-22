@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.TypeOriginFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.TypeOriginFeature.Commands.CreateTypeOriginCommand;
 using SMART.ERP.Application.Features.TypeOriginFeature.Commands.UpdateTypeOriginCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

@@ -7,8 +7,7 @@ namespace SMART.ERP.Application.Specifications.ProviderSpecification
     {
         public FilterProviderSpecification(string? filter, int? id)
         {
-            if (id != null) Query.Where(x => (x.Name == filter || x.RTN == filter
-            || x.Email == filter || x.PhoneNumber == filter) && x.Id != id).AsNoTracking();
+            if (id != null) Query.Include(x=>x.TypeProvider).Where(x => x.Id == id).AsNoTracking();
             else Query.Where(x => x.Name == filter || x.RTN == filter
             || x.Email == filter || x.PhoneNumber == filter).AsNoTracking();
         }

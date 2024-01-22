@@ -30,7 +30,6 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Queries
             }
             var dto = _mapper.Map<QuotationDto>(getQuotation);
             return new Response<QuotationDto>(dto);
-
         }
     }
 }

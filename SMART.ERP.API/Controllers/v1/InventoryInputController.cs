@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateInventoryInputCommand;
+using SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateInventoryInputCommandByPurchaseOrderIdCommand;
 using SMART.ERP.Application.Features.InventoryInputFeature.Commands.DeleteInventoryInputCommand;
 using SMART.ERP.Application.Features.InventoryInputFeature.Queries;
 using SMART.ERP.Application.Parameters;
@@ -11,8 +13,14 @@ namespace SMART.ERP.API.Controllers.v1
     public class InventoryInputController : BaseApiController
     {
         [HttpPost("Create")]
-        [Authorize(Roles = "SuperAdmin, Manager")]
+        [Authorize(Roles = "SuperAdmin, Manager, Warehouse Agent, Admin, Purchasing Agent")]
         public async Task<IActionResult> Create([FromBody] CreateInventoryInputCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+        [HttpPost("CreateByPurchaseOrderId")]
+        [Authorize(Roles = "SuperAdmin, Manager, Purchasing Agent, Admin")]
+        public async Task<IActionResult> CreateByPurchaseOrderId([FromBody] CreateInventoryInputByPurchaseOrderIdCommand command)
         {
             return Ok(await Mediator.Send(command));
         }

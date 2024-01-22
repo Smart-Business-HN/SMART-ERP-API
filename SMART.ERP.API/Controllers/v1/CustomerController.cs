@@ -7,6 +7,7 @@ using SMART.ERP.Application.Features.CustomerFeature.Commands.ImportCustomerComm
 using SMART.ERP.Application.Features.CustomerFeature.Commands.LoginCustomerCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomerCommand;
 using Microsoft.AspNetCore.OutputCaching;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

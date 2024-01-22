@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.AdvisorDepartmentFeature.Commands.DeleteAdvisorDepartmentCommand;
 using SMART.ERP.Application.Features.AdvisorDepartmentFeature.Queries;
 using SMART.ERP.Application.Features.AdvisorDepartmentFeature.Commands.CreateAdvisorDepartmentCommand;
+using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {
