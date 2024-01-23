@@ -9,11 +9,11 @@ namespace SMART.ERP.Application.Specifications.WarehouseSpecification
         {
             if (id == null)
             {
-                Query.Include(a => a.InventoryDistributions).ThenInclude(a => a.Product);
+                Query.Include(a => a.InventoryDistributions!).ThenInclude(a => a.Product);
             }
             else
             {
-                Query.Include(a=>a.InventoryDistributions).ThenInclude(a=>a.Product).Where(a => a.Id == id);
+                Query.Include(a => a.InventoryDistributions!).ThenInclude(a=>a.Product).Where(a => a.Id == id);
             }
         }
     }

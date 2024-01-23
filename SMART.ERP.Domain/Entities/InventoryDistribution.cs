@@ -7,6 +7,6 @@
         public virtual Product? Product { get; set; }
         public int WarehouseId { get; set; }
         public virtual Warehouse? Warehouse { get; set; }
-        public double Quantity { get; set; }
+        public decimal Quantity { get; set; }
     }
 }

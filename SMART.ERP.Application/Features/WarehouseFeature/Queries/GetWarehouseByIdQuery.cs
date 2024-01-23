@@ -27,11 +27,12 @@ namespace SMART.ERP.Application.Features.WarehouseFeature.Queries
         public async Task<Response<WarehouseDto>> Handle(GetWarehouseByIdQuery request, CancellationToken cancellationToken)
         {
             var warehouse = await _repositoryAsync.FirstOrDefaultAsync(
-                new WarehoseIncludesSpecification(id: request.Id));
+                new WarehoseIncludesSpecification(request.Id));
             if (warehouse == null)
             {
                 throw new KeyNotFoundException($"Registro no encontrado con el id {request.Id}");
             }
+            warehouse.InventoryDistributions = null;
             var dto = _mapper.Map<WarehouseDto>(warehouse);
             return new Response<WarehouseDto>(dto);
         }
