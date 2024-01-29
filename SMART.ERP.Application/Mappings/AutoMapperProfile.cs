@@ -86,6 +86,7 @@ using SMART.ERP.Application.DTOs.TypeProvider;
 using SMART.ERP.Application.DTOs.PurchaseOrder;
 using SMART.ERP.Application.DTOs.ProductToPurchase;
 using SMART.ERP.Application.Features.PurchaseOrderFeature.Commands.CreatePurchaseOrderCommand;
+using SMART.ERP.Application.DTOs.InventoryDistribution;
 
 namespace SMART.ERP.Application.Mappings
 {
@@ -181,6 +182,9 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<ProductToOfferdDto, ProductOffered>();
             CreateMap<InternalDocument, InternalDocumentDto>();
             CreateMap<Warehouse,WarehouseDto>();
+            CreateMap<InventoryDistribution, InventoryDistributionDto>();
+            CreateMap<InventoryDistributionDto, InventoryDistribution>();
+            CreateMap<WarehouseDto, Warehouse>();
             CreateMap<InventoryInputType, InventoryInputTypeDto>();
             CreateMap<InventoryInput,InventoryInputDto>();
             CreateMap<ProductEntry, ProductEntryDto>();

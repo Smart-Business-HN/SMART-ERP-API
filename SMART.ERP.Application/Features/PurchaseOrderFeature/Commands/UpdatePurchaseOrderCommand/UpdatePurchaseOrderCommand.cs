@@ -112,6 +112,10 @@ namespace SMART.ERP.Application.Features.PurchaseOrderFeature.Commands.UpdatePur
             {
                 purhaseOrderExist.TermsAndConditions = request.TermsAndConditions;
             }
+            if (request.DueDate != null && purhaseOrderExist.DueDate != request.DueDate)
+            {
+                purhaseOrderExist.DueDate = (DateTime)request.DueDate;
+            }
             //PRODUCS to offered
             var taxesInDatabase = await _taxRepositoryAsync.ListAsync();
             var pre = await CheckProducts(request.ProductsToPurchase, request.ProductsToBuy, request.Id, taxesInDatabase);
