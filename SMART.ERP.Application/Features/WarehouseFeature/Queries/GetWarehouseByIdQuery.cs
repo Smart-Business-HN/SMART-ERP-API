@@ -32,7 +32,6 @@ namespace SMART.ERP.Application.Features.WarehouseFeature.Queries
             {
                 throw new KeyNotFoundException($"Registro no encontrado con el id {request.Id}");
             }
-            warehouse.InventoryDistributions = null;
             var dto = _mapper.Map<WarehouseDto>(warehouse);
             return new Response<WarehouseDto>(dto);
         }

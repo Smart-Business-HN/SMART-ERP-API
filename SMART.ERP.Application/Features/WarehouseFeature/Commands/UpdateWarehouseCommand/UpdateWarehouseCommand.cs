@@ -69,6 +69,11 @@ namespace SMART.ERP.Application.Features.WarehouseFeature.Commands.UpdateWarehou
             {
                 warehouse.Name = request.Name;
             }
+            if(request.Address != warehouse.Address)
+            { 
+                warehouse.Address = request.Address; 
+            }
+
             warehouse.BranchOfficeId = request.BranchOfficeId;
             warehouse.ModificatedBy = _jwtService.GetSubjectToken();
             warehouse.ModificationDate = DateTime.Now;

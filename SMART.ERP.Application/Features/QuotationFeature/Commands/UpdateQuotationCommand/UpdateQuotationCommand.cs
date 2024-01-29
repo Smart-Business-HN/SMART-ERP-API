@@ -104,6 +104,10 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             {
                 quotationExist.TermsAndConditions = request.TermsAndConditions;
             }
+            if(request.DueDate != null && quotationExist.DueDate != request.DueDate)
+            {
+                quotationExist.DueDate = (DateTime)request.DueDate;
+            }
             //PRODUCS to offered
             var taxesInDatabase = await _taxRepositoryAsync.ListAsync();
             var pre = await CheckProducts(request.ProductsOffered, request.ProductsToOffered, request.Id, taxesInDatabase);

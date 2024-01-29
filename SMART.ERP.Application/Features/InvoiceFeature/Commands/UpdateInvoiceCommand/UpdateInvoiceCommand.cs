@@ -124,6 +124,10 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             {
                 invoiceExist.PurchaseOrderCode = request.PurchaseOrderCode;
             }
+            if( invoiceExist.CreationDate != request.CreationDate)
+            {
+                invoiceExist.CreationDate = request.CreationDate;
+            }
             var taxesRates = await _taxRepositoryAsync.ListAsync();
             var productsSold = await CheckProducts(request.ProductsSold, request.ProductsToSell, request.Id, taxesRates);
             invoiceExist.Exempt = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 0));
