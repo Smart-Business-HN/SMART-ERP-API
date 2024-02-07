@@ -1,0 +1,56 @@
+﻿using AutoMapper;
+using MediatR;
+using SMART.ERP.Application.DTOs.PurchaseBill;
+using SMART.ERP.Application.Exceptions;
+using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Specifications.PurchaseOrderSpecification;
+using SMART.ERP.Application.Wrappers;
+using SMART.ERP.Domain.Entities;
+
+namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurchaseBillFromPurchaseOrderDetailPageCommand
+{
+    public class CreatePurchaseBillFromPurchaseOrderDetailPageCommand : IRequest<Response<PurchaseBillDto>>
+    {
+        public int PurchaseOrderOriginId { get; set; }
+        public string InvoiceNumber { get; set; } = null!;
+        public DateTime InvoiceDate { get; set; }
+        public string Cai { get; set; } = null!;
+        public decimal? Exempt { get; set; }
+        public decimal? Exonerated { get; set; }
+        public decimal? TaxedAt15Percent { get; set; }
+        public decimal? TaxedAt18Percent { get; set; }
+        public decimal? Taxes15Percent { get; set; }
+        public decimal? Taxes18Percent { get; set; }
+    }
+    public class CreatePurchaseBillFromPurchaseOrderDetailPageCommandHandler : IRequestHandler<CreatePurchaseBillFromPurchaseOrderDetailPageCommand, Response<PurchaseBillDto>>
+    {
+        private readonly IRepositoryAsync<PurchaseBill> _repositoryAsync;
+        private readonly IRepositoryAsync<PurchaseOrder> _purchaseOrderRepositoryAsync;
+        private readonly IMapper _mapper;
+
+        public CreatePurchaseBillFromPurchaseOrderDetailPageCommandHandler(IRepositoryAsync<PurchaseBill> repositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IMapper mapper)
+        {
+            _repositoryAsync = repositoryAsync;
+            _purchaseOrderRepositoryAsync = purchaseOrderRepositoryAsync;
+            _mapper = mapper;
+        }
+        public async Task<Response<PurchaseBillDto>> Handle(CreatePurchaseBillFromPurchaseOrderDetailPageCommand request, CancellationToken cancellationToken)
+        {
+            var purchaseOrderExist = await _purchaseOrderRepositoryAsync.FirstOrDefaultAsync(new FilterPurchaseOrderByIdSpecification(request.PurchaseOrderOriginId));
+            if(purchaseOrderExist == null)
+            {
+                throw new ApiException($"No existe una orden de compra con el Id {request.PurchaseOrderOriginId}");
+            }
+            var newRecord = _mapper.Map<PurchaseBill>(request);
+            newRecord.PurchaseOrderOriginId = request.PurchaseOrderOriginId;
+            newRecord.ProviderId = purchaseOrderExist.ProviderId;
+            newRecord.StatusId = 27;
+            newRecord.Total = (decimal)(request.Exempt + request.Exonerated + request.Taxes15Percent + request.Taxes18Percent + request.TaxedAt15Percent + request.TaxedAt18Percent);
+            newRecord.CreationDate = DateTime.Now;
+            var purchaseBillResponse = await _repositoryAsync.AddAsync(newRecord);
+            await _repositoryAsync.SaveChangesAsync();
+            var dto = _mapper.Map<PurchaseBillDto>(purchaseBillResponse);
+            return new Response<PurchaseBillDto>(dto, $"Factura de compra para orden de compra {purchaseOrderExist.PurchaseOrderCode} creada exitosamente.");
+        }
+    }
+}

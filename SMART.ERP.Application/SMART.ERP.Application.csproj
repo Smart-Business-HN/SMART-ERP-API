@@ -41,6 +41,8 @@
 
   <ItemGroup>
     <Folder Include="Features\OpinionFeature\Commands\" />
+    <Folder Include="Features\PurchaseBillFeature\Commands\CreatePurchaseBillCommand\" />
+    <Folder Include="Features\PurchaseBillFeature\Queries\" />
     <Folder Include="Features\WarehouseFeature\Commands\DeleteWarehouseCommand\" />
     <Folder Include="Features\WishListFeature\Commands\UpdateWishListCommand\" />
     <Folder Include="Features\WishListProductFeature\Commands\UpdateWishListProductCommand\" />
