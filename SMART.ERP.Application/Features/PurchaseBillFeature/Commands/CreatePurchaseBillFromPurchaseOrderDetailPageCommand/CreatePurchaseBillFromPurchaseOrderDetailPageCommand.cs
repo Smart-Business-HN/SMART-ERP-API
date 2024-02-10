@@ -49,6 +49,15 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             newRecord.CreationDate = DateTime.Now;
             var purchaseBillResponse = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
+            purchaseOrderExist.PurchaseBillDestinationId = purchaseBillResponse.Id;
+            purchaseOrderExist.Prefix = null;
+            purchaseOrderExist.Provider = null;
+            purchaseOrderExist.ProductsToPurchase = null;
+            purchaseOrderExist.Status = null;
+            purchaseOrderExist.BranchOffice = null;
+            purchaseOrderExist.User = null;
+            await _purchaseOrderRepositoryAsync.UpdateAsync(purchaseOrderExist);
+            await _purchaseOrderRepositoryAsync.SaveChangesAsync();
             var dto = _mapper.Map<PurchaseBillDto>(purchaseBillResponse);
             return new Response<PurchaseBillDto>(dto, $"Factura de compra para orden de compra {purchaseOrderExist.PurchaseOrderCode} creada exitosamente.");
         }

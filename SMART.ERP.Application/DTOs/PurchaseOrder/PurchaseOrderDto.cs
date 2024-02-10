@@ -1,6 +1,7 @@
 ﻿using SMART.ERP.Application.DTOs.Company;
 using SMART.ERP.Application.DTOs.ProductToPurchase;
 using SMART.ERP.Application.DTOs.Provider;
+using SMART.ERP.Application.DTOs.PurchaseBill;
 using SMART.ERP.Application.DTOs.Status;
 using SMART.ERP.Application.DTOs.User;
 
@@ -27,6 +28,7 @@ namespace SMART.ERP.Application.DTOs.PurchaseOrder
         public int PrefixId { get; set; }
         public virtual PrefixDto? Prefix { get; set; }
         public int? PurchaseBillDestinationId { get; set; }
+        public PurchaseBillDto? PurchaseBillDestination { get; set; }
         public List<ProductToPurchaseDto>? ProductsToPurchase { get; set; }
     }
 }

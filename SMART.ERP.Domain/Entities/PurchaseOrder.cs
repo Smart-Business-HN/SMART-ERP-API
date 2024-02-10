@@ -21,6 +21,7 @@
         public int PrefixId { get; set; }
         public virtual Prefix? Prefix { get; set; }
         public int? PurchaseBillDestinationId { get; set; }
+        public virtual PurchaseBill? PurchaseBillDestination { get; set; }
         public List<ProductToPurchase>? ProductsToPurchase { get; set; }
     }
 }
