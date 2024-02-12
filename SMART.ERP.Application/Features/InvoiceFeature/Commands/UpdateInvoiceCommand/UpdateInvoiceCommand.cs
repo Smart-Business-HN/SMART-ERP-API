@@ -134,7 +134,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
                 invoiceExist.Taxes15Percent = CalculateTaxesValue(productsSold, taxesRates.Find(x => x.Rate == 15));
                 invoiceExist.Taxes18Percent = CalculateTaxesValue(productsSold, taxesRates.Find(x => x.Rate == 18));
                 invoiceExist.Exonerated = 0;
-                invoiceExist.Total = invoiceExist.TaxedAt15Percent + invoiceExist.TaxedAt18Percent + invoiceExist.Taxes15Percent + invoiceExist.Taxes18Percent;
+                invoiceExist.Total = invoiceExist.TaxedAt15Percent + invoiceExist.TaxedAt18Percent + invoiceExist.Taxes15Percent + invoiceExist.Taxes18Percent + invoiceExist.Exempt;
                 invoiceExist.Outstanding = invoiceExist.Total;
             }
             else

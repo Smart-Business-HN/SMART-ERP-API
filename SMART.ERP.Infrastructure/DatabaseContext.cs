@@ -1157,7 +1157,29 @@ namespace SMART.ERP.Infrastructure
                .WithMany()
                .HasForeignKey(x => x.PurchaseOrderOriginId)
                .OnDelete(DeleteBehavior.Restrict);
-
+            modelBuilder.Entity<PurchaseBill>()
+              .HasMany(p => p.PurchaseBillPayments)
+              .WithOne(x => x.PurchaseBill)
+              .HasForeignKey(x => x.PurchaseBillId)
+              .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<PurchaseBill>()
+               .HasOne(x => x.Prefix)
+               .WithMany()
+               .HasForeignKey(x => x.PrefixId)
+               .OnDelete(DeleteBehavior.Restrict);
+            //Purchase Bill Payment
+            modelBuilder.Entity<PurchaseBillPayment>().ToTable("PurchaseBillPayment");
+            modelBuilder.Entity<PurchaseBillPayment>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<PurchaseBillPayment>()
+              .HasOne(x => x.TypeOfPaymentMethod)
+              .WithMany()
+              .HasForeignKey(x => x.TypeOfPaymentMethodId)
+              .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<PurchaseBillPayment>()
+              .HasOne(x => x.InternalBankAccount)
+              .WithMany()
+              .HasForeignKey(x => x.InternalBankAccountId)
+              .OnDelete(DeleteBehavior.Restrict);
             base.OnModelCreating(modelBuilder);
         }
     }

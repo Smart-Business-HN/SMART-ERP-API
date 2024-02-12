@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace SMART.ERP.Domain.Entities
 {
     public class PurchaseBill
     {
         public int Id { get; init; }
+        public string PurchaseBillCode { get; set; } = null!;
         public int ProviderId { get; set; }
         public Provider? Provider { get; set; }
         public string InvoiceNumber { get; set; } = null!;
@@ -26,6 +22,10 @@ namespace SMART.ERP.Domain.Entities
         public decimal Taxes15Percent {  get; set; }
         public decimal Taxes18Percent { get; set; }
         public decimal Total { get; set; }
+        public decimal Outstanding { get; set; }
         public int? InventoryInputDestinationId { get; set; }
+        public int PrefixId {  get; set; }
+        public Prefix? Prefix { get; set; }
+        public List<PurchaseBillPayment>? PurchaseBillPayments { get; set; }
     }
 }
