@@ -7,9 +7,9 @@ namespace SMART.ERP.Application.DTOs.InventoryDistribution
     {
         public int Id { get; set; }
         public int ProductId { get; set; }
-        public  ProductDto Product { get; set; } = null!;
+        public ProductDto? Product { get; set; }
         public int WarehouseId { get; set; }
-        public WarehouseDto Warehouse { get; set; } = null!;
-        public double Quantity { get; set; }
+        public WarehouseDto? Warehouse { get; set; }
+        public decimal Quantity { get; set; }
     }
 }

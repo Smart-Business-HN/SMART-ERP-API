@@ -187,6 +187,9 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<ProductToOfferdDto, ProductOffered>();
             CreateMap<InternalDocument, InternalDocumentDto>();
             CreateMap<Warehouse,WarehouseDto>();
+            CreateMap<InventoryDistribution, InventoryDistributionDto>();
+            CreateMap<InventoryDistributionDto, InventoryDistribution>();
+            CreateMap<WarehouseDto, Warehouse>();
             CreateMap<InventoryInputType, InventoryInputTypeDto>();
             CreateMap<InventoryInput,InventoryInputDto>();
             CreateMap<ProductEntry, ProductEntryDto>();
