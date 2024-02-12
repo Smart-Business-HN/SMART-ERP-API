@@ -11,7 +11,7 @@ namespace SMART.ERP.Application.Features.ProviderFeature.Commands.UpdateProvider
                 .NotEqual(0).WithMessage("{PropertyName} no puede ser igual a cero");
             RuleFor(p => p.Name)
                 .NotEmpty().WithMessage("{PropertyName} no puede ser vacio")
-                .MaximumLength(50).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres");
+                .MaximumLength(100).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres");
 
             RuleFor(p => p.RTN)
                 .NotEmpty().WithMessage("{PropertyName} no puede ser vacio")

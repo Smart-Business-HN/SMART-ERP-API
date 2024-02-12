@@ -8,7 +8,7 @@ namespace SMART.ERP.Application.Features.ProviderFeature.Commands.CreateProvider
         {
             RuleFor(p => p.Name)
                 .NotEmpty().WithMessage("{PropertyName} no puede ser vacio")
-                .MaximumLength(50).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres");
+                .MaximumLength(100).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres");
 
             RuleFor(p => p.RTN)
                 .NotEmpty().WithMessage("{PropertyName} no puede ser vacio")

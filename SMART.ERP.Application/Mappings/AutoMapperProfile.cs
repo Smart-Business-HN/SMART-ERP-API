@@ -87,6 +87,11 @@ using SMART.ERP.Application.DTOs.PurchaseOrder;
 using SMART.ERP.Application.DTOs.ProductToPurchase;
 using SMART.ERP.Application.Features.PurchaseOrderFeature.Commands.CreatePurchaseOrderCommand;
 using SMART.ERP.Application.DTOs.InventoryDistribution;
+using SMART.ERP.Application.DTOs.PurchaseBill;
+using SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurchaseBillFromPurchaseOrderDetailPageCommand;
+using SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurchaseBillCommand;
+using SMART.ERP.Application.DTOs.PurchaseBillPayment;
+using SMART.ERP.Application.Features.PurchaseBillPaymentFeature.Commands.CreatePurchaseBillPaymentCommand;
 
 namespace SMART.ERP.Application.Mappings
 {
@@ -206,6 +211,10 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<ProductToPurchase, ProductToPurchaseDto>();
             CreateMap<ProductToPurchaseDto, ProductToPurchase>();
             CreateMap<ProductToBuyDto, ProductToPurchase>();
+            CreateMap<PurchaseBillDto, PurchaseBill>();
+            CreateMap<PurchaseBill, PurchaseBillDto>();
+            CreateMap<PurchaseBillPayment, PurchaseBillPaymentDto>();
+            CreateMap<PurchaseBillPaymentDto, PurchaseBillPayment>();
             #endregion
 
             #region Commands
@@ -269,6 +278,9 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateBillPaymentCommand, BillPayment>();
             CreateMap<CopyQuotationFromIdCommand, Quotation>();
             CreateMap<CreatePurchaseOrderCommand, PurchaseOrder>();
+            CreateMap<CreatePurchaseBillFromPurchaseOrderDetailPageCommand, PurchaseBill>();
+            CreateMap<CreatePurchaseBillCommand,PurchaseBill>();
+            CreateMap<CreatePurchaseBillPaymentCommand, PurchaseBillPayment>();
             #endregion
         }
     }
