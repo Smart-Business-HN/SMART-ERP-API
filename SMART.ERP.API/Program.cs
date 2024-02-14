@@ -108,6 +108,7 @@ builder.Services.AddOutputCache(opt =>
         opt.AddPolicy("cache_taxes", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_tax"));
         opt.AddPolicy("cache_typeOfPayment", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_typeOfPayment"));
         opt.AddPolicy("cache_statuses", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_statuses"));
+        opt.AddPolicy("cache_major_expense_account", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_major_expense_account"));
         //ECOMMERCE CACHE
         opt.AddPolicy("cache_getAllNavCategories", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_getAllNavCategories"));
         opt.AddPolicy("cache_productsEcommerce", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsEcommerce"));

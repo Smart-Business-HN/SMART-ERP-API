@@ -92,6 +92,8 @@ using SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurchase
 using SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurchaseBillCommand;
 using SMART.ERP.Application.DTOs.PurchaseBillPayment;
 using SMART.ERP.Application.Features.PurchaseBillPaymentFeature.Commands.CreatePurchaseBillPaymentCommand;
+using SMART.ERP.Application.DTOs.MajorExpenseAccount;
+using SMART.ERP.Application.Features.MajorExpenseAccountFeature.Commands.CreateMajorExpenseAccountCommand;
 
 namespace SMART.ERP.Application.Mappings
 {
@@ -215,6 +217,8 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<PurchaseBill, PurchaseBillDto>();
             CreateMap<PurchaseBillPayment, PurchaseBillPaymentDto>();
             CreateMap<PurchaseBillPaymentDto, PurchaseBillPayment>();
+            CreateMap<MajorExpenseAccount, MajorExpenseAccountDto>();
+            CreateMap<MajorExpenseAccountDto, MajorExpenseAccount>();
             #endregion
 
             #region Commands
@@ -281,6 +285,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreatePurchaseBillFromPurchaseOrderDetailPageCommand, PurchaseBill>();
             CreateMap<CreatePurchaseBillCommand,PurchaseBill>();
             CreateMap<CreatePurchaseBillPaymentCommand, PurchaseBillPayment>();
+            CreateMap<CreateMajorExpenseAccountCommand, MajorExpenseAccount>();
             #endregion
         }
     }

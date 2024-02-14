@@ -1180,6 +1180,38 @@ namespace SMART.ERP.Infrastructure
               .WithMany()
               .HasForeignKey(x => x.InternalBankAccountId)
               .OnDelete(DeleteBehavior.Restrict);
+            //Major Expense Account
+            modelBuilder.Entity<MajorExpenseAccount>().ToTable("MajorExpenseAccount");
+            modelBuilder.Entity<MajorExpenseAccount>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<MajorExpenseAccount>()
+             .HasMany(p => p.ExpenseAccounts)
+             .WithOne(x => x.MajorExpenseAccount)
+             .HasForeignKey(x => x.MajorExpenseAccountId)
+             .OnDelete(DeleteBehavior.Restrict);
+            //Expense Account
+            modelBuilder.Entity<ExpenseAccount>().ToTable("ExpenseAccount");
+            modelBuilder.Entity<ExpenseAccount>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<ExpenseAccount>()
+              .HasOne(x => x.MajorExpenseAccount)
+              .WithMany()
+              .HasForeignKey(x => x.MajorExpenseAccountId)
+              .OnDelete(DeleteBehavior.Restrict);
+            //Major Income Account
+            modelBuilder.Entity<MajorIncomeAccount>().ToTable("MajorIncomeAccount");
+            modelBuilder.Entity<MajorIncomeAccount>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<MajorIncomeAccount>()
+             .HasMany(p => p.IncomeAccounts)
+             .WithOne(x => x.MajorIncomeAccount)
+             .HasForeignKey(x => x.MajorIncomeAccountId)
+             .OnDelete(DeleteBehavior.Restrict);
+            //Income Account
+            modelBuilder.Entity<IncomeAccount>().ToTable("IncomeAccount");
+            modelBuilder.Entity<IncomeAccount>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<IncomeAccount>()
+              .HasOne(x => x.MajorIncomeAccount)
+              .WithMany()
+              .HasForeignKey(x => x.MajorIncomeAccountId)
+              .OnDelete(DeleteBehavior.Restrict);
             base.OnModelCreating(modelBuilder);
         }
     }
