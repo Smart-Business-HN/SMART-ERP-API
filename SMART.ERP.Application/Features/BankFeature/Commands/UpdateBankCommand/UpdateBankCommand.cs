@@ -13,7 +13,7 @@ namespace SMART.ERP.Application.Features.BankFeature.Commands.UpdateBankCommand
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-        public bool ItIsNationBank { get; set; }
+        public bool ItIsNationalBank { get; set; }
         public bool IsActive { get; set; }
     }
 
@@ -39,7 +39,7 @@ namespace SMART.ERP.Application.Features.BankFeature.Commands.UpdateBankCommand
             }
 
             checkBank.Name = request.Name;
-            checkBank.ItIsNationalBank = request.ItIsNationBank;
+            checkBank.ItIsNationalBank = request.ItIsNationalBank;
             checkBank.IsActive = request.IsActive;
 
             await _repositoryAsync.UpdateAsync(checkBank);

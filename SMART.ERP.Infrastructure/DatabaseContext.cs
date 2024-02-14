@@ -1191,11 +1191,6 @@ namespace SMART.ERP.Infrastructure
             //Expense Account
             modelBuilder.Entity<ExpenseAccount>().ToTable("ExpenseAccount");
             modelBuilder.Entity<ExpenseAccount>(o => o.HasKey(x => x.Id));
-            modelBuilder.Entity<ExpenseAccount>()
-              .HasOne(x => x.MajorExpenseAccount)
-              .WithMany()
-              .HasForeignKey(x => x.MajorExpenseAccountId)
-              .OnDelete(DeleteBehavior.Restrict);
             //Major Income Account
             modelBuilder.Entity<MajorIncomeAccount>().ToTable("MajorIncomeAccount");
             modelBuilder.Entity<MajorIncomeAccount>(o => o.HasKey(x => x.Id));
