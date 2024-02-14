@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Features.MajorExpenseAccountFeature.Commands.CreateMajorExpenseAccountCommand;
+using SMART.ERP.Application.Features.MajorExpenseAccountFeature.Commands.DeleteMajorExpenseAccountCommand;
 using SMART.ERP.Application.Features.MajorExpenseAccountFeature.Commands.UpdateMajorExpenseAccountCommand;
 using SMART.ERP.Application.Features.MajorExpenseAccountFeature.Queries;
 using SMART.ERP.Application.Parameters;
