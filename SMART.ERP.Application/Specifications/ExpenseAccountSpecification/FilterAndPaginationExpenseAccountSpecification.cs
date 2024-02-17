@@ -1,18 +1,18 @@
 ﻿using Ardalis.Specification;
 using SMART.ERP.Domain.Entities;
 
-namespace SMART.ERP.Application.Specifications.MajorExpenseAccountSpecification
+namespace SMART.ERP.Application.Specifications.ExpenseAccountSpecification
 {
-    public class FilterAndPaginationMajorExpenseAccountSpecification : Specification<MajorExpenseAccount>
+    public class FilterAndPaginationExpenseAccountSpecification : Specification<ExpenseAccount>
     {
-        public FilterAndPaginationMajorExpenseAccountSpecification(string? parameter, int pageNumber,
+        public FilterAndPaginationExpenseAccountSpecification(string? parameter, int pageNumber,
             int pageSize, string? order, string? column)
         {
-            Query.Include(x=>x.ExpenseAccounts).Skip((pageNumber) * pageSize).Take(pageSize).AsNoTracking();
+            Query.Skip((pageNumber) * pageSize).Take(pageSize).AsNoTracking();
 
             if (!string.IsNullOrEmpty(parameter))
             {
-                Query.Where(x => x.Name.Contains(parameter));
+                Query.Where(x => x.Name.Contains(parameter) || x.AccountNumber.Contains(parameter));
             }
 
             if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))
