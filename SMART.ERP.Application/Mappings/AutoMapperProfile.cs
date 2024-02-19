@@ -92,6 +92,14 @@ using SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurchase
 using SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurchaseBillCommand;
 using SMART.ERP.Application.DTOs.PurchaseBillPayment;
 using SMART.ERP.Application.Features.PurchaseBillPaymentFeature.Commands.CreatePurchaseBillPaymentCommand;
+using SMART.ERP.Application.DTOs.MajorExpenseAccount;
+using SMART.ERP.Application.Features.MajorExpenseAccountFeature.Commands.CreateMajorExpenseAccountCommand;
+using SMART.ERP.Application.DTOs.MajorIncomeAccount;
+using SMART.ERP.Application.Features.MajorIncomeAccountFeature.Commands.CreateMajorIncomeAccountCommand;
+using SMART.ERP.Application.DTOs.IncomeAccount;
+using SMART.ERP.Application.DTOs.ExpenseAccount;
+using SMART.ERP.Application.Features.IncomeAccountFeature.Commands.CreateIncomeAccountCommand;
+using SMART.ERP.Application.Features.ExpenseAccountFeature.Commands.CreateExpenseAccountCommand;
 
 namespace SMART.ERP.Application.Mappings
 {
@@ -215,6 +223,14 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<PurchaseBill, PurchaseBillDto>();
             CreateMap<PurchaseBillPayment, PurchaseBillPaymentDto>();
             CreateMap<PurchaseBillPaymentDto, PurchaseBillPayment>();
+            CreateMap<MajorExpenseAccount, MajorExpenseAccountDto>();
+            CreateMap<MajorExpenseAccountDto, MajorExpenseAccount>();
+            CreateMap<MajorIncomeAccount, MajorIncomeAccountDto>();
+            CreateMap<MajorIncomeAccountDto, MajorIncomeAccount>();
+            CreateMap<IncomeAccount, IncomeAccountDto>();
+            CreateMap<IncomeAccountDto, IncomeAccount>();
+            CreateMap<ExpenseAccount, ExpenseAccountDto>();
+            CreateMap<ExpenseAccountDto, ExpenseAccount>();
             #endregion
 
             #region Commands
@@ -281,6 +297,10 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreatePurchaseBillFromPurchaseOrderDetailPageCommand, PurchaseBill>();
             CreateMap<CreatePurchaseBillCommand,PurchaseBill>();
             CreateMap<CreatePurchaseBillPaymentCommand, PurchaseBillPayment>();
+            CreateMap<CreateMajorExpenseAccountCommand, MajorExpenseAccount>();
+            CreateMap<CreateMajorIncomeAccountCommand, MajorIncomeAccount>();
+            CreateMap<CreateIncomeAccountCommand, IncomeAccount>();
+            CreateMap<CreateExpenseAccountCommand, ExpenseAccount>();
             #endregion
         }
     }

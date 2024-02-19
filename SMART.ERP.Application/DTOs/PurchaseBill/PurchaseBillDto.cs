@@ -1,4 +1,5 @@
 ﻿using SMART.ERP.Application.DTOs.Company;
+using SMART.ERP.Application.DTOs.ExpenseAccount;
 using SMART.ERP.Application.DTOs.Provider;
 using SMART.ERP.Application.DTOs.PurchaseBillPayment;
 using SMART.ERP.Application.DTOs.PurchaseOrder;
@@ -33,5 +34,7 @@ namespace SMART.ERP.Application.DTOs.PurchaseBill
         public int PrefixId {  get; set; }
         public PrefixDto? Prefix { get; set; }
         public List<PurchaseBillPaymentDto>? PurchaseBillPayments { get; set; }
+        public int ExpenseAccountId { get; set; }
+        public ExpenseAccountDto? ExpenseAccount { get; set; }
     }
 }

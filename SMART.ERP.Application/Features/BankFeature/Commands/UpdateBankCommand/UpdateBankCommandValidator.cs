@@ -14,8 +14,7 @@ namespace SMART.ERP.Application.Features.BankFeature.Commands.UpdateBankCommand
                 .NotNull().WithMessage("{PropertyName es requerido}")
                 .MaximumLength(50).WithMessage("{PropertyName} no debe exceder los {MaxLength} caracteres");
 
-            RuleFor(x => x.ItIsNationBank)
-                .NotEmpty().WithMessage("{PropertyName} es requerido")
+            RuleFor(x => x.ItIsNationalBank)
                 .NotNull().WithMessage("{PropertyName es requerido}");
 
             RuleFor(x => x.IsActive)

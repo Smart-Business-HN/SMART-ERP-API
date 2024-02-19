@@ -27,5 +27,7 @@ namespace SMART.ERP.Domain.Entities
         public int PrefixId {  get; set; }
         public Prefix? Prefix { get; set; }
         public List<PurchaseBillPayment>? PurchaseBillPayments { get; set; }
+        public int ExpenseAccountId { get; set; }
+        public ExpenseAccount? ExpenseAccount { get; set; }
     }
 }

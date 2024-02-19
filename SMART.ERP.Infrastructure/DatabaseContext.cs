@@ -1167,6 +1167,11 @@ namespace SMART.ERP.Infrastructure
                .WithMany()
                .HasForeignKey(x => x.PrefixId)
                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<PurchaseBill>()
+               .HasOne(x => x.ExpenseAccount)
+               .WithMany()
+               .HasForeignKey(x => x.ExpenseAccountId)
+               .OnDelete(DeleteBehavior.Restrict);
             //Purchase Bill Payment
             modelBuilder.Entity<PurchaseBillPayment>().ToTable("PurchaseBillPayment");
             modelBuilder.Entity<PurchaseBillPayment>(o => o.HasKey(x => x.Id));
@@ -1180,6 +1185,29 @@ namespace SMART.ERP.Infrastructure
               .WithMany()
               .HasForeignKey(x => x.InternalBankAccountId)
               .OnDelete(DeleteBehavior.Restrict);
+            //Major Expense Account
+            modelBuilder.Entity<MajorExpenseAccount>().ToTable("MajorExpenseAccount");
+            modelBuilder.Entity<MajorExpenseAccount>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<MajorExpenseAccount>()
+             .HasMany(p => p.ExpenseAccounts)
+             .WithOne(x => x.MajorExpenseAccount)
+             .HasForeignKey(x => x.MajorExpenseAccountId)
+             .OnDelete(DeleteBehavior.Restrict);
+            //Expense Account
+            modelBuilder.Entity<ExpenseAccount>().ToTable("ExpenseAccount");
+            modelBuilder.Entity<ExpenseAccount>(o => o.HasKey(x => x.Id));
+            //Major Income Account
+            modelBuilder.Entity<MajorIncomeAccount>().ToTable("MajorIncomeAccount");
+            modelBuilder.Entity<MajorIncomeAccount>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<MajorIncomeAccount>()
+             .HasMany(p => p.IncomeAccounts)
+             .WithOne(x => x.MajorIncomeAccount)
+             .HasForeignKey(x => x.MajorIncomeAccountId)
+             .OnDelete(DeleteBehavior.Restrict);
+            //Income Account
+            modelBuilder.Entity<IncomeAccount>().ToTable("IncomeAccount");
+            modelBuilder.Entity<IncomeAccount>(o => o.HasKey(x => x.Id));
+
             base.OnModelCreating(modelBuilder);
         }
     }
