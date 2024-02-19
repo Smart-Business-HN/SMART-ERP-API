@@ -26,6 +26,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.UpdatePurc
         public decimal? TaxedAt18Percent { get; set; }
         public decimal? Taxes15Percent { get; set; }
         public decimal? Taxes18Percent { get; set; }
+        public int ExpenseAccountId { get; set; }
     }
     public class UpdatePurchaseBillCommandHandler : IRequestHandler<UpdatePurchaseBillCommand,Response<PurchaseBillDto>>
     {
@@ -116,6 +117,10 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.UpdatePurc
             if (purchaseBillExist.Cai != request.Cai)
             {
                 purchaseBillExist.Cai = request.Cai;
+            }
+            if (purchaseBillExist.ExpenseAccountId != request.ExpenseAccountId)
+            {
+                purchaseBillExist.ExpenseAccountId = request.ExpenseAccountId;
             }
             purchaseBillExist.Total = (decimal)(request.Exempt + request.Exonerated + request.Taxes15Percent + request.Taxes18Percent + request.TaxedAt15Percent + request.TaxedAt18Percent);
             purchaseBillExist.Outstanding = purchaseBillExist.Total;
