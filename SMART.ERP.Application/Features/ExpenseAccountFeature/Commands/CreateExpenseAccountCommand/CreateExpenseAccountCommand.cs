@@ -14,7 +14,7 @@ namespace SMART.ERP.Application.Features.ExpenseAccountFeature.Commands.CreateEx
     {
         public string Name { get; set; } = null!;
         public string AccountNumber { get; set; } = null!;
-        public int MajorIncomeAccountId { get; set; }
+        public int MajorExpenseAccountId { get; set; }
     }
     public class CreateExpenseAccountCommandHandler : IRequestHandler<CreateExpenseAccountCommand, Response<ExpenseAccountDto>>
     {

@@ -1167,6 +1167,11 @@ namespace SMART.ERP.Infrastructure
                .WithMany()
                .HasForeignKey(x => x.PrefixId)
                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<PurchaseBill>()
+               .HasOne(x => x.ExpenseAccount)
+               .WithMany()
+               .HasForeignKey(x => x.ExpenseAccountId)
+               .OnDelete(DeleteBehavior.Restrict);
             //Purchase Bill Payment
             modelBuilder.Entity<PurchaseBillPayment>().ToTable("PurchaseBillPayment");
             modelBuilder.Entity<PurchaseBillPayment>(o => o.HasKey(x => x.Id));
@@ -1202,11 +1207,7 @@ namespace SMART.ERP.Infrastructure
             //Income Account
             modelBuilder.Entity<IncomeAccount>().ToTable("IncomeAccount");
             modelBuilder.Entity<IncomeAccount>(o => o.HasKey(x => x.Id));
-            modelBuilder.Entity<IncomeAccount>()
-              .HasOne(x => x.MajorIncomeAccount)
-              .WithMany()
-              .HasForeignKey(x => x.MajorIncomeAccountId)
-              .OnDelete(DeleteBehavior.Restrict);
+
             base.OnModelCreating(modelBuilder);
         }
     }

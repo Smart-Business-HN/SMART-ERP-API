@@ -14,7 +14,7 @@ namespace SMART.ERP.Application.Features.ExpenseAccountFeature.Commands.CreateEx
              .NotEmpty().WithMessage("{PropertyName} es requerido")
              .NotNull().WithMessage("{PropertyName} es requerido")
              .MaximumLength(100).WithMessage("{PropertyName} no debe exceder los {MaxLength} caracteres");
-            RuleFor(x => x.MajorIncomeAccountId)
+            RuleFor(x => x.MajorExpenseAccountId)
               .NotNull().WithMessage("{PropertyName} es requerido");
         }
     }

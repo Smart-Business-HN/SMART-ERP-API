@@ -55,6 +55,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             newRecord.PurchaseOrderOriginId = request.PurchaseOrderOriginId;
             newRecord.ProviderId = purchaseOrderExist.ProviderId;
             newRecord.StatusId = 27;
+            newRecord.ExpenseAccountId = 1;
             newRecord.Total = (decimal)(request.Exempt + request.Exonerated + request.Taxes15Percent + request.Taxes18Percent + request.TaxedAt15Percent + request.TaxedAt18Percent);
             newRecord.Outstanding = newRecord.Total;
             newRecord.CreationDate = DateTime.Now;

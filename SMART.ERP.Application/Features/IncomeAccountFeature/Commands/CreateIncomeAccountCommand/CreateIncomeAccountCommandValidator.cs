@@ -14,7 +14,7 @@ namespace SMART.ERP.Application.Features.IncomeAccountFeature.Commands.CreateInc
              .NotEmpty().WithMessage("{PropertyName} es requerido")
              .NotNull().WithMessage("{PropertyName} es requerido")
              .MaximumLength(100).WithMessage("{PropertyName} no debe exceder los {MaxLength} caracteres");
-            RuleFor(x => x.MajorExpenseAccountId)
+            RuleFor(x => x.MajorIncomeAccountId)
               .NotNull().WithMessage("{PropertyName} es requerido");
         }
     }

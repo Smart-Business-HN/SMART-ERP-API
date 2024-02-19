@@ -14,7 +14,7 @@ namespace SMART.ERP.Application.Features.IncomeAccountFeature.Commands.CreateInc
     {
         public string Name { get; set; } = null!;
         public string AccountNumber { get; set; } = null!;
-        public int MajorExpenseAccountId { get; set; }
+        public int MajorIncomeAccountId { get; set; }
     }
     public class CreateIncomeAccountCommandHandler : IRequestHandler<CreateIncomeAccountCommand, Response<IncomeAccountDto>>
     {

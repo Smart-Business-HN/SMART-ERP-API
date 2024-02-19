@@ -25,6 +25,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
         public decimal? Taxes15Percent { get; set; }
         public decimal? Taxes18Percent { get; set; }
         public int PrefixId { get; set; }
+        public int ExpenseAccountId { get; set; }
     }
     public class CreatePurchaseBillCommandHandler : IRequestHandler<CreatePurchaseBillCommand,Response<PurchaseBillDto>>
     {
@@ -32,14 +33,16 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
         private readonly IRepositoryAsync<PurchaseOrder> _purchaseOrderRepositoryAsync;
         private readonly IRepositoryAsync<Provider> _providerRepositoryAsync;
         private readonly IRepositoryAsync<Prefix> _prefixRepositoryAsync;
+        private readonly IRepositoryAsync<ExpenseAccount> _expenseAccountRepositoryAsync;
         private readonly IMapper _mapper;
-        public CreatePurchaseBillCommandHandler(IRepositoryAsync<PurchaseBill> repositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IRepositoryAsync<Provider> providerRepositoryAsync, IMapper mapper)
+        public CreatePurchaseBillCommandHandler(IRepositoryAsync<PurchaseBill> repositoryAsync, IRepositoryAsync<ExpenseAccount> expenseAccountRepositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IRepositoryAsync<Provider> providerRepositoryAsync, IMapper mapper)
         {
             _repositoryAsync = repositoryAsync;
             _purchaseOrderRepositoryAsync = purchaseOrderRepositoryAsync;
             _providerRepositoryAsync = providerRepositoryAsync;
             _mapper = mapper;
             _prefixRepositoryAsync = prefixRepositoryAsync;
+            _expenseAccountRepositoryAsync = expenseAccountRepositoryAsync;
         }
         public async Task<Response<PurchaseBillDto>> Handle(CreatePurchaseBillCommand request, CancellationToken cancellationToken)
         {
@@ -61,11 +64,17 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             {
                 throw new ApiException($"No existe un prefijo con el id {request.PrefixId}");
             }
+            var expenseAccountExist = await _expenseAccountRepositoryAsync.GetByIdAsync(request.ExpenseAccountId);
+            if (expenseAccountExist == null)
+            {
+                throw new ApiException($"No existe una cuenta de gastos con el id {request.PrefixId}");
+            }
             var currentPurchaseBills = await _repositoryAsync.ListAsync();
             var newRecord = _mapper.Map<PurchaseBill>(request);
             newRecord.PurchaseBillCode = CreatePurchaseBillCode(prefixExist, currentPurchaseBills.Last());
             newRecord.ProviderId = request.ProviderId;
             newRecord.PurchaseOrderOriginId = request.PurchaseOrderOriginId;
+            newRecord.ExpenseAccountId = request.ExpenseAccountId;
             newRecord.StatusId = 27;
             newRecord.Total = (decimal)(request.Exempt + request.Exonerated + request.Taxes15Percent + request.Taxes18Percent + request.TaxedAt15Percent + request.TaxedAt18Percent);
             newRecord.Outstanding = newRecord.Total;
