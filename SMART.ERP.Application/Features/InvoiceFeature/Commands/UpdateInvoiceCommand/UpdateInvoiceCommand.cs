@@ -128,6 +128,18 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             {
                 invoiceExist.CreationDate = request.CreationDate;
             }
+            if (invoiceExist.SagCode != request.SagCode)
+            {
+                invoiceExist.SagCode = request.SagCode;
+            }
+            if (invoiceExist.ExemptedRegistrationCertificateNumber != request.ExemptedRegistrationCertificateNumber)
+            {
+                invoiceExist.ExemptedRegistrationCertificateNumber = request.ExemptedRegistrationCertificateNumber;
+            }
+            if (invoiceExist.ExemptOrderNumber != request.ExemptOrderNumber)
+            {
+                invoiceExist.ExemptOrderNumber = request.ExemptOrderNumber;
+            }
             var taxesRates = await _taxRepositoryAsync.ListAsync();
             var productsSold = await CheckProducts(request.ProductsSold, request.ProductsToSell, request.Id, taxesRates);
             invoiceExist.Exempt = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 0));
@@ -143,7 +155,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             }
             else
             {
-                invoiceExist.Exonerated = CalculateTaxesValue(productsSold, taxesRates.Find(x => x.Rate == 15)) + CalculateTaxesValue(productsSold, taxesRates.Find(x => x.Rate == 18));
+                invoiceExist.Exonerated = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 15)) + CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 18));
 
             }
             invoiceExist.ProductsSold = null;
