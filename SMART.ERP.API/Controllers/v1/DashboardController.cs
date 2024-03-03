@@ -7,6 +7,7 @@ using SMART.ERP.Application.Features.DashboardFeature.Queries.ProspectMetrics;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.DashboardFeature.Queries;
 using Asp.Versioning;
+using SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard;
 
 namespace SMART.ERP.API.Controllers.v1
 {
@@ -186,6 +187,16 @@ namespace SMART.ERP.API.Controllers.v1
         public async Task<IActionResult> CampaignEffectivenessMetric([FromQuery] string Id)
         {
             return Ok(await Mediator.Send(new AdCampaignEffectivenessQuery { Id = Id }));
+        }
+        [HttpGet("AccountsReceivableVsAccountsPayable")]
+        public async Task<IActionResult> AccountsReceivableVsAccountsPayable()
+        {
+            return Ok(await Mediator.Send(new AccountsReceivableVsAccountsPayableQuery()));
+        }
+        [HttpGet("GeneralFinanceInformation")]
+        public async Task<IActionResult> GeneralFinance()
+        {
+            return Ok(await Mediator.Send(new GeneralFinanceQuery()));
         }
     }
 }
