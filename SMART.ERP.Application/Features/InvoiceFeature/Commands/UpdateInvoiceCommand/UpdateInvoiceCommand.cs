@@ -13,6 +13,7 @@ using SMART.ERP.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -156,7 +157,11 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             else
             {
                 invoiceExist.Exonerated = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 15)) + CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 18));
-
+                invoiceExist.TaxedAt15Percent = 0;
+                invoiceExist.TaxedAt18Percent = 0;
+                invoiceExist.Taxes15Percent = 0;
+                invoiceExist.Taxes18Percent = 0;
+                invoiceExist.Total = invoiceExist.Exonerated;
             }
             invoiceExist.ProductsSold = null;
             await _repositoryAsync.UpdateAsync(invoiceExist);
