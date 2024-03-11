@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Http;
 using SMART.ERP.Application.DTOs.Dashboard;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Specifications.AdvisorGoalSpecification;
 using SMART.ERP.Application.Specifications.InvoiceSpecification;
 using SMART.ERP.Application.Specifications.PurchaseBillSpecification;
 using SMART.ERP.Application.Wrappers;
@@ -20,10 +22,14 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
     {
         private readonly IRepositoryAsync<PurchaseBill> _purchaseBillRepositoryAsync;
         private readonly IRepositoryAsync<Invoice> _invoiceRepositoryAsync;
-        public GeneralFinanceQueryHandler(IRepositoryAsync<PurchaseBill> purchaseBillRepositoryAsync, IRepositoryAsync<Invoice> invoiceRepositoryAsync)
+        private readonly IRepositoryAsync<InternalBankAccount> _internalBankAccountRepositoryAsync;
+        private readonly IRepositoryAsync<AdvisorGoal> _advisorGoalRepositoryAsync;
+        public GeneralFinanceQueryHandler(IRepositoryAsync<PurchaseBill> purchaseBillRepositoryAsync, IRepositoryAsync<AdvisorGoal> advisorGoalRepositoryAsync, IRepositoryAsync<InternalBankAccount> internalBankAccountRepositoryAsync, IRepositoryAsync<Invoice> invoiceRepositoryAsync)
         {
             _purchaseBillRepositoryAsync = purchaseBillRepositoryAsync;
             _invoiceRepositoryAsync = invoiceRepositoryAsync;
+            _internalBankAccountRepositoryAsync = internalBankAccountRepositoryAsync;
+            _advisorGoalRepositoryAsync = advisorGoalRepositoryAsync;
         }
         public async Task<Response<GeneralFinanceInformationDto>> Handle(GeneralFinanceQuery request, CancellationToken cancellationToken)
         {
@@ -32,12 +38,22 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
             List<decimal> brandvalues = new List<decimal> {};
             List<string> expenses = new List<string> {};
             List<decimal> expensesValues = new List<decimal> {};
-            var bills = await _purchaseBillRepositoryAsync.ListAsync(new FilterPurchaseBillByYearSpecification(currentDate));
+
+            var purchaseBillsPendingToPay = await _purchaseBillRepositoryAsync.ListAsync(new FilterPurchaseBillByPendingValuesSpecification());
+            var invoicesPendindToPay = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceByPendingValuesSpecification());
+            var bills = await _purchaseBillRepositoryAsync.ListAsync(new FilterPurchaseBillByYearSpecification(currentDate)); 
+            var invoices = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceByYearSpecification(currentDate));
+            var bankAccounts = await _internalBankAccountRepositoryAsync.ListAsync();
+            var globalGoal = await _advisorGoalRepositoryAsync.ListAsync(new FilterAdvisorGoalByYearSpecification(currentDate.Year, null));
+
             var billsOfThisMonth = bills.FindAll(x=>x.InvoiceDate.Month == currentDate.Month);
             var billOfLastMonth = bills.FindAll(x=>x.InvoiceDate.Month == currentDate.Month - 1);
-            var invoices = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceByYearSpecification(currentDate));
             var invoicesOfThisMonth = invoices.FindAll(x => x.CreationDate.Month == currentDate.Month);
             var invoicesOfLastMonth = invoices.FindAll(x => x.CreationDate.Month == currentDate.Month - 1);
+
+            decimal payable = purchaseBillsPendingToPay.Sum(purchaseBill => purchaseBill.Outstanding);
+            decimal receivable = invoicesPendindToPay.Sum(invoice => invoice.Outstanding);
+            decimal cashInBanks = bankAccounts.Sum(x => x.CurrentAmount);
             bills.ForEach(bill =>
             {
                 bool exist = expenses.Contains(bill.ExpenseAccount.Name);
@@ -96,13 +112,17 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
             var values = new GeneralFinanceInformationDto
             {
                 AnnualSales = invoices.Sum(x => x.Total),
+                AnnualGoal = globalGoal.Sum(x => x.Goal),
                 AnnualExpenses = bills.Sum(x => x.Total),
                 CurrentMonthExpenses = billsOfThisMonth.Sum(x => x.Total),
                 CurrentMonthSales = invoicesOfThisMonth.Sum(x => x.Total),
                 PreviousMonthExpenses = billOfLastMonth.Sum(x => x.Total),
                 PreviousMonthSales = invoicesOfLastMonth.Sum(x => x.Total),
                 BrandSales = brandsSales,
-                Expenses= expenseValues
+                Expenses= expenseValues,
+                Payable = payable,
+                Receivable = receivable,
+                AcidTest = (cashInBanks + receivable)/payable,
             };
             return new Response<GeneralFinanceInformationDto>(values);
 

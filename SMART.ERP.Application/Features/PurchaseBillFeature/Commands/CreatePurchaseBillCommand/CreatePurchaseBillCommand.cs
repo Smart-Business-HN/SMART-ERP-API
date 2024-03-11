@@ -4,10 +4,10 @@ using SMART.ERP.Application.DTOs.PurchaseBill;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.ProviderSpecification;
+using SMART.ERP.Application.Specifications.PurchaseBillSpecification;
 using SMART.ERP.Application.Specifications.PurchaseOrderSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using System.Numerics;
 
 namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurchaseBillCommand
 {
@@ -46,7 +46,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
         }
         public async Task<Response<PurchaseBillDto>> Handle(CreatePurchaseBillCommand request, CancellationToken cancellationToken)
         {
-            if(request.PurchaseOrderOriginId!=null)
+            if(request.PurchaseOrderOriginId != null)
             {
                 var purchaseOrderExist = await _purchaseOrderRepositoryAsync.FirstOrDefaultAsync(new FilterPurchaseOrderByIdSpecification((int)request.PurchaseOrderOriginId));
                 if (purchaseOrderExist == null)
@@ -68,6 +68,11 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             if (expenseAccountExist == null)
             {
                 throw new ApiException($"No existe una cuenta de gastos con el id {request.PrefixId}");
+            }
+            var checkIfPurchaseBillExist = await _repositoryAsync.ListAsync(new FilterPurchaseBillByExistingValuesSpecification(request));
+            if(checkIfPurchaseBillExist != null)
+            {
+                throw new ApiException($"Ya existe una factura con este numero, CAI y/o proveedor registrada. Favor revisar factura con ID {checkIfPurchaseBillExist[0].Id}");
             }
             var currentPurchaseBills = await _repositoryAsync.ListAsync();
             var newRecord = _mapper.Map<PurchaseBill>(request);
