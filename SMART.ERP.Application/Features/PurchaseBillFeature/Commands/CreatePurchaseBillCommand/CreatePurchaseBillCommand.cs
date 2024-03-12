@@ -70,7 +70,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
                 throw new ApiException($"No existe una cuenta de gastos con el id {request.PrefixId}");
             }
             var checkIfPurchaseBillExist = await _repositoryAsync.ListAsync(new FilterPurchaseBillByExistingValuesSpecification(request));
-            if(checkIfPurchaseBillExist != null)
+            if(checkIfPurchaseBillExist.Count() > 0)
             {
                 throw new ApiException($"Ya existe una factura con este numero, CAI y/o proveedor registrada. Favor revisar factura con ID {checkIfPurchaseBillExist[0].Id}");
             }
