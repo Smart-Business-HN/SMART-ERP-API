@@ -28,14 +28,16 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
         private readonly IRepositoryAsync<PurchaseBill> _repositoryAsync;
         private readonly IRepositoryAsync<PurchaseOrder> _purchaseOrderRepositoryAsync;
         private readonly IRepositoryAsync<Prefix> _prefixRepositoryAsync;
+        private readonly IRepositoryAsync<ProductPurchasePriceLog> _productPurchasePriceLogRepositoryAsync;
         private readonly IMapper _mapper;
 
-        public CreatePurchaseBillFromPurchaseOrderDetailPageCommandHandler(IRepositoryAsync<PurchaseBill> repositoryAsync,IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IMapper mapper)
+        public CreatePurchaseBillFromPurchaseOrderDetailPageCommandHandler(IRepositoryAsync<ProductPurchasePriceLog> productPurchasePriceLogRepositoryAsync ,IRepositoryAsync<PurchaseBill> repositoryAsync,IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IMapper mapper)
         {
             _repositoryAsync = repositoryAsync;
             _purchaseOrderRepositoryAsync = purchaseOrderRepositoryAsync;
             _mapper = mapper;
             _prefixRepositoryAsync = prefixRepositoryAsync;
+            _productPurchasePriceLogRepositoryAsync = productPurchasePriceLogRepositoryAsync;
         }
         public async Task<Response<PurchaseBillDto>> Handle(CreatePurchaseBillFromPurchaseOrderDetailPageCommand request, CancellationToken cancellationToken)
         {
@@ -61,6 +63,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             newRecord.CreationDate = DateTime.Now;
             var purchaseBillResponse = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
+            await SaveProductPurchasePriceLogs(purchaseOrderExist.ProductsToPurchase!, purchaseBillResponse);
             purchaseOrderExist.PurchaseBillDestinationId = purchaseBillResponse.Id;
             purchaseOrderExist.Prefix = null;
             purchaseOrderExist.Provider = null;
@@ -88,6 +91,22 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
                 code = prefix.Format + (lastPurchaseBill.Id + 1).ToString();
             }
             return code;
+        }
+        public async Task SaveProductPurchasePriceLogs (List<ProductToPurchase> products, PurchaseBill purchaseBill)
+        {
+            foreach (var product in products)
+            {
+                var newRecord = new ProductPurchasePriceLog
+                {
+                    ProductId = product.Id,
+                    UnitsPurchased = product.Quantity,
+                    Price = product.UnitPrice,
+                    PurchaseDate = purchaseBill.InvoiceDate,
+                    PurchaseBillOriginId = purchaseBill.Id
+                };
+                await _productPurchasePriceLogRepositoryAsync.AddAsync(newRecord);
+            }
+            await _productPurchasePriceLogRepositoryAsync.SaveChangesAsync();
         }
     }
 }
