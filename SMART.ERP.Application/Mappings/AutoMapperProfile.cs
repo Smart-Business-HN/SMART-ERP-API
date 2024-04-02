@@ -100,6 +100,7 @@ using SMART.ERP.Application.DTOs.IncomeAccount;
 using SMART.ERP.Application.DTOs.ExpenseAccount;
 using SMART.ERP.Application.Features.IncomeAccountFeature.Commands.CreateIncomeAccountCommand;
 using SMART.ERP.Application.Features.ExpenseAccountFeature.Commands.CreateExpenseAccountCommand;
+using SMART.ERP.Application.DTOs.ProductPurchasePriceLog;
 
 namespace SMART.ERP.Application.Mappings
 {
@@ -231,6 +232,8 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<IncomeAccountDto, IncomeAccount>();
             CreateMap<ExpenseAccount, ExpenseAccountDto>();
             CreateMap<ExpenseAccountDto, ExpenseAccount>();
+            CreateMap<ProductPurchasePriceLogDto, ProductPurchasePriceLog>();
+            CreateMap<ProductPurchasePriceLog, ProductPurchasePriceLogDto>();
             #endregion
 
             #region Commands

@@ -6,6 +6,8 @@ using SMART.ERP.Application.DTOs.Provider;
 using SMART.ERP.Application.DTOs.PurchaseBill;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Specifications.ProductPurchasePriceLogSpecification;
+using SMART.ERP.Application.Specifications.PurchaseOrderSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
@@ -34,13 +36,15 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.UpdatePurc
         private readonly IRepositoryAsync<PurchaseOrder> _purchaseOrderRepositoryAsync;
         private readonly IRepositoryAsync<Provider> _providerRepositoryAsync;
         private readonly IRepositoryAsync<Status> _statusRepositoryAsync;
+        private readonly IRepositoryAsync<ProductPurchasePriceLog> _productPurchasePriceLogRepositoryAsync;
         private readonly IMapper _mapper;
-        public UpdatePurchaseBillCommandHandler(IRepositoryAsync<PurchaseBill> repositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IRepositoryAsync<Provider> providerRepositoryAsync, IMapper mapper)
+        public UpdatePurchaseBillCommandHandler(IRepositoryAsync<ProductPurchasePriceLog> productPurchasePriceLogRepositoryAsync, IRepositoryAsync<PurchaseBill> repositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IRepositoryAsync<Provider> providerRepositoryAsync, IMapper mapper)
         {
             _repositoryAsync = repositoryAsync;
             _purchaseOrderRepositoryAsync = purchaseOrderRepositoryAsync;
             _providerRepositoryAsync = providerRepositoryAsync;
             _statusRepositoryAsync = statusRepositoryAsync;
+            _productPurchasePriceLogRepositoryAsync = productPurchasePriceLogRepositoryAsync;
             _mapper = mapper;
         }
         public async Task<Response<PurchaseBillDto>> Handle(UpdatePurchaseBillCommand request, CancellationToken cancellationToken)
@@ -77,6 +81,10 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.UpdatePurc
             if(purchaseBillExist.InvoiceDate != request.InvoiceDate)
             {
                 purchaseBillExist.InvoiceDate = request.InvoiceDate;
+                if(purchaseBillExist.PurchaseOrderOriginId != null && purchaseBillExist.PurchaseOrderOriginId != 0)
+                {
+                    await UpdateProductPurchasePriceLogs(request.InvoiceDate,  purchaseBillExist);
+                }
             }
             if (purchaseBillExist.InvoiceNumber != request.InvoiceNumber)
             {
@@ -128,6 +136,16 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.UpdatePurc
             await _repositoryAsync.SaveChangesAsync();
             var dto = _mapper.Map<PurchaseBillDto>(purchaseBillExist);
             return new Response<PurchaseBillDto>(dto, message: $"{purchaseBillExist.Id} actualizado correctamente");
+        }
+        public async Task UpdateProductPurchasePriceLogs (DateTime invoiceDate, PurchaseBill purchaseBill)
+        {
+            var productPurchasePriceLogs = await _productPurchasePriceLogRepositoryAsync.ListAsync(new FilterProductPurchasePriceLogByPurchaseBillId(purchaseBill.Id));
+            foreach (var log in productPurchasePriceLogs)
+            {
+                log.PurchaseDate = invoiceDate;
+                await _productPurchasePriceLogRepositoryAsync.UpdateAsync(log);
+            }
+            await _productPurchasePriceLogRepositoryAsync.SaveChangesAsync();
         }
 
     }

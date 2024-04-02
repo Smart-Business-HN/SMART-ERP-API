@@ -87,6 +87,7 @@ namespace SMART.ERP.Infrastructure
         public DbSet<TypeProvider> TypeProviders { get; set; } = null!;
         public DbSet<PurchaseOrder> PurchaseOrders { get; set; } = null!;
         public DbSet<PurchaseBill> PurchaseBill { get; set; } = null!;
+        public DbSet<ProductPurchasePriceLog> ProductPurchasePriceLog { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -465,6 +466,11 @@ namespace SMART.ERP.Infrastructure
                 .HasOne(x => x.Status)
                 .WithMany()
                 .HasForeignKey(x => x.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Product>()
+                .HasMany(x => x.ProductPurchasePriceLogs)
+                .WithOne(x=>x.Product)
+                .HasForeignKey(x=>x.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             //Category
@@ -1207,6 +1213,14 @@ namespace SMART.ERP.Infrastructure
             //Income Account
             modelBuilder.Entity<IncomeAccount>().ToTable("IncomeAccount");
             modelBuilder.Entity<IncomeAccount>(o => o.HasKey(x => x.Id));
+            //Product Purchase Price Log
+            modelBuilder.Entity<ProductPurchasePriceLog>().ToTable("ProductPurchasePriceLog");
+            modelBuilder.Entity<ProductPurchasePriceLog>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<ProductPurchasePriceLog>()
+             .HasOne(x => x.PurchaseBillOrigin)
+             .WithMany()
+             .HasForeignKey(x => x.PurchaseBillOriginId)
+             .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }

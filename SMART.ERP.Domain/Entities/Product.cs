@@ -37,5 +37,6 @@
         public List<ProductFeature>? ProductFeatures { get; set; }
         public List<ProductImage>? ProductImages { get; set; }
         public List<InventoryDistribution>? InventoryDistributions { get; set; }
+        public List<ProductPurchasePriceLog>? ProductPurchasePriceLogs { get; set; }
     }
 }
