@@ -29,15 +29,17 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
         private readonly IRepositoryAsync<PurchaseOrder> _purchaseOrderRepositoryAsync;
         private readonly IRepositoryAsync<Prefix> _prefixRepositoryAsync;
         private readonly IRepositoryAsync<ProductPurchasePriceLog> _productPurchasePriceLogRepositoryAsync;
+        private readonly IRepositoryAsync<Product> _productRepositoryAsync;
         private readonly IMapper _mapper;
 
-        public CreatePurchaseBillFromPurchaseOrderDetailPageCommandHandler(IRepositoryAsync<ProductPurchasePriceLog> productPurchasePriceLogRepositoryAsync ,IRepositoryAsync<PurchaseBill> repositoryAsync,IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IMapper mapper)
+        public CreatePurchaseBillFromPurchaseOrderDetailPageCommandHandler(IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductPurchasePriceLog> productPurchasePriceLogRepositoryAsync ,IRepositoryAsync<PurchaseBill> repositoryAsync,IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IMapper mapper)
         {
             _repositoryAsync = repositoryAsync;
             _purchaseOrderRepositoryAsync = purchaseOrderRepositoryAsync;
             _mapper = mapper;
             _prefixRepositoryAsync = prefixRepositoryAsync;
             _productPurchasePriceLogRepositoryAsync = productPurchasePriceLogRepositoryAsync;
+            _productRepositoryAsync = productRepositoryAsync;
         }
         public async Task<Response<PurchaseBillDto>> Handle(CreatePurchaseBillFromPurchaseOrderDetailPageCommand request, CancellationToken cancellationToken)
         {
@@ -96,6 +98,9 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
         {
             foreach (var product in products)
             {
+                var productToUpdate = product.Product;
+                productToUpdate.CostPrice = product.UnitPrice;
+                productToUpdate.RecomendedSalePrice = (Math.Ceiling(product.UnitPrice * (decimal)(1+0.18+(double)(product.Tax.Rate/100))/5)*5) / (1+(product.Tax.Rate/100));
                 var newRecord = new ProductPurchasePriceLog
                 {
                     ProductId = product.Id,
@@ -104,9 +109,11 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
                     PurchaseDate = purchaseBill.InvoiceDate,
                     PurchaseBillOriginId = purchaseBill.Id
                 };
+                await _productRepositoryAsync.UpdateAsync(productToUpdate);
                 await _productPurchasePriceLogRepositoryAsync.AddAsync(newRecord);
             }
             await _productPurchasePriceLogRepositoryAsync.SaveChangesAsync();
+            await _productRepositoryAsync.SaveChangesAsync();
         }
     }
 }
