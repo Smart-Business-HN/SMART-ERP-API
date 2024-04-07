@@ -71,6 +71,8 @@ Cuarto Comando: Seed de Tipos de Estado
     INSERT INTO [SmartERP].[dbo].[TypeStatus] (Name,IsActive) VALUES ('Actividad',1)
     INSERT INTO [SmartERP].[dbo].[TypeStatus] (Name,IsActive) VALUES ('Factura',1)
     INSERT INTO [SmartERP].[dbo].[TypeStatus] (Name,IsActive) VALUES ('Orden de Compra',1)
+    INSERT INTO [SmartERP].[dbo].[TypeStatus] (Name,IsActive) VALUES ('Factura de compra',1)
+    INSERT INTO [SmartERP].[dbo].[TypeStatus] (Name,IsActive) VALUES ('Gasto no Declarable',1)
 
 Quinto Comando: Seed de Estados con sus respectivos tipos de estado
     INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Nuevo',1,1)
@@ -104,6 +106,12 @@ Quinto Comando: Seed de Estados con sus respectivos tipos de estado
     INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Pagada',6,1)
     INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Recibida',6,1)
     INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Cancelada',6,1)
+
+    INSERT INTO [SmartERP].[dbo].[Status] (Name, TypeStatusId, IsActive) VALUES ('Pendiente de pago',7,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name, TypeStatusId, IsActive) VALUES ('Pagada',7,1)
+
+    INSERT INTO [SmartERP].[dbo].[Status] (Name, TypeStatusId, IsActive) VALUES ('Pendiente de pago',8,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name, TypeStatusId, IsActive) VALUES ('Pagado',8,1)
 
 Sexto comando: Datos demograficos de Honduras
 

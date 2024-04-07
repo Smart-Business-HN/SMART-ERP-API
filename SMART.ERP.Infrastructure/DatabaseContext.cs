@@ -1,4 +1,4 @@
-﻿    using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Infrastructure
@@ -469,8 +469,8 @@ namespace SMART.ERP.Infrastructure
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Product>()
                 .HasMany(x => x.ProductPurchasePriceLogs)
-                .WithOne(x=>x.Product)
-                .HasForeignKey(x=>x.ProductId)
+                .WithOne(x => x.Product)
+                .HasForeignKey(x => x.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             //Category
@@ -888,12 +888,12 @@ namespace SMART.ERP.Infrastructure
             modelBuilder.Entity<Prefix>().ToTable("Prefix");
             modelBuilder.Entity<Prefix>(o => o.HasKey(x => x.Id));
             modelBuilder.Entity<Prefix>()
-                .HasOne(x=>x.InternalDocument)
+                .HasOne(x => x.InternalDocument)
                 .WithMany()
                 .HasForeignKey(x => x.InternalDocumentId);
             //Taxes
             modelBuilder.Entity<Tax>().ToTable("Tax");
-            modelBuilder.Entity<Tax>(o=>o.HasKey(x=> x.Id));
+            modelBuilder.Entity<Tax>(o => o.HasKey(x => x.Id));
             //Taxes
             modelBuilder.Entity<CustomerType>().ToTable("CustomerType");
             modelBuilder.Entity<CustomerType>(o => o.HasKey(x => x.Id));
@@ -947,7 +947,7 @@ namespace SMART.ERP.Infrastructure
             modelBuilder.Entity<ProductOffered>(o => o.HasKey(x => x.Id));
             //Warehouse
             modelBuilder.Entity<Warehouse>().ToTable("Warehouse");
-            modelBuilder.Entity<Warehouse>(o=>o.HasKey(x => x.Id));
+            modelBuilder.Entity<Warehouse>(o => o.HasKey(x => x.Id));
             modelBuilder.Entity<Warehouse>()
                .HasOne(x => x.User)
                .WithMany()
@@ -964,8 +964,8 @@ namespace SMART.ERP.Infrastructure
               .HasForeignKey(x => x.BranchOfficeId)
               .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Warehouse>()
-                .HasMany(a=>a.InventoryDistributions)
-                .WithOne(a=>a.Warehouse)
+                .HasMany(a => a.InventoryDistributions)
+                .WithOne(a => a.Warehouse)
                 .HasForeignKey(x => x.WarehouseId)
                 .OnDelete(DeleteBehavior.Restrict);
             //Inventory Distribution
@@ -974,7 +974,7 @@ namespace SMART.ERP.Infrastructure
 
             //Inventory Entry
             modelBuilder.Entity<InventoryInput>().ToTable("InventoryInput");
-            modelBuilder.Entity<InventoryInput>(o=>o.HasKey(x => x.Id));
+            modelBuilder.Entity<InventoryInput>(o => o.HasKey(x => x.Id));
             modelBuilder.Entity<InventoryInput>()
                .HasOne(x => x.Warehouse)
                .WithMany()
@@ -1221,7 +1221,29 @@ namespace SMART.ERP.Infrastructure
              .WithMany()
              .HasForeignKey(x => x.PurchaseBillOriginId)
              .OnDelete(DeleteBehavior.Restrict);
-
+            //NonBillable Expense
+            modelBuilder.Entity<NonBillableExpense>().ToTable("NonBillableExpense");
+            modelBuilder.Entity<NonBillableExpense>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<NonBillableExpense>()
+             .HasOne(x => x.Provider)
+             .WithMany()
+             .HasForeignKey(x => x.ProviderId)
+             .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<NonBillableExpense>()
+            .HasOne(x => x.Prefix)
+            .WithMany()
+            .HasForeignKey(x => x.PrefixId)
+            .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<NonBillableExpense>()
+            .HasOne(x => x.Status)
+            .WithMany()
+            .HasForeignKey(x => x.StatusId)
+            .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<NonBillableExpense>()
+            .HasOne(x => x.ExpenseAccount)
+            .WithMany()
+            .HasForeignKey(x => x.ExpenseAccountId)
+            .OnDelete(DeleteBehavior.Restrict);
             base.OnModelCreating(modelBuilder);
         }
     }
