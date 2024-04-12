@@ -32,7 +32,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
         private readonly IRepositoryAsync<Product> _productRepositoryAsync;
         private readonly IMapper _mapper;
 
-        public CreatePurchaseBillFromPurchaseOrderDetailPageCommandHandler(IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductPurchasePriceLog> productPurchasePriceLogRepositoryAsync ,IRepositoryAsync<PurchaseBill> repositoryAsync,IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IMapper mapper)
+        public CreatePurchaseBillFromPurchaseOrderDetailPageCommandHandler(IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductPurchasePriceLog> productPurchasePriceLogRepositoryAsync, IRepositoryAsync<PurchaseBill> repositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IMapper mapper)
         {
             _repositoryAsync = repositoryAsync;
             _purchaseOrderRepositoryAsync = purchaseOrderRepositoryAsync;
@@ -44,7 +44,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
         public async Task<Response<PurchaseBillDto>> Handle(CreatePurchaseBillFromPurchaseOrderDetailPageCommand request, CancellationToken cancellationToken)
         {
             var purchaseOrderExist = await _purchaseOrderRepositoryAsync.FirstOrDefaultAsync(new FilterPurchaseOrderByIdSpecification(request.PurchaseOrderOriginId));
-            if(purchaseOrderExist == null)
+            if (purchaseOrderExist == null)
             {
                 throw new ApiException($"No existe una orden de compra con el Id {request.PurchaseOrderOriginId}");
             }
@@ -94,13 +94,15 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             }
             return code;
         }
-        public async Task SaveProductPurchasePriceLogs (List<ProductToPurchase> products, PurchaseBill purchaseBill)
+        public async Task SaveProductPurchasePriceLogs(List<ProductToPurchase> products, PurchaseBill purchaseBill)
         {
             foreach (var product in products)
             {
                 var productToUpdate = product.Product;
+                productToUpdate.Brand = null;
+                productToUpdate.Tax = null;
                 productToUpdate.CostPrice = product.UnitPrice;
-                productToUpdate.RecomendedSalePrice = (Math.Ceiling(product.UnitPrice * (decimal)(1+0.18+(double)(product.Tax.Rate/100))/5)*5) / (1+(product.Tax.Rate/100));
+                productToUpdate.RecomendedSalePrice = (Math.Ceiling(product.UnitPrice * (decimal)(1 + 0.18 + (double)(product.Tax.Rate / 100)) / 5) * 5) / (1 + (product.Tax.Rate / 100));
                 var newRecord = new ProductPurchasePriceLog
                 {
                     ProductId = product.Id,

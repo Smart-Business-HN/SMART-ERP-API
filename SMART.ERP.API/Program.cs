@@ -1,17 +1,17 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Quartz;
 using SMART.ERP.API.Extensions;
 using SMART.ERP.Application;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.SignalRHub;
-using Quartz;
 using SMART.ERP.Infrastructure;
 using SMART.ERP.Infrastructure.Repository;
-using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Asp.Versioning;
-using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -112,6 +112,7 @@ builder.Services.AddOutputCache(opt =>
         opt.AddPolicy("cache_major_income_account", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_major_income_account"));
         opt.AddPolicy("cache_income_account", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_income_account"));
         opt.AddPolicy("cache_expense_account", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_expense_account"));
+        opt.AddPolicy("cache_nonBillableExpense", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_nonBillableExpense"));
         //ECOMMERCE CACHE
         opt.AddPolicy("cache_getAllNavCategories", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_getAllNavCategories"));
         opt.AddPolicy("cache_productsEcommerce", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsEcommerce"));
