@@ -23,11 +23,11 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
 
     public class TopQuoteProductQueryHandler : IRequestHandler<TopQuoteProductQuery, PagedResponse<List<ReportQuoteProductDto>>>
     {
-        private readonly IRepositoryAsync<Opportunity> _repositoryAsync;
+        private readonly IRepositoryAsync<Quotation> _repositoryAsync;
         private readonly IRepositoryAsync<BranchOffices> _branchRepositoryAsync;
         private readonly IRepositoryAsync<Category> _categoryRepositoryAsync;
 
-        public TopQuoteProductQueryHandler(IRepositoryAsync<Opportunity> repositoryAsync, IRepositoryAsync<BranchOffices> branchRepositoryAsync,
+        public TopQuoteProductQueryHandler(IRepositoryAsync<Quotation> repositoryAsync, IRepositoryAsync<BranchOffices> branchRepositoryAsync,
             IRepositoryAsync<Category> categoryRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
@@ -57,15 +57,15 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
             var response = new List<ReportQuoteProductDto>();
             opportunities.ForEach(opp =>
             {
-                if (opp.QuoteProducts != null)
+                if (opp.ProductsOffered != null)
                 {
-                    opp.QuoteProducts!.ForEach(quote =>
+                    opp.ProductsOffered!.ForEach(quote =>
                     {
                         if (response.Exists(z => z.Name == quote.Product!.Name))
                         {
                             var quoteProduct = response.Find(x => x.Name == quote.Product!.Name);
-                            quoteProduct!.TotalNum += quote.Quantity;
-                            quoteProduct!.Total += quote.Quantity * quote.SalePrice;
+                            quoteProduct!.TotalNum += (int)quote.Quantity;
+                            quoteProduct!.Total += quote.Quantity * quote.UnitPrice;
                         }
                         else
                         {
@@ -74,8 +74,8 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                             newReportQuote.Name = quote.Product!.Name;
                             newReportQuote.SubCategory = quote.Product!.SubCategory!.Name;
                             newReportQuote.Category = category!.Name;
-                            newReportQuote.TotalNum = quote.Quantity;
-                            newReportQuote.Total = quote.Quantity * quote.SalePrice;
+                            newReportQuote.TotalNum = (int)quote.Quantity;
+                            newReportQuote.Total = quote.Quantity * quote.UnitPrice;
                             response.Add(newReportQuote);
                         }
                     });
