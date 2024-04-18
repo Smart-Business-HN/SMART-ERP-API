@@ -75,11 +75,11 @@ builder.Services.AddTransient(typeof(IRepositoryAsync<>), typeof(CustomRepositor
 
 builder.WebHost.UseSentry(opts =>
 {
-    opts.BeforeSend = @event =>
+    opts.SetBeforeSend ((@event, hint) =>
     {
         @event.ServerName = null;
         return @event;
-    };
+    });
 });
 builder.Services.AddStackExchangeRedisOutputCache(options =>
 {

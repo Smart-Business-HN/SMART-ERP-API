@@ -34,12 +34,12 @@ namespace SMART.ERP.Application.Services.GoogleCalendarService
                 });
 
                 GoogleCredential credential = GoogleCredential.FromJson(json)
-                    .CreateScoped(scopes).CreateWithUser("dev@grupoplatino.hn");
+                    .CreateScoped(scopes).CreateWithUser("no-reply@smartbusiness.site");
 
                 var service = new CalendarService(new BaseClientService.Initializer()
                 {
                     HttpClientInitializer = credential,
-                    ApplicationName = "PlatinoHN",
+                    ApplicationName = "SB-Calendar",
                 });
 
                 return service;
@@ -57,7 +57,7 @@ namespace SMART.ERP.Application.Services.GoogleCalendarService
                 var body = new Event();
                 var attendes = new List<EventAttendee>()
                 {
-                    new EventAttendee() { Email = "dtabora@grupoplatino.hn"},
+                    new EventAttendee() { Email = "josec@smartbusiness.site"},
                 };
                 body.Attendees = attendes;
                 var start = new EventDateTime
