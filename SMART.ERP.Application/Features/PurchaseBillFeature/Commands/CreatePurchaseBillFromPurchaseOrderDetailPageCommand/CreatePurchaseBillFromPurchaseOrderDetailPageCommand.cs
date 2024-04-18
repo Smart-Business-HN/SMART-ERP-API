@@ -99,8 +99,6 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             foreach (var product in products)
             {
                 var productToUpdate = product.Product;
-                productToUpdate.Brand = null;
-                productToUpdate.Tax = null;
                 productToUpdate.CostPrice = product.UnitPrice;
                 productToUpdate.RecomendedSalePrice = (Math.Ceiling(product.UnitPrice * (decimal)(1 + 0.18 + (double)(product.Tax.Rate / 100)) / 5) * 5) / (1 + (product.Tax.Rate / 100));
                 var newRecord = new ProductPurchasePriceLog
@@ -111,6 +109,8 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
                     PurchaseDate = purchaseBill.InvoiceDate,
                     PurchaseBillOriginId = purchaseBill.Id
                 };
+                productToUpdate.Brand = null;
+                productToUpdate.Tax = null;
                 await _productRepositoryAsync.UpdateAsync(productToUpdate);
                 await _productPurchasePriceLogRepositoryAsync.AddAsync(newRecord);
             }
