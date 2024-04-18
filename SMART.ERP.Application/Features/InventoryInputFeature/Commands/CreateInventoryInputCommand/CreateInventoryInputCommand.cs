@@ -16,7 +16,7 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateIn
         public int WarehouseId { get; set; }
         public int PrefixId { get; set; }
         public string? Description { get; set; }
-        public int? PurchaseOrderId { get; set; }
+        public int? PurchaseOrderOriginId { get; set; }
         public int? ProductReturnId { get; set; }
         public int? SurplusInventoryId { get; set; }
         public List<CreateProductEntryDto>? ProductEntries { get; set; }
@@ -66,12 +66,13 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateIn
                 {
                     throw new ApiException($"{checkProducts}");
                 }
-            }
+            } 
+            var currentInventoryInputs = await _repositoryAsync.ListAsync();
             var productEntries = new List<ProductEntryDto>();
             var newRecord = _mapper.Map<InventoryInput>(request);
+            newRecord.Code = CreateInventoryEntryCode(prefixExist, currentInventoryInputs.Last());
             newRecord.CreationDate = DateTime.Now;
-            //newRecord.CreatedBy = _jwtService.GetSubjectToken();
-            newRecord.CreatedBy = "Jose Cubas";
+            newRecord.CreatedBy = _jwtService.GetSubjectToken();
             newRecord.ProductEntries = null;
             var inventoryEntryResponse = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
@@ -103,6 +104,22 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateIn
                 }
             }
             return "true";
+        }
+        public static string CreateInventoryEntryCode(Prefix prefix, InventoryInput lastInventoryInput)
+        {
+            int numberOfCharacters = prefix.Format.ToCharArray().Length;
+            int numberOfCharactersInId = lastInventoryInput.Id.ToString().ToCharArray().Length;
+            string? code;
+            if (numberOfCharacters + numberOfCharactersInId < 8)
+            {
+                int characterOffset = 8 - (numberOfCharacters + numberOfCharactersInId);
+                code = prefix.Format + new string('0', characterOffset) + (lastInventoryInput.Id + 1).ToString();
+            }
+            else
+            {
+                code = prefix.Format + (lastInventoryInput.Id + 1).ToString();
+            }
+            return code;
         }
     }
 

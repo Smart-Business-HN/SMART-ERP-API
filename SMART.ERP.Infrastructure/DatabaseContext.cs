@@ -981,6 +981,11 @@ namespace SMART.ERP.Infrastructure
                .HasForeignKey(x => x.WarehouseId)
                .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<InventoryInput>()
+              .HasOne(x => x.PurchaseOrderOrigin)
+              .WithMany()
+              .HasForeignKey(x => x.PurchaseOrderOriginId)
+              .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<InventoryInput>()
               .HasOne(x => x.Prefix)
               .WithMany()
               .HasForeignKey(x => x.PrefixId)
