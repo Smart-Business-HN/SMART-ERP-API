@@ -1,14 +1,8 @@
 ﻿using MediatR;
 using SMART.ERP.Application.Exceptions;
-using SMART.ERP.Application.Features.CityFeature.Commands.DeleteCityCommand;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.DeleteBillPaymentCommand
 {
@@ -40,7 +34,7 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.DeleteBillP
 
             try
             {
-                
+
                 await _repositoryAsync.DeleteAsync(checkBillPayment);
                 await _repositoryAsync.SaveChangesAsync();
                 await _invoiceRepositoryAsync.UpdateAsync(invoice);
