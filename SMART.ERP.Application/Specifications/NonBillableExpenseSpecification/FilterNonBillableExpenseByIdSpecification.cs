@@ -10,8 +10,9 @@ namespace SMART.ERP.Application.Specifications.NonBillableExpenseSpecification
             Query
                 .Include(x => x.Provider)
                 .Include(x => x.ExpenseAccount)
-                .Include(x => x.StatusId)
+                .Include(x => x.Status)
                 .Include(x => x.Prefix)
+                .Include(x => x.NonBillableExpensePayments)!.ThenInclude(x => x.TypeOfPaymentMethod)
                 .Where(x => x.Id == id);
         }
     }

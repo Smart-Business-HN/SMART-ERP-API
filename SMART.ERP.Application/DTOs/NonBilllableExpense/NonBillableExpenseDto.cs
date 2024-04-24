@@ -1,5 +1,6 @@
 ﻿using SMART.ERP.Application.DTOs.Company;
 using SMART.ERP.Application.DTOs.ExpenseAccount;
+using SMART.ERP.Application.DTOs.NonBillableExpensePayment;
 using SMART.ERP.Application.DTOs.Provider;
 using SMART.ERP.Application.DTOs.Status;
 
@@ -20,5 +21,7 @@ namespace SMART.ERP.Application.DTOs.NonBilllableExpense
         public virtual PrefixDto? Prefix { get; set; }
         public int StatusId { get; set; }
         public virtual StatusDto? Status { get; set; }
+        public string ExpenseCode { get; set; } = null!;
+        public List<NonBillableExpensePaymentDto>? NonBillableExpensePayments { get; set; }
     }
 }
