@@ -20,7 +20,7 @@ namespace SMART.ERP.API.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
         [HttpGet("GetById/{id}")]
-        [Authorize(Roles = "SuperAdmin, Manager, Admin")]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin, Accountan")]
         public async Task<IActionResult> GetById(int id)
         {
             return Ok(await Mediator.Send(new GetNonBillableExpenseByIdQuery { Id = id }));
