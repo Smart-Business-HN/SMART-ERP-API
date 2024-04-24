@@ -18,6 +18,7 @@ using SMART.ERP.Application.DTOs.Invoice;
 using SMART.ERP.Application.DTOs.MajorExpenseAccount;
 using SMART.ERP.Application.DTOs.MajorIncomeAccount;
 using SMART.ERP.Application.DTOs.Meta.MetAdCampaign;
+using SMART.ERP.Application.DTOs.NonBillableExpensePayment;
 using SMART.ERP.Application.DTOs.NonBilllableExpense;
 using SMART.ERP.Application.DTOs.Notification;
 using SMART.ERP.Application.DTOs.Opportunity;
@@ -72,6 +73,7 @@ using SMART.ERP.Application.Features.MajorExpenseAccountFeature.Commands.CreateM
 using SMART.ERP.Application.Features.MajorIncomeAccountFeature.Commands.CreateMajorIncomeAccountCommand;
 using SMART.ERP.Application.Features.MessageFeature.Commands.CreateMessageCommand;
 using SMART.ERP.Application.Features.NonBillableExpenseFeature.Commands.CreateNonBillableExpenseCommand;
+using SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Commands.CreateNonBillableExpensePaymentCommand;
 using SMART.ERP.Application.Features.OpinionFeature.Commands.CreateOpinionCommand;
 using SMART.ERP.Application.Features.OpportunityActivityFeature.Commands.CreateOpportunityActivityCommand;
 using SMART.ERP.Application.Features.OpportunityCommentFeature.Commands.CreateOpportunityCommentCommand;
@@ -238,6 +240,8 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<ProductPurchasePriceLog, ProductPurchasePriceLogDto>();
             CreateMap<NonBillableExpense, NonBillableExpenseDto>();
             CreateMap<NonBillableExpenseDto, NonBillableExpense>();
+            CreateMap<NonBillableExpensePayment, NonBillableExpensePaymentDto>();
+            CreateMap<NonBillableExpensePaymentDto, NonBillableExpensePayment>();
             #endregion
 
             #region Commands
@@ -309,6 +313,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateIncomeAccountCommand, IncomeAccount>();
             CreateMap<CreateExpenseAccountCommand, ExpenseAccount>();
             CreateMap<CreateNonBillableExpenseCommand, NonBillableExpense>();
+            CreateMap<CreateNonBillableExpensePaymentCommand, NonBillableExpensePayment>();
             #endregion
         }
     }

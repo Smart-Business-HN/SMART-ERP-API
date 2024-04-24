@@ -1,22 +1,11 @@
 ﻿using AutoMapper;
 using MediatR;
-using SMART.ERP.Application.DTOs.Address;
 using SMART.ERP.Application.DTOs.BillPayment;
-using SMART.ERP.Application.DTOs.InternalBankAccount;
-using SMART.ERP.Application.DTOs.Invoice;
-using SMART.ERP.Application.DTOs.TypeOfPaymentMethod;
 using SMART.ERP.Application.Exceptions;
-using SMART.ERP.Application.Features.CityFeature.Commands.CreateCityCommand;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.JwtService;
-using SMART.ERP.Application.Specifications.CitySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.CreateBillPaymentCommand
 {
@@ -59,16 +48,16 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.CreateBillP
             {
                 throw new ApiException("Esta factura ya se encuentra pagada.");
             }
-            if ( checkInvoice.Outstanding < request.Amount )
+            if (checkInvoice.Outstanding < request.Amount)
             {
                 throw new ApiException("No se permiten pagos mayores al saldo adeudado.");
             }
             var checkTypeOfPaymentMethod = await _typeOfPaymentMethodRepositoryAsync.GetByIdAsync(request.TypeOfPaymentMethodId);
             if (checkTypeOfPaymentMethod == null)
             {
-                throw new KeyNotFoundException($"No se encontro una forma de pago con id {request.TypeOfPaymentMethodId }");
+                throw new KeyNotFoundException($"No se encontro una forma de pago con id {request.TypeOfPaymentMethodId}");
             }
-            if(request.InternalBankAccountId != null)
+            if (request.InternalBankAccountId != null)
             {
                 var checkInternalBankAccount = await _internalBankAccountRepositoryAsync.GetByIdAsync((int)request.InternalBankAccountId);
                 if (checkInternalBankAccount == null)
@@ -77,7 +66,7 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.CreateBillP
                 }
             }
             checkInvoice.Outstanding = checkInvoice.Outstanding - request.Amount;
-            if(checkInvoice.Outstanding == 0)
+            if (checkInvoice.Outstanding == 0)
             {
                 checkInvoice.StatusId = 19;
             }

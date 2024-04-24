@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.CreateBillPaymentCommand
+namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Commands.CreateNonBillableExpensePaymentCommand
 {
-    public class CreateBillPaymentCommandValidator : AbstractValidator<CreateBillPaymentCommand>
+    public class CreateNonBillableExpensePaymentCommandValidator : AbstractValidator<CreateNonBillableExpensePaymentCommand>
     {
-        public CreateBillPaymentCommandValidator()
+        public CreateNonBillableExpensePaymentCommandValidator()
         {
             RuleFor(x => x.Date)
                    .NotNull().WithMessage("{PropertyName} es requerido");
@@ -12,14 +12,13 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.CreateBillP
                 .GreaterThan(0).WithMessage("{PropertyName} no puede ser inferior o igual a cero")
                 .NotNull().WithMessage("{PropertyName} es requerido");
 
-            RuleFor(x => x.InvoiceId)
+            RuleFor(x => x.NonBillableExpenseId)
                 .NotEmpty().WithMessage("{PropertyName} es requerido")
                 .NotNull().WithMessage("{PropertyName} es requerido");
 
             RuleFor(x => x.TypeOfPaymentMethodId)
                .NotEmpty().WithMessage("{PropertyName} es requerido")
                .NotNull().WithMessage("{PropertyName} es requerido");
-
         }
     }
 }

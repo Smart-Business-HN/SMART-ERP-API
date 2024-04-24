@@ -86,8 +86,10 @@ namespace SMART.ERP.Infrastructure
         public DbSet<BillPayment> BillPayments { get; set; } = null!;
         public DbSet<TypeProvider> TypeProviders { get; set; } = null!;
         public DbSet<PurchaseOrder> PurchaseOrders { get; set; } = null!;
-        public DbSet<PurchaseBill> PurchaseBill { get; set; } = null!;
+        public DbSet<PurchaseBill> PurchaseBills { get; set; } = null!;
         public DbSet<ProductPurchasePriceLog> ProductPurchasePriceLog { get; set; } = null!;
+        public DbSet<NonBillableExpense> NonBillableExpenses { get; set; } = null!;
+        public DbSet<NonBillableExpensePayment> NonBillableExpensePayments { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1243,6 +1245,24 @@ namespace SMART.ERP.Infrastructure
             .HasOne(x => x.ExpenseAccount)
             .WithMany()
             .HasForeignKey(x => x.ExpenseAccountId)
+            .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<NonBillableExpense>()
+             .HasMany(p => p.NonBillableExpensePayments)
+             .WithOne(x => x.NonBillableExpense)
+             .HasForeignKey(x => x.NonBillableExpenseId)
+             .OnDelete(DeleteBehavior.Restrict);
+            //NonBillable Expense Payment
+            modelBuilder.Entity<NonBillableExpensePayment>().ToTable("NonBillableExpensePayment");
+            modelBuilder.Entity<NonBillableExpensePayment>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<NonBillableExpensePayment>()
+             .HasOne(x => x.TypeOfPaymentMethod)
+             .WithMany()
+             .HasForeignKey(x => x.TypeOfPaymentMethodId)
+             .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<NonBillableExpensePayment>()
+            .HasOne(x => x.InternalBankAccount)
+            .WithMany()
+            .HasForeignKey(x => x.InternalBankAccountId)
             .OnDelete(DeleteBehavior.Restrict);
             base.OnModelCreating(modelBuilder);
         }

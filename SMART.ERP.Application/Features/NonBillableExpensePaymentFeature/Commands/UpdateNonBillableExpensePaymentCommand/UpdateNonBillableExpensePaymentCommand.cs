@@ -1,17 +1,17 @@
 ﻿using AutoMapper;
 using MediatR;
-using SMART.ERP.Application.DTOs.BillPayment;
+using SMART.ERP.Application.DTOs.NonBillableExpensePayment;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
-namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.UpdateBillPaymentCommand
+namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Commands.UpdateNonBillableExpensePaymentCommand
 {
-    public class UpdateBillPaymentCommand : IRequest<Response<BillPaymentDto>>
+    public class UpdateNonBillableExpensePaymentCommand : IRequest<Response<NonBillableExpensePaymentDto>>
     {
         public int Id { get; set; }
-        public int InvoiceId { get; set; }
+        public int NonBillableExpenseId { get; set; }
         public int TypeOfPaymentMethodId { get; set; }
         public DateTime Date { get; set; }
         public decimal Amount { get; set; }
@@ -19,38 +19,38 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.UpdateBillP
         public string? Attachment { get; set; }
     }
 
-    public class UpdateBillPaymentCommandHandler : IRequestHandler<UpdateBillPaymentCommand, Response<BillPaymentDto>>
+    public class UpdateNonBillableExpensePaymentCommandHandler : IRequestHandler<UpdateNonBillableExpensePaymentCommand, Response<NonBillableExpensePaymentDto>>
     {
-        private readonly IRepositoryAsync<BillPayment> _repositoryAsync;
-        private readonly IRepositoryAsync<Invoice> _invoiceRepositoryAsync;
+        private readonly IRepositoryAsync<NonBillableExpensePayment> _repositoryAsync;
+        private readonly IRepositoryAsync<NonBillableExpense> _nonBillableExpenseRepositoryAsync;
         private readonly IRepositoryAsync<InternalBankAccount> _internalBankAccountRepositoryAsync;
         private readonly IRepositoryAsync<TypeOfPaymentMethod> _typeOfPaymentMethodRepositoryAsync;
         private readonly IMapper _mapper;
 
-        public UpdateBillPaymentCommandHandler(IRepositoryAsync<BillPayment> repositoryAsync, IRepositoryAsync<Invoice> invoiceRepositoryAsync, IRepositoryAsync<InternalBankAccount> internalBankAccountRepositoryAsync, IRepositoryAsync<TypeOfPaymentMethod> typeOfPaymentMethodRepositoryAsync, IMapper mapper)
+        public UpdateNonBillableExpensePaymentCommandHandler(IRepositoryAsync<NonBillableExpensePayment> repositoryAsync, IRepositoryAsync<NonBillableExpense> invoiceRepositoryAsync, IRepositoryAsync<InternalBankAccount> internalBankAccountRepositoryAsync, IRepositoryAsync<TypeOfPaymentMethod> typeOfPaymentMethodRepositoryAsync, IMapper mapper)
         {
             _repositoryAsync = repositoryAsync;
-            _invoiceRepositoryAsync = invoiceRepositoryAsync;
+            _nonBillableExpenseRepositoryAsync = invoiceRepositoryAsync;
             _internalBankAccountRepositoryAsync = internalBankAccountRepositoryAsync;
             _typeOfPaymentMethodRepositoryAsync = typeOfPaymentMethodRepositoryAsync;
             _mapper = mapper;
         }
 
-        public async Task<Response<BillPaymentDto>> Handle(UpdateBillPaymentCommand request, CancellationToken cancellationToken)
+        public async Task<Response<NonBillableExpensePaymentDto>> Handle(UpdateNonBillableExpensePaymentCommand request, CancellationToken cancellationToken)
         {
             var checkBillPaymen = await _repositoryAsync.GetByIdAsync(request.Id);
             if (checkBillPaymen == null)
             {
                 throw new KeyNotFoundException($"No se encontro ningun pago el con id {request.Id}");
             }
-            var checkInvoice = await _invoiceRepositoryAsync.GetByIdAsync(request.InvoiceId);
-            if (checkInvoice == null)
+            var checkNonBillableExpense = await _nonBillableExpenseRepositoryAsync.GetByIdAsync(request.NonBillableExpenseId);
+            if (checkNonBillableExpense == null)
             {
-                throw new KeyNotFoundException($"No se encontro una factura con id {request.InvoiceId}");
+                throw new KeyNotFoundException($"No se encontro un gasto con id {request.NonBillableExpenseId}");
             }
-            if (checkInvoice.StatusId == 19)
+            if (checkNonBillableExpense.StatusId == 30)
             {
-                throw new ApiException("Esta factura ya se encuentra pagada. Por lo cual no puede modificar este pago.");
+                throw new ApiException("Este gasto ya se encuentra pagada. Por lo cual no puede modificar este pago.");
             }
             var checkTypeOfPaymentMethod = await _typeOfPaymentMethodRepositoryAsync.GetByIdAsync(request.TypeOfPaymentMethodId);
             if (checkTypeOfPaymentMethod == null)
@@ -65,18 +65,18 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.UpdateBillP
                     throw new KeyNotFoundException($"No se encontro una la cuenta bancaria con id {request.InternalBankAccountId}");
                 }
             }
-            decimal invoiceWithoutThisPayment = checkInvoice.Outstanding + checkBillPaymen.Amount;
+            decimal invoiceWithoutThisPayment = checkNonBillableExpense.Outstanding + checkBillPaymen.Amount;
             if (invoiceWithoutThisPayment < request.Amount)
             {
-                throw new ApiException("Esta intentando pagar mas de lo debido en la factura de origen.");
+                throw new ApiException("Esta intentando pagar mas de lo debido en el gasto de origen.");
             }
-            checkInvoice.Outstanding = invoiceWithoutThisPayment - request.Amount;
+            checkNonBillableExpense.Outstanding = invoiceWithoutThisPayment - request.Amount;
             if (invoiceWithoutThisPayment - request.Amount == 0)
             {
-                checkInvoice.StatusId = 17;
+                checkNonBillableExpense.StatusId = 30;
             }
             checkBillPaymen.Amount = request.Amount;
-            checkBillPaymen.InvoiceId = request.InvoiceId;
+            checkBillPaymen.NonBillableExpenseId = request.NonBillableExpenseId;
             checkBillPaymen.TypeOfPaymentMethodId = request.TypeOfPaymentMethodId;
             checkBillPaymen.Date = request.Date;
             checkBillPaymen.Attachment = request.Attachment;
@@ -84,11 +84,11 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.UpdateBillP
 
             await _repositoryAsync.UpdateAsync(checkBillPaymen);
             await _repositoryAsync.SaveChangesAsync();
-            await _invoiceRepositoryAsync.UpdateAsync(checkInvoice);
-            await _invoiceRepositoryAsync.SaveChangesAsync();
+            await _nonBillableExpenseRepositoryAsync.UpdateAsync(checkNonBillableExpense);
+            await _nonBillableExpenseRepositoryAsync.SaveChangesAsync();
 
-            var dto = _mapper.Map<BillPaymentDto>(checkBillPaymen);
-            return new Response<BillPaymentDto>(dto, $"Pago actualizado correctamente");
+            var dto = _mapper.Map<NonBillableExpensePaymentDto>(checkBillPaymen);
+            return new Response<NonBillableExpensePaymentDto>(dto, $"Pago actualizado correctamente");
         }
     }
 }

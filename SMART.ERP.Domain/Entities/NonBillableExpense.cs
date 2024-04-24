@@ -17,5 +17,6 @@ namespace SMART.ERP.Domain.Entities
         public int StatusId { get; set; }
         public virtual Status? Status { get; set; }
         public string ExpenseCode { get; set; } = null!;
+        public List<NonBillableExpensePayment>? NonBillableExpensePayments { get; set; }
     }
 }
