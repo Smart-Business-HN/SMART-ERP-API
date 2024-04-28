@@ -27,7 +27,7 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateIn
         private readonly IRepositoryAsync<Prefix> _prefixRepositoryAsync;
         private readonly IMapper _mapper;
         private readonly IJwtService _jwtService;
-        public CreateInventoryInputByPurchaseOrderIdCommandHandler(IRepositoryAsync<Prefix> prefixRepositoryAsync,IRepositoryAsync<InventoryInput> repositoryAsync, IJwtService jwtService, IMapper mapper, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<ProductEntry> productEntoryRepositoryAsync)
+        public CreateInventoryInputByPurchaseOrderIdCommandHandler(IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<InventoryInput> repositoryAsync, IJwtService jwtService, IMapper mapper, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<ProductEntry> productEntoryRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
             _warehouseRepositoryAsync = warehouseRepositoryAsync;
@@ -56,6 +56,7 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateIn
             newRecord.CreatedBy = _jwtService.GetSubjectToken();
             newRecord.Code = CreateInventoryEntryCode(prefixExist, currentInventoryInputs.Last());
             newRecord.ProductEntries = null;
+            newRecord.StatusId = 30;
             var inventoryEntryResponse = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
             if (request.ProductEntries != null && request.ProductEntries.Count > 0)

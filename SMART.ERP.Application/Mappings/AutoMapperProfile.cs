@@ -205,7 +205,8 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<WarehouseDto, Warehouse>();
             CreateMap<InventoryInputType, InventoryInputTypeDto>();
             CreateMap<InventoryInput, InventoryInputDto>();
-            CreateMap<ProductEntry, ProductEntryDto>();
+            CreateMap<InventoryInputDto, InventoryInput>();
+            CreateMap<ProductEntry, ProductEntryDto>().ReverseMap();
             CreateMap<CreateProductEntryDto, ProductEntryDto>();
             CreateMap<ProductEntryDto, CreateProductEntryDto>();
             CreateMap<CreateProductEntryDto, ProductEntry>();

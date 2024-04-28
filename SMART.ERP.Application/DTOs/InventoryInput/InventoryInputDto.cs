@@ -2,6 +2,7 @@
 using SMART.ERP.Application.DTOs.InventoryInputType;
 using SMART.ERP.Application.DTOs.ProductEntry;
 using SMART.ERP.Application.DTOs.PurchaseOrder;
+using SMART.ERP.Application.DTOs.Status;
 using SMART.ERP.Application.DTOs.Warehouse;
 
 namespace SMART.ERP.Application.DTOs.InventoryInput
@@ -28,5 +29,7 @@ namespace SMART.ERP.Application.DTOs.InventoryInput
         public DateTime? ModificationDate { get; set; }
         public string? ModifiedBy { get; set; }
         public List<ProductEntryDto>? ProductEntries { get; set; }
+        public int StatusId { get; set; }
+        public StatusDto? Status { get; set; }
     }
 }

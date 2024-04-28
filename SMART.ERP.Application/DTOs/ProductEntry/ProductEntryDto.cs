@@ -5,7 +5,7 @@ namespace SMART.ERP.Application.DTOs.ProductEntry
 {
     public class ProductEntryDto
     {
-        public int? Id { get; set; }
+        public int Id { get; set; }
         public int InventoryInputId { get; set; }
         public virtual InventoryInputDto? InventoryInput { get; set; }
         public int ProductId { get; set; }

@@ -22,5 +22,7 @@
         public DateTime? ModificationDate { get; set; }
         public string? ModifiedBy { get; set; }
         public List<ProductEntry>? ProductEntries { get; set; }
+        public int StatusId { get; set; }
+        public virtual Status? Status { get; set; }
     }
 }
