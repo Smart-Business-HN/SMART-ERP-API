@@ -1,6 +1,8 @@
 ﻿using SMART.ERP.Application.DTOs.Company;
 using SMART.ERP.Application.DTOs.InventoryInputType;
 using SMART.ERP.Application.DTOs.ProductEntry;
+using SMART.ERP.Application.DTOs.PurchaseOrder;
+using SMART.ERP.Application.DTOs.Status;
 using SMART.ERP.Application.DTOs.Warehouse;
 
 namespace SMART.ERP.Application.DTOs.InventoryInput
@@ -9,14 +11,15 @@ namespace SMART.ERP.Application.DTOs.InventoryInput
     {
         public int Id { get; set; }
         public int InventoryInputTypeId { get; set; }
-        public virtual InventoryInputTypeDto? InventoryInputType { get; set; }
+        public string Code { get; set; } = null!;
+        public InventoryInputTypeDto? InventoryInputType { get; set; }
         public int WarehouseId { get; set; }
-        public virtual WarehouseDto? Warehouse { get; set; }
+        public WarehouseDto? Warehouse { get; set; }
         public int PrefixId { get; set; }
-        public virtual PrefixDto? Prefix { get; set; }
+        public PrefixDto? Prefix { get; set; }
         public string? Description { get; set; }
-        public int? PurchaseOrderId { get; set; }
-        //public virtual PurchaseOrderDto? PurchaseOrder { get; set; }
+        public int? PurchaseOrderOriginId { get; set; }
+        public PurchaseOrderDto? PurchaseOrderOrigin { get; set; }
         public int? ProductReturnId { get; set; }
         //public virtual ProductReturnDto? ProductReturn { get; set; }
         public int? SurplusInventoryId { get; set; }
@@ -26,5 +29,7 @@ namespace SMART.ERP.Application.DTOs.InventoryInput
         public DateTime? ModificationDate { get; set; }
         public string? ModifiedBy { get; set; }
         public List<ProductEntryDto>? ProductEntries { get; set; }
+        public int StatusId { get; set; }
+        public StatusDto? Status { get; set; }
     }
 }

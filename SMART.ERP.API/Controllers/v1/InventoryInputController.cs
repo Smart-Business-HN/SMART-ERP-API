@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateInventoryInputCommand;
 using SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateInventoryInputCommandByPurchaseOrderIdCommand;
 using SMART.ERP.Application.Features.InventoryInputFeature.Commands.DeleteInventoryInputCommand;
+using SMART.ERP.Application.Features.InventoryInputFeature.Commands.UpdateInventooryInputCommand;
 using SMART.ERP.Application.Features.InventoryInputFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
@@ -46,17 +47,17 @@ namespace SMART.ERP.API.Controllers.v1
             }));
         }
 
-        //[HttpPut("Update/{id}")]
-        //[Authorize(Roles = "SuperAdmin, Manager, Admin")]
-        //public async Task<IActionResult> Update(int id, [FromBody] UpdateInventoryInputTypeCommand command)
-        //{
-        //    if (id != command.Id)
-        //    {
-        //        return BadRequest("Ocurrio un error con el id de este registro");
-        //    }
-        //    return Ok(await Mediator.Send(command));
-        //}
-       
+        [HttpPut("update/{id}")]
+        [Authorize]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateInventoryInputCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("ocurrio un error con el id de este registro");
+            }
+            return Ok(await Mediator.Send(command));
+        }
+
         [HttpDelete("Delete/{id}")]
         [Authorize(Roles = "SuperAdmin, Manager")]
         public async Task<IActionResult> Delete(int id)

@@ -8,7 +8,7 @@ namespace SMART.ERP.Application.Specifications.InventoryInputSpecification
         public FilterAndPaginationInventoryInputSpecification(string? parameter, int pageNumber,
             int pageSize, string? order, string? column)
         {
-            Query.Skip((pageNumber) * pageSize).Take(pageSize).AsNoTracking();
+            Query.Include(x => x.Warehouse).Include(x => x.Status).Include(x => x.InventoryInputType).Skip((pageNumber) * pageSize).Take(pageSize).AsNoTracking();
 
             if (!string.IsNullOrEmpty(parameter))
             {
