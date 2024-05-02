@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateInvent
 using SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateInventoryInputCommandByPurchaseOrderIdCommand;
 using SMART.ERP.Application.Features.InventoryInputFeature.Commands.DeleteInventoryInputCommand;
 using SMART.ERP.Application.Features.InventoryInputFeature.Commands.UpdateInventooryInputCommand;
+using SMART.ERP.Application.Features.InventoryInputFeature.Commands.ValidateInventoryInputCommand;
 using SMART.ERP.Application.Features.InventoryInputFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
@@ -64,5 +65,17 @@ namespace SMART.ERP.API.Controllers.v1
         {
             return Ok(await Mediator.Send(new DeleteInventoryInputCommand { Id = id }));
         }
+
+        [HttpPut("validate/{id}")]
+        [Authorize]
+        public async Task<IActionResult> Validate(int id, [FromBody] ValidateInventoryInputCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("ocurrio un error con el id de este registro");
+            }
+            return Ok(await Mediator.Send(command));
+        }
+
     }
 }
