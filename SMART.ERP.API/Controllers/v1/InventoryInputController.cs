@@ -34,7 +34,7 @@ namespace SMART.ERP.API.Controllers.v1
         }
 
         [HttpGet("GetAll")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllInventoryInputQuery()

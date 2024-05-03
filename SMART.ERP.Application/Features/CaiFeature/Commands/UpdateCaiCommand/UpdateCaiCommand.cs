@@ -2,9 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Cai;
-using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
-using SMART.ERP.Application.Specifications.CaiSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
@@ -42,11 +40,11 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.UpdateCaiCommand
         public async Task<Response<CaiDto>> Handle(UpdateCaiCommand request, CancellationToken cancellationToken)
         {
             var cai = await _repositoryAsync.GetByIdAsync(request.Id);
-            if(cai== null)
+            if (cai == null)
             {
                 throw new KeyNotFoundException($"No se encontro ningun registro con el id {request.Id}");
             }
-            if(request.BranchOfficeId != null)
+            if (request.BranchOfficeId != null)
             {
                 var branchOffice = await _branchOfficeRepositoryAsync.GetByIdAsync((int)request.BranchOfficeId);
                 if (branchOffice == null)
@@ -55,19 +53,17 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.UpdateCaiCommand
                 }
                 cai.BranchOfficeId = request.BranchOfficeId;
             }
-            
-            var checkIfExist = await _repositoryAsync.FirstOrDefaultAsync(
-                    new FilterCaiByIdentificatorSpecification(request.Identificator));
-            if(checkIfExist != null)
-            {
-                if(checkIfExist.Id != request.Id)
-                {
-                    throw new ApiException($"Ya existe un CAI con el identificador {request.Identificator}");
-                }
-            }
             cai.Prefix = request.Prefix;
             cai.Name = request.Name;
-            if(request.CurrentCorrelative != request.StartCorrelative)
+            if (request.CurrentCorrelative > request.EndCorrelative)
+            {
+                throw new Exception("El correlativo actual no puede ser mayor al correlativo final");
+            }
+            if (request.CurrentCorrelative < request.StartCorrelative)
+            {
+                throw new Exception("El correlativo actual no puede ser menor al correlativo inicial");
+            }
+            if (request.CurrentCorrelative != request.StartCorrelative)
             {
                 cai.AvailableInvoices = request.EndCorrelative - request.CurrentCorrelative;
             }
@@ -78,11 +74,11 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.UpdateCaiCommand
             cai.IsGeneralCai = request.IsGeneralCai;
             cai.IsActive = request.IsActive;
             cai.Identificator = request.Identificator;
-            cai.ValidFrom= request.ValidFrom;
+            cai.ValidFrom = request.ValidFrom;
             cai.ValidUntil = request.ValidUntil;
             cai.CurrentCorrelative = request.CurrentCorrelative;
-            cai.StartCorrelative= request.StartCorrelative;
-            cai.EndCorrelative= request.EndCorrelative;
+            cai.StartCorrelative = request.StartCorrelative;
+            cai.EndCorrelative = request.EndCorrelative;
             await _repositoryAsync.UpdateAsync(cai);
             await _repositoryAsync.SaveChangesAsync();
             await _outputCacheStored.EvictByTagAsync("cache_cais", cancellationToken);

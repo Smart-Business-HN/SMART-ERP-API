@@ -11,7 +11,7 @@ using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.CaiFeature.Commands.CreateCaiCommand
 {
-    public class CreateCaiCommand: IRequest<Response<CaiDto>>
+    public class CreateCaiCommand : IRequest<Response<CaiDto>>
     {
         public string Name { get; set; } = null!;
         public int? BranchOfficeId { get; set; }
@@ -41,13 +41,13 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.CreateCaiCommand
         }
         public async Task<Response<CaiDto>> Handle(CreateCaiCommand request, CancellationToken cancellationToken)
         {
-            
+
             var filterByIdentificator = await _repositoryAsync.FirstOrDefaultAsync(new FilterCaiByIdentificatorSpecification(request.Identificator));
             if (filterByIdentificator != null)
             {
                 throw new ApiException($"Ya existe un CAI con el identificador {request.Identificator}");
             }
-            if(request.BranchOfficeId != null)
+            if (request.BranchOfficeId != null)
             {
                 var branchOffice = await _branchOfficeRepositoryAsync.GetByIdAsync((int)request.BranchOfficeId);
                 if (branchOffice == null)
@@ -55,8 +55,16 @@ namespace SMART.ERP.Application.Features.CaiFeature.Commands.CreateCaiCommand
                     throw new ApiException($"No existe una sucursal con el id {request.BranchOfficeId}");
                 }
             }
+            if (request.CurrentCorrelative > request.EndCorrelative)
+            {
+                throw new Exception("El correlativo actual no puede ser mayor al correlativo final");
+            }
+            if (request.CurrentCorrelative < request.StartCorrelative)
+            {
+                throw new Exception("El correlativo actual no puede ser menor al correlativo inicial");
+            }
             var newRecord = _mapper.Map<Cai>(request);
-            newRecord.AvailableInvoices= request.EndCorrelative - request.StartCorrelative;
+            newRecord.AvailableInvoices = request.EndCorrelative - request.StartCorrelative;
             newRecord.CurrentCorrelative = request.StartCorrelative;
             var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();

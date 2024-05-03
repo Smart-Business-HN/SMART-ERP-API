@@ -66,6 +66,7 @@ using SMART.ERP.Application.Features.InterestLevelFeature.Commands.CreateInteres
 using SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.CreateInternalBankAccountCommand;
 using SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateInventoryInputCommand;
 using SMART.ERP.Application.Features.InventoryInputTypeFeature.Commands.CreateInventoryInputTypeCommand;
+using SMART.ERP.Application.Features.InvoiceFeature.Commands.CancelInvoiceCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCommand;
 using SMART.ERP.Application.Features.LossReasonFeature.Commands.CreateLossReasonCommand;
 using SMART.ERP.Application.Features.MachineryFailureFeature.Commands.CreateMachineryFailureCommand;
@@ -315,6 +316,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateExpenseAccountCommand, ExpenseAccount>();
             CreateMap<CreateNonBillableExpenseCommand, NonBillableExpense>();
             CreateMap<CreateNonBillableExpensePaymentCommand, NonBillableExpensePayment>();
+            CreateMap<CancelInvoiceCommand, InvoiceDto>();
             #endregion
         }
     }
