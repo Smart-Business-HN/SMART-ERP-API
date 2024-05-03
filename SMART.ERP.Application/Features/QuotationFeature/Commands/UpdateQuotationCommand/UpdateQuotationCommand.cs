@@ -3,10 +3,10 @@ using MediatR;
 using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Specifications.ProductOfferedSpecification;
 using SMART.ERP.Application.Specifications.QuotationSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.Specifications.ProductOfferedSpecification;
 
 
 namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotationCommand
@@ -26,7 +26,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
         public int StatusId { get; set; }
         public int PrefixId { get; set; }
     }
-    public class UpdateQuotationCommandHandler: IRequestHandler<UpdateQuotationCommand,Response<QuotationDto>>
+    public class UpdateQuotationCommandHandler : IRequestHandler<UpdateQuotationCommand, Response<QuotationDto>>
     {
         private readonly IRepositoryAsync<Quotation> _repositoryAsync;
         private readonly IMapper _mapper;
@@ -92,7 +92,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             {
                 quotationExist.StatusId = request.StatusId;
             }
-            if(quotationExist.PrefixId != request.PrefixId)
+            if (quotationExist.PrefixId != request.PrefixId)
             {
                 quotationExist.PrefixId = request.PrefixId;
             }
@@ -104,7 +104,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             {
                 quotationExist.TermsAndConditions = request.TermsAndConditions;
             }
-            if(request.DueDate != null && quotationExist.DueDate != request.DueDate)
+            if (request.DueDate != null && quotationExist.DueDate != request.DueDate)
             {
                 quotationExist.DueDate = (DateTime)request.DueDate;
             }
@@ -112,7 +112,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             var taxesInDatabase = await _taxRepositoryAsync.ListAsync();
             var pre = await CheckProducts(request.ProductsOffered, request.ProductsToOffered, request.Id, taxesInDatabase);
             quotationExist.SubTotal = CalculateSubtotal(pre);
-            var taxes = CalculateTaxes(pre,taxesInDatabase);
+            var taxes = CalculateTaxes(pre, taxesInDatabase);
             decimal taxesAmount = 0;
             foreach (var taxis in taxes)
             {
@@ -148,7 +148,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
                 {
                     if (item == product.TaxId)
                     {
-                        tax = taxes.Find(x=>x.Id == item);
+                        tax = taxes.Find(x => x.Id == item);
                         decimal subTotalAmount = product.Quantity * product.UnitPrice;
                         decimal rates = 1 + (tax.Rate / 100);
                         decimal totalAmountWithTaxes = subTotalAmount * rates;
@@ -171,7 +171,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
                 //UPDATING EVERY PRODUCT AND REMOVING FROM LOCAL LISTS
                 foreach (var item in productsToOffered)
                 {
-                    if(productExisting.ProductId == item.ProductId)
+                    if (productExisting.ProductId == item.ProductId)
                     {
                         var productToUpdate = productExisting;
                         if (productToUpdate.Quantity != item.Quantity)
@@ -184,13 +184,14 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
                         }
                         productToUpdate.TotalLine = item.Quantity * item.RecomendedSalePrice;
                         productToUpdate.Taxes = TaxCalculator(item, taxesRates);
+                        productToUpdate.ProductName = item.ProductName;
                         productToUpdate.Product = null;
                         productToUpdate.Tax = null;
                         productToUpdate.Quotation = null;
                         var productSeed = _mapper.Map<ProductOffered>(productToUpdate);
                         await _productOfferedRepositoryAsync.UpdateAsync(productSeed);
                         await _productOfferedRepositoryAsync.SaveChangesAsync();
-                        prouductsPreExistence.RemoveAll(x=>x.ProductId == productExisting.ProductId);
+                        prouductsPreExistence.RemoveAll(x => x.ProductId == productExisting.ProductId);
                         productsToProcess.RemoveAll(x => x.ProductId == item.ProductId);
                     }
                 }

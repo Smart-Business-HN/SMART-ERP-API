@@ -5,12 +5,6 @@ using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.DTOs.Status;
 using SMART.ERP.Application.DTOs.User;
-using SMART.ERP.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.DTOs.Invoice
 {

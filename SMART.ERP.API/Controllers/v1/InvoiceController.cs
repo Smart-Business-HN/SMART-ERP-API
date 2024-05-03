@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.InvoiceFeature.Commands.CancelInvoiceCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceByQuotationIdCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCommand;
@@ -20,7 +21,7 @@ namespace SMART.ERP.API.Controllers.v1
         }
         [HttpPost("CreateByQuotationId/{quotationId}")]
         [Authorize(Roles = "SuperAdmin, Admin, Manager, SalesAdvisor")]
-        public async Task<IActionResult> CreateByQuotationId(int quotationId,[FromBody] CreateInvoiceByQuotationIdCommand command)
+        public async Task<IActionResult> CreateByQuotationId(int quotationId, [FromBody] CreateInvoiceByQuotationIdCommand command)
         {
             if (quotationId != command.QuotationId)
             {
@@ -51,6 +52,16 @@ namespace SMART.ERP.API.Controllers.v1
         [HttpPut("Update/{id}")]
         [Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateInvoiceCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("Ocurrio un error con el id de este registro");
+            }
+            return Ok(await Mediator.Send(command));
+        }
+        [HttpPut("Cancel/{id}")]
+        [Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
+        public async Task<IActionResult> Cancel(int id, [FromBody] CancelInvoiceCommand command)
         {
             if (id != command.Id)
             {
