@@ -23,16 +23,16 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateIn
         private readonly IRepositoryAsync<InventoryInput> _repositoryAsync;
         private readonly IRepositoryAsync<Warehouse> _warehouseRepositoryAsync;
         private readonly IRepositoryAsync<ProductEntry> _productEntryRepositoryAsync;
-        private readonly IRepositoryAsync<Product> _productRepositoryAsync;
+        private readonly IRepositoryAsync<PurchaseOrder> _purchaseOrderRespositoryAsync;
         private readonly IRepositoryAsync<Prefix> _prefixRepositoryAsync;
         private readonly IMapper _mapper;
         private readonly IJwtService _jwtService;
-        public CreateInventoryInputByPurchaseOrderIdCommandHandler(IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<InventoryInput> repositoryAsync, IJwtService jwtService, IMapper mapper, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<ProductEntry> productEntoryRepositoryAsync)
+        public CreateInventoryInputByPurchaseOrderIdCommandHandler(IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<InventoryInput> repositoryAsync, IJwtService jwtService, IMapper mapper, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<ProductEntry> productEntoryRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
             _warehouseRepositoryAsync = warehouseRepositoryAsync;
             _productEntryRepositoryAsync = productEntoryRepositoryAsync;
-            _productRepositoryAsync = productRepositoryAsync;
+            _purchaseOrderRespositoryAsync = purchaseOrderRepositoryAsync;
             _mapper = mapper;
             _prefixRepositoryAsync = prefixRepositoryAsync;
             _jwtService = jwtService;
@@ -49,14 +49,23 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateIn
             {
                 throw new ApiException($"No existe un prefijo con el id {request.PrefixId}");
             }
+            var purchaseOrderExist = await _purchaseOrderRespositoryAsync.GetByIdAsync(request.PurchaseOrderId);
+            if (purchaseOrderExist == null)
+            {
+                throw new ApiException($"No existe una orden de compra con el id {request.PurchaseOrderId}");
+            }
             var productEntries = new List<ProductEntryDto>();
             var currentInventoryInputs = await _repositoryAsync.ListAsync();
-            var newRecord = _mapper.Map<InventoryInput>(request);
+            var newRecord = new InventoryInput();
+            newRecord.WarehouseId = request.WarehouseId;
+            newRecord.PrefixId = request.PrefixId;
+            newRecord.PurchaseOrderOriginId = request.PurchaseOrderId;
             newRecord.CreationDate = DateTime.Now;
             newRecord.CreatedBy = _jwtService.GetSubjectToken();
             newRecord.Code = CreateInventoryEntryCode(prefixExist, currentInventoryInputs.Last());
             newRecord.ProductEntries = null;
-            newRecord.StatusId = 30;
+            newRecord.StatusId = 31;
+            newRecord.InventoryInputTypeId = 1;
             var inventoryEntryResponse = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
             if (request.ProductEntries != null && request.ProductEntries.Count > 0)
@@ -66,21 +75,33 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateIn
                     var newProductEntry = _mapper.Map<ProductEntry>(item);
                     newProductEntry.InventoryInputId = inventoryEntryResponse.Id;
                     newProductEntry.UnitProductPrice = item.UnitPrice;
+                    newProductEntry.Quantity = item.Quantity;
                     newProductEntry.Total = item.TotalLine;
                     var productEntryResponse = await _productEntryRepositoryAsync.AddAsync(newProductEntry);
-                    await _productEntryRepositoryAsync.SaveChangesAsync();
+
                     var newProductEntryDto = _mapper.Map<ProductEntryDto>(productEntryResponse);
                     productEntries.Add(newProductEntryDto);
                 }
+                await _productEntryRepositoryAsync.SaveChangesAsync();
             }
+            if (purchaseOrderExist.PurchaseBillDestinationId != null)
+            {
+                purchaseOrderExist.StatusId = 24;
+            }
+            else
+            {
+                purchaseOrderExist.StatusId = 23;
+            }
+            purchaseOrderExist.InventoryInputDestinationId = inventoryEntryResponse.Id;
+            await _purchaseOrderRespositoryAsync.UpdateAsync(purchaseOrderExist);
+            await _purchaseOrderRespositoryAsync.SaveChangesAsync();
             var dto = _mapper.Map<InventoryInputDto>(inventoryEntryResponse);
-            dto.ProductEntries = productEntries;
             return new Response<int>(dto.Id);
         }
         public static string CreateInventoryEntryCode(Prefix prefix, InventoryInput lastInventoryInput)
         {
             int numberOfCharacters = prefix.Format.ToCharArray().Length;
-            int numberOfCharactersInId = lastInventoryInput.Id.ToString().ToCharArray().Length;
+            int numberOfCharactersInId = (lastInventoryInput.Id + 1).ToString().ToCharArray().Length;
             string? code;
             if (numberOfCharacters + numberOfCharactersInId < 8)
             {

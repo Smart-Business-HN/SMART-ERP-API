@@ -20,7 +20,7 @@ namespace SMART.ERP.API.Controllers.v1
         {
             return Ok(await Mediator.Send(command));
         }
-        [HttpPost("CreateByPurchaseOrderId")]
+        [HttpPost("CreateByPurchaseOrder")]
         [Authorize(Roles = "SuperAdmin, Manager, Purchasing Agent, Admin")]
         public async Task<IActionResult> CreateByPurchaseOrderId([FromBody] CreateInventoryInputByPurchaseOrderIdCommand command)
         {

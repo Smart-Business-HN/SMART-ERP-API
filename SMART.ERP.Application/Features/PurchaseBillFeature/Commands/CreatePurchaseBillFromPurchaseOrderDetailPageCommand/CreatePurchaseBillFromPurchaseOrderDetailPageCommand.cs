@@ -70,6 +70,14 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             purchaseOrderExist.Prefix = null;
             purchaseOrderExist.Provider = null;
             purchaseOrderExist.ProductsToPurchase = null;
+            if (purchaseOrderExist.InventoryInputDestinationId != null)
+            {
+                purchaseOrderExist.StatusId = 24;
+            }
+            else
+            {
+                purchaseOrderExist.StatusId = 22;
+            }
             purchaseOrderExist.Status = null;
             purchaseOrderExist.BranchOffice = null;
             purchaseOrderExist.User = null;

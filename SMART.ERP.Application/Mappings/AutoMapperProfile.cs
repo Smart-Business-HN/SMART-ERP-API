@@ -65,6 +65,7 @@ using SMART.ERP.Application.Features.IncomeAccountFeature.Commands.CreateIncomeA
 using SMART.ERP.Application.Features.InterestLevelFeature.Commands.CreateInterestLevelCommand;
 using SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.CreateInternalBankAccountCommand;
 using SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateInventoryInputCommand;
+using SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateInventoryInputCommandByPurchaseOrderIdCommand;
 using SMART.ERP.Application.Features.InventoryInputTypeFeature.Commands.CreateInventoryInputTypeCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CancelInvoiceCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCommand;
@@ -244,6 +245,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<NonBillableExpenseDto, NonBillableExpense>();
             CreateMap<NonBillableExpensePayment, NonBillableExpensePaymentDto>();
             CreateMap<NonBillableExpensePaymentDto, NonBillableExpensePayment>();
+            CreateMap<ProductToBuyDto, ProductEntry>();
             #endregion
 
             #region Commands
@@ -317,6 +319,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateNonBillableExpenseCommand, NonBillableExpense>();
             CreateMap<CreateNonBillableExpensePaymentCommand, NonBillableExpensePayment>();
             CreateMap<CancelInvoiceCommand, InvoiceDto>();
+            CreateMap<CreateInventoryInputByPurchaseOrderIdCommand, InventoryInput>();
             #endregion
         }
     }
