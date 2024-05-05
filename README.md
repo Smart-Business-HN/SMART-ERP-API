@@ -98,12 +98,12 @@ Quinto Comando: Seed de Estados con sus respectivos tipos de estado
     INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Enviada',5,1)
     INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Pendiente de Pago',5,1)
     INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Pagada',5,1)
-    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Cancelada',6,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Cancelada',5,1)
 
     INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Guardada',6,1)
-    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Enviada',6,1)
-    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Pendiente de Pago',6,1)
-    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Pagada',6,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Facturada / Sin Recibir',6,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Recibida / Sin Facturar',6,1)
+    INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Completa',6,1)
     INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Recibida',6,1)
     INSERT INTO [SmartERP].[dbo].[Status] (Name,TypeStatusId,IsActive) VALUES ('Cancelada',6,1)
 

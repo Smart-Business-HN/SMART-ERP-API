@@ -1,4 +1,5 @@
 ﻿using SMART.ERP.Application.DTOs.Company;
+using SMART.ERP.Application.DTOs.InventoryInput;
 using SMART.ERP.Application.DTOs.ProductToPurchase;
 using SMART.ERP.Application.DTOs.Provider;
 using SMART.ERP.Application.DTOs.PurchaseBill;
@@ -29,6 +30,8 @@ namespace SMART.ERP.Application.DTOs.PurchaseOrder
         public virtual PrefixDto? Prefix { get; set; }
         public int? PurchaseBillDestinationId { get; set; }
         public PurchaseBillDto? PurchaseBillDestination { get; set; }
+        public int? inventoryInputDestinationId { get; set; }
+        public InventoryInputDto? InventoryInputDestination { get; set; }
         public List<ProductToPurchaseDto>? ProductsToPurchase { get; set; }
     }
 }

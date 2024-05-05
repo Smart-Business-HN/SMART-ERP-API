@@ -1140,6 +1140,11 @@ namespace SMART.ERP.Infrastructure
               .WithMany()
               .HasForeignKey(x => x.PurchaseBillDestinationId)
               .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<PurchaseOrder>()
+                .HasOne(x => x.InventoryInputDestination)
+                .WithMany()
+                .HasForeignKey(x => x.InventoryInputDestinationId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<PurchaseOrder>()
                 .HasMany(p => p.ProductsToPurchase)
