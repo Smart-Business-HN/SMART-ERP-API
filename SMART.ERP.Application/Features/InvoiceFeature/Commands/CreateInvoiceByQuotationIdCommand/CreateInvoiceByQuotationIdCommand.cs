@@ -48,7 +48,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             _productSoldRepositoryAsync = productSoldRepositoryAsync;
             _quotationRepositoryAsync = quotationRepositoryAsync;
         }
-        public async Task<Response<string>> Handle (CreateInvoiceByQuotationIdCommand request, CancellationToken cancellationToken)
+        public async Task<Response<string>> Handle(CreateInvoiceByQuotationIdCommand request, CancellationToken cancellationToken)
         {
             var quotationExist = await _quotationRepositoryAsync.FirstOrDefaultAsync(new FilterQuotationByIdSpecification(request.QuotationId));
             if (quotationExist == null)
@@ -118,7 +118,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             quotationExist.User = null;
             quotationExist.Customer = null;
             quotationExist.Status = null;
-            for (int i = 0; i < quotationExist?.ProductsOffered?.Count;i++)
+            for (int i = 0; i < quotationExist?.ProductsOffered?.Count; i++)
             {
                 quotationExist.ProductsOffered[i].Tax = null;
                 quotationExist.ProductsOffered[i].Product.Brand = null;
@@ -135,10 +135,12 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             {
                 foreach (var productToSell in quotationExistDto.ProductsOffered)
                 {
-                    var newProductToSell = new ProductSold { InvoiceId = invoiceResponse.Id,
+                    var newProductToSell = new ProductSold
+                    {
+                        InvoiceId = invoiceResponse.Id,
                         ProductId = productToSell.ProductId,
                         ProductCode = productToSell.ProductCode,
-                        ProductName = productToSell.ProductName,
+                        ProductDescription = productToSell.ProductDescription,
                         UnitPrice = productToSell.UnitPrice,
                         Quantity = productToSell.Quantity,
                         TaxId = productToSell.TaxId,
@@ -160,7 +162,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
                     newRecord.Taxes15Percent = CalculateTaxesValue(productsSold, taxesRates.Find(x => x.Rate == 15));
                     newRecord.Taxes18Percent = CalculateTaxesValue(productsSold, taxesRates.Find(x => x.Rate == 18));
                     newRecord.Exonerated = 0;
-                    newRecord.Total = newRecord.TaxedAt15Percent + newRecord.TaxedAt18Percent + newRecord.Taxes15Percent + newRecord.Taxes18Percent + newRecord.Exempt ;
+                    newRecord.Total = newRecord.TaxedAt15Percent + newRecord.TaxedAt18Percent + newRecord.Taxes15Percent + newRecord.Taxes18Percent + newRecord.Exempt;
                     newRecord.Outstanding = newRecord.Total;
                 }
                 else

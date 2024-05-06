@@ -1,11 +1,5 @@
 ﻿using SMART.ERP.Application.DTOs.Company;
 using SMART.ERP.Application.DTOs.Product;
-using SMART.ERP.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.DTOs.Invoice
 {
@@ -17,7 +11,7 @@ namespace SMART.ERP.Application.DTOs.Invoice
         public int? ProductId { get; set; }
         public ProductDto? Product { get; set; }
         public string? ProductCode { get; set; }
-        public string? ProductName { get; set; }
+        public string ProductDescription { get; set; } = null!;
         public decimal UnitPrice { get; set; }
         public decimal Quantity { get; set; }
         public int TaxId { get; set; }

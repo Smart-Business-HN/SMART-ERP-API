@@ -24,7 +24,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CopyQuotation
         public int StatusId { get; set; }
         public int PrefixId { get; set; }
     }
-    public class CopyQuotationFromIdCommandHandler : IRequestHandler<CopyQuotationFromIdCommand,Response<int>>
+    public class CopyQuotationFromIdCommandHandler : IRequestHandler<CopyQuotationFromIdCommand, Response<int>>
     {
         private readonly IRepositoryAsync<Quotation> _repositoryAsync;
         private readonly IMapper _mapper;
@@ -47,7 +47,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CopyQuotation
             _prefixRepositoryAsync = prefixRepositoryAsync;
             _productOfferedRepositoryAsync = productOfferedRepositoryAsync;
         }
-       public async Task<Response<int>> Handle(CopyQuotationFromIdCommand request, CancellationToken cancellationToken)
+        public async Task<Response<int>> Handle(CopyQuotationFromIdCommand request, CancellationToken cancellationToken)
         {
             var customerExist = await _customerRepositoryAsync.FirstOrDefaultAsync(new FilterClientByIdSpecification(request.CustomerId));
             if (customerExist == null)
@@ -98,7 +98,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CopyQuotation
                         Taxes = item.Taxes,
                         TotalLine = item.TotalLine,
                         ProductCode = item.ProductCode,
-                        ProductName = item.ProductName,
+                        ProductDescription = item.ProductDescription,
 
                     };
                     var productOfferedResponse = await _productOfferedRepositoryAsync.AddAsync(product);

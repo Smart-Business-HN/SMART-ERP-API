@@ -73,23 +73,23 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
             {
                 throw new ApiException($"No existe un CAI con el id {request.CaiId}");
             }
-            if(!caiExist.IsActive)
+            if (!caiExist.IsActive)
             {
                 throw new ApiException($"El CAI con el id {request.CaiId} se encuentra inactivo");
             }
-            if(!caiExist.IsGeneralCai && caiExist.BranchOfficeId != request.BranchOfficeId)
+            if (!caiExist.IsGeneralCai && caiExist.BranchOfficeId != request.BranchOfficeId)
             {
                 throw new ApiException($"El CAI {caiExist.Name} no pertenece a la sucursal {branchOfficeExist.Name}");
             }
-            if(DateTime.UtcNow.Date > caiExist.ValidUntil)
+            if (DateTime.UtcNow.Date > caiExist.ValidUntil)
             {
                 throw new ApiException($"El CAI {caiExist.Name} se encuentra vencido por favor solicitar mas facturas");
             }
-            if(caiExist.AvailableInvoices == 0)
+            if (caiExist.AvailableInvoices == 0)
             {
                 throw new ApiException($"Lo sentimos no tiene facturas disponibles con este CAI");
             }
-            if(request.SagCode != null && (request.ExemptedRegistrationCertificateNumber == null || request.ExemptOrderNumber == null))
+            if (request.SagCode != null && (request.ExemptedRegistrationCertificateNumber == null || request.ExemptOrderNumber == null))
             {
                 throw new ApiException($"Se requiere un registro de exoneracion completo: Codigo SAG, Numero de Orden Exenta, y Nº de Contancia de Registro Exonerado.");
             }
@@ -127,7 +127,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
             var productsSold = new List<ProductSoldDto>();
             var invoiceResponse = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
-            if(caiExist.AvailableInvoices < (caiExist.EndCorrelative - caiExist.StartCorrelative))
+            if (caiExist.AvailableInvoices < (caiExist.EndCorrelative - caiExist.StartCorrelative))
             {
                 caiExist.AvailableInvoices = caiExist.AvailableInvoices - 1;
                 caiExist.CurrentCorrelative = caiExist.CurrentCorrelative + 1;
@@ -138,7 +138,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
             }
             await _caiRepositoryAsync.UpdateAsync(caiExist);
             await _caiRepositoryAsync.SaveChangesAsync();
-            
+
             if (request.ProductsToSell != null && request.ProductsToSell.Count > 0)
             {
                 foreach (var productToSell in request.ProductsToSell)
@@ -153,9 +153,9 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
                     var newProductToSellDto = _mapper.Map<ProductSoldDto>(productToSellResponse);
                     productsSold.Add(newProductToSellDto);
                 }
-                
+
                 newRecord.Exempt = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 0));
-                if(request.SagCode == null)
+                if (request.SagCode == null)
                 {
                     newRecord.TaxedAt15Percent = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 15));
                     newRecord.TaxedAt18Percent = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 18));
@@ -191,7 +191,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
         {
             foreach (var item in request)
             {
-                if (item.ProductId == null && item.ProductName == null)
+                if (item.ProductId == null && item.ProductDescription == null)
                 {
                     return "El Producto y/o nombre del producto es requerido";
                 }
@@ -246,7 +246,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
             var numberOfCharacters = cai.Prefix.ToCharArray().Length;
             var numberOfCharactersInId = cai.CurrentCorrelative.ToString().ToCharArray().Length;
             var code = "";
-            if(cai.CurrentCorrelative != cai.StartCorrelative)
+            if (cai.CurrentCorrelative != cai.StartCorrelative)
             {
                 if (numberOfCharacters + numberOfCharactersInId < 19)
                 {
@@ -261,7 +261,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
             }
             else
             {
-                if(cai.AvailableInvoices < cai.EndCorrelative - cai.StartCorrelative)
+                if (cai.AvailableInvoices < cai.EndCorrelative - cai.StartCorrelative)
                 {
                     if (numberOfCharacters + numberOfCharactersInId < 19)
                     {
@@ -287,10 +287,10 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
                     }
                     return code;
                 }
-               
-              
+
+
             }
-            
+
         }
         static public decimal TaxCalculator(ProductToSellDto product, List<Tax> taxes)
         {
