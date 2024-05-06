@@ -8,7 +8,7 @@
         public int? ProductId { get; set; }
         public virtual Product? Product { get; set; }
         public string? ProductCode { get; set; }
-        public string? ProductName { get; set; }
+        public string ProductDescription { get; set; } = null!;
         public decimal UnitPrice { get; set; }
         public decimal Quantity { get; set; }
         public int TaxId { get; set; }

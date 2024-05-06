@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SMART.ERP.Domain.Entities
+﻿namespace SMART.ERP.Domain.Entities
 {
     public class ProductSold
     {
@@ -14,7 +8,7 @@ namespace SMART.ERP.Domain.Entities
         public int? ProductId { get; set; }
         public virtual Product? Product { get; set; }
         public string? ProductCode { get; set; }
-        public string? ProductName { get; set; }
+        public string ProductDescription { get; set; } = null!;
         public decimal UnitPrice { get; set; }
         public decimal Quantity { get; set; }
         public int TaxId { get; set; }

@@ -184,7 +184,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
                         }
                         productToUpdate.TotalLine = item.Quantity * item.RecomendedSalePrice;
                         productToUpdate.Taxes = TaxCalculator(item, taxesRates);
-                        productToUpdate.ProductName = item.ProductName;
+                        productToUpdate.ProductDescription = item.ProductDescription;
                         productToUpdate.Product = null;
                         productToUpdate.Tax = null;
                         productToUpdate.Quotation = null;

@@ -11,7 +11,7 @@ namespace SMART.ERP.Application.DTOs.Quotation
         public int? ProductId { get; set; }
         public ProductDto? Product { get; set; }
         public string? ProductCode { get; set; }
-        public string? ProductName { get; set; }
+        public string ProductDescription { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal Quantity { get; set; }
         public int TaxId { get; set; }

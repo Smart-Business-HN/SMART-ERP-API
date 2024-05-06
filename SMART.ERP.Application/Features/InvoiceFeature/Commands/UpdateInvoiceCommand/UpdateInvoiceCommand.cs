@@ -209,6 +209,10 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
                         {
                             productToUpdate.UnitPrice = item.RecomendedSalePrice;
                         }
+                        if (productToUpdate.ProductDescription != item.ProductDescription)
+                        {
+                            productToUpdate.ProductDescription = item.ProductDescription;
+                        }
                         productToUpdate.Taxes = TaxCalculator(item, taxesRates);
                         productToUpdate.TotalLine = productToUpdate.Taxes + (productToUpdate.Quantity * productToUpdate.UnitPrice);
                         productToUpdate.Product = null;

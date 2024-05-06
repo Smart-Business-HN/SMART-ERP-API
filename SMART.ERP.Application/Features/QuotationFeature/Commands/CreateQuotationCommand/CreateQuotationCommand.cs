@@ -116,7 +116,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                 {
                     taxesAmount += taxis.Amount;
                 }
-                newRecord.Total = taxesAmount + newRecord.SubTotal ;
+                newRecord.Total = taxesAmount + newRecord.SubTotal;
                 await _repositoryAsync.UpdateAsync(newRecord);
                 await _repositoryAsync.SaveChangesAsync();
                 quoteResponse.Total = newRecord.Total;
@@ -126,7 +126,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             var productsDto = _mapper.Map<List<ProductOfferedDto>>(productsForNewQuotation);
             var dto = _mapper.Map<QuotationDto>(quoteResponse);
             dto.ProductsOffered = productsDto;
-            return new Response<QuotationDto>(dto,$"Cotización {dto.QuotationCode} creada exitosamente.");
+            return new Response<QuotationDto>(dto, $"Cotización {dto.QuotationCode} creada exitosamente.");
         }
         static public decimal TaxCalculator(ProductToOfferdDto product, List<Tax> taxes)
         {
@@ -169,7 +169,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                     {
                         tax = taxes.Find(x => x.Id == item);
                         decimal subTotalAmount = product.Quantity * product.UnitPrice;
-                        decimal rates = 1+ (tax.Rate/100);
+                        decimal rates = 1 + (tax.Rate / 100);
                         decimal totalAmountWithTaxes = subTotalAmount * rates;
                         currentTaxAmount += (totalAmountWithTaxes - subTotalAmount);
                     }
@@ -181,25 +181,25 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             return Taxes;
         }
 
-        static public string CheckDescriptionsAndNamesOfProductsToOffered (List<ProductToOfferdDto> request)
+        static public string CheckDescriptionsAndNamesOfProductsToOffered(List<ProductToOfferdDto> request)
         {
             foreach (var item in request)
             {
-                if(item.ProductId == null && item.ProductName == null)
+                if (item.ProductId == null && item.ProductDescription == null)
                 {
                     return "El Producto y/o nombre del producto es requerido";
                 }
             }
             return "true";
         }
-        public static string CreateQuotationCode (Prefix prefix, Quotation lastQuotation)
-        {  
+        public static string CreateQuotationCode(Prefix prefix, Quotation lastQuotation)
+        {
             var numberOfCharacters = prefix.Format.ToCharArray().Length;
             var numberOfCharactersInId = lastQuotation.Id.ToString().ToCharArray().Length;
             var code = "";
             if (numberOfCharacters + numberOfCharactersInId < 8)
             {
-                int characterOffset = 8-(numberOfCharacters + numberOfCharactersInId);
+                int characterOffset = 8 - (numberOfCharacters + numberOfCharactersInId);
                 code = prefix.Format + new string('0', characterOffset) + (lastQuotation.Id + 1).ToString();
             }
             else
@@ -214,11 +214,11 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             List<int> productsId = new();
             foreach (var productToOfferdDto in request)
             {
-                if(!taxesIds.Contains(productToOfferdDto.TaxId))
-                { 
+                if (!taxesIds.Contains(productToOfferdDto.TaxId))
+                {
                     taxesIds.Add(productToOfferdDto.TaxId);
                 }
-                if(productToOfferdDto.ProductId != null)
+                if (productToOfferdDto.ProductId != null)
                 {
                     if (!productsId.Contains((int)productToOfferdDto.ProductId))
                     {
@@ -228,11 +228,11 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             }
             if (taxesIds.Count > 0)
             {
-                
+
                 foreach (var tax in taxesIds)
                 {
-                    var currentTax = taxes.Exists(x=>x.Id == tax);
-                    if(currentTax == false)
+                    var currentTax = taxes.Exists(x => x.Id == tax);
+                    if (currentTax == false)
                     {
                         return "Ha habido un problema con el Id del Impuesto de uno de los productos";
                     }
