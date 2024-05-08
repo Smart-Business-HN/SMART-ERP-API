@@ -14,7 +14,7 @@ namespace SMART.ERP.Application.Features.DailyClosinFeature.Commands
     public class CreateDailyCloseCommand : IRequest<Response<DailyCloseDto>>
     {
         public int BranchOfficeId { get; set; }
-        public DateOnly Date { get; set; }
+        public DateTime Date { get; set; }
         public int CaiId { get; set; }
     }
     public class CreateDailyCloseCommandHandler : IRequestHandler<CreateDailyCloseCommand, Response<DailyCloseDto>>
@@ -50,19 +50,19 @@ namespace SMART.ERP.Application.Features.DailyClosinFeature.Commands
             {
                 throw new ApiException($"No existe un CAI con el id {request.CaiId}");
             }
-            var invoices = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceByCaiIdBranchOfficeIdAndDateSpecification(cai.Identificator, branchOffice.Id, request.Date));
+            var invoices = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceByCaiIdBranchOfficeIdAndDateSpecification(cai.Id, branchOffice.Id, DateOnly.FromDateTime(request.Date)));
             invoices.ForEach(x => x.Exonerated = x.Exonerated);
             var dailyClose = new DailyClose
             {
                 BranchOfficeId = request.BranchOfficeId,
-                Date = request.Date,
+                Date = DateOnly.FromDateTime(request.Date),
                 CaiId = request.CaiId,
                 Exonerated = invoices.Sum(x => x.Exonerated),
                 Exempt = invoices.Sum(x => x.Exempt),
                 TaxedAt15Percent = invoices.Sum(x => x.TaxedAt15Percent),
                 TaxedAt18Percent = invoices.Sum(x => x.TaxedAt18Percent),
-                TaxesAt15Percent = invoices.Sum(x => x.Taxes15Percent),
-                TaxesAt18Percent = invoices.Sum(x => x.Taxes18Percent),
+                Taxes15Percent = invoices.Sum(x => x.Taxes15Percent),
+                Taxes18Percent = invoices.Sum(x => x.Taxes18Percent),
                 Total = invoices.Sum(x => x.Total),
                 NumberOfInvoices = invoices.Count(),
                 StartCorrelative = invoices[0].InvoiceNumber,

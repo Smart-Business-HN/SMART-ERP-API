@@ -13,8 +13,8 @@ namespace SMART.ERP.Domain.Entities
         public decimal Exempt { get; set; }
         public decimal TaxedAt15Percent { get; set; }
         public decimal TaxedAt18Percent { get; set; }
-        public decimal TaxesAt15Percent { get; set; }
-        public decimal TaxesAt18Percent { get; set; }
+        public decimal Taxes15Percent { get; set; }
+        public decimal Taxes18Percent { get; set; }
         public decimal Total { get; set; }
         public int NumberOfInvoices { get; set; }
         public string StartCorrelative { get; set; } = null!;
