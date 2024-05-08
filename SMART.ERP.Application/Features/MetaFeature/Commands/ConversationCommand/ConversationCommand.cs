@@ -6,12 +6,12 @@ using SMART.ERP.Application.DTOs.Meta.MetaTextReply;
 using SMART.ERP.Application.DTOs.Meta.Payload;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 using SMART.ERP.Application.Services.MailService;
 using SMART.ERP.Application.Services.MetaPostService;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 
 namespace SMART.ERP.Application.Features.MetaFeature.Commands.ConversationCommand
 {

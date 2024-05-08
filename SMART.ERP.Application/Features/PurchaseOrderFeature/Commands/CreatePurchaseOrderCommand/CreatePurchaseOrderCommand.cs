@@ -52,7 +52,7 @@ namespace SMART.ERP.Application.Features.PurchaseOrderFeature.Commands.CreatePur
         }
         public async Task<Response<PurchaseOrderDto>> Handle(CreatePurchaseOrderCommand request, CancellationToken cancellationToken)
         {
-            var providerExist = await _providerRepositoryAsync.FirstOrDefaultAsync(new FilterProviderSpecification( null,request.ProviderId));
+            var providerExist = await _providerRepositoryAsync.FirstOrDefaultAsync(new FilterProviderSpecification(null, request.ProviderId));
             if (providerExist == null)
             {
                 throw new ApiException($"No existe un proveedor con el Id {request.ProviderId}");
@@ -89,11 +89,11 @@ namespace SMART.ERP.Application.Features.PurchaseOrderFeature.Commands.CreatePur
             }
             var producsToPurchase = new List<ProductToPurchaseDto>();
             var currentPurchaseOrders = await _repositoryAsync.ListAsync();
-            if(currentPurchaseOrders.Count() == 0)
+            if (currentPurchaseOrders.Count() == 0)
             {
-                var firstPurchaseOrder = new PurchaseOrder { Id=0};
+                var firstPurchaseOrder = new PurchaseOrder { Id = 0 };
                 currentPurchaseOrders = [firstPurchaseOrder];
-                
+
             }
             var newRecord = _mapper.Map<PurchaseOrder>(request);
             newRecord.PurchaseOrderCode = CreatePurchaseOrderCode(prefixExist, currentPurchaseOrders.Last());

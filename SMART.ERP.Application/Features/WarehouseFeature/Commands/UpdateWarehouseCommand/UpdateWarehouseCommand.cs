@@ -47,7 +47,7 @@ namespace SMART.ERP.Application.Features.WarehouseFeature.Commands.UpdateWarehou
             {
                 throw new KeyNotFoundException($"No se encontro ninguna ciudad con el id {request.CityId}");
             }
-            if(request.CityId.HasValue)
+            if (request.CityId.HasValue)
             {
                 var existCity = await _cityRepositoryAsync.GetByIdAsync(request.CityId.Value);
                 if (existCity == null)
@@ -56,22 +56,22 @@ namespace SMART.ERP.Application.Features.WarehouseFeature.Commands.UpdateWarehou
                 }
                 warehouse.CityId = request.CityId;
             }
-            if(request.UserId.HasValue)
+            if (request.UserId.HasValue)
             {
                 var existUser = await _userRepositoryAsync.GetByIdAsync(request.UserId.Value);
-                if(existUser == null)
+                if (existUser == null)
                 {
                     throw new KeyNotFoundException($"No se encontro ninguna ciudad con el id {request.CityId}");
                 }
                 warehouse.UserId = request.UserId;
             }
-            if(request.Name != warehouse.Name)
+            if (request.Name != warehouse.Name)
             {
                 warehouse.Name = request.Name;
             }
-            if(request.Address != warehouse.Address)
-            { 
-                warehouse.Address = request.Address; 
+            if (request.Address != warehouse.Address)
+            {
+                warehouse.Address = request.Address;
             }
 
             warehouse.BranchOfficeId = request.BranchOfficeId;
@@ -80,7 +80,7 @@ namespace SMART.ERP.Application.Features.WarehouseFeature.Commands.UpdateWarehou
             await _repositoryAsync.UpdateAsync(warehouse);
             await _repositoryAsync.SaveChangesAsync();
             var dto = _mapper.Map<WarehouseDto>(warehouse);
-            return new Response<WarehouseDto> (dto, $"{request.Name} actualizado exitosamente");
+            return new Response<WarehouseDto>(dto, $"{request.Name} actualizado exitosamente");
         }
     }
 }

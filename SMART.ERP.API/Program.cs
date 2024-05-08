@@ -75,7 +75,7 @@ builder.Services.AddTransient(typeof(IRepositoryAsync<>), typeof(CustomRepositor
 
 builder.WebHost.UseSentry(opts =>
 {
-    opts.SetBeforeSend ((@event, hint) =>
+    opts.SetBeforeSend((@event, hint) =>
     {
         @event.ServerName = null;
         return @event;
@@ -113,6 +113,7 @@ builder.Services.AddOutputCache(opt =>
         opt.AddPolicy("cache_income_account", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_income_account"));
         opt.AddPolicy("cache_expense_account", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_expense_account"));
         opt.AddPolicy("cache_nonBillableExpense", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_nonBillableExpense"));
+        opt.AddPolicy("cache_dailyClose", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_dailyClose"));
         //ECOMMERCE CACHE
         opt.AddPolicy("cache_getAllNavCategories", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_getAllNavCategories"));
         opt.AddPolicy("cache_productsEcommerce", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsEcommerce"));
