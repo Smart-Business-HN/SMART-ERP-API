@@ -8,7 +8,7 @@ namespace SMART.ERP.Application.Specifications.DailyCloseSpecification
         public FilterAndPaginationDailyClosingSpecification(string? parameter, int pageNumber,
                        int pageSize, string? order, string? column)
         {
-            Query.Include(x => x.BranchOffice).Include(x => x.Cai).Include(x => x.ResumePayments).Skip((pageNumber) * pageSize).Take(pageSize).AsNoTracking();
+            Query.Include(x => x.BranchOffice).Include(x => x.Cai).Include(x => x.ResumePayments).ThenInclude(x => x.TypeOfPayment).Skip((pageNumber) * pageSize).Take(pageSize).AsNoTracking();
 
             if (!string.IsNullOrEmpty(parameter))
             {

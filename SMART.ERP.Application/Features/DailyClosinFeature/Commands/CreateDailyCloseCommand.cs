@@ -51,7 +51,7 @@ namespace SMART.ERP.Application.Features.DailyClosinFeature.Commands
                 throw new ApiException($"No existe un CAI con el id {request.CaiId}");
             }
             var invoices = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceByCaiIdBranchOfficeIdAndDateSpecification(cai.Id, branchOffice.Id, DateOnly.FromDateTime(request.Date)));
-            invoices.ForEach(x => x.Exonerated = x.Exonerated);
+
             var dailyClose = new DailyClose
             {
                 BranchOfficeId = request.BranchOfficeId,
@@ -72,11 +72,14 @@ namespace SMART.ERP.Application.Features.DailyClosinFeature.Commands
             };
             var response = await _repositoryAsync.AddAsync(dailyClose);
             await _repositoryAsync.SaveChangesAsync();
-            await SaveResumePayments(invoices, response.Id);
+            var resumePayments = await SaveResumePayments(invoices, response.Id);
             await _outputCacheStored.EvictByTagAsync("cache_dailyClosing", cancellationToken);
+            response.Cai = cai;
+            response.BranchOffice = branchOffice;
+            response.ResumePayments = resumePayments;
             return new Response<DailyCloseDto>(_mapper.Map<DailyCloseDto>(response), "Cierre Guardado Exitosamente");
         }
-        public async Task SaveResumePayments(List<Invoice> invoices, int dailyCloseId)
+        public async Task<List<ResumePayment>> SaveResumePayments(List<Invoice> invoices, int dailyCloseId)
         {
             var typeOfPaymentMethods = new List<TypeOfPaymentMethod>();
             var resumePayments = new List<ResumePayment>();
@@ -99,6 +102,7 @@ namespace SMART.ERP.Application.Features.DailyClosinFeature.Commands
                 {
                     DailyCloseId = dailyCloseId,
                     TypeOfPaymentMethodId = typeOfPaymentMethod.Id,
+
                     Amount = invoices.Where(x => x.BillPayments.Any(y => y.TypeOfPaymentMethod.Id == typeOfPaymentMethod.Id)).Sum(x => x.BillPayments.Where(y => y.TypeOfPaymentMethod.Id == typeOfPaymentMethod.Id).Sum(y => y.Amount))
                 };
                 resumePayments.Add(resumePayment);
@@ -106,8 +110,10 @@ namespace SMART.ERP.Application.Features.DailyClosinFeature.Commands
             foreach (var resumePayment in resumePayments)
             {
                 await _resumePaymentRepositoryAsync.AddAsync(resumePayment);
+                resumePayment.TypeOfPayment = typeOfPaymentMethods.FirstOrDefault(x => x.Id == resumePayment.TypeOfPaymentMethodId);
             }
             await _resumePaymentRepositoryAsync.SaveChangesAsync();
+            return resumePayments;
         }
     }
 }
