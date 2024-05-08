@@ -7,6 +7,7 @@ using SMART.ERP.Application.DTOs.BillPayment;
 using SMART.ERP.Application.DTOs.Cai;
 using SMART.ERP.Application.DTOs.Company;
 using SMART.ERP.Application.DTOs.Customer;
+using SMART.ERP.Application.DTOs.DailyClose;
 using SMART.ERP.Application.DTOs.Dashboard;
 using SMART.ERP.Application.DTOs.ExpenseAccount;
 using SMART.ERP.Application.DTOs.IncomeAccount;
@@ -33,6 +34,7 @@ using SMART.ERP.Application.DTOs.PurchaseBill;
 using SMART.ERP.Application.DTOs.PurchaseBillPayment;
 using SMART.ERP.Application.DTOs.PurchaseOrder;
 using SMART.ERP.Application.DTOs.Quotation;
+using SMART.ERP.Application.DTOs.ResumePayment;
 using SMART.ERP.Application.DTOs.Rootcloud;
 using SMART.ERP.Application.DTOs.SaleOrder;
 using SMART.ERP.Application.DTOs.Status;
@@ -55,6 +57,7 @@ using SMART.ERP.Application.Features.CompanyFeature.Commands.CreateCompanyComman
 using SMART.ERP.Application.Features.CountryFeature.Commands.CreateCountryCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomerCommand;
 using SMART.ERP.Application.Features.CustomerMachineryFeature.Commands.CreateCustomerMachineryCommand;
+using SMART.ERP.Application.Features.DailyClosinFeature.Commands;
 using SMART.ERP.Application.Features.DataSheetFeature.Commands.CreateDataSheetCommand;
 using SMART.ERP.Application.Features.DepartmentFeature.Commands.CreateDepartmentCommand;
 using SMART.ERP.Application.Features.DocumentTypeFeature.Commands.CreateDocumentTypeCommand;
@@ -246,6 +249,8 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<NonBillableExpensePayment, NonBillableExpensePaymentDto>();
             CreateMap<NonBillableExpensePaymentDto, NonBillableExpensePayment>();
             CreateMap<ProductToBuyDto, ProductEntry>();
+            CreateMap<DailyClose,DailyCloseDto>().ReverseMap();
+            CreateMap<ResumePayment, ResumePaymentDto>().ReverseMap();
             #endregion
 
             #region Commands
@@ -320,6 +325,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateNonBillableExpensePaymentCommand, NonBillableExpensePayment>();
             CreateMap<CancelInvoiceCommand, InvoiceDto>();
             CreateMap<CreateInventoryInputByPurchaseOrderIdCommand, InventoryInput>();
+            CreateMap<CreateDailyCloseCommand, DailyClose>();
             #endregion
         }
     }

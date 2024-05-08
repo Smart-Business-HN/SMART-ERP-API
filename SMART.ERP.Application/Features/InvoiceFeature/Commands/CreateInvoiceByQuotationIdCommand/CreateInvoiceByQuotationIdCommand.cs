@@ -26,23 +26,15 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Invoice> _repositoryAsync;
         private readonly IRepositoryAsync<Cai> _caiRepositoryAsync;
-        private readonly IRepositoryAsync<Customer> _customerRepositoryAsync;
-        private readonly IRepositoryAsync<BranchOffices> _branchOfficeRepositoryAsync;
-        private readonly IRepositoryAsync<User> _userRepositoryAsync;
-        private readonly IRepositoryAsync<Status> _statusRepositoryAsync;
         private readonly IRepositoryAsync<Tax> _taxRepositoryAsync;
         private readonly IRepositoryAsync<Product> _productRepositoryAsync;
         private readonly IRepositoryAsync<ProductSold> _productSoldRepositoryAsync;
         private readonly IRepositoryAsync<Quotation> _quotationRepositoryAsync;
-        public CreateInvoiceByQuotationIdCommandHandler(IMapper mapper, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync, IRepositoryAsync<Quotation> quotationRepositoryAsync)
+        public CreateInvoiceByQuotationIdCommandHandler(IMapper mapper, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync, IRepositoryAsync<Quotation> quotationRepositoryAsync)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
             _caiRepositoryAsync = caiRepositoryAsync;
-            _customerRepositoryAsync = customerRepositoryAsync;
-            _branchOfficeRepositoryAsync = branchOfficeRepositoryAsync;
-            _userRepositoryAsync = userRepositoryAsync;
-            _statusRepositoryAsync = statusRepositoryAsync;
             _taxRepositoryAsync = taxRepositoryAsync;
             _productRepositoryAsync = productRepositoryAsync;
             _productSoldRepositoryAsync = productSoldRepositoryAsync;

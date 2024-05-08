@@ -11,7 +11,7 @@ namespace SMART.ERP.Application.Features.WarehouseFeature.Commands.CreateWarehou
 {
     public class CreateWarehouseCommand : IRequest<Response<WarehouseDto>>
     {
-        public string Name { get; set; } 
+        public string Name { get; set; }
         public string? Address { get; set; }
         public Guid? UserId { get; set; }
         public int BranchOfficeId { get; set; }
@@ -24,7 +24,7 @@ namespace SMART.ERP.Application.Features.WarehouseFeature.Commands.CreateWarehou
         private readonly IRepositoryAsync<Warehouse> _repositoryAsync;
         private readonly IRepositoryAsync<User> _userRepositoryAsync;
         private readonly IRepositoryAsync<BranchOffices> _branchOfficesRepositoryAsync;
-        private readonly IRepositoryAsync<City> _cityRepositoryAsync; 
+        private readonly IRepositoryAsync<City> _cityRepositoryAsync;
         private readonly IJwtService _jwtService;
         public CreateWarehouseCommandHandler(IMapper mapper, IRepositoryAsync<Warehouse> repositoryAsync, IRepositoryAsync<User> user, IRepositoryAsync<BranchOffices> branchOffice, IRepositoryAsync<City> city, IJwtService jwtService)
         {
@@ -42,7 +42,7 @@ namespace SMART.ERP.Application.Features.WarehouseFeature.Commands.CreateWarehou
             {
                 throw new ApiException($"No existe una Sucursal con el Id {request.BranchOfficeId}");
             }
-            if(request.CityId.HasValue)
+            if (request.CityId.HasValue)
             {
                 var isCityExist = await _cityRepositoryAsync.GetByIdAsync(request.CityId.Value);
                 if (isCityExist == null)

@@ -90,6 +90,8 @@ namespace SMART.ERP.Infrastructure
         public DbSet<ProductPurchasePriceLog> ProductPurchasePriceLog { get; set; } = null!;
         public DbSet<NonBillableExpense> NonBillableExpenses { get; set; } = null!;
         public DbSet<NonBillableExpensePayment> NonBillableExpensePayments { get; set; } = null!;
+        public DbSet<DailyClose> DailyCloses { get; set; } = null!;
+        public DbSet<ResumePayment> ResumePayments { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1283,6 +1285,27 @@ namespace SMART.ERP.Infrastructure
             .WithMany()
             .HasForeignKey(x => x.InternalBankAccountId)
             .OnDelete(DeleteBehavior.Restrict);
+            //Daily Close
+            modelBuilder.Entity<DailyClose>().ToTable("DailyClose");
+            modelBuilder.Entity<DailyClose>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<DailyClose>()
+             .HasOne(x => x.BranchOffice)
+             .WithMany()
+             .HasForeignKey(x => x.BranchOfficeId)
+             .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<DailyClose>()
+            .HasOne(x => x.Cai)
+            .WithMany()
+            .HasForeignKey(x => x.CaiId)
+            .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<DailyClose>()
+             .HasMany(p => p.ResumePayments)
+             .WithOne(x => x.DailyClose)
+             .HasForeignKey(x => x.DailyCloseId)
+             .OnDelete(DeleteBehavior.Restrict);
+            //Resume Payment
+            modelBuilder.Entity<ResumePayment>().ToTable("ResumePayment");
+            modelBuilder.Entity<ResumePayment>(o => o.HasKey(x => x.Id));
             base.OnModelCreating(modelBuilder);
         }
     }

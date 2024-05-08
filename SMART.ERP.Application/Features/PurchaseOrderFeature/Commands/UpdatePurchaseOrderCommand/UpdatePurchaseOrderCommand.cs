@@ -5,17 +5,10 @@ using SMART.ERP.Application.DTOs.PurchaseOrder;
 using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
-using SMART.ERP.Application.Specifications.ProductOfferedSpecification;
 using SMART.ERP.Application.Specifications.ProductToPurchaseSpecification;
 using SMART.ERP.Application.Specifications.PurchaseOrderSpecification;
-using SMART.ERP.Application.Specifications.QuotationSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.Features.PurchaseOrderFeature.Commands.UpdatePurchaseOrderCommand
 {
