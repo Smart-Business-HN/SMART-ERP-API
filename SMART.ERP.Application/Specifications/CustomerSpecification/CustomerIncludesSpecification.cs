@@ -8,11 +8,11 @@ namespace SMART.ERP.Application.Specifications.CustomerSpecification
         public CustomerIncludesSpecification(string? parameter, int pageNumber,
             int pageSize, string? order, string? column)
         {
-            Query.Include(x => x.CustomerType).AsNoTracking();
+            Query.Include(x => x.CustomerType).Skip((pageNumber) * pageSize).Take(pageSize).OrderByDescending(x => x.Id).AsNoTracking();
 
             if (!string.IsNullOrEmpty(parameter))
             {
-                Query.Where(x => x.FullName.Contains(parameter)).Skip((pageNumber) * pageSize).Take(pageSize).OrderBy(x => x.FullName).AsNoTracking(); ;
+                Query.Where(x => x.FullName.Contains(parameter)); ;
             }
 
             if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))
