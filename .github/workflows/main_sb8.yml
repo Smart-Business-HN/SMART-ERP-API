@@ -49,7 +49,7 @@ jobs:
       
       - name: List files in directory
         run: |
-          ls -la /bin/
+          ls -la SMART-ERP-API/
       
       - name: Copy local assets
         run: |
