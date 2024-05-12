@@ -159,7 +159,7 @@ namespace SMART.ERP.Application.Services.MailService
 </html>", firstDiv, platinoImage.ContentId, whatsappImage.ContentId, fbImage.ContentId, instagramImage.ContentId, sanyImage.ContentId);
             email.Body = builder.ToMessageBody();
             using var smtp = new SmtpClient();
-            await smtp.ConnectAsync(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.SslOnConnect);
+            await smtp.ConnectAsync(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
             await smtp.AuthenticateAsync(_mailSettings.Mail, _mailSettings.Password);
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
