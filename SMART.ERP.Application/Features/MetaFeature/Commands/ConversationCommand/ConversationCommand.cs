@@ -375,7 +375,7 @@ guido@platino.hn";
                                     var newMail = new MailRequestDto();
                                     Guid validUser = await _assignUserToOpportunityService.FindValidUser();
                                     var assignedUser = await _userRepositoryAsync.GetByIdAsync(validUser);
-                                    newMail.ToEmail = "bfernandez@grupoplatino.hn";
+                                    newMail.ToEmail = "josec@smartbusiness.site";
                                     newMail.Subject = "Nueva consulta de Maquinaria";
                                     newMail.Body = $@"¡Hola {assignedUser!.FullName}!,<br><br>
 

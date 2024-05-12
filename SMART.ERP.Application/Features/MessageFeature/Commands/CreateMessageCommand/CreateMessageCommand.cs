@@ -51,7 +51,7 @@ namespace SMART.ERP.Application.Features.MessageFeature.Commands.CreateMessageCo
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
-            _customerRepositoryAsync =customerRepositoryAsync;
+            _customerRepositoryAsync = customerRepositoryAsync;
             _userRepositoryAsync = userRepositoryAsync;
             _countryRepositoryAsync = countryRepositoryAsync;
             _departmentRepositoryAsync = departmentRepositoryAsync;
@@ -99,7 +99,7 @@ namespace SMART.ERP.Application.Features.MessageFeature.Commands.CreateMessageCo
             await _repositoryAsync.SaveChangesAsync();
 
             var communityManagers = await _userRepositoryAsync.ListAsync(
-                new FilterUserByRoleSpecification("Community Manager", null));
+                new FilterUserByRoleSpecification("SuperAdmin", null));
 
             if (communityManagers.Count > 0)
             {

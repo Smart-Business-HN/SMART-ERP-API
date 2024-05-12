@@ -47,15 +47,6 @@ jobs:
         with:
           name: .net-app
       
-      - name: List files in directory
-        run: |
-          ls -la SMART-ERP-API/
-      
-      - name: Copy local assets
-        run: |
-          mkdir -p $HOME/local-assets
-          cp -r /SMART-ERP-API/SMART.ERP.Application/Assets* $HOME/local-assets
-      
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2

@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.MessageFeature.Commands.CreateMessageCommand;
+using SMART.ERP.Application.Features.MessageFeature.Commands.SendMessageCommand;
 using SMART.ERP.Application.Features.MessageFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Services.HeaderService;
-using SMART.ERP.Application.Features.MessageFeature.Commands.CreateMessageCommand;
-using SMART.ERP.Application.Features.MessageFeature.Commands.SendMessageCommand;
-using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {
@@ -45,8 +45,8 @@ namespace SMART.ERP.API.Controllers.v1
         [AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] CreateMessageCommand command)
         {
-            if (!_headerService.VerificatedSecretKey())
-                return Unauthorized();
+            //if (!_headerService.VerificatedSecretKey())
+            //    return Unauthorized();
 
             return Ok(await Mediator.Send(command));
         }
