@@ -59,11 +59,11 @@ namespace SMART.ERP.Application.Services.MailService
                 }
 
             }
-            var platinoImage = builder.LinkedResources.Add("~/Assets/pm-logo.png");
-            var sanyImage = builder.LinkedResources.Add("~/Assets/sany-logo.png");
-            var whatsappImage = builder.LinkedResources.Add("~/Assets/whatsapp.png");
-            var fbImage = builder.LinkedResources.Add("~/Assets/facebook.png");
-            var instagramImage = builder.LinkedResources.Add("~/Assets/instagram.png");
+            var platinoImage = builder.LinkedResources.Add("Assets/pm-logo.png");
+            var sanyImage = builder.LinkedResources.Add("Assets/sany-logo.png");
+            var whatsappImage = builder.LinkedResources.Add("Assets/whatsapp.png");
+            var fbImage = builder.LinkedResources.Add("Assets/facebook.png");
+            var instagramImage = builder.LinkedResources.Add("Assets/instagram.png");
             platinoImage.ContentId = MimeUtils.GenerateMessageId();
             sanyImage.ContentId = MimeUtils.GenerateMessageId();
             whatsappImage.ContentId = MimeUtils.GenerateMessageId();
