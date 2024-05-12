@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using MediatR;
+using SMART.ERP.Application.DTOs.Dashboard;
 using SMART.ERP.Application.DTOs.Opportunity;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.AdvisorGoalSpecification;
+using SMART.ERP.Application.Specifications.InvoiceSpecification;
 using SMART.ERP.Application.Specifications.OpportunityActivitySpecification;
-using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.Dashboard;
 
 namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorDashboard
 {
@@ -19,18 +19,18 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorDashboa
             private readonly IRepositoryAsync<User> _repositoryAsync;
             private readonly IRepositoryAsync<AdvisorGoal> _advisorGoalRepositoryAsync;
             private readonly IRepositoryAsync<OpportunityActivity> _activityRepositoryAsync;
-            private readonly IRepositoryAsync<Opportunity> _opportunityRepositoryAsync;
+            private readonly IRepositoryAsync<Invoice> _invoiceRepositoryAsync;
             private readonly IJwtService _jwtService;
             private readonly IMapper _mapper;
 
             public AdvisorDashboardQueryHandler(IRepositoryAsync<User> repositoryAsync, IRepositoryAsync<AdvisorGoal> advisorGoalRepositoryAsync,
-                IRepositoryAsync<OpportunityActivity> activityRepositoryAsync, IRepositoryAsync<Opportunity> opportunityRepositoryAsync,
+                IRepositoryAsync<OpportunityActivity> activityRepositoryAsync, IRepositoryAsync<Invoice> invoiceRepositoryAsync,
                 IJwtService jwtService, IMapper mapper)
             {
                 _repositoryAsync = repositoryAsync;
                 _advisorGoalRepositoryAsync = advisorGoalRepositoryAsync;
                 _activityRepositoryAsync = activityRepositoryAsync;
-                _opportunityRepositoryAsync = opportunityRepositoryAsync;
+                _invoiceRepositoryAsync = invoiceRepositoryAsync;
                 _jwtService = jwtService;
                 _mapper = mapper;
             }
@@ -55,9 +55,9 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorDashboa
                 }
                 else
                 {
-                    var monthWonOpportunities = await _opportunityRepositoryAsync.ListAsync(new FilterClosedOpportunitiesInMonthYearSpecification(currentDate.Month, currentDate.Year, guid, null));
+                    var monthSales = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceByMonthYearAndUserIdSpecification(currentDate.Month, currentDate.Year, guid, null));
                     var total = 0m;
-                    foreach (var opportunity in monthWonOpportunities)
+                    foreach (var opportunity in monthSales)
                     {
                         total += opportunity.Total;
                     }
@@ -94,8 +94,7 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorDashboa
                     }
 
                     decimal totalCompletion = 0;
-                    var yearSales = await _opportunityRepositoryAsync.ListAsync(new FilterClosedOpportunitiesInYearByUserSpecification(currentDate.Year, guid));
-                    yearSales = yearSales.FindAll(x => x.OpportunityStep!.Name == "Ganado");
+                    var yearSales = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceByYearAndUserIdSpecification(currentDate.Year, guid));
                     foreach (var opportunity in yearSales)
                     {
                         totalCompletion += opportunity.Total;
