@@ -46,6 +46,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: .net-app
+          
+      - name: Copy local assets
+        run: |
+          mkdir -p $HOME/local-assets
+          cp -r SMART.ERP.Application/Assets/* $HOME/local-assets
       
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
