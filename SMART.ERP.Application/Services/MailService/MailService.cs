@@ -150,9 +150,9 @@ namespace SMART.ERP.Application.Services.MailService
                                     Distribuidores autorizados
                                 </span>
                                 <span style=""display: flex; gap: 1rem; justify-content: center; justify-items: center; align-content: center;"">
-                                    <img style=""width:180px; height:40px"" src=""cid:{{5}}"">
+                                    <img style=""width:175px; height:38px; margin-top:2px"" src=""cid:{{5}}"">
                                     <img style=""width:100px; height:45px"" src=""cid:{{6}}"">
-                                    <img style=""width:190px; height:35px; margin-top:4px;filter: grayscale(100%) brightness(10000%) hue-rotate(180deg); "" src=""cid:{{7}}"">
+                                    <img style=""width:175px; height:30px; margin-top:6px;filter: grayscale(100%) brightness(10000%) hue-rotate(180deg); "" src=""cid:{{7}}"">
                                 </span>
                             </div>
                         </div>
