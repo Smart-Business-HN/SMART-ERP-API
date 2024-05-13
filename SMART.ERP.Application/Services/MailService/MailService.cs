@@ -65,12 +65,14 @@ namespace SMART.ERP.Application.Services.MailService
             var fbImage = builder.LinkedResources.Add("Assets/facebook.png");
             var instagramImage = builder.LinkedResources.Add("Assets/instagram.png");
             var ubiquitiImage = builder.LinkedResources.Add("Assets/ubiquiti-logo.png");
+            var mikrotikImage = builder.LinkedResources.Add("Assets/mikrotik-logo.png");
             companyImage.ContentId = MimeUtils.GenerateMessageId();
             hikvisionImage.ContentId = MimeUtils.GenerateMessageId();
             whatsappImage.ContentId = MimeUtils.GenerateMessageId();
             fbImage.ContentId = MimeUtils.GenerateMessageId();
             instagramImage.ContentId = MimeUtils.GenerateMessageId();
             ubiquitiImage.ContentId = MimeUtils.GenerateMessageId();
+            mikrotikImage.ContentId = MimeUtils.GenerateMessageId();
             string firstDiv = @"
             @media only screen and (max-width:768px){
                 .pad-div{padding:0px;}
@@ -147,16 +149,17 @@ namespace SMART.ERP.Application.Services.MailService
                                 <span style=""display:inline-block;vertical-align:middle;margin-right:20px;"">
                                     Distribuidores autorizados
                                 </span>
-                                <span style=""display:flex; gap:4rem; justify-content: center; "">
-                                    <img style=""width:150px;"" src=""cid:{{5}}"">
-                                    <img style=""width:150px;"" src=""cid:{{6}}"">
+                                <span style=""display: flex; gap: 1rem; justify-content: center; justify-items: center; align-content: center;"">
+                                    <img style=""width:180px; height:40px"" src=""cid:{{5}}"">
+                                    <img style=""width:100px; height:45px"" src=""cid:{{6}}"">
+                                    <img style=""width:190px; height:35px; margin-top:4px;filter: grayscale(100%) brightness(10000%) hue-rotate(180deg); "" src=""cid:{{7}}"">
                                 </span>
                             </div>
                         </div>
                     </div>
                 </div>
 </body>
-</html>", firstDiv, companyImage.ContentId, whatsappImage.ContentId, fbImage.ContentId, instagramImage.ContentId, hikvisionImage.ContentId, ubiquitiImage.ContentId);
+</html>", firstDiv, companyImage.ContentId, whatsappImage.ContentId, fbImage.ContentId, instagramImage.ContentId, hikvisionImage.ContentId, ubiquitiImage.ContentId, mikrotikImage.ContentId);
             email.Body = builder.ToMessageBody();
             using var smtp = new SmtpClient();
             await smtp.ConnectAsync(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
