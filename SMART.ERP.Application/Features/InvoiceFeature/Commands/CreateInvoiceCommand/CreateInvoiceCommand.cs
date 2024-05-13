@@ -3,6 +3,7 @@ using MediatR;
 using SMART.ERP.Application.DTOs.Invoice;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Specifications.CustomerSpecification;
 using SMART.ERP.Application.Specifications.ProductSoldSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -53,7 +54,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
         }
         public async Task<Response<InvoiceDto>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
         {
-            var customerExist = await _customerRepositoryAsync.GetByIdAsync(request.CustomerId);
+            var customerExist = await _customerRepositoryAsync.FirstOrDefaultAsync(new FilterCustomerByMasterIdSpecification(request.CustomerId));
             if (customerExist == null)
             {
                 throw new ApiException($"No existe un cliente con el Id {request.CustomerId}");
@@ -181,6 +182,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
                 invoiceResponse.Total = newRecord.Total;
                 invoiceResponse.Outstanding = newRecord.Outstanding;
             }
+            invoiceResponse.Status = statusExist;
+            invoiceResponse.Customer = customerExist;
             var productsForNewInvoice = await _productSoldRepositoryAsync.ListAsync(new ProductSoldSpecification(invoiceResponse.Id));
             var productsDto = _mapper.Map<List<ProductSoldDto>>(productsForNewInvoice);
             var dto = _mapper.Map<InvoiceDto>(invoiceResponse);
