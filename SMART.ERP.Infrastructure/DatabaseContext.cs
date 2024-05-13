@@ -92,6 +92,8 @@ namespace SMART.ERP.Infrastructure
         public DbSet<NonBillableExpensePayment> NonBillableExpensePayments { get; set; } = null!;
         public DbSet<DailyClose> DailyCloses { get; set; } = null!;
         public DbSet<ResumePayment> ResumePayments { get; set; } = null!;
+        public DbSet<MonthlyPurchaseDeclaration> MonthlyPurchaseDeclarations { get; set; } = null!;
+        public DbSet<DeclaratedPurchaseBill> DeclaratedPurchaseBills { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1306,6 +1308,27 @@ namespace SMART.ERP.Infrastructure
             //Resume Payment
             modelBuilder.Entity<ResumePayment>().ToTable("ResumePayment");
             modelBuilder.Entity<ResumePayment>(o => o.HasKey(x => x.Id));
+            // Monthly Purchase Declaration
+            modelBuilder.Entity<MonthlyPurchaseDeclaration>().ToTable("MonthlyPurchaseDeclaration");
+            modelBuilder.Entity<MonthlyPurchaseDeclaration>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<MonthlyPurchaseDeclaration>()
+             .HasMany(x => x.DeclaratedPurchaseBills)
+             .WithOne(x => x.MonthlyPurchaseDeclaration)
+             .HasForeignKey(x => x.MonthlyPurchaseDeclarationId)
+             .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<MonthlyPurchaseDeclaration>()
+             .HasOne(x => x.Status)
+             .WithMany()
+             .HasForeignKey(x => x.StatusId)
+             .OnDelete(DeleteBehavior.Restrict);
+            //Declarated Purchase Bill
+            modelBuilder.Entity<DeclaratedPurchaseBill>().ToTable("DeclaratedPurchaseBill");
+            modelBuilder.Entity<DeclaratedPurchaseBill>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<DeclaratedPurchaseBill>()
+             .HasOne(x => x.PurchaseBill)
+             .WithMany()
+             .HasForeignKey(x => x.PurchaseBillId)
+             .OnDelete(DeleteBehavior.Restrict);
             base.OnModelCreating(modelBuilder);
         }
     }
