@@ -43,7 +43,7 @@ namespace SMART.ERP.Application.Features.MonthlyPurchaseDeclarationFeature.Comma
                 {
                     MonthlyPurchaseDeclarationId = 1,
                     PurchaseBillId = purchaseBill.Id,
-                    ProviderRTN = purchaseBill.Provider.RTN,
+                    ProviderRTN = purchaseBill.Provider.RTN.Replace("-", ""),
                     ProviderName = purchaseBill.Provider.Name,
                     BillDate = purchaseBill.InvoiceDate.ToString("dd/MM/yyyy"),
                     Cai = purchaseBill.Cai,
@@ -81,7 +81,10 @@ namespace SMART.ERP.Application.Features.MonthlyPurchaseDeclarationFeature.Comma
             };
             var response = await _repositoryAsync.AddAsync(monthlyPurchaseDeclaration);
             declaratedPurchaseBills.ForEach(x => x.MonthlyPurchaseDeclarationId = response.Id);
-            var _ = await _declaratedPurchaseBillRepositoryAsync.AddRangeAsync(declaratedPurchaseBills);
+            foreach (var declaratedPurchaseBill in declaratedPurchaseBills)
+            {
+                await _declaratedPurchaseBillRepositoryAsync.AddAsync(declaratedPurchaseBill);
+            }
             await _repositoryAsync.SaveChangesAsync();
             await _declaratedPurchaseBillRepositoryAsync.SaveChangesAsync();
             var dto = _mapper.Map<MonthlyPurchaseDeclarationDto>(response);
