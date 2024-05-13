@@ -59,13 +59,14 @@ namespace SMART.ERP.Application.Services.MailService
                 }
 
             }
-            var platinoImage = builder.LinkedResources.Add("Assets/pm-logo.png");
-            var sanyImage = builder.LinkedResources.Add("Assets/sany-logo.png");
+            var companyImage = builder.LinkedResources.Add("Assets/company-image.png");
+            var hikvisionImage = builder.LinkedResources.Add("Assets/hikvision-logo.png");
             var whatsappImage = builder.LinkedResources.Add("Assets/whatsapp.png");
             var fbImage = builder.LinkedResources.Add("Assets/facebook.png");
             var instagramImage = builder.LinkedResources.Add("Assets/instagram.png");
-            platinoImage.ContentId = MimeUtils.GenerateMessageId();
-            sanyImage.ContentId = MimeUtils.GenerateMessageId();
+            var ubiquitiImage = builder.LinkedResources.Add("Assets/ubiquiti-logo.png");
+            companyImage.ContentId = MimeUtils.GenerateMessageId();
+            hikvisionImage.ContentId = MimeUtils.GenerateMessageId();
             whatsappImage.ContentId = MimeUtils.GenerateMessageId();
             fbImage.ContentId = MimeUtils.GenerateMessageId();
             instagramImage.ContentId = MimeUtils.GenerateMessageId();
@@ -74,14 +75,14 @@ namespace SMART.ERP.Application.Services.MailService
                 .pad-div{padding:0px;}
                 .parentContainer{width:100%;background-color:white;height:100%;}
                 .firstContainer{width:100%;background-color:white;}
-                .platinoText{font-size:10px;color:gray;}
+                .platinoText{font-size:9px;color:gray;}
             } 
 
             @media only screen and (min-width:769px){
                 .pad-div{padding:3rem;}
                 .parentContainer{width:100%;background-color:#888A8F;height:100%;}
                 .firstContainer{width:60%;background-color:white;height:100%;margin:auto;font-family:'Poppins',sans-serif;border:solid 1px gray}
-                .platinoText{font-size:20px;color:gray;}
+                .platinoText{font-size:16px;color:gray;}
             }
             .ql-align-right{
                 text-align:right;
@@ -120,19 +121,19 @@ namespace SMART.ERP.Application.Services.MailService
                                             </span>
                                             |
                                             <span>
-                                                <a href=""https://www.facebook.com/platinomotors/"" style=""color:gray;text-decoration:none;"">
+                                                <a href=""https://www.facebook.com/SmartBusiness504/"" style=""color:gray;text-decoration:none;"">
                                                     <img height=""24px"" width=""24px"" src=""cid:{{3}}"">
                                                 </a>
                                             </span>
                                             |
                                             <span>
-                                            <a href=""https://www.instagram.com/platinomotors/?hl=es"" style=""color:gray;text-decoration:none;"">
+                                            <a href=""https://www.instagram.com/smartbusiness504/?hl=es"" style=""color:gray;text-decoration:none;"">
                                                 <img height=""24px"" width=""24px"" src=""cid:{{4}}"">
                                             </a>
                                         </span>
                                     </div>
                                     <div class=""platinoText"" style=""text-align:center"">
-                                        w w w . p l a t i n o . h n
+                                        www.smartbusiness.site
                                     </div>
                                 </div>
                             </div>
@@ -144,19 +145,20 @@ namespace SMART.ERP.Application.Services.MailService
                             <div style=""background-color:#050C44;width:25%;height:inherit;"">
                 
                             </div>
-                            <div style=""width:75%;background-image:linear-gradient(to right,#B50D21,#F72F26);text-align: center; color: white; padding: 10px;"">
+                            <div style=""width:75%;background-image:linear-gradient(90deg, rgba(25,35,45,1) 0%, rgba(9,9,121,1) 27%, rgba(0,116,208,1) 100%);text-align: center; color: white; padding: 10px;"">
                                 <span style=""display:inline-block;vertical-align:middle;margin-right:20px;"">
-                                    Distribuidores exclusivos
+                                    Distribuidores autorizados
                                 </span>
                                 <span style=""display:inline-block; vertical-align:middle"">
                                     <img style=""width:180px;"" src=""cid:{{5}}"">
+                                    <img style=""width:180px;"" src=""cid:{{6}}"">
                                 </span>
                             </div>
                         </div>
                     </div>
                 </div>
 </body>
-</html>", firstDiv, platinoImage.ContentId, whatsappImage.ContentId, fbImage.ContentId, instagramImage.ContentId, sanyImage.ContentId);
+</html>", firstDiv, companyImage.ContentId, whatsappImage.ContentId, fbImage.ContentId, instagramImage.ContentId, hikvisionImage.ContentId, ubiquitiImage.ContentId);
             email.Body = builder.ToMessageBody();
             using var smtp = new SmtpClient();
             await smtp.ConnectAsync(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
