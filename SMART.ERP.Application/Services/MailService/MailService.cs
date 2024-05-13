@@ -70,19 +70,20 @@ namespace SMART.ERP.Application.Services.MailService
             whatsappImage.ContentId = MimeUtils.GenerateMessageId();
             fbImage.ContentId = MimeUtils.GenerateMessageId();
             instagramImage.ContentId = MimeUtils.GenerateMessageId();
+            ubiquitiImage.ContentId = MimeUtils.GenerateMessageId();
             string firstDiv = @"
             @media only screen and (max-width:768px){
                 .pad-div{padding:0px;}
                 .parentContainer{width:100%;background-color:white;height:100%;}
                 .firstContainer{width:100%;background-color:white;}
-                .platinoText{font-size:9px;color:gray;}
+                .platinoText{font-size:10px;color:gray;}
             } 
 
             @media only screen and (min-width:769px){
                 .pad-div{padding:3rem;}
                 .parentContainer{width:100%;background-color:#888A8F;height:100%;}
                 .firstContainer{width:60%;background-color:white;height:100%;margin:auto;font-family:'Poppins',sans-serif;border:solid 1px gray}
-                .platinoText{font-size:16px;color:gray;}
+                .platinoText{font-size:14px;color:gray;}
             }
             .ql-align-right{
                 text-align:right;
@@ -110,7 +111,7 @@ namespace SMART.ERP.Application.Services.MailService
                     <div class=""firstContainer"">
                         <div class=""pad-div"">
                             <div style=""display:flex;"">                             
-                                <img width=""30%"" height=""30%"" src=""cid:{{1}}"">              
+                                <img width=""40%"" height=""40%"" src=""cid:{{1}}"">              
                                 <div style=""margin-left:auto;margin-top:auto;margin-bottom:auto"">
                                     <div style=""text-align:center;color:gray;"">
                                         Siguenos en:
@@ -142,16 +143,13 @@ namespace SMART.ERP.Application.Services.MailService
                             </div>
                         </div>
                         <div style=""display:flex;width:100%;padding-bottom:15px"">
-                            <div style=""background-color:#050C44;width:25%;height:inherit;"">
-                
-                            </div>
-                            <div style=""width:75%;background-image:linear-gradient(90deg, rgba(25,35,45,1) 0%, rgba(9,9,121,1) 27%, rgba(0,116,208,1) 100%);text-align: center; color: white; padding: 10px;"">
+                            <div style=""width:100%;background-image:linear-gradient(90deg, rgba(25,35,45,1) 0%, rgba(9,9,121,1) 27%, rgba(0,116,208,1) 100%);text-align: center; color: white; padding: 10px;"">
                                 <span style=""display:inline-block;vertical-align:middle;margin-right:20px;"">
                                     Distribuidores autorizados
                                 </span>
-                                <span style=""display:inline-block; vertical-align:middle"">
-                                    <img style=""width:180px;"" src=""cid:{{5}}"">
-                                    <img style=""width:180px;"" src=""cid:{{6}}"">
+                                <span style=""display:flex; gap:4rem; justify-content: center; "">
+                                    <img style=""width:150px;"" src=""cid:{{5}}"">
+                                    <img style=""width:150px;"" src=""cid:{{6}}"">
                                 </span>
                             </div>
                         </div>
