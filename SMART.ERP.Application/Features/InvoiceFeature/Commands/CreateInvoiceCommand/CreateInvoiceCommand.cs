@@ -5,6 +5,7 @@ using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.CustomerSpecification;
 using SMART.ERP.Application.Specifications.ProductSoldSpecification;
+using SMART.ERP.Application.Specifications.WarehouseSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
@@ -39,7 +40,9 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
         private readonly IRepositoryAsync<Tax> _taxRepositoryAsync;
         private readonly IRepositoryAsync<Product> _productRepositoryAsync;
         private readonly IRepositoryAsync<ProductSold> _productSoldRepositoryAsync;
-        public CreateInvoiceCommandHandler(IMapper mapper, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync)
+        private readonly IRepositoryAsync<Warehouse> _warehouseRepositoryAsync;
+        private readonly IRepositoryAsync<InventoryDistribution> _inventoryDistributionRepositoryAsync;
+        public CreateInvoiceCommandHandler(IMapper mapper, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
@@ -51,6 +54,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
             _taxRepositoryAsync = taxRepositoryAsync;
             _productRepositoryAsync = productRepositoryAsync;
             _productSoldRepositoryAsync = productSoldRepositoryAsync;
+            _warehouseRepositoryAsync = warehouseRepositoryAsync;
+            _inventoryDistributionRepositoryAsync = inventoryDistributionRepositoryAsync;
         }
         public async Task<Response<InvoiceDto>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
         {
@@ -188,7 +193,42 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
             var productsDto = _mapper.Map<List<ProductSoldDto>>(productsForNewInvoice);
             var dto = _mapper.Map<InvoiceDto>(invoiceResponse);
             dto.ProductsSold = productsDto;
+            await removeProductsFromWarehouses(productsForNewInvoice, request.BranchOfficeId);
             return new Response<InvoiceDto>(dto, $"Factura {dto.InvoiceNumber} creada exitosamente.");
+        }
+        public async Task removeProductsFromWarehouses(List<ProductSold> products, int branchOfficeId)
+        {
+            var warehouseExist = await _warehouseRepositoryAsync.FirstOrDefaultAsync(new FilterWarehouseByBranchOfficeIdSpecification(branchOfficeId));
+            if (warehouseExist != null)
+            {
+                foreach (var product in products)
+                {
+                    var productExist = warehouseExist.InventoryDistributions.FirstOrDefault(x => x.ProductId == product.ProductId);
+                    if (productExist != null)
+                    {
+                        productExist.Quantity = productExist.Quantity - product.Quantity;
+                        await _inventoryDistributionRepositoryAsync.UpdateAsync(productExist);
+                    }
+                    else
+                    {
+                        var newInventoryDistribution = new InventoryDistribution
+                        {
+                            ProductId = product.ProductId.Value,
+                            WarehouseId = warehouseExist.Id,
+                            Quantity = 0 - product.Quantity
+                        };
+                        await _inventoryDistributionRepositoryAsync.AddAsync(newInventoryDistribution);
+                    }
+                }
+                await _inventoryDistributionRepositoryAsync.SaveChangesAsync();
+            }
+            foreach (var product in products)
+            {
+                var productExist = await _productRepositoryAsync.GetByIdAsync(product.ProductId.Value);
+                productExist.CurrentStock -= (int)product.Quantity;
+                await _productRepositoryAsync.UpdateAsync(productExist);
+            }
+            await _productRepositoryAsync.SaveChangesAsync();
         }
         static public string CheckDescriptionsAndNamesOfProductsToSell(List<ProductToSellDto> request)
         {
