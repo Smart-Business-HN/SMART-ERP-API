@@ -16,6 +16,7 @@ using SMART.ERP.Application.DTOs.InventoryDistribution;
 using SMART.ERP.Application.DTOs.InventoryInput;
 using SMART.ERP.Application.DTOs.InventoryInputType;
 using SMART.ERP.Application.DTOs.Invoice;
+using SMART.ERP.Application.DTOs.InvoicePaymentType;
 using SMART.ERP.Application.DTOs.MajorExpenseAccount;
 using SMART.ERP.Application.DTOs.MajorIncomeAccount;
 using SMART.ERP.Application.DTOs.Meta.MetAdCampaign;
@@ -251,6 +252,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<ProductToBuyDto, ProductEntry>();
             CreateMap<DailyClose,DailyCloseDto>().ReverseMap();
             CreateMap<ResumePayment, ResumePaymentDto>().ReverseMap();
+            CreateMap<InvoicePaymentType,InvoicePaymentTypeDto>().ReverseMap();
             #endregion
 
             #region Commands
