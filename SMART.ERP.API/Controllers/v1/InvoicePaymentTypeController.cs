@@ -1,7 +1,7 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SMART.ERP.Application.Features.PrefixFeature.Queries;
+using SMART.ERP.Application.Features.InvoicePaymentTypeFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
 namespace SMART.ERP.API.Controllers.v1

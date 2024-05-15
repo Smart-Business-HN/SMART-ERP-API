@@ -21,6 +21,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
         public string? SagCode { get; set; }
         public string? ExemptOrderNumber { get; set; }
         public string? ExemptedRegistrationCertificateNumber { get; set; }
+        public int InvoicePaymentTypeId { get; set; }
+        public DateOnly? ExpectedPaymentDate { get; set; }
     }
     public class CreateInvoiceByQuotationIdCommandHandler : IRequestHandler<CreateInvoiceByQuotationIdCommand, Response<string>>
     {
@@ -33,7 +35,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
         private readonly IRepositoryAsync<Quotation> _quotationRepositoryAsync;
         private readonly IRepositoryAsync<Warehouse> _warehouseRepositoryAsync;
         private readonly IRepositoryAsync<InventoryDistribution> _inventoryDistributionRepositoryAsync;
-        public CreateInvoiceByQuotationIdCommandHandler(IMapper mapper, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync, IRepositoryAsync<Quotation> quotationRepositoryAsync)
+        private readonly IRepositoryAsync<InvoicePaymentType> _invoicePaymentTypeRepositoryAsync;
+        public CreateInvoiceByQuotationIdCommandHandler(IMapper mapper, IRepositoryAsync<InvoicePaymentType> invoicePaymentTypeRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync, IRepositoryAsync<Quotation> quotationRepositoryAsync)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
@@ -44,6 +47,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             _quotationRepositoryAsync = quotationRepositoryAsync;
             _warehouseRepositoryAsync = warehouseRepositoryAsync;
             _inventoryDistributionRepositoryAsync = inventoryDistributionRepositoryAsync;
+            _invoicePaymentTypeRepositoryAsync = invoicePaymentTypeRepositoryAsync;
         }
         public async Task<Response<string>> Handle(CreateInvoiceByQuotationIdCommand request, CancellationToken cancellationToken)
         {
@@ -56,6 +60,11 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             if (caiExist == null)
             {
                 throw new ApiException($"No existe un CAI con el id {request.CaiId}");
+            }
+            var invoicePaymentTypeExist = await _invoicePaymentTypeRepositoryAsync.GetByIdAsync(request.InvoicePaymentTypeId);
+            if (invoicePaymentTypeExist == null)
+            {
+                throw new ApiException($"No existe un tipo de pago con el id {request.InvoicePaymentTypeId}");
             }
             if (!caiExist.IsActive)
             {
@@ -86,7 +95,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
                 throw new ApiException($"Se requiere un registro de exoneracion completo: Codigo SAG, Numero de Orden Exenta, y Nº de Contancia de Registro Exonerado.");
             }
             var taxesRates = await _taxRepositoryAsync.ListAsync();
-            var newRecord = new Invoice { CustomerId = quotationExist.CustomerId, CaiId = request.CaiId, BranchOfficeId = quotationExist.BranchOfficeId, UserId = quotationExist.UserId, CreationDate = DateTime.Now, Observations = quotationExist.Observations, TermsAndConditions = quotationExist.TermsAndConditions, StatusId = 16, PurchaseOrderCode = request.PurchaseOrderCode, SagCode = request.SagCode, ExemptOrderNumber = request.ExemptOrderNumber, ExemptedRegistrationCertificateNumber = request.ExemptedRegistrationCertificateNumber, QuotationOriginId = request.QuotationId };
+            var newRecord = new Invoice { CustomerId = quotationExist.CustomerId, CaiId = request.CaiId, BranchOfficeId = quotationExist.BranchOfficeId, UserId = quotationExist.UserId, CreationDate = DateTime.Now, Observations = quotationExist.Observations, TermsAndConditions = quotationExist.TermsAndConditions, StatusId = 16, PurchaseOrderCode = request.PurchaseOrderCode, SagCode = request.SagCode, ExemptOrderNumber = request.ExemptOrderNumber, ExemptedRegistrationCertificateNumber = request.ExemptedRegistrationCertificateNumber, QuotationOriginId = request.QuotationId, InvoicePaymentTypeId = request.InvoicePaymentTypeId };
 
             newRecord.InvoiceNumber = CreateInvoiceNumber(caiExist);
             newRecord.TaxedAt15Percent = 0;

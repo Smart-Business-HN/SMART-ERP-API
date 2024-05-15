@@ -2,6 +2,7 @@
 using SMART.ERP.Application.DTOs.Cai;
 using SMART.ERP.Application.DTOs.Company;
 using SMART.ERP.Application.DTOs.Customer;
+using SMART.ERP.Application.DTOs.InvoicePaymentType;
 using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.DTOs.Status;
 using SMART.ERP.Application.DTOs.User;
@@ -39,6 +40,9 @@ namespace SMART.ERP.Application.DTOs.Invoice
         public string? TermsAndConditions { get; set; }
         public int StatusId { get; set; }
         public StatusDto? Status { get; set; }
+        public int InvoicePaymentTypeId { get; set; }
+        public InvoicePaymentTypeDto? InvoicePaymentType { get; set; }
+        public DateOnly? ExpectedPaymentDate { get; set; }
         public List<ProductSoldDto>? ProductsSold { get; set; }
         public List<BillPaymentDto>? BillPayments { get; set; }
     }
