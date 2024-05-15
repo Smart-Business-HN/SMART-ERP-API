@@ -31,6 +31,9 @@
         public string? TermsAndConditions { get; set; }
         public int StatusId { get; set; }
         public virtual Status? Status { get; set; }
+        public int InvoicePaymentTypeId { get; set; }
+        public virtual InvoicePaymentType? InvoicePaymentType { get; set; }
+        public DateOnly? ExpectedPaymentDate { get; set; }
         public List<ProductSold>? ProductsSold { get; set; }
         public List<BillPayment>? BillPayments { get; set; }
     }

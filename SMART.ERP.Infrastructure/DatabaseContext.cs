@@ -92,6 +92,7 @@ namespace SMART.ERP.Infrastructure
         public DbSet<NonBillableExpensePayment> NonBillableExpensePayments { get; set; } = null!;
         public DbSet<DailyClose> DailyCloses { get; set; } = null!;
         public DbSet<ResumePayment> ResumePayments { get; set; } = null!;
+        public DbSet<InvoicePaymentType> InvoicePaymentTypes { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1306,6 +1307,9 @@ namespace SMART.ERP.Infrastructure
             //Resume Payment
             modelBuilder.Entity<ResumePayment>().ToTable("ResumePayment");
             modelBuilder.Entity<ResumePayment>(o => o.HasKey(x => x.Id));
+            //Invoice Payment Type
+            modelBuilder.Entity<InvoicePaymentType>().ToTable("InvoicePaymentType");
+            modelBuilder.Entity<InvoicePaymentType>(o => o.HasKey(x => x.Id));
             base.OnModelCreating(modelBuilder);
         }
     }

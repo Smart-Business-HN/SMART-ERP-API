@@ -26,6 +26,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
         public string? SagCode { get; set; }
         public string? ExemptOrderNumber { get; set; }
         public string? ExemptedRegistrationCertificateNumber { get; set; }
+        public int InvoicePaymentTypeId { get; set; }
+        public DateOnly? ExpectedPaymentDate { get; set; }
     }
     public class UpdateInvoiceCommandHandler : IRequestHandler<UpdateInvoiceCommand, Response<InvoiceDto>>
     {
@@ -131,6 +133,14 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             if (invoiceExist.ExemptOrderNumber != request.ExemptOrderNumber)
             {
                 invoiceExist.ExemptOrderNumber = request.ExemptOrderNumber;
+            }
+            if (invoiceExist.InvoicePaymentTypeId != request.InvoicePaymentTypeId)
+            {
+                invoiceExist.InvoicePaymentTypeId = request.InvoicePaymentTypeId;
+            }
+            if (invoiceExist.ExpectedPaymentDate != request.ExpectedPaymentDate)
+            {
+                invoiceExist.ExpectedPaymentDate = request.ExpectedPaymentDate;
             }
             var taxesRates = await _taxRepositoryAsync.ListAsync();
             var productsSold = await CheckProducts(request.ProductsSold, request.ProductsToSell, request.Id, taxesRates);

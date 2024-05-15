@@ -27,6 +27,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
         public string? SagCode { get; set; }
         public string? ExemptOrderNumber { get; set; }
         public string? ExemptedRegistrationCertificateNumber { get; set; }
+        public int InvoicePaymentTypeId { get; set; }
+        public DateOnly? ExpectedPaymentDate { get; set; }
     }
     public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand, Response<InvoiceDto>>
     {
@@ -42,7 +44,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
         private readonly IRepositoryAsync<ProductSold> _productSoldRepositoryAsync;
         private readonly IRepositoryAsync<Warehouse> _warehouseRepositoryAsync;
         private readonly IRepositoryAsync<InventoryDistribution> _inventoryDistributionRepositoryAsync;
-        public CreateInvoiceCommandHandler(IMapper mapper, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync)
+        private readonly IRepositoryAsync<InvoicePaymentType> _invoicePaymentTypeRepositoryAsync;
+        public CreateInvoiceCommandHandler(IMapper mapper, IRepositoryAsync<InvoicePaymentType> invoicePaymentTypeRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
@@ -56,6 +59,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
             _productSoldRepositoryAsync = productSoldRepositoryAsync;
             _warehouseRepositoryAsync = warehouseRepositoryAsync;
             _inventoryDistributionRepositoryAsync = inventoryDistributionRepositoryAsync;
+            _invoicePaymentTypeRepositoryAsync = invoicePaymentTypeRepositoryAsync;
         }
         public async Task<Response<InvoiceDto>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
         {
@@ -73,6 +77,11 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
             if (statusExist == null)
             {
                 throw new ApiException($"No existe un Estado con el id {request.StatusId}");
+            }
+            var invoicePaymentTypeExist = await _invoicePaymentTypeRepositoryAsync.GetByIdAsync(request.InvoicePaymentTypeId);
+            if (invoicePaymentTypeExist == null)
+            {
+                throw new ApiException($"No existe un tipo de pago con el id {request.InvoicePaymentTypeId}");
             }
             var caiExist = await _caiRepositoryAsync.GetByIdAsync(request.CaiId);
             if (caiExist == null)
