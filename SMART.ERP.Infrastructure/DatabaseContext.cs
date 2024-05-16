@@ -94,6 +94,7 @@ namespace SMART.ERP.Infrastructure
         public DbSet<ResumePayment> ResumePayments { get; set; } = null!;
         public DbSet<MonthlyPurchaseDeclaration> MonthlyPurchaseDeclarations { get; set; } = null!;
         public DbSet<DeclaratedPurchaseBill> DeclaratedPurchaseBills { get; set; } = null!;
+        public DbSet<InvoicePaymentType> InvoicePaymentTypes { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1329,6 +1330,9 @@ namespace SMART.ERP.Infrastructure
              .WithMany()
              .HasForeignKey(x => x.PurchaseBillId)
              .OnDelete(DeleteBehavior.Restrict);
+            //Invoice Payment Type
+            modelBuilder.Entity<InvoicePaymentType>().ToTable("InvoicePaymentType");
+            modelBuilder.Entity<InvoicePaymentType>(o => o.HasKey(x => x.Id));
             base.OnModelCreating(modelBuilder);
         }
     }

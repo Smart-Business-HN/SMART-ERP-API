@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
+using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Services.NewEncryptionService;
+using SMART.ERP.Application.Services.RegisterClientService;
 using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.ClientTypeSpecification;
 using SMART.ERP.Application.Specifications.DepartmentSpecification;
@@ -11,13 +15,9 @@ using SMART.ERP.Application.Specifications.ProspectSpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.Customer;
-using SMART.ERP.Application.Services.AssignUserToOpportunityService;
-using SMART.ERP.Application.Services.RegisterClientService;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomerCommand
 {
@@ -34,6 +34,7 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomer
         public int DepartmentId { get; set; }
         public int CountryId { get; set; }
         public int SocialReasonId { get; set; }
+        public string? RTN { get; set; }
     }
 
     public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, Response<CustomerDto>>
@@ -205,15 +206,15 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomer
             {
                 assignedUserId = checkUser!.Id;
             }
-            if(assignedUserId != null)
+            if (assignedUserId != null)
             {
                 response.UserId = assignedUserId != null ? assignedUserId : null;
                 await _repositoryAsync.UpdateAsync(response);
                 await _repositoryAsync.SaveChangesAsync();
             }
-                var dto = _mapper.Map<CustomerDto>(response);
-                return new Response<CustomerDto>(dto);
-           
+            var dto = _mapper.Map<CustomerDto>(response);
+            return new Response<CustomerDto>(dto);
+
         }
 
         static string RandomString(int length)

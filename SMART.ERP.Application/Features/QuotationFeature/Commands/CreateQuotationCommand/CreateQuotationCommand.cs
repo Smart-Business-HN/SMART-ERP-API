@@ -85,11 +85,16 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                     throw new ApiException($"{checkDescriptios}");
                 }
             }
+            var userExist = await _userRepositoryAsync.GetByIdAsync(request.UserId);
+            if (userExist == null)
+            {
+                throw new ApiException($"No existe un usuario con el Id {request.CustomerId}");
+            }
             var productsOffered = new List<ProductOfferedDto>();
             var currentCuotations = await _repositoryAsync.ListAsync();
             var newRecord = _mapper.Map<Quotation>(request);
-            //TODO: refactorizin this to: print a different correlative for each prefix.
-            newRecord.QuotationCode = CreateQuotationCode(prefixExist, currentCuotations.Last());
+            var lastQuotationId = currentCuotations.Count > 0 ? currentCuotations.Last().Id : 0;
+            newRecord.QuotationCode = CreateQuotationCode(prefixExist, lastQuotationId);
             newRecord.Profitability = 0;
             newRecord.SubTotal = 0;
             newRecord.Total = 0;
@@ -124,6 +129,8 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             }
             var productsForNewQuotation = await _productOfferedRepositoryAsync.ListAsync(new ProductOfferedSpecification(quoteResponse.Id));
             var productsDto = _mapper.Map<List<ProductOfferedDto>>(productsForNewQuotation);
+            quoteResponse.Customer = customerExist;
+            quoteResponse.User = userExist;
             var dto = _mapper.Map<QuotationDto>(quoteResponse);
             dto.ProductsOffered = productsDto;
             return new Response<QuotationDto>(dto, $"Cotización {dto.QuotationCode} creada exitosamente.");
@@ -192,19 +199,19 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             }
             return "true";
         }
-        public static string CreateQuotationCode(Prefix prefix, Quotation lastQuotation)
+        public static string CreateQuotationCode(Prefix prefix, int lastQuotationId)
         {
             var numberOfCharacters = prefix.Format.ToCharArray().Length;
-            var numberOfCharactersInId = lastQuotation.Id.ToString().ToCharArray().Length;
+            var numberOfCharactersInId = (lastQuotationId + 1).ToString().ToCharArray().Length;
             var code = "";
             if (numberOfCharacters + numberOfCharactersInId < 8)
             {
                 int characterOffset = 8 - (numberOfCharacters + numberOfCharactersInId);
-                code = prefix.Format + new string('0', characterOffset) + (lastQuotation.Id + 1).ToString();
+                code = prefix.Format + new string('0', characterOffset) + (lastQuotationId + 1).ToString();
             }
             else
             {
-                code = prefix.Format + (lastQuotation.Id + 1).ToString();
+                code = prefix.Format + (lastQuotationId + 1).ToString();
             }
             return code;
         }
