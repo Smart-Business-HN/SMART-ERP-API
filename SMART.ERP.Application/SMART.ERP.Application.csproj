@@ -40,7 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\MonthlyPurchaseDeclarationFeature\Queries\" />
     <Folder Include="Features\InvoicePaymentTypeFeature\Commands\" />
     <Folder Include="Features\NonBillableExpensePaymentFeature\Queries\" />
     <Folder Include="Features\OpinionFeature\Commands\" />
