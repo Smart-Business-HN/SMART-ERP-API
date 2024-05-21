@@ -305,12 +305,6 @@ namespace SMART.ERP.Infrastructure
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Customer>()
-                .HasOne(x => x.CustomerType)
-                .WithMany()
-                .HasForeignKey(x => x.CustomerTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Customer>()
                 .HasOne(x => x.Department)
                 .WithMany()
                 .HasForeignKey(x => x.DepartmentId)
@@ -339,6 +333,16 @@ namespace SMART.ERP.Infrastructure
                 .HasOne(x => x.Gender)
                 .WithMany()
                 .HasForeignKey(x => x.GenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Customer>()
+                .HasMany(x => x.DeliveryDirections)
+                .WithOne(x => x.Customer)
+                .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Customer>()
+                .HasMany(x => x.PendingInvoices)
+                .WithOne(x => x.Customer)
+                .HasForeignKey(x => x.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             //DataSheet
@@ -1041,12 +1045,6 @@ namespace SMART.ERP.Infrastructure
                 .WithMany()
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Invoice>()
-               .HasOne(x => x.Customer)
-               .WithMany()
-               .HasForeignKey(x => x.CustomerId)
-               .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Invoice>()
                .HasOne(x => x.Status)
