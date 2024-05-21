@@ -47,5 +47,6 @@
         public bool HasChangedPassword { get; set; }
         public bool HasEcommercePorfile { get; set; }
         public DateTime RegistrationDate { get; set; }
+        public List<Invoice>? PendingInvoices { get; set; }
     }
 }
