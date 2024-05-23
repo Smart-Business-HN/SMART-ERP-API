@@ -7,7 +7,7 @@ namespace SMART.ERP.Application.Specifications.InvoiceSpecification
     {
         public FilterInvoiceByCaiIdBranchOfficeIdAndDateSpecification(int caiId, int branchOfficeId, DateOnly date)
         {
-            Query.Include(x => x.BillPayments).ThenInclude(x => x.TypeOfPaymentMethod).Where(x => x.CaiId == caiId && x.BranchOfficeId == branchOfficeId && x.CreationDate.Date == date.ToDateTime(TimeOnly.MinValue).Date);
+            Query.Include(x => x.InvoicePaymentType).Include(x => x.BillPayments).ThenInclude(x => x.TypeOfPaymentMethod).Where(x => x.CaiId == caiId && x.BranchOfficeId == branchOfficeId && x.CreationDate.Date == date.ToDateTime(TimeOnly.MinValue).Date);
         }
     }
 }
