@@ -1,7 +1,9 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Features.MonthlyPurchaseDeclarationFeature.Commands.CreateMonthlyPurchaseDeclarationCommand;
+using SMART.ERP.Application.Features.MonthlyPurchaseDeclarationFeature.Commands.DeleteMonthlyPurchaseDeclarationCommand;
 using SMART.ERP.Application.Features.MonthlyPurchaseDeclarationFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
@@ -11,13 +13,14 @@ namespace SMART.ERP.API.Controllers.v1
     public class MonthlyPurchaseDeclarationController : BaseApiController
     {
         [HttpPost("Create")]
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin")]
         public async Task<IActionResult> Send([FromBody] CreateMonthlyPurchaseDeclarationCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
         [HttpGet("GetAll")]
-        [Authorize]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin")]
+        [OutputCache(PolicyName = "cache_monthlyPurchaseDeclaration")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllMonthlyPurchaseDeclarationQuery
@@ -29,6 +32,18 @@ namespace SMART.ERP.API.Controllers.v1
                 Column = filter.Column,
                 All = filter.All
             }));
+        }
+        [HttpGet("GetById/{id}")]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            return Ok(await Mediator.Send(new GetMonthlyPurchaseDeclarationByIdQuery { Id = id }));
+        }
+        [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return Ok(await Mediator.Send(new DeleteMonthlyPurchaseDeclarationCommand { Id = id }));
         }
     }
 }

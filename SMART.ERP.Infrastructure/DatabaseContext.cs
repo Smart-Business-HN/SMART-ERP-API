@@ -1303,7 +1303,7 @@ namespace SMART.ERP.Infrastructure
              .HasMany(p => p.ResumePayments)
              .WithOne(x => x.DailyClose)
              .HasForeignKey(x => x.DailyCloseId)
-             .OnDelete(DeleteBehavior.Restrict);
+             .OnDelete(DeleteBehavior.Cascade);
             //Resume Payment
             modelBuilder.Entity<ResumePayment>().ToTable("ResumePayment");
             modelBuilder.Entity<ResumePayment>(o => o.HasKey(x => x.Id));
@@ -1314,7 +1314,7 @@ namespace SMART.ERP.Infrastructure
              .HasMany(x => x.DeclaratedPurchaseBills)
              .WithOne(x => x.MonthlyPurchaseDeclaration)
              .HasForeignKey(x => x.MonthlyPurchaseDeclarationId)
-             .OnDelete(DeleteBehavior.Restrict);
+             .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<MonthlyPurchaseDeclaration>()
              .HasOne(x => x.Status)
              .WithMany()
@@ -1323,11 +1323,6 @@ namespace SMART.ERP.Infrastructure
             //Declarated Purchase Bill
             modelBuilder.Entity<DeclaratedPurchaseBill>().ToTable("DeclaratedPurchaseBill");
             modelBuilder.Entity<DeclaratedPurchaseBill>(o => o.HasKey(x => x.Id));
-            modelBuilder.Entity<DeclaratedPurchaseBill>()
-             .HasOne(x => x.PurchaseBill)
-             .WithMany()
-             .HasForeignKey(x => x.PurchaseBillId)
-             .OnDelete(DeleteBehavior.Restrict);
             //Invoice Payment Type
             modelBuilder.Entity<InvoicePaymentType>().ToTable("InvoicePaymentType");
             modelBuilder.Entity<InvoicePaymentType>(o => o.HasKey(x => x.Id));

@@ -60,7 +60,7 @@ using SMART.ERP.Application.Features.CompanyFeature.Commands.CreateCompanyComman
 using SMART.ERP.Application.Features.CountryFeature.Commands.CreateCountryCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomerCommand;
 using SMART.ERP.Application.Features.CustomerMachineryFeature.Commands.CreateCustomerMachineryCommand;
-using SMART.ERP.Application.Features.DailyClosinFeature.Commands;
+using SMART.ERP.Application.Features.DailyClosinFeature.Commands.CreateDailyCloseCommand;
 using SMART.ERP.Application.Features.DataSheetFeature.Commands.CreateDataSheetCommand;
 using SMART.ERP.Application.Features.DepartmentFeature.Commands.CreateDepartmentCommand;
 using SMART.ERP.Application.Features.DocumentTypeFeature.Commands.CreateDocumentTypeCommand;
@@ -256,7 +256,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<ResumePayment, ResumePaymentDto>().ReverseMap();
             CreateMap<MonthlyPurchaseDeclaration, MonthlyPurchaseDeclarationDto>().ReverseMap();
             CreateMap<DeclaratedPurchaseBill, DeclaratedPurchaseBillDto>().ReverseMap();
-            CreateMap<InvoicePaymentType,InvoicePaymentTypeDto>().ReverseMap();
+            CreateMap<InvoicePaymentType, InvoicePaymentTypeDto>().ReverseMap();
             #endregion
 
             #region Commands

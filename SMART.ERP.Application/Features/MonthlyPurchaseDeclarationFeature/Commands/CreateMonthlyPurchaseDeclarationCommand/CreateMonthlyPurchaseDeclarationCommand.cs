@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.MonthlyPurchaseDeclaration;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.JwtService;
@@ -20,14 +21,15 @@ namespace SMART.ERP.Application.Features.MonthlyPurchaseDeclarationFeature.Comma
         private readonly IRepositoryAsync<DeclaratedPurchaseBill> _declaratedPurchaseBillRepositoryAsync;
         private readonly IJwtService _jwtService;
         private readonly IMapper _mapper;
-
-        public CreateMonthlyPurchaseDeclarationCommandHandler(IRepositoryAsync<PurchaseBill> purchaseBillRepository, IRepositoryAsync<MonthlyPurchaseDeclaration> repositoryAsync, IRepositoryAsync<DeclaratedPurchaseBill> declaratedPurchaseBillRepositoryAsync, IJwtService jwtService, IMapper mapper)
+        private readonly IOutputCacheStore _outputCacheStored;
+        public CreateMonthlyPurchaseDeclarationCommandHandler(IOutputCacheStore outputCacheStored, IRepositoryAsync<PurchaseBill> purchaseBillRepository, IRepositoryAsync<MonthlyPurchaseDeclaration> repositoryAsync, IRepositoryAsync<DeclaratedPurchaseBill> declaratedPurchaseBillRepositoryAsync, IJwtService jwtService, IMapper mapper)
         {
             _repositoryAsync = repositoryAsync;
             _declaratedPurchaseBillRepositoryAsync = declaratedPurchaseBillRepositoryAsync;
             _jwtService = jwtService;
             _mapper = mapper;
             _purchaseBillRepositoryAsync = purchaseBillRepository;
+            _outputCacheStored = outputCacheStored;
         }
         public async Task<Response<MonthlyPurchaseDeclarationDto>> Handle(CreateMonthlyPurchaseDeclarationCommand request, CancellationToken cancellationToken)
         {
@@ -63,11 +65,12 @@ namespace SMART.ERP.Application.Features.MonthlyPurchaseDeclarationFeature.Comma
                 };
                 declaratedPurchaseBills.Add(declaratedPurchaseBill);
             }
+            var month = request.DeclarationDate.Month.ToString().Length == 1 ? $"0{request.DeclarationDate.Month}" : request.DeclarationDate.Month.ToString();
             var monthlyPurchaseDeclaration = new MonthlyPurchaseDeclaration
             {
-                Period = $"{request.DeclarationDate.Year}/{request.DeclarationDate.Month}",
+                Period = $"{request.DeclarationDate.Year}{month}",
                 CreationDate = DateTime.Now,
-                CreatedBy = "Root",
+                CreatedBy = _jwtService.GetSubjectToken(),
                 StatusId = 31,
                 TotalPurchaseBills = purchaseBills.Count,
                 Exempt = purchaseBills.Sum(x => x.Exempt),
@@ -87,6 +90,7 @@ namespace SMART.ERP.Application.Features.MonthlyPurchaseDeclarationFeature.Comma
             }
             await _repositoryAsync.SaveChangesAsync();
             await _declaratedPurchaseBillRepositoryAsync.SaveChangesAsync();
+            await _outputCacheStored.EvictByTagAsync("cache_monthlyPurchaseDeclaration", cancellationToken);
             var dto = _mapper.Map<MonthlyPurchaseDeclarationDto>(response);
             return new Response<MonthlyPurchaseDeclarationDto>(dto);
         }

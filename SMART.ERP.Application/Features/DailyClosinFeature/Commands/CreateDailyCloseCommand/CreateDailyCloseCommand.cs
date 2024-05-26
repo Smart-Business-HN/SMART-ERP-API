@@ -10,7 +10,7 @@ using SMART.ERP.Application.Specifications.InvoiceSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
-namespace SMART.ERP.Application.Features.DailyClosinFeature.Commands
+namespace SMART.ERP.Application.Features.DailyClosinFeature.Commands.CreateDailyCloseCommand
 {
     public class CreateDailyCloseCommand : IRequest<Response<DailyCloseDto>>
     {
