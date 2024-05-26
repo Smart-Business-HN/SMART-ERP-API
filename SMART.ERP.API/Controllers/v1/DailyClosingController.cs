@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
-using SMART.ERP.Application.Features.DailyClosinFeature.Commands;
+using SMART.ERP.Application.Features.DailyClosinFeature.Commands.CreateDailyCloseCommand;
+using SMART.ERP.Application.Features.DailyClosinFeature.Commands.DeleteDailyCloseCommand;
 using SMART.ERP.Application.Features.DailyClosinFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
@@ -12,7 +13,7 @@ namespace SMART.ERP.API.Controllers.v1
     public class DailyClosingController : BaseApiController
     {
         [HttpPost("Create")]
-        [Authorize(Roles = "SuperAdmin, Manager, SalesAdvisor")]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin")]
         public async Task<IActionResult> Create([FromBody] CreateDailyCloseCommand command)
         {
             return Ok(await Mediator.Send(command));
@@ -32,6 +33,12 @@ namespace SMART.ERP.API.Controllers.v1
                 Column = filter.Column,
                 All = filter.All
             }));
+        }
+        [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return Ok(await Mediator.Send(new DeleteDailyCloseCommand { Id = id }));
         }
     }
 }
