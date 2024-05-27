@@ -69,9 +69,11 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateIn
                 }
             }
             var currentInventoryInputs = await _repositoryAsync.ListAsync();
+            var lastInventoryInputId = currentInventoryInputs.Count > 0 ? currentInventoryInputs.Max(x => x.Id) : 0;
+
             var productEntries = new List<ProductEntryDto>();
             var newRecord = _mapper.Map<InventoryInput>(request);
-            newRecord.Code = CreateInventoryEntryCode(prefixExist, currentInventoryInputs.Last());
+            newRecord.Code = CreateInventoryEntryCode(prefixExist, lastInventoryInputId);
             newRecord.CreationDate = DateTime.Now;
             newRecord.CreatedBy = _jwtService.GetSubjectToken();
             newRecord.ProductEntries = null;
@@ -107,19 +109,19 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateIn
             }
             return "true";
         }
-        public static string CreateInventoryEntryCode(Prefix prefix, InventoryInput lastInventoryInput)
+        public static string CreateInventoryEntryCode(Prefix prefix, int lastInventoryInputId)
         {
             int numberOfCharacters = prefix.Format.ToCharArray().Length;
-            int numberOfCharactersInId = (lastInventoryInput.Id + 1).ToString().ToCharArray().Length;
+            int numberOfCharactersInId = (lastInventoryInputId + 1).ToString().ToCharArray().Length;
             string? code;
             if (numberOfCharacters + numberOfCharactersInId < 8)
             {
                 int characterOffset = 8 - (numberOfCharacters + numberOfCharactersInId);
-                code = prefix.Format + new string('0', characterOffset) + (lastInventoryInput.Id + 1).ToString();
+                code = prefix.Format + new string('0', characterOffset) + (lastInventoryInputId + 1).ToString();
             }
             else
             {
-                code = prefix.Format + (lastInventoryInput.Id + 1).ToString();
+                code = prefix.Format + (lastInventoryInputId + 1).ToString();
             }
             return code;
         }
