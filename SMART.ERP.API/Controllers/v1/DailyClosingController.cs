@@ -13,7 +13,7 @@ namespace SMART.ERP.API.Controllers.v1
     public class DailyClosingController : BaseApiController
     {
         [HttpPost("Create")]
-        [Authorize(Roles = "SuperAdmin, Manager, Admin")]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin, SalesAdvisor")]
         public async Task<IActionResult> Create([FromBody] CreateDailyCloseCommand command)
         {
             return Ok(await Mediator.Send(command));
