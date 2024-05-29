@@ -137,6 +137,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             if (invoiceExist.InvoicePaymentTypeId != request.InvoicePaymentTypeId)
             {
                 invoiceExist.InvoicePaymentTypeId = request.InvoicePaymentTypeId;
+                invoiceExist.InvoicePaymentType = null;
             }
             if (invoiceExist.ExpectedPaymentDate != request.ExpectedPaymentDate)
             {
