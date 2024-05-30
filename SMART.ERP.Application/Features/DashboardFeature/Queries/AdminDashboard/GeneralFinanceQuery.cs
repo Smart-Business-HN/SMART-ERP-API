@@ -2,6 +2,7 @@
 using SMART.ERP.Application.DTOs.Dashboard;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.AdvisorGoalSpecification;
+using SMART.ERP.Application.Specifications.InventoryDistributionSpecification;
 using SMART.ERP.Application.Specifications.InvoiceSpecification;
 using SMART.ERP.Application.Specifications.PurchaseBillSpecification;
 using SMART.ERP.Application.Wrappers;
@@ -18,12 +19,14 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
         private readonly IRepositoryAsync<Invoice> _invoiceRepositoryAsync;
         private readonly IRepositoryAsync<InternalBankAccount> _internalBankAccountRepositoryAsync;
         private readonly IRepositoryAsync<AdvisorGoal> _advisorGoalRepositoryAsync;
-        public GeneralFinanceQueryHandler(IRepositoryAsync<PurchaseBill> purchaseBillRepositoryAsync, IRepositoryAsync<AdvisorGoal> advisorGoalRepositoryAsync, IRepositoryAsync<InternalBankAccount> internalBankAccountRepositoryAsync, IRepositoryAsync<Invoice> invoiceRepositoryAsync)
+        private readonly IRepositoryAsync<InventoryDistribution> _inventoryDistributionRepositoryAsync;
+        public GeneralFinanceQueryHandler(IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync, IRepositoryAsync<PurchaseBill> purchaseBillRepositoryAsync, IRepositoryAsync<AdvisorGoal> advisorGoalRepositoryAsync, IRepositoryAsync<InternalBankAccount> internalBankAccountRepositoryAsync, IRepositoryAsync<Invoice> invoiceRepositoryAsync)
         {
             _purchaseBillRepositoryAsync = purchaseBillRepositoryAsync;
             _invoiceRepositoryAsync = invoiceRepositoryAsync;
             _internalBankAccountRepositoryAsync = internalBankAccountRepositoryAsync;
             _advisorGoalRepositoryAsync = advisorGoalRepositoryAsync;
+            _inventoryDistributionRepositoryAsync = inventoryDistributionRepositoryAsync;
         }
         public async Task<Response<GeneralFinanceInformationDto>> Handle(GeneralFinanceQuery request, CancellationToken cancellationToken)
         {
@@ -39,6 +42,7 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
             var invoices = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceByYearSpecification(currentDate));
             var bankAccounts = await _internalBankAccountRepositoryAsync.ListAsync();
             var globalGoal = await _advisorGoalRepositoryAsync.ListAsync(new FilterAdvisorGoalByYearSpecification(currentDate.Year, null));
+            var inventoryDistributions = await _inventoryDistributionRepositoryAsync.ListAsync(new FilterInventoryDistributionByAvalibleStockSpecification());
 
             var billsOfThisMonth = bills.FindAll(x => x.InvoiceDate.Month == currentDate.Month);
             var billOfLastMonth = bills.FindAll(x => x.InvoiceDate.Month == currentDate.Month - 1);
@@ -119,6 +123,8 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
                 Payable = payable,
                 Receivable = receivable,
                 AcidTest = (cashInBanks + receivable) / payable,
+                RealInventory = inventoryDistributions.Sum(x => x.Quantity * (x.Product.CostPrice * (1 + (x.Product.Tax.Rate / 100)))),
+                AccountantInventory = inventoryDistributions.Sum(x => x.Quantity * (x.Product.RecomendedSalePrice * (1 + (x.Product.Tax.Rate / 100))))
             };
             return new Response<GeneralFinanceInformationDto>(values);
         }
