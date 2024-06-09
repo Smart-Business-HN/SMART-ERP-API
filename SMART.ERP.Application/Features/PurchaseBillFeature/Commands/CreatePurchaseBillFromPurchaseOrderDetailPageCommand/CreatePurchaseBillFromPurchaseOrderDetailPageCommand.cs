@@ -54,6 +54,11 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
                 throw new ApiException($"No existe un prefijo con el id {request.PrefixId}");
             }
             var currentPurchaseBills = await _repositoryAsync.ListAsync();
+            var existPurchaseBill = currentPurchaseBills.Where(x => (x.Cai == request.Cai && x.InvoiceNumber == request.InvoiceNumber) || (x.ProviderId == purchaseOrderExist.ProviderId && x.InvoiceNumber == request.InvoiceNumber));
+            if (existPurchaseBill.Any())
+            {
+                throw new ApiException($"Ya existe una factura con este numero, CAI y/o proveedor registrada. Favor revisar factura con ID {existPurchaseBill.First().Id}");
+            }
             var newRecord = _mapper.Map<PurchaseBill>(request);
             newRecord.PurchaseBillCode = CreatePurchaseBillCode(prefixExist, currentPurchaseBills.Last());
             newRecord.PurchaseOrderOriginId = request.PurchaseOrderOriginId;
