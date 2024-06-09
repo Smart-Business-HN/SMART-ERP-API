@@ -54,6 +54,10 @@ namespace SMART.ERP.Application.Features.DailyClosinFeature.Commands.CreateDaily
                 throw new ApiException($"No existe un CAI con el id {request.CaiId}");
             }
             var invoices = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceByCaiIdBranchOfficeIdAndDateSpecification(cai.Id, branchOffice.Id, DateOnly.FromDateTime(request.Date)));
+            if (invoices.Any(x => x.InvoicePaymentType.Name == "Contado" && x.Outstanding > 0))
+            {
+                throw new ApiException("No se puede cerrar el día, existen facturas al contado pendientes de pago");
+            }
             var paymentsForToday = await _billPaymentRepositoryAsync.ListAsync(new FilterBillPaymentByCreationDateAndBrandOfficeId(cai.Id, branchOffice.Id, DateOnly.FromDateTime(request.Date)));
             var dailyClose = new DailyClose
             {
