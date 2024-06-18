@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using SMART.ERP.Application.DTOs.Rootcloud;
+using Quartz;
+using SMART.ERP.Application.Behaviours;
 using SMART.ERP.Application.Jobs.AdvisorGoalJob;
+using SMART.ERP.Application.Jobs.LogSessionJob;
 using SMART.ERP.Application.Jobs.LongLivedOpportunitiesJob;
 using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 using SMART.ERP.Application.Services.AssignUserToProspectService;
@@ -18,12 +20,8 @@ using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Services.MailService;
 using SMART.ERP.Application.Services.MetaPostService;
 using SMART.ERP.Application.Services.NewEncryptionService;
-using SMART.ERP.Application.Wrappers;
-using Quartz;
-using SMART.ERP.Application.Behaviours;
-using SMART.ERP.Application.Jobs.LogSessionJob;
 using SMART.ERP.Application.Services.RegisterClientService;
-using SMART.ERP.Application.Services.Rootcloud;
+using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Settings;
 using System.Reflection;
 using System.Text;
@@ -39,12 +37,12 @@ namespace SMART.ERP.Application
             services.AddQuartz(x =>
             {
                 x.UseMicrosoftDependencyInjectionJobFactory();
-               // x.AddJob<RootcloudJob>(rootcloud => rootcloud.WithIdentity(RootcloudJob.Key));
+                // x.AddJob<RootcloudJob>(rootcloud => rootcloud.WithIdentity(RootcloudJob.Key));
                 x.AddJob<AdvisorGoalJob>(opts => opts.WithIdentity(AdvisorGoalJob.Key));
                 x.AddJob<LongLivedOpportunitiesJob>(opts => opts.WithIdentity(LongLivedOpportunitiesJob.Key));
                 x.AddJob<LogSessionJob>(opts => opts.WithIdentity(LogSessionJob.LogJobKey));
                 //x.AddJob<LocationJob>(opts => opts.WithIdentity(LocationJob.Key));
-               // x.AddJob<RegisterMachineryJob>(opts => opts.WithIdentity(RegisterMachineryJob.Key));
+                // x.AddJob<RegisterMachineryJob>(opts => opts.WithIdentity(RegisterMachineryJob.Key));
 
                 x.AddTrigger(opts => opts
                 .ForJob(AdvisorGoalJob.Key)
@@ -74,7 +72,6 @@ namespace SMART.ERP.Application
             services.Configure<MetaSettings>(configuration.GetSection("MetaSettings"));
             services.Configure<MetaAdSettings>(configuration.GetSection("MetaAdSettings"));
             services.Configure<GoogleCalendarSettings>(configuration.GetSection("GoogleCalendar"));
-            services.Configure<LoginRequestDto>(configuration.GetSection("Rootcloud"));
             // configure blob storage service
             services.AddScoped(_ =>
             {
@@ -90,7 +87,6 @@ namespace SMART.ERP.Application
             services.AddTransient<IAssignUserToProspectService, AssignUserToProspectService>();
             services.AddTransient<IMetaPostService, MetaPostService>();
             services.AddTransient<IGoogleCalendarService, GoogleCalendarService>();
-            services.AddTransient<IRootcloudSessionService, RootcloudSessionService>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

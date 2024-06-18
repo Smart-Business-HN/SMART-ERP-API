@@ -64,10 +64,7 @@ namespace SMART.ERP.Infrastructure
         public DbSet<TypeActivity> TypeActivities { get; set; } = null!;
         public DbSet<LossReason> LossReasons { get; set; } = null!;
         public DbSet<WinReason> WinReasons { get; set; } = null!;
-        public DbSet<CustomerMachinery> CustomerMachinery { get; set; } = null!;
-        public DbSet<RootcloudSession> RootcloudSessions { get; set; } = null!;
         public DbSet<AdvisorGoal> AdvisorGoals { get; set; } = null!;
-        public DbSet<MachineryFailure> MachineryFailures { get; set; } = null!;
         public DbSet<Cai> Cais { get; set; } = null!;
         public DbSet<InternalDocument> InternalDocuments { get; set; } = null!;
         public DbSet<Prefix> Prefixes { get; set; } = null!;
@@ -872,22 +869,6 @@ namespace SMART.ERP.Infrastructure
             //WinReason
             modelBuilder.Entity<WinReason>().ToTable("WinReason");
             modelBuilder.Entity<WinReason>(o => o.HasKey(x => x.Id));
-
-            //CustomerMachinery
-            modelBuilder.Entity<CustomerMachinery>().ToTable("CustomerMachinery");
-            modelBuilder.Entity<CustomerMachinery>(o => o.HasKey(x => x.Id));
-            modelBuilder.Entity<CustomerMachinery>()
-                .HasOne(x => x.Product)
-                .WithMany()
-                .HasForeignKey(x => x.ProductId);
-
-            //RootcloudSession
-            modelBuilder.Entity<RootcloudSession>().ToTable("RootcloudSession");
-            modelBuilder.Entity<RootcloudSession>(o => o.HasKey(x => x.Id));
-
-            //MachineryFailure
-            modelBuilder.Entity<MachineryFailure>().ToTable("MachineryFailure");
-            modelBuilder.Entity<MachineryFailure>(o => o.HasKey(x => x.Id));
 
             //CAIs
             modelBuilder.Entity<Cai>().ToTable("Cai");
