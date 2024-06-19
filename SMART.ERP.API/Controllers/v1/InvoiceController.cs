@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CancelInvoiceCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceByQuotationIdCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCommand;
+using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceFromPosScreenCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Queries;
 using SMART.ERP.Application.Parameters;
@@ -27,6 +28,12 @@ namespace SMART.ERP.API.Controllers.v1
             {
                 return BadRequest("Ocurrio un error con el id de este registro");
             }
+            return Ok(await Mediator.Send(command));
+        }
+        [HttpPost("CreateFromPosScreen")]
+        [Authorize(Roles = "SuperAdmin, Admin, Manager, SalesAdvisor")]
+        public async Task<IActionResult> CreateFromPosScreen([FromBody] CreateInvoiceFromPosScreenCommand command)
+        {
             return Ok(await Mediator.Send(command));
         }
         [HttpGet("GetById/{id}")]

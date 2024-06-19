@@ -81,7 +81,7 @@ namespace SMART.ERP.Application.Features.NonBillableExpenseFeature.Commands.Crea
         public static string CreateNonBillableExpenseCode(Prefix prefix, NonBillableExpense lastNonBillableExpense)
         {
             var numberOfCharacters = prefix.Format.ToCharArray().Length;
-            var numberOfCharactersInId = lastNonBillableExpense.Id.ToString().ToCharArray().Length;
+            var numberOfCharactersInId = (lastNonBillableExpense.Id + 1).ToString().ToCharArray().Length;
             var code = "";
             if (numberOfCharacters + numberOfCharactersInId < 8)
             {

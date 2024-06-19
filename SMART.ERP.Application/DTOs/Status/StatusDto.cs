@@ -6,6 +6,6 @@
         public string Name { get; set; } = null!;
         public bool IsActive { get; set; }
         public int TypeStatusId { get; set; }
-        public ResumeTypeStatusDto? TypeStatus { get; set; }
+        public TypeStatusDto? TypeStatus { get; set; }
     }
 }
