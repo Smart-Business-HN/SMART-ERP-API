@@ -74,6 +74,7 @@ using SMART.ERP.Application.Features.InventoryInputFeature.Commands.CreateInvent
 using SMART.ERP.Application.Features.InventoryInputTypeFeature.Commands.CreateInventoryInputTypeCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CancelInvoiceCommand;
 using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCommand;
+using SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceFromPosScreenCommand;
 using SMART.ERP.Application.Features.LossReasonFeature.Commands.CreateLossReasonCommand;
 using SMART.ERP.Application.Features.MajorExpenseAccountFeature.Commands.CreateMajorExpenseAccountCommand;
 using SMART.ERP.Application.Features.MajorIncomeAccountFeature.Commands.CreateMajorIncomeAccountCommand;
@@ -326,6 +327,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CancelInvoiceCommand, InvoiceDto>();
             CreateMap<CreateInventoryInputByPurchaseOrderIdCommand, InventoryInput>();
             CreateMap<CreateDailyCloseCommand, DailyClose>();
+            CreateMap<CreateInvoiceFromPosScreenCommand, Invoice>();
             #endregion
         }
     }

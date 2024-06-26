@@ -142,6 +142,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceFr
             {
                 foreach (var productToSell in request.ProductsToSell)
                 {
+                    productToSell.Tax = null;
                     var newProductToSell = _mapper.Map<ProductSold>(productToSell);
                     newProductToSell.InvoiceId = invoiceResponse.Id;
                     newProductToSell.UnitPrice = productToSell.RecomendedSalePrice;
@@ -160,7 +161,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceFr
                 newRecord.Taxes18Percent = CalculateTaxesValue(productsSold, taxesRates.Find(x => x.Rate == 18));
                 newRecord.Exonerated = 0;
                 newRecord.Total = newRecord.TaxedAt15Percent + newRecord.TaxedAt18Percent + newRecord.Taxes15Percent + newRecord.Taxes18Percent + newRecord.Exempt;
-                newRecord.Outstanding = newRecord.Total;
+                newRecord.Outstanding = 0;
 
                 await _repositoryAsync.UpdateAsync(newRecord);
                 await _repositoryAsync.SaveChangesAsync();
