@@ -38,13 +38,15 @@ namespace SMART.ERP.Application.Features.StatusFeature.Queries
                 }
 
                 var statuses = await _repositoryAsync.ListAsync(new FilterAndPaginationStatusSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
-                var dto = _mapper.Map<List<StatusDto>>(statuses);
-                foreach (var item in dto)
+                if (!request.All)
                 {
-                    var typeStatus = await _typeStatusRepositoryAsync.GetByIdAsync(item.TypeStatusId);
-                    if (typeStatus != null)
-                        item.TypeStatus = _mapper.Map<ResumeTypeStatusDto>(typeStatus);
+                    var typeStatuses = await _typeStatusRepositoryAsync.ListAsync();
+                    foreach (var item in statuses)
+                    {
+                        item.TypeStatus = typeStatuses.FirstOrDefault(x => x.Id == item.TypeStatusId);
+                    }
                 }
+                var dto = _mapper.Map<List<StatusDto>>(statuses);
                 return new PagedResponse<List<StatusDto>>(dto, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync());
             }
         }

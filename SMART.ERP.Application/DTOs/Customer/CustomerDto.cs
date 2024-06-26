@@ -1,5 +1,5 @@
-﻿using SMART.ERP.Application.DTOs.User;
-using SMART.ERP.Application.DTOs.Address;
+﻿using SMART.ERP.Application.DTOs.Address;
+using SMART.ERP.Application.DTOs.User;
 
 namespace SMART.ERP.Application.DTOs.Customer
 {
@@ -40,7 +40,6 @@ namespace SMART.ERP.Application.DTOs.Customer
         public string? ContactPersonPhone { get; set; }
         public string? ContactPersonEmail { get; set; }
         public List<DeliveryDirectionDto>? DeliveryDirections { get; set; }
-        public List<CustomerMachineryDto>? CustomerMachinery { get; set; }
         public bool IsActive { get; set; }
     }
 }
