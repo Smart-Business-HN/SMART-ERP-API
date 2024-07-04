@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseProductCommand;
 using SMART.ERP.Application.Features.BaseProductFeature.Commands.DeleteBaseProductCommand;
+using SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseProductCommand;
 using SMART.ERP.Application.Features.BaseProductFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Services.HeaderService;
-using SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseProductCommand;
-using SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseProductCommand;
-using Microsoft.AspNetCore.OutputCaching;
-using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {
@@ -81,14 +81,14 @@ namespace SMART.ERP.API.Controllers.v1
         }
 
         [HttpPost("Create")]
-        [Authorize(Roles = "SuperAdmin, Manager, CommunityManager, Admin")]
+        [Authorize(Roles = "SuperAdmin, Manager, SalesAdvisor, Admin")]
         public async Task<IActionResult> Create([FromBody] CreateBaseProductCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
 
         [HttpPut("Update/{id}")]
-        [Authorize(Roles = "SuperAdmin, Manager, CommunityManager, Admin")]
+        [Authorize(Roles = "SuperAdmin, Manager, SalesAdvisor, Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateBaseProductCommand command)
         {
             if (id != command.Id)
