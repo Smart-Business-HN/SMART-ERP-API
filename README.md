@@ -462,6 +462,11 @@ Sexto comando: Datos demograficos de Honduras
       INSERT INTO [SmartERP].[dbo].[InternalDocument] (Name, IsActive) VALUES ('Factura',1)
       INSERT INTO [SmartERP].[dbo].[InternalDocument] (Name, IsActive) VALUES ('Cotización',1)
       INSERT INTO [SmartERP].[dbo].[InternalDocument] (Name, IsActive) VALUES ('Orden de Compra',1)
+      INSERT INTO [SmartERP].[dbo].[InternalDocument] (Name, IsActive) VALUES ('Factura de Compra',1)
+      INSERT INTO [SmartERP].[dbo].[InternalDocument] (Name, IsActive) VALUES ('Gasto no Declarable',1)
+      INSERT INTO [SmartERP].[dbo].[InternalDocument] (Name, IsActive) VALUES ('Entrada de Inventario',1)
+      INSERT INTO [SmartERP].[dbo].[InternalDocument] (Name, IsActive) VALUES ('Salida de Inventario',1)
+
 
       Octavo comando: Razones sociales
       INSERT INTO [SmartERP].[dbo].[SocialReason] (Name, IsActive) VALUES ('Natural',1)
@@ -496,10 +501,30 @@ Sexto comando: Datos demograficos de Honduras
 
       Duodecimo commando: Tipos de Forma de Pago (Para uso interno)
       INSERT INTO [SmartERP].[dbo].[TypeOfPaymentMethod] (Name,IsActive) VALUES ('Efectivo',1)
-      INSERT INTO [SmartERP].[dbo].[TypeOfPaymentMethod] (Name,IsActive) VALUES ('Transferencia Bancaria',1)
+      INSERT INTO [SmartERP].[dbo].[TypeOfPaymentMethod] (Name,IsActive) VALUES ('T
+      ransferencia Bancaria',1)
       INSERT INTO [SmartERP].[dbo].[TypeOfPaymentMethod] (Name,IsActive) VALUES ('Link de pago',1)
 
       Treceabo commando: Incertar los tipos de proveedores: 
         INSERT INTO [dbo].[TypeProvider] ([Name]) VALUES ('Proveedor')
         INSERT INTO [dbo].[TypeProvider] ([Name]) VALUES ('Acreedor')
         INSERT INTO [dbo].[TypeProvider] ([Name]) VALUES ('Ambos')
+
+      Catorceavo comando: Insertar los tipos de forma de pago de factura
+        INSERT INTO [dbo].[InvoicePaymentType] ([Name]) VALUES ('Contado')
+        INSERT INTO [dbo].[InvoicePaymentType] ([Name]) VALUES ('Credito')
+
+      Quinceavo comand: Insertar los tipos de entrada de inventario
+        INSERT INTO [dbo].[InventoryInputType] ([Name],[IsActive]) VALUES ('Compra de Equipo',1)
+        INSERT INTO [dbo].[InventoryInputType] ([Name],[IsActive]) VALUES ('Regalias',1)
+        INSERT INTO [dbo].[InventoryInputType] ([Name],[IsActive]) VALUES ('Sobrante de Inventario',1)
+        INSERT INTO [dbo].[InventoryInputType] ([Name],[IsActive]) VALUES ('Devoluciones',1)
+
+      Dieciseisavo comando: Insertar los prefijos
+        INSERT INTO [dbo].[Prefix] ([Format],[InternalDocumentId],[ItIsTaken]) VALUES ('000-000-01-',1,1)
+        INSERT INTO [dbo].[Prefix] ([Format],[InternalDocumentId],[ItIsTaken]) VALUES ('SO',2,1)
+        INSERT INTO [dbo].[Prefix] ([Format],[InternalDocumentId],[ItIsTaken]) VALUES ('PO',3,1)
+        INSERT INTO [dbo].[Prefix] ([Format],[InternalDocumentId],[ItIsTaken]) VALUES ('PB',4,1)
+        INSERT INTO [dbo].[Prefix] ([Format],[InternalDocumentId],[ItIsTaken]) VALUES ('IE',5,1)
+        INSERT INTO [dbo].[Prefix] ([Format],[InternalDocumentId],[ItIsTaken]) VALUES ('IO',6,1)
+      
