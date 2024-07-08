@@ -33,14 +33,14 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
             public async Task<PagedResponse<List<ProductDto>>> Handle(GetAllBaseProductsByCategorySlugQuery request, CancellationToken cancellationToken)
             {
                 var checkCategory = await _categoryRepositoryAsync.FirstOrDefaultAsync(new GetCategoryBySlugSpecification(request.CategorySlug));
-                if (checkCategory ==null)
+                if (checkCategory == null)
                 {
                     throw new KeyNotFoundException($"Registro no encontrado con el slug {request.CategorySlug}");
                 }
                 var products = await _repositoryAsync.ListAsync(
-                    new FilterAndPaginationProductsByCategorySlugSpecification(request.CategorySlug,request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
+                    new FilterAndPaginationProductsByCategorySlugSpecification(request.CategorySlug, request.Parameter, request.PageNumber - 1, request.PageSize, request.Order, request.Column));
                 var dto = _mapper.Map<List<ProductDto>>(products);
-                return new PagedResponse<List<ProductDto>>(dto, request.PageNumber, request.PageSize, false ? request.PageSize : await _repositoryAsync.CountAsync());
+                return new PagedResponse<List<ProductDto>>(dto, request.PageNumber, request.PageSize, false ? request.PageSize : await _repositoryAsync.CountAsync(new FilterAndPaginationProductsByCategorySlugSpecification(request.CategorySlug, request.Parameter, 0, 0, request.Order, request.Column)));
             }
         }
     }

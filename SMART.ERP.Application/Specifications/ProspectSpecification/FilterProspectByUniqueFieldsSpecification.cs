@@ -7,7 +7,7 @@ namespace SMART.ERP.Application.Specifications.ProspectSpecification
     {
         public FilterProspectByUniqueFieldsSpecification(string? fullName, string? phoneNumber, string? email, Guid? id)
         {
-            Query.Include(x => x.ProspectStep).Where(x => x.FullName == fullName || x.PhoneNumber == phoneNumber);
+            Query.Include(x => x.ProspectStep).Where(x => x.FullName == fullName || (x.PhoneNumber == phoneNumber && phoneNumber != null));
             if (id != null)
             {
                 Query.Where(x => x.Id != id);
