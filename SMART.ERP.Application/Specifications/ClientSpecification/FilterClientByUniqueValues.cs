@@ -10,7 +10,7 @@ namespace SMART.ERP.Application.Specifications.ClientSpecification
             if (!string.IsNullOrEmpty(email))
                 Query.Where(x => x.Email == email);
             else
-                Query.Where(x => x.FullName == fullName || x.PhoneNumber == phone);
+                Query.Where(x => x.FullName == fullName || (x.PhoneNumber == phone && phone != null));
 
             if (Id != null)
             {

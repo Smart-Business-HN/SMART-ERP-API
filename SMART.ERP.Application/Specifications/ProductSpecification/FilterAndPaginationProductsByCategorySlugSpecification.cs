@@ -1,20 +1,14 @@
 ﻿using Ardalis.Specification;
 using SMART.ERP.Domain.Entities;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.Specifications.ProductSpecification
 {
     public class FilterAndPaginationProductsByCategorySlugSpecification : Specification<Product>
     {
-        public FilterAndPaginationProductsByCategorySlugSpecification(string categorySlug,string? parameter, int pageNumber, int pageSize,
+        public FilterAndPaginationProductsByCategorySlugSpecification(string categorySlug, string? parameter, int pageNumber, int pageSize,
             string? order, string? column)
         {
-            Query.Include(x => x.SubCategory).ThenInclude(x=>x.Category).Include(x => x.Status).Include(x => x.Brand).Include(x => x.Provider)
+            Query.Include(x => x.SubCategory).ThenInclude(x => x.Category).Include(x => x.Status).Include(x => x.Brand).Include(x => x.Provider)
                 .Include(x => x.ProductImages).Include(x => x.ProductDataSheets!).ThenInclude(x => x.DataSheet)
             .Skip((pageNumber) * pageSize).Take(pageSize).Where(x => x.ShowInEcommerce && x.SubCategory.Category.Slug == categorySlug).AsNoTracking();
 
