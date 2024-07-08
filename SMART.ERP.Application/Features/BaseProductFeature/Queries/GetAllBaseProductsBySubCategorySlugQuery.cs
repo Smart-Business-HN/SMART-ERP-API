@@ -44,9 +44,9 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                     throw new KeyNotFoundException($"Registro no encontrado con el slug {request.SubCategorySlug}");
                 }
                 var products = await _repositoryAsync.ListAsync(
-                    new FilterAndPaginationProductsBySubCategorySlugSpecification(request.SubCategorySlug, request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
+                    new FilterAndPaginationProductsBySubCategorySlugSpecification(request.SubCategorySlug, request.Parameter, request.PageNumber - 1, request.PageSize, request.Order, request.Column));
                 var dto = _mapper.Map<List<ProductDto>>(products);
-                return new PagedResponse<List<ProductDto>>(dto, request.PageNumber, request.PageSize, false ? request.PageSize : await _repositoryAsync.CountAsync());
+                return new PagedResponse<List<ProductDto>>(dto, request.PageNumber, request.PageSize, false ? request.PageSize : await _repositoryAsync.CountAsync(new FilterAndPaginationProductsBySubCategorySlugSpecification(request.SubCategorySlug, request.Parameter, 0, 0, request.Order, request.Column)));
             }
         }
     }
