@@ -5,8 +5,10 @@ using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.InvoiceSpecification;
 using SMART.ERP.Application.Specifications.ProductSoldSpecification;
+using SMART.ERP.Application.Specifications.WarehouseSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using System.Runtime.CompilerServices;
 
 namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCommand
 {
@@ -41,7 +43,9 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
         private readonly IRepositoryAsync<Tax> _taxRepositoryAsync;
         private readonly IRepositoryAsync<Product> _productRepositoryAsync;
         private readonly IRepositoryAsync<ProductSold> _productSoldRepositoryAsync;
-        public UpdateInvoiceCommandHandler(IMapper mapper, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync)
+        private readonly IRepositoryAsync<Warehouse> _warehouseRepositoryAsync;
+        private readonly IRepositoryAsync<InventoryDistribution> _inventoryDistributionRepositoryAsync;
+        public UpdateInvoiceCommandHandler(IMapper mapper, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
@@ -53,6 +57,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             _taxRepositoryAsync = taxRepositoryAsync;
             _productRepositoryAsync = productRepositoryAsync;
             _productSoldRepositoryAsync = productSoldRepositoryAsync;
+            _warehouseRepositoryAsync = warehouseRepositoryAsync;
+            _inventoryDistributionRepositoryAsync = inventoryDistributionRepositoryAsync;
         }
         public async Task<Response<InvoiceDto>> Handle(UpdateInvoiceCommand request, CancellationToken cancellationToken)
         {
@@ -199,46 +205,62 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             }
             return taxes;
         }
-        public async Task<List<ProductSoldDto>> CheckProducts(List<ProductSoldDto> productSold, List<ProductToSellDto> productsToSell, int invoiceId, List<Tax> taxesRates)
+        public async Task<List<ProductSoldDto>> CheckProducts(
+    List<ProductSoldDto> productSold,
+    List<ProductToSellDto> productsToSell,
+    int invoiceId,
+    List<Tax> taxesRates)
         {
             var productsToProcess = new List<ProductToSellDto>(productsToSell);
-            var prouductsPreExistence = new List<ProductSoldDto>(productSold);
+            var productsPreExistence = new List<ProductSoldDto>(productSold);
 
+            // Actualizar productos existentes
             foreach (var productExisting in productSold)
             {
-                //UPDATING EVERY PRODUCT AND REMOVING FROM LOCAL LISTS
-                foreach (var item in productsToSell)
+                var productToUpdate = productExisting;
+                var matchingProduct = productsToSell.FirstOrDefault(p => p.ProductId == productExisting.ProductId);
+
+                if (matchingProduct != null)
                 {
-                    if (productExisting.ProductId == item.ProductId)
+                    bool needsUpdate = false;
+
+                    if (productToUpdate.Quantity != matchingProduct.Quantity)
                     {
-                        var productToUpdate = productExisting;
-                        if (productToUpdate.Quantity != item.Quantity)
-                        {
-                            productToUpdate.Quantity = item.Quantity;
-                        }
-                        if (productToUpdate.UnitPrice != item.RecomendedSalePrice)
-                        {
-                            productToUpdate.UnitPrice = item.RecomendedSalePrice;
-                        }
-                        if (productToUpdate.ProductDescription != item.ProductDescription)
-                        {
-                            productToUpdate.ProductDescription = item.ProductDescription;
-                        }
-                        productToUpdate.Taxes = TaxCalculator(item, taxesRates);
+                        productToUpdate.Quantity = matchingProduct.Quantity;
+                        needsUpdate = true;
+                    }
+
+                    if (productToUpdate.UnitPrice != matchingProduct.RecomendedSalePrice)
+                    {
+                        productToUpdate.UnitPrice = matchingProduct.RecomendedSalePrice;
+                        needsUpdate = true;
+                    }
+
+                    if (productToUpdate.ProductDescription != matchingProduct.ProductDescription)
+                    {
+                        productToUpdate.ProductDescription = matchingProduct.ProductDescription;
+                        needsUpdate = true;
+                    }
+
+                    if (needsUpdate)
+                    {
+                        productToUpdate.Taxes = TaxCalculator(matchingProduct, taxesRates);
                         productToUpdate.TotalLine = productToUpdate.Taxes + (productToUpdate.Quantity * productToUpdate.UnitPrice);
                         productToUpdate.Product = null;
                         productToUpdate.Invoice = null;
-
                         productToUpdate.Tax = null;
+
                         var productSeed = _mapper.Map<ProductSold>(productToUpdate);
                         await _productSoldRepositoryAsync.UpdateAsync(productSeed);
                         await _productSoldRepositoryAsync.SaveChangesAsync();
-                        prouductsPreExistence.RemoveAll(x => x.ProductId == productExisting.ProductId);
-                        productsToProcess.RemoveAll(x => x.ProductId == item.ProductId);
                     }
+
+                    productsPreExistence.Remove(productExisting);
+                    productsToProcess.Remove(matchingProduct);
                 }
             }
-            //ADD NEW PRODUCTS TO THE INVOICE
+
+            // Añadir nuevos productos a la factura
             foreach (var newProductToSell in productsToProcess)
             {
                 var newProductOffered = _mapper.Map<ProductSold>(newProductToSell);
@@ -249,18 +271,19 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
                 await _productSoldRepositoryAsync.AddAsync(newProductOffered);
                 await _productSoldRepositoryAsync.SaveChangesAsync();
             }
-            //REMOVING PREVIOUS PRODUCTS FROM THE INVOICE
-            foreach (var productPreExistence in prouductsPreExistence)
+
+            // Eliminar productos anteriores de la factura
+            foreach (var productPreExistence in productsPreExistence)
             {
                 productPreExistence.Tax = null;
                 productPreExistence.Invoice = null;
                 productPreExistence.Product = null;
-
                 var dtoToDelete = _mapper.Map<ProductSold>(productPreExistence);
                 await _productSoldRepositoryAsync.DeleteAsync(dtoToDelete);
                 await _productSoldRepositoryAsync.SaveChangesAsync();
             }
-            //GETS NEW PRODUCTS FROM THE QUOTATION
+
+            // Obtener nuevos productos de la factura
             var newProducts = await _productSoldRepositoryAsync.ListAsync(new ProductSoldSpecification(invoiceId));
             var dtos = _mapper.Map<List<ProductSoldDto>>(newProducts);
 
@@ -274,5 +297,6 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             decimal tax = total - gravable;
             return tax;
         }
+
     }
 }
