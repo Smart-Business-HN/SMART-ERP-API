@@ -22,7 +22,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins("https://*.vercel.app").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod().AllowCredentials();
-            policy.WithOrigins("https://www.smartbusiness.site", "https://admin.smartbusiness.site").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+            policy.WithOrigins("https://www.smartbusiness.site", "https://cafe-catracho.smartbusiness.site").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod().AllowCredentials();
             policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
             .AllowAnyHeader().AllowAnyMethod().AllowCredentials();
         });
@@ -153,7 +153,7 @@ var webSocketOptions = new WebSocketOptions
 };
 
 webSocketOptions.AllowedOrigins.Add("http://localhost:4200");
-webSocketOptions.AllowedOrigins.Add("https://admin.smartbusiness.site");
+webSocketOptions.AllowedOrigins.Add("https://cafe-catracho.smartbusiness.site");
 webSocketOptions.AllowedOrigins.Add("https://www.smartbusiness.site");
 app.UseRouting();
 app.UseCors();
