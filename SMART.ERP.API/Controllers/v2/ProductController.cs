@@ -20,14 +20,14 @@ namespace SMART.ERP.API.Controllers.v2
 
         [HttpGet("GetBySlug/{slug}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetBySlug(string slug)
+        public async Task<IActionResult> GetBySlug([FromQuery] bool isLogged, [FromQuery] int customerTypeId, string slug)
         {
-            return Ok(await Mediator.Send(new GetBaseProductBySlugQuery { Slug = slug }));
+            return Ok(await Mediator.Send(new GetBaseProductBySlugQuery { Slug = slug, CustomerTypeId = customerTypeId, IsLogged = isLogged }));
         }
         [HttpGet("GetAll")]
         [AllowAnonymous]
-        [OutputCache (PolicyName = "cache_productsEcommerce")]
-        public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
+        [OutputCache(PolicyName = "cache_productsEcommerce")]
+        public async Task<IActionResult> GetAll([FromQuery] RequestEcommerceParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllProductForEcommerceQuery()
             {
@@ -36,12 +36,14 @@ namespace SMART.ERP.API.Controllers.v2
                 PageSize = filter.PageSize,
                 Order = filter.Order,
                 Column = filter.Column,
-                All = filter.All
+                All = filter.All,
+                IsUserSignIn = filter.IsUserSignIn,
+                CustomerTypeId = filter.CustomerTypeId
             }));
         }
         [HttpGet("GetProductsBySameCategorySlug/{categorySlug}/{productSlug}")]
         [AllowAnonymous]
-        [OutputCache (PolicyName = "cache_productsBySameCategorySlug")]
+        [OutputCache(PolicyName = "cache_productsBySameCategorySlug")]
         public async Task<IActionResult> GetProductsBySameCategorySlug(string categorySlug, string productSlug)
         {
             return Ok(await Mediator.Send(new GetProductsBySameCategorySlugQuery { CategorySlug = categorySlug, ProductSlug = productSlug }
@@ -58,7 +60,7 @@ namespace SMART.ERP.API.Controllers.v2
         [HttpGet("GetProducsByCategorySlug/{categorySlug}")]
         [AllowAnonymous]
         [OutputCache(PolicyName = "cache_producsByCategorySlug")]
-        public async Task<IActionResult> GetProductsByCategorySlug(string categorySlug,[FromQuery] RequestParameter filter)
+        public async Task<IActionResult> GetProductsByCategorySlug(string categorySlug, [FromQuery] RequestEcommerceParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllBaseProductsByCategorySlugQuery()
             {
@@ -67,13 +69,15 @@ namespace SMART.ERP.API.Controllers.v2
                 PageNumber = filter.PageNumber,
                 PageSize = filter.PageSize,
                 Order = filter.Order,
-                Column = filter.Column
+                Column = filter.Column,
+                IsUserSignIn = filter.IsUserSignIn,
+                CustomerTypeId = filter.CustomerTypeId
             }));
         }
         [HttpGet("GetProductsBySubCategorySlug/{subCategorySlug}")]
         [AllowAnonymous]
         [OutputCache(PolicyName = "cache_productsBySubCategorySlug")]
-        public async Task<IActionResult> GetProductsBySubCategorySlug(string subCategorySlug, [FromQuery] RequestParameter filter)
+        public async Task<IActionResult> GetProductsBySubCategorySlug(string subCategorySlug, [FromQuery] RequestEcommerceParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllBaseProductsBySubCategorySlugQuery()
             {
@@ -82,7 +86,9 @@ namespace SMART.ERP.API.Controllers.v2
                 PageNumber = filter.PageNumber,
                 PageSize = filter.PageSize,
                 Order = filter.Order,
-                Column = filter.Column
+                Column = filter.Column,
+                IsUserSignIn = filter.IsUserSignIn,
+                CustomerTypeId = filter.CustomerTypeId
             }));
         }
 
