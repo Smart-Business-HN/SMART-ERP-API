@@ -4,6 +4,7 @@ using SMART.ERP.Application.DTOs.Invoice;
 using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.ProductSoldSpecification;
 using SMART.ERP.Application.Specifications.QuotationSpecification;
 using SMART.ERP.Application.Specifications.WarehouseSpecification;
@@ -36,7 +37,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
         private readonly IRepositoryAsync<Warehouse> _warehouseRepositoryAsync;
         private readonly IRepositoryAsync<InventoryDistribution> _inventoryDistributionRepositoryAsync;
         private readonly IRepositoryAsync<InvoicePaymentType> _invoicePaymentTypeRepositoryAsync;
-        public CreateInvoiceByQuotationIdCommandHandler(IMapper mapper, IRepositoryAsync<InvoicePaymentType> invoicePaymentTypeRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync, IRepositoryAsync<Quotation> quotationRepositoryAsync)
+        private readonly IJwtService _jwtService;
+        public CreateInvoiceByQuotationIdCommandHandler(IMapper mapper, IJwtService jwtService, IRepositoryAsync<InvoicePaymentType> invoicePaymentTypeRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync, IRepositoryAsync<Quotation> quotationRepositoryAsync)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
@@ -48,6 +50,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             _warehouseRepositoryAsync = warehouseRepositoryAsync;
             _inventoryDistributionRepositoryAsync = inventoryDistributionRepositoryAsync;
             _invoicePaymentTypeRepositoryAsync = invoicePaymentTypeRepositoryAsync;
+            _jwtService = jwtService;
         }
         public async Task<Response<string>> Handle(CreateInvoiceByQuotationIdCommand request, CancellationToken cancellationToken)
         {
@@ -105,6 +108,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             newRecord.Exempt = 0;
             newRecord.Exonerated = 0;
             newRecord.Outstanding = 0;
+            newRecord.CreatedBy = _jwtService.GetSubjectToken();
+            newRecord.InsertedDate = DateTime.UtcNow;
             var productsSold = new List<ProductSoldDto>();
             var invoiceResponse = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();

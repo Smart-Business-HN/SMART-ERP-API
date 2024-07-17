@@ -24,5 +24,9 @@
         public decimal? Profitability { get; set; }
         public int? InvoiceDestinationId { get; set; }
         public virtual Invoice? InvoiceDestination { get; set; }
+        public string CreatedBy { get; set; } = null!;
+        public DateTime InsertedDate { get; set; }
+        public string? ModificatedBy { get; set; }
+        public DateTime? ModificationDate { get; set; }
     }
 }

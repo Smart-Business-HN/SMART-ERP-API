@@ -3,6 +3,7 @@ using MediatR;
 using SMART.ERP.Application.DTOs.Invoice;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.InvoiceSpecification;
 using SMART.ERP.Application.Specifications.ProductSoldSpecification;
 using SMART.ERP.Application.Wrappers;
@@ -41,7 +42,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
         private readonly IRepositoryAsync<Tax> _taxRepositoryAsync;
         private readonly IRepositoryAsync<Product> _productRepositoryAsync;
         private readonly IRepositoryAsync<ProductSold> _productSoldRepositoryAsync;
-        public UpdateInvoiceCommandHandler(IMapper mapper, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync)
+        private readonly IJwtService _jwtService;
+        public UpdateInvoiceCommandHandler(IMapper mapper, IJwtService jwtService, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
@@ -53,6 +55,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             _taxRepositoryAsync = taxRepositoryAsync;
             _productRepositoryAsync = productRepositoryAsync;
             _productSoldRepositoryAsync = productSoldRepositoryAsync;
+            _jwtService = jwtService;
         }
         public async Task<Response<InvoiceDto>> Handle(UpdateInvoiceCommand request, CancellationToken cancellationToken)
         {
@@ -166,6 +169,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
                 invoiceExist.Total = invoiceExist.Exonerated;
             }
             invoiceExist.ProductsSold = null;
+            invoiceExist.ModificatedBy = _jwtService.GetSubjectToken();
+            invoiceExist.ModificationDate = DateTime.UtcNow;
             await _repositoryAsync.UpdateAsync(invoiceExist);
             await _repositoryAsync.SaveChangesAsync();
             invoiceExist.Customer = customerExist;

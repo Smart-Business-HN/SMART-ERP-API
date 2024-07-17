@@ -59,7 +59,7 @@ namespace SMART.ERP.API.Controllers.v2
         }
         [HttpGet("GetProducsByCategorySlug/{categorySlug}")]
         [AllowAnonymous]
-        [OutputCache(PolicyName = "cache_producsByCategorySlug")]
+        [OutputCache(PolicyName = "cache_productsByCategorySlug")]
         public async Task<IActionResult> GetProductsByCategorySlug(string categorySlug, [FromQuery] RequestEcommerceParameter filter)
         {
             return Ok(await Mediator.Send(new GetAllBaseProductsByCategorySlugQuery()
