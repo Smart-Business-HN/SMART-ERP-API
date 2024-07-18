@@ -1,8 +1,6 @@
-﻿
-
-namespace SMART.ERP.Application.DTOs.Report
+﻿namespace SMART.ERP.Application.DTOs.Report
 {
-    public class ClientByQuoteProductDto
+    public class ClientByProductSoldDto
     {
         public string CustomerName { get; set; } = null!;
         public int Quantity { get; set; }

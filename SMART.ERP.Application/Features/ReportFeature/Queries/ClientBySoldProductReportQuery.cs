@@ -7,7 +7,7 @@ using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.ReportFeature.Queries
 {
-    public class ClientByQuoteProductReportQuery : IRequest<PagedResponse<List<ClientByQuoteProductDto>>>
+    public class ClientBySoldProductReportQuery : IRequest<PagedResponse<List<ClientByProductSoldDto>>>
     {
         public int ProductId { get; set; }
         public DateTime? StartDate { get; set; }
@@ -17,38 +17,37 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
         public bool All { get; set; }
     }
 
-    public class ClientByQuoteProductReportQueryHandler : IRequestHandler<ClientByQuoteProductReportQuery, PagedResponse<List<ClientByQuoteProductDto>>>
+    public class ClientBySoldProductReportQueryHandler : IRequestHandler<ClientBySoldProductReportQuery, PagedResponse<List<ClientByProductSoldDto>>>
     {
-        private readonly IRepositoryAsync<Quotation> _repositoryAsync;
+        private readonly IRepositoryAsync<Invoice> _repositoryAsync;
 
-        public ClientByQuoteProductReportQueryHandler(IRepositoryAsync<Quotation> repositoryAsync)
+        public ClientBySoldProductReportQueryHandler(IRepositoryAsync<Invoice> repositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
         }
 
-        public async Task<PagedResponse<List<ClientByQuoteProductDto>>> Handle(ClientByQuoteProductReportQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResponse<List<ClientByProductSoldDto>>> Handle(ClientBySoldProductReportQuery request, CancellationToken cancellationToken)
         {
-            var quotations = await _repositoryAsync.ListAsync(new ClientByQuoteProductReportSpecification(request.ProductId));
-
+            var invoices = await _repositoryAsync.ListAsync(new ClientBySoldProductSpecification(request.ProductId));
             List<string> customers = new();
-            foreach (var invoice in quotations)
+            foreach (var invoice in invoices)
             {
                 if (!customers.Exists(x => x == invoice.Customer.FullName))
                 {
                     customers.Add(invoice.Customer.FullName);
                 }
             }
-            List<ClientByQuoteProductDto> response = new();
+            List<ClientByProductSoldDto> response = new();
             foreach (var client in customers)
             {
-                var invoicesForThisClient = quotations.FindAll(x => x.Customer.FullName == client);
+                var invoicesForThisClient = invoices.FindAll(x => x.Customer.FullName == client);
                 decimal totalPurchased = 0;
                 decimal totalQuantity = 0;
                 foreach (var invoice in invoicesForThisClient)
                 {
-                    if (invoice.ProductsOffered != null)
+                    if (invoice.ProductsSold != null)
                     {
-                        invoice.ProductsOffered!.ForEach(prd =>
+                        invoice.ProductsSold!.ForEach(prd =>
                         {
                             if (prd.ProductId == request.ProductId)
                             {
@@ -58,13 +57,13 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                         });
                     }
                 }
-                ClientByQuoteProductDto dto = new();
+                ClientByProductSoldDto dto = new();
                 dto.CustomerName = client;
                 dto.Quantity = (int)totalQuantity;
                 dto.Total = totalPurchased;
                 response.Add(dto);
             }
-            response.Sort(delegate (ClientByQuoteProductDto a, ClientByQuoteProductDto b)
+            response.Sort(delegate (ClientByProductSoldDto a, ClientByProductSoldDto b)
             {
                 return b.Quantity.CompareTo(a.Quantity);
             });
@@ -74,7 +73,7 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                 request.PageSize = response.Count;
             }
             var pagedResult = response.Skip(request.PageNumber * request.PageSize).Take(request.PageSize).ToList();
-            return new PagedResponse<List<ClientByQuoteProductDto>>(pagedResult, request.PageNumber, request.PageSize, response.Count);
+            return new PagedResponse<List<ClientByProductSoldDto>>(pagedResult, request.PageNumber, request.PageSize, response.Count);
         }
     }
 }
