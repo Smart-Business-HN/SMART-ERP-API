@@ -63,6 +63,10 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                 dto.Total = totalPurchased;
                 response.Add(dto);
             }
+            response.Sort(delegate (ClientByProductSoldDto a, ClientByProductSoldDto b)
+            {
+                return b.Quantity.CompareTo(a.Quantity);
+            });
             if (request.All)
             {
                 request.PageNumber = 0;
