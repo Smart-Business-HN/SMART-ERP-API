@@ -9,7 +9,7 @@ using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.ReportFeature.Queries
 {
-    public class TopSoldProductQuery : IRequest<PagedResponse<List<ReportQuoteProductDto>>>
+    public class TopSoldProductQuery : IRequest<PagedResponse<List<ReportProductSoldDto>>>
     {
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -19,20 +19,20 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
         public bool All { get; set; }
     }
 
-    public class TopSoldProductQueryHandler : IRequestHandler<TopSoldProductQuery, PagedResponse<List<ReportQuoteProductDto>>>
+    public class TopSoldProductQueryHandler : IRequestHandler<TopSoldProductQuery, PagedResponse<List<ReportProductSoldDto>>>
     {
-        private readonly IRepositoryAsync<Opportunity> _repositoryAsync;
+        private readonly IRepositoryAsync<Invoice> _repositoryAsync;
         private readonly IRepositoryAsync<BranchOffices> _branchRepositoryAsync;
         private readonly IRepositoryAsync<Category> _categoryRepositoryAsync;
 
-        public TopSoldProductQueryHandler(IRepositoryAsync<Opportunity> repositoryAsync, IRepositoryAsync<BranchOffices> branchRepositoryAsync,
+        public TopSoldProductQueryHandler(IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<BranchOffices> branchRepositoryAsync,
             IRepositoryAsync<Category> categoryRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
             _branchRepositoryAsync = branchRepositoryAsync;
             _categoryRepositoryAsync = categoryRepositoryAsync;
         }
-        public async Task<PagedResponse<List<ReportQuoteProductDto>>> Handle(TopSoldProductQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResponse<List<ReportProductSoldDto>>> Handle(TopSoldProductQuery request, CancellationToken cancellationToken)
         {
             if (request.StartDate != null && request.EndDate != null)
             {
@@ -51,55 +51,37 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
             }
 
             var categories = await _categoryRepositoryAsync.ListAsync(new IncludeCategorySpecification());
-            var opportunities = await _repositoryAsync.ListAsync(new TopSoldProductSpecification(request.StartDate, request.EndDate, request.BranchOfficeId));
-            var response = new List<ReportQuoteProductDto>();
-            opportunities.ForEach(opp =>
+            var invoices = await _repositoryAsync.ListAsync(new TopSoldProductSpecification(request.StartDate, request.EndDate, request.BranchOfficeId));
+            var response = new List<ReportProductSoldDto>();
+            invoices.ForEach(opp =>
             {
-                if (opp.QuoteProducts != null)
+                if (opp.ProductsSold != null)
                 {
-                    opp.QuoteProducts!.ForEach(quote =>
+                    opp.ProductsSold!.ForEach(quote =>
                     {
                         if (response.Exists(z => z.Name == quote.Product!.Name))
                         {
                             var quoteProduct = response.Find(x => x.Name == quote.Product!.Name);
-                            quoteProduct!.TotalNum += quote.Quantity;
-                            quoteProduct!.Total += quote.Quantity * quote.SalePrice;
-                            decimal marginResult = quote.Quantity * quote.SalePrice - quote.Product!.RecomendedSalePrice * quote.Quantity;
-                            if (marginResult > 0)
-                            {
-                                quoteProduct!.WinTotal += marginResult;
-                            }
-                            else
-                            {
-                                quoteProduct!.LossTotal += Math.Abs(marginResult);
-                            }
+                            quoteProduct!.Quantity += (int)quote.Quantity;
+                            quoteProduct!.Total += quote.TotalLine;
                         }
                         else
                         {
                             var category = categories.Find(x => x.Subcategories.Exists(y => y.Id == quote.Product!.SubCategoryId));
-                            var newReportQuote = new ReportQuoteProductDto();
+                            var newReportQuote = new ReportProductSoldDto();
                             newReportQuote.Name = quote.Product!.Name;
                             newReportQuote.SubCategory = quote.Product!.SubCategory!.Name;
                             newReportQuote.Category = category!.Name;
-                            newReportQuote.TotalNum = quote.Quantity;
-                            newReportQuote.Total = quote.Quantity * quote.SalePrice;
-                            decimal marginResult = quote.Quantity * quote.SalePrice - quote.Product!.RecomendedSalePrice * quote.Quantity;
-                            if (marginResult > 0)
-                            {
-                                newReportQuote.WinTotal += marginResult;
-                            }
-                            else
-                            {
-                                newReportQuote.LossTotal += Math.Abs(marginResult);
-                            }
+                            newReportQuote.Quantity = (int)quote.Quantity;
+                            newReportQuote.Total = quote.TotalLine;
                             response.Add(newReportQuote);
                         }
                     });
                 }
             });
-            response.Sort(delegate (ReportQuoteProductDto a, ReportQuoteProductDto b)
+            response.Sort(delegate (ReportProductSoldDto a, ReportProductSoldDto b)
             {
-                return b.TotalNum.CompareTo(a.TotalNum);
+                return b.Quantity.CompareTo(a.Quantity);
             });
             if (request.All)
             {
@@ -107,7 +89,7 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                 request.PageSize = response.Count;
             }
             var pagedResponse = response.Skip(request.PageNumber * request.PageSize).Take(request.PageSize).ToList();
-            return new PagedResponse<List<ReportQuoteProductDto>>(pagedResponse, request.PageNumber, request.PageSize, response.Count);
+            return new PagedResponse<List<ReportProductSoldDto>>(pagedResponse, request.PageNumber, request.PageSize, response.Count);
         }
     }
 }
