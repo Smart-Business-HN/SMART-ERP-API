@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Newtonsoft.Json;
 using SMART.ERP.Application.DTOs.Invoice;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
@@ -47,7 +48,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
         private readonly IRepositoryAsync<Warehouse> _warehouseRepositoryAsync;
         private readonly IRepositoryAsync<InventoryDistribution> _inventoryDistributionRepositoryAsync;
         private readonly IJwtService _jwtService;
-        public UpdateInvoiceCommandHandler(IMapper mapper, IJwtService jwtService,,IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync)
+        public UpdateInvoiceCommandHandler(IMapper mapper, IJwtService jwtService,IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
@@ -153,6 +154,10 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
                 invoiceExist.ExpectedPaymentDate = request.ExpectedPaymentDate;
             }
             var taxesRates = await _taxRepositoryAsync.ListAsync();
+            string localProductSoldJson = JsonConvert.SerializeObject(request.ProductsSold);
+            var productsPreExistence = JsonConvert.DeserializeObject<List<ProductSoldDto>>(localProductSoldJson);
+            string localProductsToSellJson = JsonConvert.SerializeObject(request.ProductsToSell);
+            var productsToProcess = JsonConvert.DeserializeObject<List<ProductToSellDto>>(localProductsToSellJson);
             var productsSold = await CheckProducts(request.ProductsSold, request.ProductsToSell, request.Id, taxesRates);
             invoiceExist.Exempt = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 0));
             if (request.SagCode == null)
@@ -179,10 +184,11 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             invoiceExist.ModificationDate = DateTime.UtcNow;
             await _repositoryAsync.UpdateAsync(invoiceExist);
             await _repositoryAsync.SaveChangesAsync();
+            await UpdateStock(productsPreExistence, productsToProcess, invoiceExist.BranchOfficeId);
             invoiceExist.Customer = customerExist;
             var dto = _mapper.Map<InvoiceDto>(invoiceExist);
             dto.ProductsSold = productsSold;
-            return new Response<InvoiceDto>(dto, $"Cotizacion {invoiceExist.InvoiceNumber} actualizada exitosamente.");
+            return new Response<InvoiceDto>(dto, $"Factura {invoiceExist.InvoiceNumber} actualizada exitosamente.");
 
         }
         static public decimal CalculateGravableValue(List<ProductSoldDto> products, Tax tax)
@@ -210,20 +216,18 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             }
             return taxes;
         }
-        public async Task<List<ProductSoldDto>> CheckProducts(
-    List<ProductSoldDto> productSold,
-    List<ProductToSellDto> productsToSell,
-    int invoiceId,
-    List<Tax> taxesRates)
+        public async Task<List<ProductSoldDto>> CheckProducts(List<ProductSoldDto> productSold, List<ProductToSellDto> productsToSell, int invoiceId, List<Tax> taxesRates)
         {
-            var productsToProcess = new List<ProductToSellDto>(productsToSell);
-            var productsPreExistence = new List<ProductSoldDto>(productSold);
+            string localProductSoldJson = JsonConvert.SerializeObject(productSold);
+            var productsPreExistence = JsonConvert.DeserializeObject<List<ProductSoldDto>>(localProductSoldJson);
+            string localProductsToSellJson = JsonConvert.SerializeObject(productsToSell);
+            var productsToProcess = JsonConvert.DeserializeObject<List<ProductToSellDto>>(localProductsToSellJson);
 
             // Actualizar productos existentes
             foreach (var productExisting in productSold)
             {
                 var productToUpdate = productExisting;
-                var matchingProduct = productsToSell.FirstOrDefault(p => p.ProductId == productExisting.ProductId);
+                var matchingProduct = productsToProcess.FirstOrDefault(p => p.ProductId == productExisting.ProductId);
 
                 if (matchingProduct != null)
                 {
@@ -259,8 +263,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
                         await _productSoldRepositoryAsync.UpdateAsync(productSeed);
                         await _productSoldRepositoryAsync.SaveChangesAsync();
                     }
-
-                    productsPreExistence.Remove(productExisting);
+                    var productToRemoveFromPreExistenceArray = productsPreExistence.FirstOrDefault(x => x.ProductId == productToUpdate.ProductId);
+                    productsPreExistence.Remove(productToRemoveFromPreExistenceArray);
                     productsToProcess.Remove(matchingProduct);
                 }
             }
@@ -302,6 +306,109 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             decimal tax = total - gravable;
             return tax;
         }
+        public async Task UpdateStock(List<ProductSoldDto> productsSold, List<ProductToSellDto> productsToSell, int branchOfficeId)
+        {
+            var warehouse = await _warehouseRepositoryAsync.FirstOrDefaultAsync(new FilterWarehouseByBranchOfficeIdSpecification(branchOfficeId));
+            if (warehouse == null)
+            {
+                return;
+            }
+            var productsToProcess = new List<ProductToSellDto>(productsToSell);
+            var productsPreExistence = new List<ProductSoldDto>(productsSold);
+            //Modificar los Productos existentes
+            foreach (var productExisting in productsSold)
+            {
+                var productToUpdate = productExisting;
+                var matchingProduct = productsToSell.FirstOrDefault(p => p.ProductId == productToUpdate.ProductId);
+                if(matchingProduct == null)
+                {
+                    continue;
+                }
+                if(matchingProduct.Quantity !=  productToUpdate.Quantity)
+                {
+                    if(matchingProduct.Quantity > productToUpdate.Quantity)
+                    {
+                        var difference = productToUpdate.Quantity - matchingProduct.Quantity;
+                        var currentStock = warehouse.InventoryDistributions.FirstOrDefault(p => p.ProductId == productToUpdate.ProductId);
+                        if(currentStock == null)
+                        {
+                            var newInventoryDistribution = new InventoryDistribution();
+                            newInventoryDistribution.WarehouseId = warehouse.Id;
+                            newInventoryDistribution.ProductId = productToUpdate.Id;
+                            newInventoryDistribution.Quantity = matchingProduct.Quantity;
+                            await _inventoryDistributionRepositoryAsync.AddAsync(newInventoryDistribution);
+                        }
+                        else
+                        {
+                            currentStock.Quantity += difference;
+                            await _inventoryDistributionRepositoryAsync.UpdateAsync(currentStock);
+                        }
+                        await _inventoryDistributionRepositoryAsync.SaveChangesAsync();
 
+                    }
+                    else
+                    {
+                        var difference = productToUpdate.Quantity - matchingProduct.Quantity;
+                        var currentStock = warehouse.InventoryDistributions.FirstOrDefault(p => p.ProductId == productToUpdate.ProductId);
+                        if (currentStock == null)
+                        {
+                            var newInventoryDistribution = new InventoryDistribution();
+                            newInventoryDistribution.WarehouseId = warehouse.Id;
+                            newInventoryDistribution.ProductId = productToUpdate.Id;
+                            newInventoryDistribution.Quantity = matchingProduct.Quantity;
+                            await _inventoryDistributionRepositoryAsync.AddAsync(newInventoryDistribution);
+                        }
+                        else
+                        {
+                            currentStock.Quantity += difference;
+                            await _inventoryDistributionRepositoryAsync.UpdateAsync(currentStock);
+                        }
+                        await _inventoryDistributionRepositoryAsync.SaveChangesAsync();
+                    }
+                }
+                productsPreExistence.Remove(productExisting);
+                productsToProcess.Remove(matchingProduct);
+            }
+            //Remover stock de productos nuevos en la factura
+            foreach (var newProductToSell in productsToProcess)
+            {
+                var currentStock = warehouse.InventoryDistributions.FirstOrDefault(p => p.ProductId == newProductToSell.ProductId);
+                if (currentStock == null)
+                {
+                    var newInventoryDistribution = new InventoryDistribution();
+                    newInventoryDistribution.WarehouseId = warehouse.Id;
+                    newInventoryDistribution.ProductId = newProductToSell.ProductId.Value;
+                    newInventoryDistribution.Quantity = 0 - newProductToSell.Quantity;
+                    await _inventoryDistributionRepositoryAsync.AddAsync(newInventoryDistribution);
+                }
+                else
+                {
+                    currentStock.Quantity -= newProductToSell.Quantity;
+                    await _inventoryDistributionRepositoryAsync.UpdateAsync(currentStock);
+                }
+                await _inventoryDistributionRepositoryAsync.SaveChangesAsync();
+                
+            }
+            //Devolver Stock de productos eliminados de la factura
+            foreach (var productPreExistence in productsPreExistence)
+            {
+                var currentStock = warehouse.InventoryDistributions.FirstOrDefault(p => p.ProductId == productPreExistence.ProductId);
+                if (currentStock == null)
+                {
+                    var newInventoryDistribution = new InventoryDistribution();
+                    newInventoryDistribution.WarehouseId = warehouse.Id;
+                    newInventoryDistribution.ProductId = productPreExistence.ProductId.Value;
+                    newInventoryDistribution.Quantity = productPreExistence.Quantity;
+                    await _inventoryDistributionRepositoryAsync.AddAsync(newInventoryDistribution);
+                }
+                else
+                {
+                    currentStock.Quantity += productPreExistence.Quantity;
+                    await _inventoryDistributionRepositoryAsync.UpdateAsync(currentStock);
+                }
+                await _inventoryDistributionRepositoryAsync.SaveChangesAsync();
+            }
+        }
     }
+
 }

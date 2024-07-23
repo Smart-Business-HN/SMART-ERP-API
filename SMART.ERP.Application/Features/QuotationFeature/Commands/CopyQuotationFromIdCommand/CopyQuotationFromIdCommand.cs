@@ -3,6 +3,7 @@ using MediatR;
 using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.ProductOfferedSpecification;
 using SMART.ERP.Application.Wrappers;
@@ -35,7 +36,8 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CopyQuotation
         private readonly IRepositoryAsync<Tax> _taxRepositoryAsync;
         private readonly IRepositoryAsync<Prefix> _prefixRepositoryAsync;
         private readonly IRepositoryAsync<ProductOffered> _productOfferedRepositoryAsync;
-        public CopyQuotationFromIdCommandHandler(IRepositoryAsync<Quotation> repositoryAsync, IMapper mapper, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<ProductOffered> productOfferedRepositoryAsync)
+        private readonly IJwtService _jwtService;
+        public CopyQuotationFromIdCommandHandler(IRepositoryAsync<Quotation> repositoryAsync,IJwtService jwtService, IMapper mapper, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<ProductOffered> productOfferedRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
             _mapper = mapper;
@@ -46,6 +48,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CopyQuotation
             _taxRepositoryAsync = taxRepositoryAsync;
             _prefixRepositoryAsync = prefixRepositoryAsync;
             _productOfferedRepositoryAsync = productOfferedRepositoryAsync;
+            _jwtService = jwtService;
         }
         public async Task<Response<int>> Handle(CopyQuotationFromIdCommand request, CancellationToken cancellationToken)
         {
@@ -82,6 +85,8 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CopyQuotation
             newRecord.Profitability = 0;
             newRecord.SubTotal = 0;
             newRecord.Total = 0;
+            newRecord.CreatedBy = _jwtService.GetSubjectToken();
+            newRecord.InsertedDate = DateTime.UtcNow;
             var quoteResponse = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
             if (productsInRequest != null && productsInRequest.Count > 0)

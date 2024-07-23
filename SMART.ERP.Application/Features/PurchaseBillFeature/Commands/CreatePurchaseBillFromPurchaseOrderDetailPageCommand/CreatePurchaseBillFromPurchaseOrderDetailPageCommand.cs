@@ -67,7 +67,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             newRecord.ExpenseAccountId = 1;
             newRecord.Total = (decimal)(request.Exempt + request.Exonerated + request.Taxes15Percent + request.Taxes18Percent + request.TaxedAt15Percent + request.TaxedAt18Percent);
             newRecord.Outstanding = newRecord.Total;
-            newRecord.CreationDate = DateTime.Now;
+            newRecord.CreationDate = DateTime.UtcNow;
             var purchaseBillResponse = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
             await SaveProductPurchasePriceLogs(purchaseOrderExist.ProductsToPurchase!, purchaseBillResponse);
