@@ -124,6 +124,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
                 };
                 productToUpdate.Brand = null;
                 productToUpdate.Tax = null;
+                productToUpdate.ProductPurchasePriceLogs = null;
                 await _productRepositoryAsync.UpdateAsync(productToUpdate);
                 await _productPurchasePriceLogRepositoryAsync.AddAsync(newRecord);
             }

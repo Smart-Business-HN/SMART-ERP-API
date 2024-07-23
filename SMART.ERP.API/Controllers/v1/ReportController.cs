@@ -124,10 +124,23 @@ namespace SMART.ERP.API.Controllers.v1
             }));
         }
 
-        [HttpGet("ClientByProductReport")]
-        public async Task<IActionResult> ClientByProductReport([FromQuery] DateParameter filter, [FromQuery] int ProductId, [FromQuery] RequestParameter param)
+        [HttpGet("ClientByQuotedProductReport")]
+        public async Task<IActionResult> ClientByQuotedProductReport([FromQuery] DateParameter filter, [FromQuery] int ProductId, [FromQuery] RequestParameter param)
         {
             return Ok(await Mediator.Send(new ClientByQuoteProductReportQuery
+            {
+                ProductId = ProductId,
+                StartDate = filter.StartDate,
+                EndDate = filter.EndDate,
+                PageNumber = param.PageNumber,
+                PageSize = param.PageSize,
+                All = param.All
+            }));
+        }
+        [HttpGet("ClientBySoldProductReport")]
+        public async Task<IActionResult> ClientBySoldProductSoldReport([FromQuery] DateParameter filter, [FromQuery] int ProductId, [FromQuery] RequestParameter param)
+        {
+            return Ok(await Mediator.Send(new ClientBySoldProductReportQuery
             {
                 ProductId = ProductId,
                 StartDate = filter.StartDate,

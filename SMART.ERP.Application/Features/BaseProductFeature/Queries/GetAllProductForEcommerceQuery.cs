@@ -16,6 +16,8 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
         public string? Order { get; set; }
         public string? Column { get; set; }
         public bool All { get; set; }
+        public bool? IsUserSignIn { get; set; }
+        public int? CustomerTypeId { get; set; }
         public class GetAllProductForEcommerceQueryHandler : IRequestHandler<GetAllProductForEcommerceQuery, PagedResponse<List<ProductDto>>>
         {
             private readonly IMapper _mapper;
@@ -37,8 +39,25 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                     request.PageSize = await _repositoryAsync.CountAsync();
                 }
                 var categories = await _categoryRepositoryAsync.ListAsync();
-                var products = await _repositoryAsync.ListAsync(
-                    new FilterAndPaginationProductForEcommerceSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
+                var products = await _repositoryAsync.ListAsync(new FilterAndPaginationProductForEcommerceSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
+                if (request.IsUserSignIn.HasValue && request.IsUserSignIn.Value)
+                {
+                    foreach (var item in products)
+                    {
+                        item.RecomendedSalePrice = Math.Ceiling((item.CostPrice * (decimal)1.2) * (1 + (item.Tax.Rate / 100)));
+                        item.CostPrice = 0;
+                        item.Tax = null;
+                    }
+                }
+                else
+                {
+                    foreach (var item in products)
+                    {
+                        item.RecomendedSalePrice = Math.Ceiling((item.CostPrice * (decimal)1.3) * (1 + (item.Tax.Rate / 100)));
+                        item.CostPrice = 0;
+                        item.Tax = null;
+                    }
+                }
                 var dto = _mapper.Map<List<ProductDto>>(products);
                 var spec = new ProductsForEcommerceSpecification();
                 foreach (var product in dto)

@@ -2,16 +2,10 @@
 using MediatR;
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Repository;
-using SMART.ERP.Application.Specifications.CategorySpecification;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Specifications.SubcategorySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
 {
@@ -23,6 +17,8 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
         public int PageSize { get; set; }
         public string? Order { get; set; }
         public string? Column { get; set; }
+        public bool? IsUserSignIn { get; set; }
+        public int? CustomerTypeId { get; set; }
         public class GetAllBaseProductsBySubCategorySlugQueryHandler : IRequestHandler<GetAllBaseProductsBySubCategorySlugQuery, PagedResponse<List<ProductDto>>>
         {
             private readonly IMapper _mapper;
@@ -45,6 +41,24 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                 }
                 var products = await _repositoryAsync.ListAsync(
                     new FilterAndPaginationProductsBySubCategorySlugSpecification(request.SubCategorySlug, request.Parameter, request.PageNumber - 1, request.PageSize, request.Order, request.Column));
+                if (request.IsUserSignIn.HasValue && request.IsUserSignIn.Value)
+                {
+                    foreach (var item in products)
+                    {
+                        item.RecomendedSalePrice = Math.Ceiling((item.CostPrice * (decimal)1.2) * (1 + (item.Tax.Rate / 100)));
+                        item.CostPrice = 0;
+                        item.Tax = null;
+                    }
+                }
+                else
+                {
+                    foreach (var item in products)
+                    {
+                        item.RecomendedSalePrice = Math.Ceiling((item.CostPrice * (decimal)1.3) * (1 + (item.Tax.Rate / 100)));
+                        item.CostPrice = 0;
+                        item.Tax = null;
+                    }
+                }
                 var dto = _mapper.Map<List<ProductDto>>(products);
                 return new PagedResponse<List<ProductDto>>(dto, request.PageNumber, request.PageSize, false ? request.PageSize : await _repositoryAsync.CountAsync(new FilterAndPaginationProductsBySubCategorySlugSpecification(request.SubCategorySlug, request.Parameter, 0, 0, request.Order, request.Column)));
             }

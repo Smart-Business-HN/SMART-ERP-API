@@ -3,6 +3,7 @@ using MediatR;
 using SMART.ERP.Application.DTOs.Invoice;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.CustomerSpecification;
 using SMART.ERP.Application.Specifications.ProductSoldSpecification;
 using SMART.ERP.Application.Specifications.WarehouseSpecification;
@@ -45,7 +46,9 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
         private readonly IRepositoryAsync<Warehouse> _warehouseRepositoryAsync;
         private readonly IRepositoryAsync<InventoryDistribution> _inventoryDistributionRepositoryAsync;
         private readonly IRepositoryAsync<InvoicePaymentType> _invoicePaymentTypeRepositoryAsync;
-        public CreateInvoiceCommandHandler(IMapper mapper, IRepositoryAsync<InvoicePaymentType> invoicePaymentTypeRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync)
+        private readonly IRepositoryAsync<Notification> _notificationRepositoryAsync;
+        private readonly IJwtService _jwtService;
+        public CreateInvoiceCommandHandler(IMapper mapper, IRepositoryAsync<Notification> notificationRepositoryAsync, IJwtService jwtService, IRepositoryAsync<InvoicePaymentType> invoicePaymentTypeRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
@@ -60,6 +63,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
             _warehouseRepositoryAsync = warehouseRepositoryAsync;
             _inventoryDistributionRepositoryAsync = inventoryDistributionRepositoryAsync;
             _invoicePaymentTypeRepositoryAsync = invoicePaymentTypeRepositoryAsync;
+            _notificationRepositoryAsync = notificationRepositoryAsync;
+            _jwtService = jwtService;
         }
         public async Task<Response<InvoiceDto>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
         {
@@ -67,6 +72,11 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
             if (customerExist == null)
             {
                 throw new ApiException($"No existe un cliente con el Id {request.CustomerId}");
+            }
+            var userExist = await _userRepositoryAsync.GetByIdAsync(request.UserId.Value);
+            if (userExist == null)
+            {
+                throw new ApiException($"No existe un usuario con el Id {request.UserId}");
             }
             var branchOfficeExist = await _branchOfficeRepositoryAsync.GetByIdAsync(request.BranchOfficeId);
             if (branchOfficeExist == null)
@@ -139,6 +149,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
             newRecord.Exempt = 0;
             newRecord.Exonerated = 0;
             newRecord.Outstanding = 0;
+            newRecord.CreatedBy = _jwtService.GetSubjectToken();
+            newRecord.InsertedDate = DateTime.UtcNow;
             var productsSold = new List<ProductSoldDto>();
             var invoiceResponse = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
@@ -203,6 +215,22 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
             var dto = _mapper.Map<InvoiceDto>(invoiceResponse);
             dto.ProductsSold = productsDto;
             await removeProductsFromWarehouses(productsForNewInvoice, request.BranchOfficeId);
+            if (userExist.FullName != _jwtService.GetSubjectToken())
+            {
+                var notification = new Notification();
+                notification.Title = "Factura Creada a tu nombre!";
+                notification.Icon = "heroicons_outline:information-circle";
+                notification.Description = $"El usuario <b>{_jwtService.GetSubjectToken()}</b> ha creado la factura {invoiceResponse.InvoiceNumber}. Verifica la informacion.";
+                notification.Time = DateTime.Now;
+                notification.UseRouter = true;
+                notification.Link = "/accounting/invoices/" + invoiceResponse.Id;
+                notification.Read = false;
+                notification.UserId = request.UserId.Value;
+
+                var response = await _notificationRepositoryAsync.AddAsync(notification);
+                await _notificationRepositoryAsync.SaveChangesAsync();
+            }
+
             return new Response<InvoiceDto>(dto, $"Factura {dto.InvoiceNumber} creada exitosamente.");
         }
         public async Task removeProductsFromWarehouses(List<ProductSold> products, int branchOfficeId)

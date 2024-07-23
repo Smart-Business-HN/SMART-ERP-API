@@ -34,6 +34,10 @@
         public int InvoicePaymentTypeId { get; set; }
         public virtual InvoicePaymentType? InvoicePaymentType { get; set; }
         public DateOnly? ExpectedPaymentDate { get; set; }
+        public string CreatedBy { get; set; } = null!;
+        public DateTime InsertedDate { get; set; }
+        public string? ModificatedBy { get; set; }
+        public DateTime? ModificationDate { get; set; }
         public List<ProductSold>? ProductsSold { get; set; }
         public List<BillPayment>? BillPayments { get; set; }
     }
