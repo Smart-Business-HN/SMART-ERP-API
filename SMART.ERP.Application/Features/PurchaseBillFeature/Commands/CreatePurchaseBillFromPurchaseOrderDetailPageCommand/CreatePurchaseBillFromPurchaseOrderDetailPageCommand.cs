@@ -116,7 +116,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
                 productToUpdate.RecomendedSalePrice = (Math.Ceiling(product.UnitPrice * (decimal)(1 + 0.18 + (double)(product.Tax.Rate / 100)) / 5) * 5) / (1 + (product.Tax.Rate / 100));
                 var newRecord = new ProductPurchasePriceLog
                 {
-                    ProductId = product.Id,
+                    ProductId = product.ProductId.Value,
                     UnitsPurchased = product.Quantity,
                     Price = product.UnitPrice,
                     PurchaseDate = purchaseBill.InvoiceDate,
