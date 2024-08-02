@@ -119,7 +119,7 @@ builder.Services.AddOutputCache(opt =>
         opt.AddPolicy("cache_getAllNavCategories", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_getAllNavCategories"));
         opt.AddPolicy("cache_productsEcommerce", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsEcommerce"));
         opt.AddPolicy("cache_productsBySameCategorySlug", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsBySameCategorySlug"));
-        opt.AddPolicy("cache_producsByCategorySlug", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_producsByCategorySlug"));
+        opt.AddPolicy("cache_productsByCategorySlug", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsByCategorySlug"));
         opt.AddPolicy("cache_productsBySubCategorySlug", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsBySubCategorySlug"));
     });
 var app = builder.Build();

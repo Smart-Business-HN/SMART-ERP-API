@@ -3,6 +3,7 @@ using MediatR;
 using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.ProductOfferedSpecification;
 using SMART.ERP.Application.Wrappers;
@@ -35,7 +36,9 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
         private readonly IRepositoryAsync<Product> _productRepositoryAsync;
         private readonly IRepositoryAsync<Prefix> _prefixRepositoryAsync;
         private readonly IRepositoryAsync<ProductOffered> _productOfferedRepositoryAsync;
-        public CreateQuotationCommandHandler(IRepositoryAsync<Quotation> repositoryAsync, IRepositoryAsync<ProductOffered> productOfferedRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IMapper mapper, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync)
+        private readonly IJwtService _jwtService;
+        private readonly IRepositoryAsync<Notification> _notificationRepositoryAsync;
+        public CreateQuotationCommandHandler(IRepositoryAsync<Quotation> repositoryAsync, IRepositoryAsync<Notification> notificationRepositoryAsync, IJwtService jwtService, IRepositoryAsync<ProductOffered> productOfferedRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IMapper mapper, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
             _mapper = mapper;
@@ -47,6 +50,8 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             _prefixRepositoryAsync = prefixRepositoryAsync;
             _customerRepositoryAsync = customerRepositoryAsync;
             _productOfferedRepositoryAsync = productOfferedRepositoryAsync;
+            _notificationRepositoryAsync = notificationRepositoryAsync;
+            _jwtService = jwtService;
         }
         public async Task<Response<QuotationDto>> Handle(CreateQuotationCommand request, CancellationToken cancellationToken)
         {
@@ -98,6 +103,8 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             newRecord.Profitability = 0;
             newRecord.SubTotal = 0;
             newRecord.Total = 0;
+            newRecord.CreatedBy = _jwtService.GetSubjectToken();
+            newRecord.InsertedDate = DateTime.UtcNow;
             var quoteResponse = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
             if (request.ProductsToOffered != null && request.ProductsToOffered.Count > 0)
@@ -131,6 +138,21 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             var productsDto = _mapper.Map<List<ProductOfferedDto>>(productsForNewQuotation);
             quoteResponse.Customer = customerExist;
             quoteResponse.User = userExist;
+            if (userExist.FullName != _jwtService.GetSubjectToken())
+            {
+                var notification = new Notification();
+                notification.Title = "Cotizacion Creada en tu nombre!";
+                notification.Icon = "heroicons_outline:information-circle";
+                notification.Description = $"El usuario <b>{_jwtService.GetSubjectToken()}</b> ha creado la cotizacion {quoteResponse.QuotationCode}. Verifica la informacion.";
+                notification.Time = DateTime.Now;
+                notification.UseRouter = true;
+                notification.Link = "/accounting/quotations/" + quoteResponse.Id;
+                notification.Read = false;
+                notification.UserId = request.UserId.Value;
+
+                var response = await _notificationRepositoryAsync.AddAsync(notification);
+                await _notificationRepositoryAsync.SaveChangesAsync();
+            }
             var dto = _mapper.Map<QuotationDto>(quoteResponse);
             dto.ProductsOffered = productsDto;
             return new Response<QuotationDto>(dto, $"Cotización {dto.QuotationCode} creada exitosamente.");

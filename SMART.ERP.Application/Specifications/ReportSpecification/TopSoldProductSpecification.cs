@@ -3,19 +3,18 @@ using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.ReportSpecification
 {
-    public class TopSoldProductSpecification : Specification<Opportunity>
+    public class TopSoldProductSpecification : Specification<Invoice>
     {
         public TopSoldProductSpecification(DateTime? start, DateTime? end, int? branchOfficeId)
         {
-            Query.Include(x => x.QuoteProducts!.Where(x => x.IsActive)).ThenInclude(x => x.Product).ThenInclude(x => x!.SubCategory)
-                .Where(x => x.OpportunityStep.Name == "Ganado").AsNoTracking();
+            Query.Include(x => x.ProductsSold!).ThenInclude(x => x.Product).ThenInclude(x => x!.SubCategory).AsNoTracking();
             if (start != null)
             {
-                Query.Where(x => x.ClosingDate >= start);
+                Query.Where(x => x.CreationDate >= start);
             }
             if (end != null)
             {
-                Query.Where(x => x.ClosingDate <= end);
+                Query.Where(x => x.CreationDate <= end);
             }
             if (branchOfficeId != null)
             {

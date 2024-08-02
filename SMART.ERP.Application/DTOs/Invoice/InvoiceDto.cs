@@ -43,6 +43,10 @@ namespace SMART.ERP.Application.DTOs.Invoice
         public int InvoicePaymentTypeId { get; set; }
         public InvoicePaymentTypeDto? InvoicePaymentType { get; set; }
         public DateOnly? ExpectedPaymentDate { get; set; }
+        public string CreatedBy { get; set; } = null!;
+        public DateTime InsertedDate { get; set; }
+        public string? ModificatedBy { get; set; }
+        public DateTime? ModificationDate { get; set; }
         public List<ProductSoldDto>? ProductsSold { get; set; }
         public List<BillPaymentDto>? BillPayments { get; set; }
     }

@@ -8,14 +8,17 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
         public FilterAndPaginationProductForEcommerceSpecification(string? parameter, int pageNumber, int pageSize,
             string? order, string? column)
         {
-            Query.Include(x => x.SubCategory).Include(x => x.Status).Include(x => x.Brand)
+            Query.Include(x => x.SubCategory)
+                .Include(x => x.Status)
+                .Include(x => x.Brand)
                 .Include(x => x.ProductImages)
-            .Skip((pageNumber) * pageSize).Take(pageSize).Where(x=>x.ShowInEcommerce).AsNoTracking();
+                .Include(x => x.Tax)
+                .Skip((pageNumber) * pageSize).Take(pageSize).Where(x => x.ShowInEcommerce).AsNoTracking();
 
             if (!string.IsNullOrEmpty(parameter))
             {
                 Query.Where(x => x.Name.Contains(parameter) && x.ShowInEcommerce || x.Code.Contains(parameter) && x.ShowInEcommerce
-                || x.SubCategory!.Name.Contains(parameter) && x.ShowInEcommerce|| x.Brand!.Name.Contains(parameter) && x.ShowInEcommerce);
+                || x.SubCategory!.Name.Contains(parameter) && x.ShowInEcommerce || x.Brand!.Name.Contains(parameter) && x.ShowInEcommerce);
             }
 
             if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))

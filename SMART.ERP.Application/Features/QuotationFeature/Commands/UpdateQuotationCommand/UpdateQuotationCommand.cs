@@ -3,6 +3,7 @@ using MediatR;
 using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.ProductOfferedSpecification;
 using SMART.ERP.Application.Specifications.QuotationSpecification;
 using SMART.ERP.Application.Wrappers;
@@ -38,7 +39,8 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
         private readonly IRepositoryAsync<Product> _productRepositoryAsync;
         private readonly IRepositoryAsync<Prefix> _prefixRepositoryAsync;
         private readonly IRepositoryAsync<ProductOffered> _productOfferedRepositoryAsync;
-        public UpdateQuotationCommandHandler(IRepositoryAsync<Quotation> repositoryAsync, IMapper mapper, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<ProductOffered> productOfferedRepositoryAsync)
+        private readonly IJwtService _jwtService;
+        public UpdateQuotationCommandHandler(IRepositoryAsync<Quotation> repositoryAsync, IJwtService jwtService, IMapper mapper, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<ProductOffered> productOfferedRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
             _mapper = mapper;
@@ -50,6 +52,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             _productRepositoryAsync = productRepositoryAsync;
             _prefixRepositoryAsync = prefixRepositoryAsync;
             _productOfferedRepositoryAsync = productOfferedRepositoryAsync;
+            _jwtService = jwtService;
         }
         public async Task<Response<QuotationDto>> Handle(UpdateQuotationCommand request, CancellationToken cancellationToken)
         {
@@ -57,6 +60,11 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             if (quotationExist == null)
             {
                 throw new ApiException($"No existe una cotización con el Id {request.Id}");
+            }
+            var userExist = await _userRepositoryAsync.GetByIdAsync(request.UserId.Value);
+            if (userExist == null)
+            {
+                throw new ApiException($"No existe un usuario con el Id {request.CustomerId}");
             }
             var customerExist = await _customerRepositoryAsync.GetByIdAsync(request.CustomerId);
             if (customerExist == null)
@@ -120,6 +128,8 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             }
             quotationExist.Total = taxesAmount + quotationExist.SubTotal;
             quotationExist.ProductsOffered = null;
+            quotationExist.ModificatedBy = _jwtService.GetSubjectToken();
+            quotationExist.ModificationDate = DateTime.UtcNow;
             await _repositoryAsync.UpdateAsync(quotationExist);
             await _repositoryAsync.SaveChangesAsync();
             quotationExist.Customer = customerExist;

@@ -3,6 +3,7 @@ using MediatR;
 using SMART.ERP.Application.DTOs.Invoice;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
@@ -28,10 +29,12 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CancelInvoiceCo
     {
         private readonly IRepositoryAsync<Invoice> _invoiceRepository;
         private readonly IMapper _mapper;
-        public CancelInvoiceCommandHandler(IRepositoryAsync<Invoice> invoiceRepository, IMapper mapper)
+        private readonly IJwtService _jwtService;
+        public CancelInvoiceCommandHandler(IRepositoryAsync<Invoice> invoiceRepository, IMapper mapper, IJwtService jwtService)
         {
             _invoiceRepository = invoiceRepository;
             _mapper = mapper;
+            _jwtService = jwtService;
         }
         public async Task<Response<InvoiceDto>> Handle(CancelInvoiceCommand request, CancellationToken cancellationToken)
         {
@@ -41,6 +44,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CancelInvoiceCo
                 throw new ApiException($"No existe una factura con el Id {request.CustomerId}");
             }
             invoiceExist.StatusId = 17;
+            invoiceExist.ModificationDate = DateTime.UtcNow;
+            invoiceExist.ModificatedBy = _jwtService.GetSubjectToken();
             await _invoiceRepository.UpdateAsync(invoiceExist);
             await _invoiceRepository.SaveChangesAsync();
             request.StatusId = 17;
