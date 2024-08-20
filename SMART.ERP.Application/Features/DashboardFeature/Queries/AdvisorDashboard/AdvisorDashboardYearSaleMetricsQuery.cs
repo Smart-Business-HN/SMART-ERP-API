@@ -1,11 +1,11 @@
 ﻿using MediatR;
+using SMART.ERP.Application.DTOs.Dashboard;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.AdvisorGoalSpecification;
-using SMART.ERP.Application.Specifications.OpportunitySpecification;
+using SMART.ERP.Application.Specifications.InvoiceSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.Dashboard;
 
 namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorDashboard
 {
@@ -17,14 +17,14 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorDashboa
     public class AdvisorDashboardYearSaleMetricsQueryHandler : IRequestHandler<AdvisorDashboardYearSaleMetricsQuery, Response<List<AdvisorGoalMetricDto>>>
     {
         private readonly IRepositoryAsync<AdvisorGoal> _advisorGoalRepositoryAsync;
-        private readonly IRepositoryAsync<Opportunity> _opportunityRepositoryAsync;
+        private readonly IRepositoryAsync<Invoice> _invoiceRepositoryAsync;
         private readonly IJwtService _jwtService;
 
         public AdvisorDashboardYearSaleMetricsQueryHandler(IRepositoryAsync<AdvisorGoal> advisorGoalRepositoryAsync,
-            IRepositoryAsync<Opportunity> opportunityRepositoryAsync, IJwtService jwtService)
+            IRepositoryAsync<Invoice> invoiceRepositoryAsync, IJwtService jwtService)
         {
             _advisorGoalRepositoryAsync = advisorGoalRepositoryAsync;
-            _opportunityRepositoryAsync = opportunityRepositoryAsync;
+            _invoiceRepositoryAsync = invoiceRepositoryAsync;
             _jwtService = jwtService;
         }
 
@@ -35,8 +35,7 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorDashboa
             string[] months = { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
             var yearAdvisorGoals = await _advisorGoalRepositoryAsync.ListAsync(new FilterAdvisorGoalByYearSpecification(request.Year, guid));
             var response = new List<AdvisorGoalMetricDto>();
-            var closedOppotunitiesinYear = await _opportunityRepositoryAsync.ListAsync(new FilterClosedOpportunitiesInYearByUserSpecification(request.Year, guid));
-            closedOppotunitiesinYear = closedOppotunitiesinYear.FindAll(x => x.OpportunityStep!.Name == "Ganado");
+            var closedOppotunitiesinYear = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceByYearAndUserIdSpecification(request.Year, guid));
             for (int i = 0; i < months.Length; i++)
             {
                 var metricDto = new AdvisorGoalMetricDto();
@@ -52,7 +51,7 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorDashboa
                     metricDto.SalesGoal = 0;
                 }
                 metricDto.Total = 0m;
-                var closedOpportunitiesinMonth = closedOppotunitiesinYear.FindAll(x => x.ClosingDate!.Value.Month == i + 1);
+                var closedOpportunitiesinMonth = closedOppotunitiesinYear.FindAll(x => x.CreationDate.Month == i + 1);
                 foreach (var opportunity in closedOpportunitiesinMonth)
                 {
                     metricDto.Total += opportunity.Total;
