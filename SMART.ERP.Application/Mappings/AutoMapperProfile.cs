@@ -10,6 +10,7 @@ using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Application.DTOs.DailyClose;
 using SMART.ERP.Application.DTOs.Dashboard;
 using SMART.ERP.Application.DTOs.DeclaratedPurchaseBill;
+using SMART.ERP.Application.DTOs.Discount;
 using SMART.ERP.Application.DTOs.ExpenseAccount;
 using SMART.ERP.Application.DTOs.IncomeAccount;
 using SMART.ERP.Application.DTOs.InternalBankAccount;
@@ -62,6 +63,7 @@ using SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomerComm
 using SMART.ERP.Application.Features.DailyClosinFeature.Commands.CreateDailyCloseCommand;
 using SMART.ERP.Application.Features.DataSheetFeature.Commands.CreateDataSheetCommand;
 using SMART.ERP.Application.Features.DepartmentFeature.Commands.CreateDepartmentCommand;
+using SMART.ERP.Application.Features.DiscountFeature.Commands.CreateDiscountCommand;
 using SMART.ERP.Application.Features.DocumentTypeFeature.Commands.CreateDocumentTypeCommand;
 using SMART.ERP.Application.Features.ExpenseAccountFeature.Commands.CreateExpenseAccountCommand;
 using SMART.ERP.Application.Features.FinancingPlanFeature.Commands.CreateFinancingPlanCommand;
@@ -200,8 +202,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Prefix, PrefixDto>();
             CreateMap<Tax, TaxDto>();
             CreateMap<Quotation, QuotationDto>();
-            CreateMap<ProductOffered, ProductOfferedDto>();
-            CreateMap<ProductOfferedDto, ProductOffered>();
+            CreateMap<ProductOffered, ProductOfferedDto>().ReverseMap();
             CreateMap<ProductToOfferdDto, ProductOffered>();
             CreateMap<InternalDocument, InternalDocumentDto>();
             CreateMap<Warehouse, WarehouseDto>();
@@ -217,8 +218,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateProductEntryDto, ProductEntry>();
             CreateMap<Invoice, InvoiceDto>();
             CreateMap<InvoiceDto, Invoice>();
-            CreateMap<ProductSold, ProductSoldDto>();
-            CreateMap<ProductSoldDto, ProductSold>();
+            CreateMap<ProductSold, ProductSoldDto>().ReverseMap();
             CreateMap<ProductToSellDto, ProductSold>();
             CreateMap<ProductOffered, ProductSold>();
             CreateMap<Bank, BankDto>();
@@ -227,33 +227,24 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<TypeOfPaymentMethod, TypeOfPaymentMethodDto>();
             CreateMap<TypeProvider, TypeProviderDto>();
             CreateMap<PurchaseOrder, PurchaseOrderDto>();
-            CreateMap<ProductToPurchase, ProductToPurchaseDto>();
-            CreateMap<ProductToPurchaseDto, ProductToPurchase>();
+            CreateMap<ProductToPurchase, ProductToPurchaseDto>().ReverseMap();
             CreateMap<ProductToBuyDto, ProductToPurchase>();
-            CreateMap<PurchaseBillDto, PurchaseBill>();
-            CreateMap<PurchaseBill, PurchaseBillDto>();
-            CreateMap<PurchaseBillPayment, PurchaseBillPaymentDto>();
-            CreateMap<PurchaseBillPaymentDto, PurchaseBillPayment>();
-            CreateMap<MajorExpenseAccount, MajorExpenseAccountDto>();
-            CreateMap<MajorExpenseAccountDto, MajorExpenseAccount>();
-            CreateMap<MajorIncomeAccount, MajorIncomeAccountDto>();
-            CreateMap<MajorIncomeAccountDto, MajorIncomeAccount>();
-            CreateMap<IncomeAccount, IncomeAccountDto>();
-            CreateMap<IncomeAccountDto, IncomeAccount>();
-            CreateMap<ExpenseAccount, ExpenseAccountDto>();
-            CreateMap<ExpenseAccountDto, ExpenseAccount>();
-            CreateMap<ProductPurchasePriceLogDto, ProductPurchasePriceLog>();
-            CreateMap<ProductPurchasePriceLog, ProductPurchasePriceLogDto>();
-            CreateMap<NonBillableExpense, NonBillableExpenseDto>();
-            CreateMap<NonBillableExpenseDto, NonBillableExpense>();
-            CreateMap<NonBillableExpensePayment, NonBillableExpensePaymentDto>();
-            CreateMap<NonBillableExpensePaymentDto, NonBillableExpensePayment>();
+            CreateMap<PurchaseBillDto, PurchaseBill>().ReverseMap();
+            CreateMap<PurchaseBillPayment, PurchaseBillPaymentDto>().ReverseMap();
+            CreateMap<MajorExpenseAccount, MajorExpenseAccountDto>().ReverseMap();
+            CreateMap<MajorIncomeAccount, MajorIncomeAccountDto>().ReverseMap();
+            CreateMap<IncomeAccount, IncomeAccountDto>().ReverseMap();
+            CreateMap<ExpenseAccount, ExpenseAccountDto>().ReverseMap();
+            CreateMap<ProductPurchasePriceLogDto, ProductPurchasePriceLog>().ReverseMap();
+            CreateMap<NonBillableExpense, NonBillableExpenseDto>().ReverseMap();
+            CreateMap<NonBillableExpensePayment, NonBillableExpensePaymentDto>().ReverseMap();
             CreateMap<ProductToBuyDto, ProductEntry>();
             CreateMap<DailyClose, DailyCloseDto>().ReverseMap();
             CreateMap<ResumePayment, ResumePaymentDto>().ReverseMap();
             CreateMap<MonthlyPurchaseDeclaration, MonthlyPurchaseDeclarationDto>().ReverseMap();
             CreateMap<DeclaratedPurchaseBill, DeclaratedPurchaseBillDto>().ReverseMap();
             CreateMap<InvoicePaymentType, InvoicePaymentTypeDto>().ReverseMap();
+            CreateMap<Discount,DiscountDto>().ReverseMap();
             #endregion
 
             #region Commands
@@ -328,6 +319,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateInventoryInputByPurchaseOrderIdCommand, InventoryInput>();
             CreateMap<CreateDailyCloseCommand, DailyClose>();
             CreateMap<CreateInvoiceFromPosScreenCommand, Invoice>();
+            CreateMap<CreateDiscountCommand, Discount>();
             #endregion
         }
     }
