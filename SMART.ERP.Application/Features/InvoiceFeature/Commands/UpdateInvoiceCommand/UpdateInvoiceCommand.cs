@@ -182,6 +182,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
                 invoiceExist.Taxes18Percent = 0;
                 invoiceExist.Total = invoiceExist.Exonerated;
             }
+            invoiceExist.BillPayments = null;
             invoiceExist.ProductsSold = null;
             invoiceExist.ModificatedBy = _jwtService.GetSubjectToken();
             invoiceExist.ModificationDate = DateTime.UtcNow;
