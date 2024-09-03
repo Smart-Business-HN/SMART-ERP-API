@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Application.DTOs.Dashboard;
 using SMART.ERP.Application.DTOs.Opportunity;
 using SMART.ERP.Application.DTOs.User;
@@ -7,11 +8,11 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.AdvisorGoalSpecification;
 using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.CustomerSpecification;
+using SMART.ERP.Application.Specifications.InvoiceSpecification;
 using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.Customer;
 
 namespace SMART.ERP.Application.Features.UserFeature.Queries
 {
@@ -26,11 +27,12 @@ namespace SMART.ERP.Application.Features.UserFeature.Queries
         private readonly IRepositoryAsync<Customer> _repositoryAsync;
         private readonly IRepositoryAsync<User> _userRepositoryAsync;
         private readonly IMapper _mapper;
+        private readonly IRepositoryAsync<Invoice> _invoiceRepositoryAsync;
         private readonly IRepositoryAsync<Opportunity> _opportunityRepositoryAsync;
         private readonly IRepositoryAsync<AdvisorGoal> _advisorGoalRepositoryAsync;
 
         public GetUserWalletByIdQueryHandler(IRepositoryAsync<Customer> repositoryHNAsync, IRepositoryAsync<Customer> repositoryAsync, IRepositoryAsync<User> userRepositoryAsync,
-            IMapper mapper, IRepositoryAsync<Opportunity> opportunityRepositoryAsync, IRepositoryAsync<AdvisorGoal> advisorGoalRepositoryAsync)
+            IMapper mapper, IRepositoryAsync<Opportunity> opportunityRepositoryAsync, IRepositoryAsync<Invoice> invoiceRepositoryAsync, IRepositoryAsync<AdvisorGoal> advisorGoalRepositoryAsync)
         {
             _repositoryHNAsync = repositoryHNAsync;
             _repositoryAsync = repositoryAsync;
@@ -38,6 +40,7 @@ namespace SMART.ERP.Application.Features.UserFeature.Queries
             _mapper = mapper;
             _opportunityRepositoryAsync = opportunityRepositoryAsync;
             _advisorGoalRepositoryAsync = advisorGoalRepositoryAsync;
+            _invoiceRepositoryAsync = invoiceRepositoryAsync;
         }
 
         public async Task<Response<UserWalletDto>> Handle(GetUserWalletByIdQuery request, CancellationToken cancellationToken)
@@ -125,7 +128,7 @@ namespace SMART.ERP.Application.Features.UserFeature.Queries
             }
             else
             {
-                var monthWonOpportunities = await _opportunityRepositoryAsync.ListAsync(new FilterClosedOpportunitiesInMonthYearSpecification(currentDate.Month, currentDate.Year, request.Id, null));
+                var monthWonOpportunities = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceByMonthYearAndUserIdSpecification(currentDate.Month, currentDate.Year, request.Id, null));
                 var total = 0m;
                 foreach (var opportunity in monthWonOpportunities)
                 {
@@ -164,8 +167,7 @@ namespace SMART.ERP.Application.Features.UserFeature.Queries
                 }
 
                 decimal totalCompletion = 0;
-                var yearSales = await _opportunityRepositoryAsync.ListAsync(new FilterClosedOpportunitiesInYearByUserSpecification(currentDate.Year, request.Id));
-                yearSales = yearSales.FindAll(x => x.OpportunityStep!.Name == "Ganado");
+                var yearSales = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceByYearAndUserIdSpecification(currentDate.Year, request.Id));
                 foreach (var opportunity in yearSales)
                 {
                     totalCompletion += opportunity.Total;

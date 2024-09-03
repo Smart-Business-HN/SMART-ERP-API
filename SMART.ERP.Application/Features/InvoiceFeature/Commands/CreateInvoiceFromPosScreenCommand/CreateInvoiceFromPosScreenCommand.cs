@@ -41,8 +41,9 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceFr
         private readonly IRepositoryAsync<InvoicePaymentType> _invoicePaymentTypeRepositoryAsync;
         private readonly IRepositoryAsync<BillPayment> _billPaymentRepositoryAsync;
         private readonly IRepositoryAsync<Notification> _notificationRepositoryAsync;
+        private readonly IRepositoryAsync<TypeOfPaymentMethod> _typeOfPaymentMethodRepositoryAsync;
         private readonly IJwtService _jwtService;
-        public CreateInvoiceFromPosScreenCommandHandler(IMapper mapper, IRepositoryAsync<Notification> notificationRepositoryAsync, IJwtService jwtService, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync, IRepositoryAsync<InvoicePaymentType> invoicePaymentTypeRepositoryAsync, IRepositoryAsync<BillPayment> billPaymentRepositoryAsync)
+        public CreateInvoiceFromPosScreenCommandHandler(IMapper mapper, IRepositoryAsync<TypeOfPaymentMethod> typeOfPaymentMethodRepositoryAsync, IRepositoryAsync<Notification> notificationRepositoryAsync, IJwtService jwtService, IRepositoryAsync<Invoice> repositoryAsync, IRepositoryAsync<Cai> caiRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductSold> productSoldRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync, IRepositoryAsync<InvoicePaymentType> invoicePaymentTypeRepositoryAsync, IRepositoryAsync<BillPayment> billPaymentRepositoryAsync)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
@@ -60,6 +61,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceFr
             _billPaymentRepositoryAsync = billPaymentRepositoryAsync;
             _notificationRepositoryAsync = notificationRepositoryAsync;
             _jwtService = jwtService;
+            _typeOfPaymentMethodRepositoryAsync = typeOfPaymentMethodRepositoryAsync;
         }
 
 
@@ -121,6 +123,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceFr
                     throw new ApiException($"{checkDescriptios}");
                 }
             }
+            var typeOfPaymentMethods = await _typeOfPaymentMethodRepositoryAsync.ListAsync();
             var newRecord = _mapper.Map<Invoice>(request);
             newRecord.InvoiceNumber = CreateInvoiceNumber(caiExist);
             newRecord.TaxedAt15Percent = 0;
@@ -197,10 +200,11 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceFr
                         CreationDate = DateTime.UtcNow,
                         CreatedBy = _jwtService.GetSubjectToken(),
                     };
-                    invoicePayments.Add(newBillPayment);
+                    invoicePayments.Add(newBillPayment); 
                     await _billPaymentRepositoryAsync.AddAsync(newBillPayment);
                 }
                 await _billPaymentRepositoryAsync.SaveChangesAsync();
+                invoicePayments.ForEach(billPayment => billPayment.TypeOfPaymentMethod = typeOfPaymentMethods.FirstOrDefault(b => b.Id == billPayment.TypeOfPaymentMethodId));
                 invoiceResponse.BillPayments = invoicePayments;
             }
             invoiceResponse.Status = statusExist;
