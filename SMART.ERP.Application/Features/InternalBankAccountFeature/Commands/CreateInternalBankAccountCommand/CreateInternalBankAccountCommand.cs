@@ -19,6 +19,7 @@ namespace SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.Cre
         public string Name { get; set; } = null!;
         public int BankId { get; set; }
         public bool IsActive { get; set; }
+        public string AccountNumber { get; set; } = null!;
     }
 
     public class CreateInternalBankAccountCommandHandler : IRequestHandler<CreateInternalBankAccountCommand, Response<InternalBankAccountDto>>
