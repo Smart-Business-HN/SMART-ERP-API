@@ -29,7 +29,7 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.ProductMetrics
                 opportunities = opportunities.FindAll(x => x.QuoteProducts!.Any(x => x.Product!.SubCategory!.CategoryId == request.CategoryId));
                 opportunities.ForEach(x =>
                 {
-                    x.QuoteProducts = x.QuoteProducts.Where(y => y.Product.SubCategory.CategoryId == request.CategoryId).ToList();
+                    x.QuoteProducts = x.QuoteProducts!.Where(y => y.Product!.SubCategory!.CategoryId == request.CategoryId).ToList();
                 });
             }
             var response = new List<ProductComparativeSaleDto>();
@@ -38,18 +38,18 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.ProductMetrics
             {
                 foreach (var quote in opportunity.QuoteProducts!)
                 {
-                    if (!response.Exists(x => x.Product == quote.Product.Name))
+                    if (!response.Exists(x => x.Product == quote.Product!.Name))
                     {
                         var dto = new ProductComparativeSaleDto
                         {
-                            Product = quote.Product.Name,
+                            Product = quote.Product!.Name,
                             LastYear = quote.Quantity
                         };
                         response.Add(dto);
                     }
                     else
                     {
-                        var index = response.FindIndex(x => x.Product == quote.Product.Name);
+                        var index = response.FindIndex(x => x.Product == quote.Product!.Name);
                         response[index].LastYear += quote.Quantity;
                     }
                 }
@@ -59,18 +59,18 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.ProductMetrics
             {
                 foreach (var quote in opportunity.QuoteProducts!)
                 {
-                    if (!response.Exists(x => x.Product == quote.Product.Name))
+                    if (!response.Exists(x => x.Product == quote.Product!.Name))
                     {
                         var dto = new ProductComparativeSaleDto
                         {
-                            Product = quote.Product.Name,
+                            Product = quote.Product!.Name,
                             CurrentYear = quote.Quantity
                         };
                         response.Add(dto);
                     }
                     else
                     {
-                        var index = response.FindIndex(x => x.Product == quote.Product.Name);
+                        var index = response.FindIndex(x => x.Product == quote.Product!.Name);
                         response[index].CurrentYear += quote.Quantity;
                     }
                 }

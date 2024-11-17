@@ -61,7 +61,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             {
                 throw new ApiException($"No existe una cotización con el Id {request.Id}");
             }
-            var userExist = await _userRepositoryAsync.GetByIdAsync(request.UserId.Value);
+            var userExist = await _userRepositoryAsync.GetByIdAsync(request.UserId!.Value);
             if (userExist == null)
             {
                 throw new ApiException($"No existe un usuario con el Id {request.CustomerId}");
@@ -158,7 +158,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
                 {
                     if (item == product.TaxId)
                     {
-                        tax = taxes.Find(x => x.Id == item);
+                        tax = taxes.Find(x => x.Id == item)!;
                         decimal subTotalAmount = product.Quantity * product.UnitPrice;
                         decimal rates = 1 + (tax.Rate / 100);
                         decimal totalAmountWithTaxes = subTotalAmount * rates;
@@ -237,7 +237,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
 
         static public decimal TaxCalculator(ProductToOfferdDto product, List<Tax> taxes)
         {
-            Tax productTax = taxes.Find(x => x.Id == product.TaxId);
+            Tax productTax = taxes.Find(x => x.Id == product.TaxId)!;
             decimal gravable = product.Quantity * product.RecomendedSalePrice;
             decimal total = gravable * ((productTax!.Rate / 100) + 1);
             decimal tax = total - gravable;

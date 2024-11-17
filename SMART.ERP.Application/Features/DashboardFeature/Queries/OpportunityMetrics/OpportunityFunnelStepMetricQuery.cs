@@ -69,7 +69,7 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.OpportunityMet
                 }
                 dto.NumOpportunities = stepOpportunities.Count;
                 dto.Total = stepOpportunities.Sum(a => a.Total);
-                dto.NumQuotes = stepOpportunities.Sum(x => x.QuoteProducts.Sum(y => y.Quantity));
+                dto.NumQuotes = stepOpportunities.Sum(x => x.QuoteProducts!.Sum(y => y.Quantity));
                 response.Add(dto);
 
             }

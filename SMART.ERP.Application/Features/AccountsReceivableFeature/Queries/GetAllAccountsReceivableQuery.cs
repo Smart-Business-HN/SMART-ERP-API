@@ -44,9 +44,9 @@ namespace SMART.ERP.Application.Features.AccountsReceivableFeature.Queries
                 {
                     CustomerId = customer.Id,
                     Customer = _mapper.Map<CustomerDto>(customer),
-                    TotalAmount = invoices.Sum(i => i.Outstanding),
-                    OverdueAmount = invoices.Where(i => i.ExpectedPaymentDate.HasValue && DateTime.Now.Date > i.ExpectedPaymentDate.Value.ToDateTime(TimeOnly.MinValue)).Sum(i => i.Outstanding),
-                    TotalInvoices = invoices.Where(i => i.Outstanding > 0).Count(),
+                    TotalAmount = invoices!.Sum(i => i.Outstanding),
+                    OverdueAmount = invoices!.Where(i => i.ExpectedPaymentDate.HasValue && DateTime.Now.Date > i.ExpectedPaymentDate.Value.ToDateTime(TimeOnly.MinValue)).Sum(i => i.Outstanding),
+                    TotalInvoices = invoices!.Where(i => i.Outstanding > 0).Count(),
                     Invoices = _mapper.Map<List<InvoiceDto>>(invoices)
                 });
             });

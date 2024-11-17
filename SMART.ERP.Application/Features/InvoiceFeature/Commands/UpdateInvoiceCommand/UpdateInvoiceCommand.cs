@@ -70,7 +70,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             {
                 throw new ApiException($"No existe una factura con el Id {request.CustomerId}");
             }
-            if (invoiceExist.Status.Name == "Gravada")
+            if (invoiceExist!.Status!.Name == "Gravada")
             {
                 throw new ApiException($"La factura: {invoiceExist.InvoiceNumber} se encuentra cobrada y presentada al SAR.");
             }
@@ -161,21 +161,21 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             var productsPreExistence1 = JsonConvert.DeserializeObject<List<ProductSoldDto>>(localProductSoldJson);
             string localProductsToSellJson1 = JsonConvert.SerializeObject(request.ProductsToSell);
             var productsToProcess1 = JsonConvert.DeserializeObject<List<ProductToSellDto>>(localProductsToSellJson);
-            var productsSold = await CheckProducts(request.ProductsSold, request.ProductsToSell, request.Id, taxesRates);
-            invoiceExist.Exempt = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 0));
+            var productsSold = await CheckProducts(request.ProductsSold!, request.ProductsToSell!, request.Id, taxesRates);
+            invoiceExist.Exempt = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 0)!);
             if (request.SagCode == null)
             {
-                invoiceExist.TaxedAt15Percent = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 15));
-                invoiceExist.TaxedAt18Percent = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 18));
-                invoiceExist.Taxes15Percent = CalculateTaxesValue(productsSold, taxesRates.Find(x => x.Rate == 15));
-                invoiceExist.Taxes18Percent = CalculateTaxesValue(productsSold, taxesRates.Find(x => x.Rate == 18));
+                invoiceExist.TaxedAt15Percent = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 15)!);
+                invoiceExist.TaxedAt18Percent = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 18)!);
+                invoiceExist.Taxes15Percent = CalculateTaxesValue(productsSold, taxesRates.Find(x => x.Rate == 15)!);
+                invoiceExist.Taxes18Percent = CalculateTaxesValue(productsSold, taxesRates.Find(x => x.Rate == 18)!);
                 invoiceExist.Exonerated = 0;
                 invoiceExist.Total = invoiceExist.TaxedAt15Percent + invoiceExist.TaxedAt18Percent + invoiceExist.Taxes15Percent + invoiceExist.Taxes18Percent + invoiceExist.Exempt;
-                invoiceExist.Outstanding = invoiceExist.Total - invoiceExist.BillPayments.Sum(x => x.Amount);
+                invoiceExist.Outstanding = invoiceExist.Total - invoiceExist!.BillPayments!.Sum(x => x.Amount);
             }
             else
             {
-                invoiceExist.Exonerated = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 15)) + CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 18));
+                invoiceExist.Exonerated = CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 15)!) + CalculateGravableValue(productsSold, taxesRates.Find(x => x.Rate == 18)!);
                 invoiceExist.TaxedAt15Percent = 0;
                 invoiceExist.TaxedAt18Percent = 0;
                 invoiceExist.Taxes15Percent = 0;
@@ -188,8 +188,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             invoiceExist.ModificationDate = DateTime.UtcNow;
             await _repositoryAsync.UpdateAsync(invoiceExist);
             await _repositoryAsync.SaveChangesAsync();
-            await UpdateStock(productsPreExistence, productsToProcess, invoiceExist.BranchOfficeId);
-            await UpdateMainStock(productsPreExistence1, productsToProcess1);
+            await UpdateStock(productsPreExistence!, productsToProcess!, invoiceExist.BranchOfficeId);
+            await UpdateMainStock(productsPreExistence1!, productsToProcess1!);
             invoiceExist.Customer = customerExist;
             var dto = _mapper.Map<InvoiceDto>(invoiceExist);
             dto.ProductsSold = productsSold;
@@ -232,7 +232,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             foreach (var productExisting in productSold)
             {
                 var productToUpdate = productExisting;
-                var matchingProduct = productsToProcess.FirstOrDefault(p => p.ProductId == productExisting.ProductId);
+                var matchingProduct = productsToProcess!.FirstOrDefault(p => p.ProductId == productExisting.ProductId);
 
                 if (matchingProduct != null)
                 {
@@ -268,14 +268,14 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
                         await _productSoldRepositoryAsync.UpdateAsync(productSeed);
                         await _productSoldRepositoryAsync.SaveChangesAsync();
                     }
-                    var productToRemoveFromPreExistenceArray = productsPreExistence.FirstOrDefault(x => x.ProductId == productToUpdate.ProductId);
-                    productsPreExistence.Remove(productToRemoveFromPreExistenceArray);
-                    productsToProcess.Remove(matchingProduct);
+                    var productToRemoveFromPreExistenceArray = productsPreExistence!.FirstOrDefault(x => x.ProductId == productToUpdate.ProductId);
+                    productsPreExistence!.Remove(productToRemoveFromPreExistenceArray!);
+                    productsToProcess!.Remove(matchingProduct);
                 }
             }
 
             // Añadir nuevos productos a la factura
-            foreach (var newProductToSell in productsToProcess)
+            foreach (var newProductToSell in productsToProcess!)
             {
                 var newProductOffered = _mapper.Map<ProductSold>(newProductToSell);
                 newProductOffered.InvoiceId = invoiceId;
@@ -287,7 +287,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             }
 
             // Eliminar productos anteriores de la factura
-            foreach (var productPreExistence in productsPreExistence)
+            foreach (var productPreExistence in productsPreExistence!)
             {
                 productPreExistence.Tax = null;
                 productPreExistence.Invoice = null;
@@ -305,7 +305,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
         }
         static public decimal TaxCalculator(ProductToSellDto product, List<Tax> taxes)
         {
-            Tax productTax = taxes.Find(x => x.Id == product.TaxId);
+            Tax productTax = taxes.Find(x => x.Id == product.TaxId)!;
             decimal gravable = product.Quantity * product.RecomendedSalePrice;
             decimal total = gravable * ((productTax!.Rate / 100) + 1);
             decimal tax = total - gravable;
@@ -331,7 +331,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
                     if(matchingProduct.Quantity > productToUpdate.Quantity)
                     {
                         var difference = productToUpdate.Quantity - matchingProduct.Quantity;
-                        var currentStock = warehouse.InventoryDistributions.FirstOrDefault(p => p.ProductId == productToUpdate.ProductId);
+                        var currentStock = warehouse.InventoryDistributions!.FirstOrDefault(p => p.ProductId == productToUpdate.ProductId);
                         if(currentStock == null)
                         {
                             var newInventoryDistribution = new InventoryDistribution();
@@ -350,7 +350,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
                     else
                     {
                         var difference = productToUpdate.Quantity - matchingProduct.Quantity;
-                        var currentStock = warehouse.InventoryDistributions.FirstOrDefault(p => p.ProductId == productToUpdate.ProductId);
+                        var currentStock = warehouse.InventoryDistributions!.FirstOrDefault(p => p.ProductId == productToUpdate.ProductId);
                         if (currentStock == null)
                         {
                             var newInventoryDistribution = new InventoryDistribution();
@@ -373,12 +373,12 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             //Remover stock de productos nuevos en la factura
             foreach (var newProductToSell in productsToProcess)
             {
-                var currentStock = warehouse.InventoryDistributions.FirstOrDefault(p => p.ProductId == newProductToSell.ProductId);
+                var currentStock = warehouse.InventoryDistributions!.FirstOrDefault(p => p.ProductId == newProductToSell.ProductId);
                 if (currentStock == null)
                 {
                     var newInventoryDistribution = new InventoryDistribution();
                     newInventoryDistribution.WarehouseId = warehouse.Id;
-                    newInventoryDistribution.ProductId = newProductToSell.ProductId.Value;
+                    newInventoryDistribution.ProductId = newProductToSell.ProductId!.Value;
                     newInventoryDistribution.Quantity = 0 - newProductToSell.Quantity;
                     await _inventoryDistributionRepositoryAsync.AddAsync(newInventoryDistribution);
                 }
@@ -393,12 +393,12 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             //Devolver Stock de productos eliminados de la factura
             foreach (var productPreExistence in productsPreExistence)
             {
-                var currentStock = warehouse.InventoryDistributions.FirstOrDefault(p => p.ProductId == productPreExistence.ProductId);
+                var currentStock = warehouse.InventoryDistributions!.FirstOrDefault(p => p.ProductId == productPreExistence.ProductId);
                 if (currentStock == null)
                 {
                     var newInventoryDistribution = new InventoryDistribution();
                     newInventoryDistribution.WarehouseId = warehouse.Id;
-                    newInventoryDistribution.ProductId = productPreExistence.ProductId.Value;
+                    newInventoryDistribution.ProductId = productPreExistence.ProductId!.Value;
                     newInventoryDistribution.Quantity = productPreExistence.Quantity;
                     await _inventoryDistributionRepositoryAsync.AddAsync(newInventoryDistribution);
                 }

@@ -7,7 +7,7 @@ namespace SMART.ERP.Application.Specifications.InventoryDistributionSpecificatio
     {
         public FilterInventoryDistributionByAvalibleStockSpecification()
         {
-            Query.Include(x => x.Product).ThenInclude(x => x.Tax).Where(x => x.Quantity > 0);
+            Query.Include(x => x.Product).ThenInclude(x => x!.Tax).Where(x => x.Quantity > 0);
         }
     }
 }

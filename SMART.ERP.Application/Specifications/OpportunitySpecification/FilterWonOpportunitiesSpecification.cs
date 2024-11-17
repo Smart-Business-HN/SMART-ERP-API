@@ -7,7 +7,7 @@ namespace SMART.ERP.Application.Specifications.OpportunitySpecification
     {
         public FilterWonOpportunitiesSpecification(Guid? customer)
         {
-            Query.Include(x => x.QuoteProducts).ThenInclude(x => x.Product).ThenInclude(x => x.SubCategory).Where(x => x.OpportunityStep.Name == "Ganado");
+            Query.Include(x => x.QuoteProducts)!.ThenInclude(x => x.Product).ThenInclude(x => x!.SubCategory).Where(x => x.OpportunityStep!.Name == "Ganado");
             if (customer != null)
             {
                 Query.Where(x => x.CustomerId == customer);

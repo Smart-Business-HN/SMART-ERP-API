@@ -8,22 +8,22 @@ namespace SMART.ERP.Application.Specifications.DailyCloseSpecification
         public FilterAndPaginationDailyClosingSpecification(string? parameter, int pageNumber,
                        int pageSize, string? order, string? column)
         {
-            Query.Include(x => x.BranchOffice).Include(x => x.Cai).Include(x => x.ResumePayments).ThenInclude(x => x.TypeOfPayment).Skip((pageNumber) * pageSize).Take(pageSize).OrderByDescending(x => x.Id).AsNoTracking();
+            Query.Include(x => x.BranchOffice!).Include(x => x.Cai!).Include(x => x.ResumePayments)!.ThenInclude(x => x.TypeOfPayment).Skip((pageNumber) * pageSize).Take(pageSize).OrderByDescending(x => x.Id).AsNoTracking();
 
             if (!string.IsNullOrEmpty(parameter))
             {
-                Query.Where(x => x.BranchOffice.Name.Contains(parameter));
+                Query.Where(x => x.BranchOffice!.Name.Contains(parameter));
             }
 
             if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))
             {
                 if (order == "desc")
                 {
-                    Query.OrderByDescending(x => column == "BranchOffice" ? x.BranchOffice.Name : null);
+                    Query.OrderByDescending(x => column == "BranchOffice" ? x.BranchOffice!.Name : null);
                 }
                 else
                 {
-                    Query.OrderBy(x => column == "Cai" ? x.Cai.Identificator : null);
+                    Query.OrderBy(x => column == "Cai" ? x.Cai!.Identificator : null);
                 }
             }
         }

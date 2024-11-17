@@ -186,7 +186,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceFr
                 invoiceResponse.Total = newRecord.Total;
                 invoiceResponse.Outstanding = newRecord.Outstanding;
             }
-            if (request.Payments.Count > 0)
+            if (request.Payments!.Count > 0)
             {
                 var invoicePayments = new List<BillPayment>();
                 foreach (var item in request.Payments)
@@ -239,7 +239,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceFr
             {
                 foreach (var product in products)
                 {
-                    var productExist = warehouseExist.InventoryDistributions.FirstOrDefault(x => x.ProductId == product.ProductId);
+                    var productExist = warehouseExist!.InventoryDistributions!.FirstOrDefault(x => x.ProductId == product.ProductId);
                     if (productExist != null)
                     {
                         productExist.Quantity = productExist.Quantity - product.Quantity;
@@ -249,7 +249,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceFr
                     {
                         var newInventoryDistribution = new InventoryDistribution
                         {
-                            ProductId = product.ProductId.Value,
+                            ProductId = product!.ProductId!.Value,
                             WarehouseId = warehouseExist.Id,
                             Quantity = 0 - product.Quantity
                         };
@@ -260,18 +260,18 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceFr
             }
             foreach (var product in products)
             {
-                var productExist = await _productRepositoryAsync.GetByIdAsync(product.ProductId.Value);
-                productExist.CurrentStock -= (int)product.Quantity;
+                var productExist = await _productRepositoryAsync.GetByIdAsync(product!.ProductId!.Value);
+                productExist!.CurrentStock -= (int)product.Quantity;
                 await _productRepositoryAsync.UpdateAsync(productExist);
             }
             await _productRepositoryAsync.SaveChangesAsync();
         }
         static public decimal TaxCalculator(ProductToSellDto product, List<Tax> taxes)
         {
-            Tax productTax = null;
+            Tax? productTax = null;
             productTax = taxes.Find(x => x.Id == product.TaxId);
             decimal gravable = product.Quantity * product.RecomendedSalePrice;
-            decimal total = gravable * ((productTax.Rate / 100) + 1);
+            decimal total = gravable * ((productTax!.Rate / 100) + 1);
             decimal tax = total - gravable;
             return tax;
         }

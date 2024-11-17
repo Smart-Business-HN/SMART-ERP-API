@@ -8,7 +8,7 @@ namespace SMART.ERP.Application.Specifications.CustomerSpecification
         public FilterCustomerWithPendingInvoicesSpecification(string? parameter, int pageNumber,
             int pageSize, string? order, string? column)
         {
-            Query.Include(x => x.PendingInvoices).Skip((pageNumber) * pageSize).Take(pageSize).Where(x => x.PendingInvoices.Any(y => y.Outstanding > 0 && y.InvoicePaymentType.Name == "Credito")).OrderByDescending(x => x.Id).AsNoTracking();
+            Query.Include(x => x.PendingInvoices).Skip((pageNumber) * pageSize).Take(pageSize).Where(x => x.PendingInvoices!.Any(y => y.Outstanding > 0 && y.InvoicePaymentType!.Name == "Credito")).OrderByDescending(x => x.Id).AsNoTracking();
 
             if (!string.IsNullOrEmpty(parameter))
             {

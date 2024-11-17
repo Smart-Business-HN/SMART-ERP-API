@@ -45,7 +45,7 @@ namespace SMART.ERP.Application.Features.AdCampaignFeature.Queries
                     }
                     var list = JsonSerializer.Deserialize<MetaAdCampaignReply>(response.Content);
                     var toAddList = new List<MetaAdCampaign>();
-                    if (list.data != null)
+                    if (list!.data != null)
                     {
                         foreach (var campaign in list.data)
                         {

@@ -84,20 +84,20 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                 }
                 foreach (var opp in activeUserOpportunities)
                 {
-                    if (userWallet.Clients.Exists(x => x.Id == opp.Customer.Id))
+                    if (userWallet.Clients.Exists(x => x.Id == opp.Customer!.Id))
                     {
                         continue;
                     }
-                    var client = clients.FirstOrDefault(x => x.Id == opp.Customer.Id);
+                    var client = clients.FirstOrDefault(x => x.Id == opp.Customer!.Id);
                     if (client == null)
                     {
-                        throw new KeyNotFoundException($"No se encontro el cliente con id {opp.Customer.Id}");
+                        throw new KeyNotFoundException($"No se encontro el cliente con id {opp.Customer!.Id}");
                     }
                     var clientWallet = _mapper.Map<ClientWalletDto>(client);
                     var customerOpportunities = allOpportunities.FindAll(x => x.CustomerId == opp.CustomerId && x.UserId == request.Id);
                     clientWallet.NumOpportunities = customerOpportunities.Count;
                     clientWallet.NumProducts = 0;
-                    clientWallet.UserId = opp.Customer.UserId;
+                    clientWallet.UserId = opp.Customer!.UserId;
                     userWallet.NumTemporalClients += 1;
                     foreach (var opportunity in customerOpportunities)
                     {
@@ -156,20 +156,20 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                     }
                     foreach (var opp in activeUserOpportunities)
                     {
-                        if (userWallet.Clients.Exists(x => x.Id == opp.Customer.Id))
+                        if (userWallet.Clients.Exists(x => x.Id == opp.Customer!.Id))
                         {
                             continue;
                         }
-                        var client = clients.FirstOrDefault(x => x.Id == opp.Customer.Id);
+                        var client = clients.FirstOrDefault(x => x.Id == opp.Customer!.Id);
                         if (client == null)
                         {
-                            throw new KeyNotFoundException($"No se encontro el cliente con id {opp.Customer.Id}");
+                            throw new KeyNotFoundException($"No se encontro el cliente con id {opp.Customer!.Id}");
                         }
                         var clientWallet = _mapper.Map<ClientWalletDto>(client);
                         var customerOpportunities = allOpportunities.FindAll(x => x.CustomerId == opp.CustomerId && x.UserId == user.Id);
                         clientWallet.NumOpportunities = customerOpportunities.Count;
                         clientWallet.NumProducts = 0;
-                        clientWallet.UserId = opp.Customer.UserId;
+                        clientWallet.UserId = opp.Customer!.UserId;
                         userWallet.NumTemporalClients += 1;
                         foreach (var opportunity in customerOpportunities)
                         {

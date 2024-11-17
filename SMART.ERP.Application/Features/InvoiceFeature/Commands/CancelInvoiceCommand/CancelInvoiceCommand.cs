@@ -62,14 +62,14 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CancelInvoiceCo
             string localProductSoldJson1 = JsonConvert.SerializeObject(request.ProductsSold);
             var productsPreExistencea1 = JsonConvert.DeserializeObject<List<ProductSoldDto>>(localProductSoldJson);
 
-            foreach (var item in productsPreExistencea)
+            foreach (var item in productsPreExistencea!)
             {
                 item.Product = null;
             }
             await _invoiceRepository.UpdateAsync(invoiceExist);
             await _invoiceRepository.SaveChangesAsync();
             await UpdateStock(productsPreExistencea, invoiceExist.BranchOfficeId);
-            await UpdateMainStock(productsPreExistencea1);
+            await UpdateMainStock(productsPreExistencea1!);
             request.StatusId = 17;
             var invoiceDto = _mapper.Map<InvoiceDto>(request);
             return new Response<InvoiceDto>(invoiceDto, "Factura Cancelada Existosamente");
@@ -105,12 +105,12 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CancelInvoiceCo
             //Devolver Stock de productos eliminados de la factura
             foreach (var productPreExistence in productsPreExistence)
             {
-                var currentStock = warehouse.InventoryDistributions.FirstOrDefault(p => p.ProductId == productPreExistence.ProductId);
+                var currentStock = warehouse!.InventoryDistributions!.FirstOrDefault(p => p.ProductId == productPreExistence.ProductId);
                 if (currentStock == null)
                 {
                     var newInventoryDistribution = new InventoryDistribution();
                     newInventoryDistribution.WarehouseId = warehouse.Id;
-                    newInventoryDistribution.ProductId = productPreExistence.ProductId.Value;
+                    newInventoryDistribution.ProductId = productPreExistence.ProductId!.Value;
                     newInventoryDistribution.Quantity = productPreExistence.Quantity;
                     await _inventoryDistributionRepositoryAsync.AddAsync(newInventoryDistribution);
                 }

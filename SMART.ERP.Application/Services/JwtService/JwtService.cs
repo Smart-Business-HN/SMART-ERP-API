@@ -28,7 +28,7 @@ namespace SMART.ERP.Application.Services.JwtService
             }
             else
             {
-                string username = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+                string username = _httpContextAccessor.HttpContext.Request.Headers["Authorization"]!;
                 token = username.Split(" ")[1];
             }
 
@@ -62,7 +62,7 @@ namespace SMART.ERP.Application.Services.JwtService
             }
             else
             {
-                string username = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+                string username = _httpContextAccessor.HttpContext.Request.Headers["Authorization"]!;
                 token = username.Split(" ")[1];
             }
 

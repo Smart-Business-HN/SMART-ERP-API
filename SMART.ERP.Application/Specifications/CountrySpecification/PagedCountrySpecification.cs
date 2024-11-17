@@ -9,10 +9,10 @@ namespace SMART.ERP.Application.Specifications.CountrySpecification
             int pageSize, string? order, string? column, bool includeCities)
         {
             if (includeCities)
-                Query.Include(x => x.Departments).Include(a => a.Regions).ThenInclude(x => x.Departments).ThenInclude(x => x.Cities)
+                Query.Include(x => x.Departments)!.Include(a => a.Regions)!.ThenInclude(x => x.Departments)!.ThenInclude(x => x.Cities)
                     .Skip((pageNumber) * pageSize).Take(pageSize).AsNoTracking();
             else
-                Query.Include(a => a.Regions).ThenInclude(x => x.Departments).Skip((pageNumber) * pageSize).Take(pageSize).AsNoTracking();
+                Query.Include(a => a.Regions)!.ThenInclude(x => x.Departments).Skip((pageNumber) * pageSize).Take(pageSize).AsNoTracking();
 
             if (!string.IsNullOrEmpty(parameter))
             {

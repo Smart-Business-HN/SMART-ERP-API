@@ -7,7 +7,7 @@ namespace SMART.ERP.Application.Specifications.ReportSpecification
     {
         public TopQuoteProductSpecification(DateTime? start, DateTime? end, int? branchOfficeId, int categoryId, int? subcategoryId)
         {
-            Query.Where(x => x.ProductsOffered.Any(y => y.Product.SubCategory.CategoryId == categoryId)).AsNoTracking();
+            Query.Where(x => x.ProductsOffered!.Any(y => y.Product!.SubCategory!.CategoryId == categoryId)).AsNoTracking();
             if (start != null)
             {
                 Query.Where(x => x.CreationDate.Date >= start.Value.Date);
@@ -22,12 +22,12 @@ namespace SMART.ERP.Application.Specifications.ReportSpecification
             }
             if (subcategoryId != null)
             {
-                Query.Include(x => x.ProductsOffered!.Where(x => x.Product.SubCategoryId == subcategoryId && x.Product.SubCategory.CategoryId == categoryId))
+                Query.Include(x => x.ProductsOffered!.Where(x => x.Product!.SubCategoryId == subcategoryId && x.Product.SubCategory!.CategoryId == categoryId))
                     .ThenInclude(x => x.Product).ThenInclude(x => x!.SubCategory);
             }
             else
             {
-                Query.Include(x => x.ProductsOffered!.Where(x => x.Product.SubCategory.CategoryId == categoryId))
+                Query.Include(x => x.ProductsOffered!.Where(x => x.Product!.SubCategory!.CategoryId == categoryId))
                 .ThenInclude(x => x.Product).ThenInclude(x => x!.SubCategory);
             }
         }

@@ -7,7 +7,7 @@ namespace SMART.ERP.Application.Specifications.InventoryInputSpecification
     {
         public InventoryInputIncludesSpecification(int id)
         {
-            Query.Include(x => x.Prefix).Include(x => x.ProductEntries).ThenInclude(x => x.Product).Include(x => x.Status).Include(x => x.Warehouse).Include(x => x.InventoryInputType).Where(x => x.Id == id);
+            Query.Include(x => x.Prefix).Include(x => x.ProductEntries!).ThenInclude(x => x.Product).Include(x => x.Status).Include(x => x.Warehouse).Include(x => x.InventoryInputType).Where(x => x.Id == id);
         }
     }
 }

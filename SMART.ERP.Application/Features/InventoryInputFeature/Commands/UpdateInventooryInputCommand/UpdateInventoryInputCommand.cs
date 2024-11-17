@@ -91,7 +91,7 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.UpdateIn
             {
                 inventoryInputExist.SurplusInventoryId = request.SurplusInventoryId;
             }
-            var productEntries = await CheckProducts(request.ProductEntries, request.ProductToEntries, inventoryInputExist.Id);
+            var productEntries = await CheckProducts(request.ProductEntries!, request.ProductToEntries!, inventoryInputExist.Id);
             inventoryInputExist.Prefix = null;
             inventoryInputExist.ProductEntries = null;
             inventoryInputExist.Warehouse = null;

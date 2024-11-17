@@ -12,7 +12,6 @@ namespace SMART.ERP.API.Controllers.v1
     public class PrefixController : BaseApiController
     {
         [HttpPost("Create")]
-        [AllowAnonymous]
         [Authorize(Roles = "SuperAdmin, Manager, CommunityManager, Admin")]
         public async Task<IActionResult> Create([FromBody] CreatePrefixCommand command)
         {

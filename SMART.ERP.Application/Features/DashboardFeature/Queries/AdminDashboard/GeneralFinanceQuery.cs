@@ -55,7 +55,7 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
             decimal cashInBanks = bankAccounts.Sum(x => x.CurrentAmount);
             bills.ForEach(bill =>
             {
-                bool exist = expenses.Contains(bill.ExpenseAccount.Name);
+                bool exist = expenses.Contains(bill.ExpenseAccount!.Name);
                 if (!exist)
                 {
                     expenses.Add(bill.ExpenseAccount.Name);
@@ -66,7 +66,7 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
                 decimal value = 0;
                 bills.ForEach(bill =>
                 {
-                    if (bill.ExpenseAccount.Name == expense)
+                    if (bill.ExpenseAccount!.Name == expense)
                     {
                         value += bill.Total;
                     }
@@ -75,9 +75,9 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
             });
             invoices.ForEach(invoice =>
             {
-                invoice.ProductsSold.ForEach(product =>
+                invoice.ProductsSold!.ForEach(product =>
                 {
-                    bool exist = brands.Contains(product.Product.Brand.Name);
+                    bool exist = brands.Contains(product.Product!.Brand!.Name);
                     if (!exist)
                     {
                         brands.Add(product.Product.Brand.Name);
@@ -89,9 +89,9 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
                 decimal value = 0;
                 invoices.ForEach(invoice =>
                 {
-                    invoice.ProductsSold.ForEach(product =>
+                    invoice.ProductsSold!.ForEach(product =>
                     {
-                        if (product.Product.Brand.Name == brand)
+                        if (product.Product!.Brand!.Name == brand)
                         {
                             value += product.TotalLine;
                         }
@@ -123,8 +123,8 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
                 Payable = payable,
                 Receivable = receivable,
                 AcidTest = (cashInBanks + receivable) / payable,
-                RealInventory = inventoryDistributions.Sum(x => x.Quantity * (x.Product.CostPrice * (1 + (x.Product.Tax.Rate / 100)))),
-                AccountantInventory = inventoryDistributions.Sum(x => x.Quantity * (x.Product.RecomendedSalePrice * (1 + (x.Product.Tax.Rate / 100))))
+                RealInventory = inventoryDistributions.Sum(x => x.Quantity * (x.Product!.CostPrice * (1 + (x.Product!.Tax!.Rate / 100)))),
+                AccountantInventory = inventoryDistributions.Sum(x => x.Quantity * (x.Product!.RecomendedSalePrice * (1 + (x.Product!.Tax!.Rate / 100))))
             };
             return new Response<GeneralFinanceInformationDto>(values);
         }

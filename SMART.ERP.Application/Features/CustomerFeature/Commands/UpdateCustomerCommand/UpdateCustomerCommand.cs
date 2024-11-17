@@ -134,7 +134,7 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomer
 
             var checkFields = await _prospectRepositoryAsync.FirstOrDefaultAsync(new FilterProspectByUniqueFieldsSpecification(
                 checkIfExist.FullName, request.PhoneNumber, request.Email, null));
-            if (checkFields != null && checkFields.ProspectStep.Name != "Convertido" && checkFields.ProspectStep.Name != "No Calificado")
+            if (checkFields != null && checkFields.ProspectStep!.Name != "Convertido" && checkFields.ProspectStep.Name != "No Calificado")
             {
                 if (checkFields.FullName == checkIfExist.FullName)
                 {
@@ -150,7 +150,7 @@ namespace SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomer
                 }
             }
 
-            var checkClientFields = await _repositoryHNAsync.FirstOrDefaultAsync(new FilterClientByUniqueValues(checkIfExist.FullName, checkIfExist.PhoneNumber, checkIfExist.Email, checkIfExist.Id));
+            var checkClientFields = await _repositoryHNAsync.FirstOrDefaultAsync(new FilterClientByUniqueValues(checkIfExist.FullName, checkIfExist.PhoneNumber!, checkIfExist.Email, checkIfExist.Id));
             if (checkClientFields != null)
             {
                 if (checkClientFields.FullName.ToLower() == checkIfExist.FullName.ToLower())

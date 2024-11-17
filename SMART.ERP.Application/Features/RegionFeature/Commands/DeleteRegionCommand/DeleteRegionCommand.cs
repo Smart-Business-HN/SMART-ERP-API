@@ -44,7 +44,7 @@ namespace SMART.ERP.Application.Features.RegionFeature.Commands.DeleteRegionComm
 
                 return new Response<string>("Eliminado exitosamente");
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
 
                 throw new ApiException("Ha ocurrido un error la tratar de eliminar esta region, revisa sus referencias.");

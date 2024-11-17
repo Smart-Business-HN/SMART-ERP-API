@@ -30,7 +30,7 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.DeleteBillP
                 throw new KeyNotFoundException($"No se encontro un pago con id {request.Id}");
             }
             var invoice = await _invoiceRepositoryAsync.GetByIdAsync(checkBillPayment.InvoiceId);
-            invoice.Outstanding = invoice.Outstanding + checkBillPayment.Amount;
+            invoice!.Outstanding = invoice.Outstanding + checkBillPayment.Amount;
 
             try
             {

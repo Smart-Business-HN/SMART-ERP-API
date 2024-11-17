@@ -11,7 +11,7 @@ namespace SMART.ERP.Application.Features.WarehouseFeature.Commands.UpdateWarehou
     public class UpdateWarehouseCommand : IRequest<Response<WarehouseDto>>
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public string? Address { get; set; }
         public Guid? UserId { get; set; }
         public int BranchOfficeId { get; set; }

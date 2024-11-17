@@ -1,11 +1,5 @@
 ﻿using Ardalis.Specification;
 using SMART.ERP.Domain.Entities;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.Specifications.InternalBankAccountSpecification
 {
@@ -25,11 +19,11 @@ namespace SMART.ERP.Application.Specifications.InternalBankAccountSpecification
             {
                 if (order == "desc")
                 {
-                    Query.Include(x=>x.Bank).OrderByDescending(x => column == "Name" ? x.Name : column == "DepartmentId" ? x.AccountNumber : column == "IsActive" ? x.Bank.Name : null);
+                    Query.Include(x=>x.Bank).OrderByDescending(x => column == "Name" ? x.Name : column == "DepartmentId" ? x.AccountNumber : column == "IsActive" ? x.Bank!.Name : null);
                 }
                 else
                 {
-                    Query.Include(x => x.Bank).OrderBy(x => column == "Name" ? x.Name : column == "DepartmentId" ? x.AccountNumber : column == "IsActive" ? x.Bank.Name : null);
+                    Query.Include(x => x.Bank).OrderBy(x => column == "Name" ? x.Name : column == "DepartmentId" ? x.AccountNumber : column == "IsActive" ? x.Bank!.Name : null);
                 }
             }
         }

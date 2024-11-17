@@ -30,7 +30,7 @@ namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Comman
                 throw new KeyNotFoundException($"No se encontro un pago con id {request.Id}");
             }
             var invoice = await _nonBillableExpenseRepositoryAsync.GetByIdAsync(checkNonBillableExpensePayment.NonBillableExpenseId);
-            invoice.Outstanding = invoice.Outstanding + checkNonBillableExpensePayment.Amount;
+            invoice!.Outstanding = invoice.Outstanding + checkNonBillableExpensePayment.Amount;
 
             try
             {

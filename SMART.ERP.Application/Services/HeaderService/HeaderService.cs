@@ -28,7 +28,7 @@ namespace SMART.ERP.Application.Services.HeaderService
                 var header = _httpContextAccessor.HttpContext.Request.Headers;
                 if (header.ContainsKey("sec-ch-ua"))
                 {
-                    return header["sec-ch-ua"];
+                    return header["sec-ch-ua"]!;
                 }
                 else
                 {
@@ -47,7 +47,7 @@ namespace SMART.ERP.Application.Services.HeaderService
             {
                 var header = _httpContextAccessor.HttpContext.Request.Headers;
                 if (header.ContainsKey("X-Forwarded-For"))
-                    return header["X-Forwarded-For"];
+                    return header["X-Forwarded-For"]!;
                 else
                     return _httpContextAccessor.HttpContext.Connection.RemoteIpAddress!.MapToIPv4().ToString();
             }
@@ -64,7 +64,7 @@ namespace SMART.ERP.Application.Services.HeaderService
                 var header = _httpContextAccessor.HttpContext.Request.Headers;
                 if (header.ContainsKey("Lat"))
                 {
-                    return header["Lat"];
+                    return header["Lat"]!;
                 }
                 else
                 {
@@ -84,7 +84,7 @@ namespace SMART.ERP.Application.Services.HeaderService
                 var header = _httpContextAccessor.HttpContext.Request.Headers;
                 if (header.ContainsKey("Lng"))
                 {
-                    return header["Lng"];
+                    return header["Lng"]!;
                 }
                 else
                 {
@@ -111,7 +111,7 @@ namespace SMART.ERP.Application.Services.HeaderService
                     var header = _httpContextAccessor.HttpContext.Request.Headers;
                     if (header.ContainsKey("secret-key"))
                     {
-                        if (header["secret-key"].ToString() == _configuration.GetValue<string>("AccessKey").ToString())
+                        if (header["secret-key"].ToString() == _configuration.GetValue<string>("AccessKey")!.ToString())
                             return true;
                     }
 

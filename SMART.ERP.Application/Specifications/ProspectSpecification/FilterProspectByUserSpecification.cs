@@ -7,7 +7,7 @@ namespace SMART.ERP.Application.Specifications.ProspectSpecification
     {
         public FilterProspectByUserSpecification(Guid userId)
         {
-            Query.Where(x => x.UserId == userId && x.ProspectStep.Name != "Convertido" && x.ProspectStep.Name != "No Calificado");
+            Query.Where(x => x.UserId == userId && x.ProspectStep!.Name != "Convertido" && x.ProspectStep.Name != "No Calificado");
         }
     }
 }

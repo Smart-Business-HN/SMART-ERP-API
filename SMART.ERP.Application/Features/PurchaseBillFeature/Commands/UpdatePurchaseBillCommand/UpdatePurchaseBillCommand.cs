@@ -92,35 +92,35 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.UpdatePurc
             }
             if (purchaseBillExist.StatusId != request.StatusId)
             {
-                purchaseBillExist.StatusId = (int)request.StatusId;
+                purchaseBillExist.StatusId = (int)request!.StatusId!;
             }
             if (purchaseBillExist.ProviderId != request.ProviderId)
             {
-                purchaseBillExist.ProviderId = (int)request.ProviderId;
+                purchaseBillExist.ProviderId = (int)request!.ProviderId!;
             }
             if (purchaseBillExist.Exempt != request.Exempt)
             {
-                purchaseBillExist.Exempt = (decimal)request.Exempt;
+                purchaseBillExist.Exempt = (decimal)request.Exempt!;
             }
             if (purchaseBillExist.Exonerated != request.Exonerated)
             {
-                purchaseBillExist.Exonerated = (decimal)request.Exonerated;
+                purchaseBillExist.Exonerated = (decimal)request!.Exonerated!;
             }
             if (purchaseBillExist.TaxedAt15Percent != request.TaxedAt15Percent)
             {
-                purchaseBillExist.TaxedAt15Percent = (decimal)request.TaxedAt15Percent;
+                purchaseBillExist.TaxedAt15Percent = (decimal)request.TaxedAt15Percent!;
             }
             if (purchaseBillExist.Taxes15Percent != request.Taxes15Percent)
             {
-                purchaseBillExist.Taxes15Percent = (decimal)request.Taxes15Percent;
+                purchaseBillExist.Taxes15Percent = (decimal)request!.Taxes15Percent!;
             }
             if (purchaseBillExist.TaxedAt18Percent != request.TaxedAt18Percent)
             {
-                purchaseBillExist.TaxedAt18Percent = (decimal)request.TaxedAt18Percent;
+                purchaseBillExist.TaxedAt18Percent = (decimal)request.TaxedAt18Percent!;
             }
             if (purchaseBillExist.Taxes18Percent != request.Taxes18Percent)
             {
-                purchaseBillExist.Taxes18Percent = (decimal)request.Taxes18Percent;
+                purchaseBillExist.Taxes18Percent = (decimal)request!.Taxes18Percent!;
             }
             if (purchaseBillExist.Cai != request.Cai)
             {

@@ -9,11 +9,11 @@ namespace SMART.ERP.Application.Specifications.PurchaseOrderSpecification
         {
             Query.Include(x => x.Status)
                  .Include(x => x.Provider)
-                 .Include(x => x.Prefix).ThenInclude(x => x.InternalDocument)
+                 .Include(x => x.Prefix).ThenInclude(x => x!.InternalDocument)
                  .Include(x => x.User)
                  .Include(x => x.ProductsToPurchase)
-                 .Include(x => x.ProductsToPurchase).ThenInclude(x => x.Product).ThenInclude(x => x.Brand)
-                 .Include(x => x.ProductsToPurchase).ThenInclude(x => x.Tax)
+                 .Include(x => x.ProductsToPurchase)!.ThenInclude(x => x.Product).ThenInclude(x => x!.Brand)
+                 .Include(x => x.ProductsToPurchase)!.ThenInclude(x => x.Tax)
                  .Include(x => x.BranchOffice)
                  .Where(x => x.Id == id).AsNoTracking();
         }

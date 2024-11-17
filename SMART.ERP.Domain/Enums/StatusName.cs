@@ -2,8 +2,8 @@
 {
     public static class StatusName
     {
-        public static readonly List<string> Status = new List<string>() 
-        {
+        public static readonly List<string> Status =
+        [
             "Nuevo",
             "Guardado",
             "Por Encargo",
@@ -17,6 +17,6 @@
             "Perdida",
             "Ganada",
             "Cotización"
-        };
+        ];
     }
 }

@@ -17,7 +17,7 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.Validate
         public int? PurchaseOrderOriginId { get; set; }
         public int? ProductReturnId { get; set; }
         public int? SurplusInventoryId { get; set; }
-        public List<ProductEntryDto> ProductEntries { get; set; }
+        public List<ProductEntryDto> ProductEntries { get; set; } = [];
     }
     public class ValidateInventoryInputCommandHandler : IRequestHandler<ValidateInventoryInputCommand, Response<InventoryInputDto>>
     {
@@ -77,14 +77,14 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.Validate
                     };
                     await _inventoryDistributionRepositoryAsync.AddAsync(warehouseDistribution);
                     var product = await _productRepositoryAsync.GetByIdAsync(productEntry.ProductId);
-                    product.CurrentStock += (int)productEntry.Quantity;
+                    product!.CurrentStock += (int)productEntry.Quantity;
                     await _productRepositoryAsync.UpdateAsync(product);
                 }
                 else
                 {
                     warehouseDistributionExist.Quantity += productEntry.Quantity;
                     var product = warehouseDistributionExist.Product;
-                    product.CurrentStock += (int)productEntry.Quantity;
+                    product!.CurrentStock += (int)productEntry.Quantity;
                     await _inventoryDistributionRepositoryAsync.UpdateAsync(warehouseDistributionExist);
                     await _productRepositoryAsync.UpdateAsync(product);
                 }

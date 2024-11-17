@@ -36,13 +36,10 @@ namespace SMART.ERP.Application
             //---------- Configure Quartz Settings ------
             services.AddQuartz(x =>
             {
-                x.UseMicrosoftDependencyInjectionJobFactory();
-                // x.AddJob<RootcloudJob>(rootcloud => rootcloud.WithIdentity(RootcloudJob.Key));
+                //x.UseMicrosoftDependencyInjectionJobFactory();
                 x.AddJob<AdvisorGoalJob>(opts => opts.WithIdentity(AdvisorGoalJob.Key));
                 x.AddJob<LongLivedOpportunitiesJob>(opts => opts.WithIdentity(LongLivedOpportunitiesJob.Key));
                 x.AddJob<LogSessionJob>(opts => opts.WithIdentity(LogSessionJob.LogJobKey));
-                //x.AddJob<LocationJob>(opts => opts.WithIdentity(LocationJob.Key));
-                // x.AddJob<RegisterMachineryJob>(opts => opts.WithIdentity(RegisterMachineryJob.Key));
 
                 x.AddTrigger(opts => opts
                 .ForJob(AdvisorGoalJob.Key)
@@ -104,7 +101,7 @@ namespace SMART.ERP.Application
                     ClockSkew = TimeSpan.Zero,
                     ValidIssuer = configuration["JWTSettings:Issuer"],
                     ValidAudience = configuration["JWTSettings:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWTSettings:Key"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWTSettings:Key"]!)),
                 };
 
                 o.Events = new JwtBearerEvents()

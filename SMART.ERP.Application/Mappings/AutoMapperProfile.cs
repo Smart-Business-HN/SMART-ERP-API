@@ -39,7 +39,6 @@ using SMART.ERP.Application.DTOs.PurchaseBillPayment;
 using SMART.ERP.Application.DTOs.PurchaseOrder;
 using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.DTOs.ResumePayment;
-using SMART.ERP.Application.DTOs.Rootcloud;
 using SMART.ERP.Application.DTOs.SaleOrder;
 using SMART.ERP.Application.DTOs.Status;
 using SMART.ERP.Application.DTOs.TypeOfPaymentMethod;
@@ -145,7 +144,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Role, RoleDto>();
             CreateMap<Gender, GenderDto>();
             CreateMap<Country, CountryDto>()
-                .ForMember(x => x.Departments, opt => opt.MapFrom(x => x.Regions.Count > 0 ? x.Regions.SelectMany(z => z.Departments).ToList() : x.Departments));
+                .ForMember(x => x.Departments, opt => opt.MapFrom(x => x.Regions!.Count > 0 ? x.Regions.SelectMany(z => z.Departments!).ToList() : x.Departments));
             CreateMap<Department, DepartmentDto>();
             CreateMap<ProductFeature, ProductFeatureDto>();
             CreateMap<Company, CompanyDto>();
@@ -196,7 +195,6 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<WinReason, WinReasonDto>();
             CreateMap<LossReason, LossReasonDto>();
             CreateMap<Notification, NotificationDto>();
-            CreateMap<MachineryResumeDto, MachineryNoListObjectsDto>();
             CreateMap<TypeStatus, ResumeTypeStatusDto>();
             CreateMap<Cai, CaiDto>();
             CreateMap<Prefix, PrefixDto>();

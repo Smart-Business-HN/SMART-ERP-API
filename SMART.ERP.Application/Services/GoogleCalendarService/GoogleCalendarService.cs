@@ -62,11 +62,11 @@ namespace SMART.ERP.Application.Services.GoogleCalendarService
                 body.Attendees = attendes;
                 var start = new EventDateTime
                 {
-                    DateTime = initDate
+                    DateTimeDateTimeOffset = initDate
                 };
                 var end = new EventDateTime
                 {
-                    DateTime = endDate
+                    DateTimeDateTimeOffset = endDate
                 };
                 var parameters = new EventArgs();
                 body.Start = start;
@@ -89,7 +89,7 @@ namespace SMART.ERP.Application.Services.GoogleCalendarService
             try
             {
                 EventsResource.ListRequest request = service.Events.List("primary");
-                request.TimeMin = DateTime.Now;
+                request.TimeMinDateTimeOffset = DateTime.Now;
                 request.ShowDeleted = false;
                 request.SingleEvents = true;
                 request.MaxResults = 40;
@@ -102,9 +102,9 @@ namespace SMART.ERP.Application.Services.GoogleCalendarService
                         if (item.Id == eventId)
                         {
                             EventDateTime start = new EventDateTime();
-                            start.DateTime = new DateTime(initDate.Year, initDate.Month, initDate.Day, 8, 0, 0);
+                            start.DateTimeDateTimeOffset = new DateTime(initDate.Year, initDate.Month, initDate.Day, 8, 0, 0);
                             EventDateTime end = new EventDateTime();
-                            end.DateTime = new DateTime(endDate.Year, endDate.Month, endDate.Day, 17, 0, 0);
+                            end.DateTimeDateTimeOffset = new DateTime(endDate.Year, endDate.Month, endDate.Day, 17, 0, 0);
                             item.Start = start;
                             item.End = end;
                             item.Summary = subject;
@@ -126,7 +126,7 @@ namespace SMART.ERP.Application.Services.GoogleCalendarService
             try
             {
                 EventsResource.ListRequest request = service.Events.List("primary");
-                request.TimeMin = DateTime.Now;
+                request.TimeMinDateTimeOffset = DateTime.Now;
                 request.ShowDeleted = false;
                 request.SingleEvents = true;
                 request.MaxResults = 40;

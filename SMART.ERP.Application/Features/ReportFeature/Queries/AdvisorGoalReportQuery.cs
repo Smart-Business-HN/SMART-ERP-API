@@ -51,7 +51,7 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                 var dto = new ReportAdvisorGoalDto();
                 dto.FullName = salesAdvisor.FullName;
                 var sales = await _opportunityRepositoryAsync.ListAsync(new FilterClosedOpportunitiesInYearByUserSpecification(request.Year, salesAdvisor.Id));
-                sales = sales.FindAll(x => x.OpportunityStep.Name == "Ganado");
+                sales = sales.FindAll(x => x.OpportunityStep!.Name == "Ganado");
                 foreach (var month in months)
                 {
                     var monthDto = new ReportAdvisorGoalMonthDto();
@@ -90,7 +90,7 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                     var dto = new ReportAdvisorGoalDto();
                     dto.FullName = user.FullName;
                     var sales = await _opportunityRepositoryAsync.ListAsync(new FilterClosedOpportunitiesInYearByUserSpecification(request.Year, user.Id));
-                    sales = sales.FindAll(x => x.OpportunityStep.Name == "Ganado");
+                    sales = sales.FindAll(x => x.OpportunityStep!.Name == "Ganado");
                     foreach (var month in months)
                     {
                         var monthDto = new ReportAdvisorGoalMonthDto();
@@ -128,7 +128,7 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                 var dto = new ReportAdvisorGoalDto();
                 dto.FullName = user.FullName;
                 var sales = await _opportunityRepositoryAsync.ListAsync(new FilterClosedOpportunitiesInYearByUserSpecification(request.Year, user.Id));
-                sales = sales.FindAll(x => x.OpportunityStep.Name == "Ganado");
+                sales = sales.FindAll(x => x.OpportunityStep!.Name == "Ganado");
                 foreach (var month in months)
                 {
                     var monthDto = new ReportAdvisorGoalMonthDto();

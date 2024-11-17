@@ -17,7 +17,7 @@ namespace SMART.ERP.Application.Specifications.RegionSpecification
             }
             else if (countryId > 0 && regionId > 0 && departmentId > 0)
             {
-                Query.Include(x => x.Departments.Where(x => x.Id == departmentId)).Where(x => x.CountryId == countryId && x.Id == regionId).AsNoTracking();
+                Query.Include(x => x.Departments!.Where(x => x.Id == departmentId)).Where(x => x.CountryId == countryId && x.Id == regionId).AsNoTracking();
             }
             else
             {

@@ -12,7 +12,7 @@ namespace SMART.ERP.Application.Specifications.InventoryInputSpecification
 
             if (!string.IsNullOrEmpty(parameter))
             {
-                Query.Where(x => x.Description.Contains(parameter));
+                Query.Where(x => x.Description!.Contains(parameter));
             }
 
             if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))

@@ -7,8 +7,8 @@ namespace SMART.ERP.Application.Specifications.ReportSpecification
     {
         public ClientBySoldProductSpecification(int productId)
         {
-            Query.Include(x => x.Customer).Include(x => x.ProductsSold.Where(y => y.ProductId == productId))
-                .Include(x => x.User).Where(x => x.ProductsSold.Any(y => y.ProductId == productId));
+            Query.Include(x => x.Customer).Include(x => x.ProductsSold!.Where(y => y.ProductId == productId))
+                .Include(x => x.User).Where(x => x.ProductsSold!.Any(y => y.ProductId == productId));
         }
     }
 }

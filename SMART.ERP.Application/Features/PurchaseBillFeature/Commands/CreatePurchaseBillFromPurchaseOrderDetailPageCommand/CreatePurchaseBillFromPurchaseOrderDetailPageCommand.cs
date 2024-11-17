@@ -65,7 +65,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             newRecord.ProviderId = purchaseOrderExist.ProviderId;
             newRecord.StatusId = 27;
             newRecord.ExpenseAccountId = 1;
-            newRecord.Total = (decimal)(request.Exempt + request.Exonerated + request.Taxes15Percent + request.Taxes18Percent + request.TaxedAt15Percent + request.TaxedAt18Percent);
+            newRecord.Total = (decimal)(request.Exempt + request.Exonerated + request.Taxes15Percent + request.Taxes18Percent + request.TaxedAt15Percent + request.TaxedAt18Percent)!;
             newRecord.Outstanding = newRecord.Total;
             newRecord.CreationDate = DateTime.UtcNow;
             var purchaseBillResponse = await _repositoryAsync.AddAsync(newRecord);
@@ -112,11 +112,11 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             foreach (var product in products)
             {
                 var productToUpdate = product.Product;
-                productToUpdate.CostPrice = product.UnitPrice;
-                productToUpdate.RecomendedSalePrice = (Math.Ceiling(product.UnitPrice * (decimal)(1 + 0.18 + (double)(product.Tax.Rate / 100)) / 5) * 5) / (1 + (product.Tax.Rate / 100));
+                productToUpdate!.CostPrice = product.UnitPrice;
+                productToUpdate.RecomendedSalePrice = (Math.Ceiling(product.UnitPrice * (decimal)(1 + 0.18 + (double)(product.Tax!.Rate / 100)) / 5) * 5) / (1 + (product.Tax.Rate / 100));
                 var newRecord = new ProductPurchasePriceLog
                 {
-                    ProductId = product.ProductId.Value,
+                    ProductId = product.ProductId!.Value,
                     UnitsPurchased = product.Quantity,
                     Price = product.UnitPrice,
                     PurchaseDate = purchaseBill.InvoiceDate,

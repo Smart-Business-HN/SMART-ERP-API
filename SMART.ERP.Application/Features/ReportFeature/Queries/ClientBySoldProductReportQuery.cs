@@ -32,15 +32,15 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
             List<string> customers = new();
             foreach (var invoice in invoices)
             {
-                if (!customers.Exists(x => x == invoice.Customer.FullName))
+                if (!customers.Exists(x => x == invoice.Customer!.FullName))
                 {
-                    customers.Add(invoice.Customer.FullName);
+                    customers.Add(invoice.Customer!.FullName);
                 }
             }
             List<ClientByProductSoldDto> response = new();
             foreach (var client in customers)
             {
-                var invoicesForThisClient = invoices.FindAll(x => x.Customer.FullName == client);
+                var invoicesForThisClient = invoices.FindAll(x => x.Customer!.FullName == client);
                 decimal totalPurchased = 0;
                 decimal totalQuantity = 0;
                 foreach (var invoice in invoicesForThisClient)

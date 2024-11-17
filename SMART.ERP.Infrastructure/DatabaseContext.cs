@@ -73,7 +73,7 @@ namespace SMART.ERP.Infrastructure
         public DbSet<ProductOffered> ProductOffereds { get; set; } = null!;
         public DbSet<Warehouse> Warehouses { get; set; } = null!;
         public DbSet<InventoryDistribution> InventoryDistributions { get; set; } = null!;
-        public DbSet<InventoryInput> InventoryInputs { get; set; }
+        public DbSet<InventoryInput> InventoryInputs { get; set; } = null!;
         public DbSet<InventoryInputType> InventoryInputTypes { get; set; } = null!;
         public DbSet<ProductEntry> ProductEntries { get; set; } = null!;
         public DbSet<Invoice> Invoices { get; set; } = null!;

@@ -23,7 +23,7 @@ namespace SMART.ERP.Application.Specifications.InvoiceSpecification
 
             if (!string.IsNullOrEmpty(parameter))
             {
-                Query.Where(x => x.InvoiceNumber.Contains(parameter) || x.Customer.FullName.Contains(parameter));
+                Query.Where(x => x.InvoiceNumber.Contains(parameter) || x.Customer!.FullName.Contains(parameter));
             }
 
             if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))

@@ -29,19 +29,19 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.ProductMetrics
         {
             var opportunities = await _repositoryAsync.ListAsync(new FilterClosedOpportunitiesInYearByUserSpecification(request.Year, null));
             var pastOpportunities = await _repositoryAsync.ListAsync(new FilterClosedOpportunitiesInYearByUserSpecification(request.Year - 1, null));
-            opportunities = opportunities.FindAll(x => x.OpportunityStep.Name == "Ganado");
-            pastOpportunities = pastOpportunities.FindAll(x => x.OpportunityStep.Name == "Ganado");
+            opportunities = opportunities.FindAll(x => x.OpportunityStep!.Name == "Ganado");
+            pastOpportunities = pastOpportunities.FindAll(x => x.OpportunityStep!.Name == "Ganado");
             if (request.CategoryId != null)
             {
                 opportunities = opportunities.FindAll(x => x.QuoteProducts!.Any(y => y.Product!.SubCategory!.CategoryId == request.CategoryId));
                 opportunities.ForEach(x =>
                 {
-                    x.QuoteProducts = x.QuoteProducts.Where(y => y.Product.SubCategory.CategoryId == request.CategoryId).ToList();
+                    x.QuoteProducts = x.QuoteProducts!.Where(y => y.Product!.SubCategory!.CategoryId == request.CategoryId).ToList();
                 });
                 pastOpportunities = pastOpportunities.FindAll(x => x.QuoteProducts!.Any(y => y.Product!.SubCategory!.CategoryId == request.CategoryId));
                 pastOpportunities.ForEach(x =>
                 {
-                    x.QuoteProducts = x.QuoteProducts.Where(y => y.Product.SubCategory.CategoryId == request.CategoryId).ToList();
+                    x.QuoteProducts = x.QuoteProducts!.Where(y => y.Product!.SubCategory!.CategoryId == request.CategoryId).ToList();
                 });
             }
             var response = new List<ProductComparativeDto>();
@@ -49,12 +49,12 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.ProductMetrics
             {
                 foreach (var quote in opportunity.QuoteProducts!)
                 {
-                    int index = response.FindIndex(x => x.Product == quote.Product.Name);
+                    int index = response.FindIndex(x => x.Product == quote.Product!.Name);
                     if (index == -1)
                     {
                         var dto = new ProductComparativeDto
                         {
-                            Product = quote.Product.Name,
+                            Product = quote.Product!.Name,
                             SoldPast = quote.Quantity,
                             SoldPastTotal = quote.Quantity * quote.SalePrice
                         };
@@ -72,12 +72,12 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.ProductMetrics
             {
                 foreach (var quote in opportunity.QuoteProducts!)
                 {
-                    int index = response.FindIndex(x => x.Product == quote.Product.Name);
+                    int index = response.FindIndex(x => x.Product == quote.Product!.Name);
                     if (index == -1)
                     {
                         var dto = new ProductComparativeDto
                         {
-                            Product = quote.Product.Name,
+                            Product = quote.Product!.Name,
                             SoldCurrent = quote.Quantity,
                             SoldCurrentTotal = quote.Quantity * quote.SalePrice
                         };

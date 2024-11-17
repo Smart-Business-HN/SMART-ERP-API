@@ -41,11 +41,11 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
             var opportunities = await _opportunityRepositoryAsync.ListAsync(new OpportunityIncludesSpecification(null, null));
             if (request.StartDate != null && request.EndDate != null)
             {
-                var closed = opportunities.FindAll(x => (x.OpportunityStep.Name == "Ganado" || x.OpportunityStep.Name == "Perdido"
+                var closed = opportunities.FindAll(x => (x.OpportunityStep!.Name == "Ganado" || x.OpportunityStep.Name == "Perdido"
                 || x.OpportunityStep.Name == "Abandonado")
                     && x.ClosingDate.HasValue && x.ClosingDate.Value.Date >= request.StartDate.Value.Date
                     && x.ClosingDate.Value.Date <= request.EndDate.Value.Date);
-                var notClosed = opportunities.FindAll(x => x.OpportunityStep.Name != "Ganado" && x.OpportunityStep.Name != "Perdido"
+                var notClosed = opportunities.FindAll(x => x.OpportunityStep!.Name != "Ganado" && x.OpportunityStep.Name != "Perdido"
                     && x.OpportunityStep.Name != "Abandonado" && x.CreationDate.Date >= request.StartDate.Value.Date && x.CreationDate.Date <= request.EndDate.Value.Date);
                 opportunities = new HashSet<Opportunity>(closed.Concat(notClosed)).ToList();
             }

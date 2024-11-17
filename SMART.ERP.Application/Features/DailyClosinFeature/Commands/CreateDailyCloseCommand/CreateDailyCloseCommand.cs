@@ -54,7 +54,7 @@ namespace SMART.ERP.Application.Features.DailyClosinFeature.Commands.CreateDaily
                 throw new ApiException($"No existe un CAI con el id {request.CaiId}");
             }
             var invoices = await _invoiceRepositoryAsync.ListAsync(new FilterInvoiceByCaiIdBranchOfficeIdAndDateSpecification(cai.Id, branchOffice.Id, DateOnly.FromDateTime(request.Date)));
-            if (invoices.Any(x => x.InvoicePaymentType.Name == "Contado" && x.Outstanding > 0))
+            if (invoices.Any(x => x.InvoicePaymentType!.Name == "Contado" && x.Outstanding > 0))
             {
                 throw new ApiException("No se puede cerrar el día, existen facturas al contado pendientes de pago");
             }
@@ -71,10 +71,10 @@ namespace SMART.ERP.Application.Features.DailyClosinFeature.Commands.CreateDaily
                 Taxes15Percent = invoices.Sum(x => x.Taxes15Percent),
                 Taxes18Percent = invoices.Sum(x => x.Taxes18Percent),
                 Total = invoices.Sum(x => x.Total),
-                SpotSales = invoices.Where(x => x.InvoicePaymentType.Name == "Contado").Sum(x => x.Total),
-                CreditSales = invoices.Where(x => x.InvoicePaymentType.Name == "Credito").Sum(x => x.Total),
-                CashSalesPayments = paymentsForToday.Where(x => x.Invoice.InvoicePaymentType.Name == "Contado").Sum(x => x.Amount),
-                CreditSalesPayments = paymentsForToday.Where(x => x.Invoice.InvoicePaymentType.Name == "Credito").Sum(x => x.Amount),
+                SpotSales = invoices.Where(x => x.InvoicePaymentType!.Name == "Contado").Sum(x => x.Total),
+                CreditSales = invoices.Where(x => x.InvoicePaymentType!.Name == "Credito").Sum(x => x.Total),
+                CashSalesPayments = paymentsForToday.Where(x => x.Invoice!.InvoicePaymentType!.Name == "Contado").Sum(x => x.Amount),
+                CreditSalesPayments = paymentsForToday.Where(x => x.Invoice!.InvoicePaymentType!.Name == "Credito").Sum(x => x.Amount),
                 TotalIncomes = paymentsForToday.Sum(x => x.Amount),
                 NumberOfInvoices = invoices.Count(),
                 StartCorrelative = invoices[0].InvoiceNumber,
@@ -97,9 +97,9 @@ namespace SMART.ERP.Application.Features.DailyClosinFeature.Commands.CreateDaily
             var resumePayments = new List<ResumePayment>();
             foreach (var billPayment in billPayments)
             {
-                if (!typeOfPaymentMethods.Any(x => x.Id == billPayment.TypeOfPaymentMethod.Id))
+                if (!typeOfPaymentMethods.Any(x => x.Id == billPayment.TypeOfPaymentMethod!.Id))
                 {
-                    typeOfPaymentMethods.Add(billPayment.TypeOfPaymentMethod);
+                    typeOfPaymentMethods.Add(billPayment.TypeOfPaymentMethod!);
                 }
             }
             foreach (var typeOfPaymentMethod in typeOfPaymentMethods)
@@ -108,7 +108,7 @@ namespace SMART.ERP.Application.Features.DailyClosinFeature.Commands.CreateDaily
                 {
                     DailyCloseId = dailyCloseId,
                     TypeOfPaymentMethodId = typeOfPaymentMethod.Id,
-                    Amount = billPayments.Where(x => x.TypeOfPaymentMethod.Id == typeOfPaymentMethod.Id).Sum(x => x.Amount)
+                    Amount = billPayments.Where(x => x.TypeOfPaymentMethod!.Id == typeOfPaymentMethod.Id).Sum(x => x.Amount)
                 };
                 resumePayments.Add(resumePayment);
             }

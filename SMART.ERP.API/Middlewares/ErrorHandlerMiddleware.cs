@@ -55,10 +55,10 @@ namespace SMART.ERP.API.Middlewares
                         SentrySdk.CaptureException(error);
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
                         LogError newRecord = new();
-                        newRecord.Message = e.InnerException.Message;
+                        newRecord.Message = e.InnerException!.Message;
                         newRecord.CreationDate = DateTime.Now;
                         var pattern = "SMARTERP\\.Ecommerce\\.Application\\\\Features\\\\[A-Za-z]+\\\\Commands\\\\[A-Za-z]+\\\\[A-Za-z]+\\.cs:line [0-9]+";
-                        var match = Regex.Match(e.StackTrace, pattern);
+                        var match = Regex.Match(e.StackTrace!, pattern);
                         if (match.Success)
                         {
                             newRecord.StackTrace = match.Value;

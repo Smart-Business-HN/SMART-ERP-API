@@ -11,7 +11,7 @@ namespace SMART.ERP.Application.Specifications.OpportunitySpecification
                 .ThenInclude(x => x.Product).Where(x => x.ClosingDate != null && x.ClosingDate.Value.Year == year && x.User!.BranchOfficeId == branchId).AsNoTracking();
             if (won)
             {
-                Query.Where(x => x.OpportunityStep.Name == "Ganado");
+                Query.Where(x => x.OpportunityStep!.Name == "Ganado");
             }
         }
     }

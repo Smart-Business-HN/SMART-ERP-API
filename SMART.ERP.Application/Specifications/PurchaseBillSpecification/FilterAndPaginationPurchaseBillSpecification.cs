@@ -1,10 +1,5 @@
 ﻿using Ardalis.Specification;
 using SMART.ERP.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.Specifications.PurchaseBillSpecification
 {
@@ -17,7 +12,7 @@ namespace SMART.ERP.Application.Specifications.PurchaseBillSpecification
 
             if (!string.IsNullOrEmpty(parameter))
             {
-                Query.Where(x => x.Total.ToString().Contains(parameter) || x.Provider.Name.Contains(parameter) || x.PurchaseBillCode.Contains(parameter) || x.InvoiceNumber.Contains(parameter));
+                Query.Where(x => x.Total.ToString().Contains(parameter) || x.Provider!.Name.Contains(parameter) || x.PurchaseBillCode.Contains(parameter) || x.InvoiceNumber.Contains(parameter));
             }
 
             if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))

@@ -90,7 +90,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                     throw new ApiException($"{checkDescriptios}");
                 }
             }
-            var userExist = await _userRepositoryAsync.GetByIdAsync(request.UserId);
+            var userExist = await _userRepositoryAsync.GetByIdAsync(request.UserId!.Value);
             if (userExist == null)
             {
                 throw new ApiException($"No existe un usuario con el Id {request.CustomerId}");
@@ -148,7 +148,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                 notification.UseRouter = true;
                 notification.Link = "/accounting/quotations/" + quoteResponse.Id;
                 notification.Read = false;
-                notification.UserId = request.UserId.Value;
+                notification.UserId = request.UserId!.Value;
 
                 var response = await _notificationRepositoryAsync.AddAsync(notification);
                 await _notificationRepositoryAsync.SaveChangesAsync();
@@ -159,8 +159,8 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
         }
         static public decimal TaxCalculator(ProductToOfferdDto product, List<Tax> taxes)
         {
-            Tax productTax = null;
-            productTax = taxes.Find(x => x.Id == product.TaxId);
+            Tax? productTax = null;
+            productTax = taxes.Find(x => x.Id == product.TaxId)!;
             decimal gravable = product.Quantity * product.RecomendedSalePrice;
             decimal total = gravable * ((productTax.Rate / 100) + 1);
             decimal tax = total - gravable;
@@ -196,9 +196,9 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                 {
                     if (item == product.TaxId)
                     {
-                        tax = taxes.Find(x => x.Id == item);
+                        tax = taxes.Find(x => x.Id == item)!;
                         decimal subTotalAmount = product.Quantity * product.UnitPrice;
-                        decimal rates = 1 + (tax.Rate / 100);
+                        decimal rates = 1 + (tax!.Rate / 100);
                         decimal totalAmountWithTaxes = subTotalAmount * rates;
                         currentTaxAmount += (totalAmountWithTaxes - subTotalAmount);
                     }

@@ -11,7 +11,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
 {
     public class GetBaseProductBySlugQuery : IRequest<Response<ProductDto>>
     {
-        public string Slug { get; set; }
+        public string Slug { get; set; } = null!;
         public bool? IsLogged { get; set; }
         public int? CustomerTypeId { get; set; }
     }
@@ -37,11 +37,11 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
             }
             if (request.IsLogged.HasValue && request.IsLogged.Value)
             {
-                product.RecomendedSalePrice = Math.Ceiling((product.CostPrice * (decimal)1.2) * (1 + (product.Tax.Rate / 100)));
+                product.RecomendedSalePrice = Math.Ceiling((product.CostPrice * (decimal)1.2) * (1 + (product.Tax!.Rate / 100)));
             }
             else
             {
-                product.RecomendedSalePrice = Math.Ceiling((product.CostPrice * (decimal)1.3) * (1 + (product.Tax.Rate / 100)));
+                product.RecomendedSalePrice = Math.Ceiling((product.CostPrice * (decimal)1.3) * (1 + (product.Tax!.Rate / 100)));
             }
             product.Tax = null;
             product.CostPrice = 0;

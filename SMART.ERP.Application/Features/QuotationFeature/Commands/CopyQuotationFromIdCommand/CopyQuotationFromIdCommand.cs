@@ -77,7 +77,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CopyQuotation
             var currentCuotations = await _repositoryAsync.ListAsync();
             var productsInRequest = request.ProductsOffered;
             request.Id = null;
-            request.ProductsOffered = null;
+            request.ProductsOffered = [];
             request.CreationDate = DateTime.Now;
             var newRecord = _mapper.Map<Quotation>(request);
             //TODO: refactorizin this to: print a different correlative for each prefix.
@@ -176,7 +176,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CopyQuotation
                 {
                     if (item == product.TaxId)
                     {
-                        tax = taxes.Find(x => x.Id == item);
+                        tax = taxes.Find(x => x.Id == item)!;
                         decimal subTotalAmount = product.Quantity * product.UnitPrice;
                         decimal rates = 1 + (tax.Rate / 100);
                         decimal totalAmountWithTaxes = subTotalAmount * rates;

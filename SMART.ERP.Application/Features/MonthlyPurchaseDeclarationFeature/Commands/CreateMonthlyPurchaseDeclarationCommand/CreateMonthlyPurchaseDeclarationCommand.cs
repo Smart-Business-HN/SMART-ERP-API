@@ -45,7 +45,7 @@ namespace SMART.ERP.Application.Features.MonthlyPurchaseDeclarationFeature.Comma
                 {
                     MonthlyPurchaseDeclarationId = 1,
                     PurchaseBillId = purchaseBill.Id,
-                    ProviderRTN = purchaseBill.Provider.RTN.Replace("-", ""),
+                    ProviderRTN = purchaseBill.Provider!.RTN.Replace("-", ""),
                     ProviderName = purchaseBill.Provider.Name,
                     BillDate = purchaseBill.InvoiceDate.ToString("dd/MM/yyyy"),
                     Cai = purchaseBill.Cai,

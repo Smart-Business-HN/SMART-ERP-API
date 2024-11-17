@@ -137,12 +137,12 @@ namespace SMART.ERP.Application.Features.ProspectFeature.Commands.ConvertProspec
             var newClient = new Customer();
             var getMotorsCountry = await _countryRepositoryAsync.FirstOrDefaultAsync(new
                 IncludeCountrySpecification(checkProspect.CountryId));
-            var prospectRegion = getMotorsCountry.Regions.Find(x => x.Departments!.Any(y => y.Id == checkProspect.DepartmentId));
+            var prospectRegion = getMotorsCountry!.Regions!.Find(x => x.Departments!.Any(y => y.Id == checkProspect.DepartmentId));
             if (prospectRegion != null)
             {
                 throw new KeyNotFoundException($"El pais {getMotorsCountry.Name} no contiene el departamento del prospecto.");
             }
-            var prospectDepartment = prospectRegion.Departments.Find(x => x.Id == checkProspect.DepartmentId);
+            var prospectDepartment = prospectRegion!.Departments!.Find(x => x.Id == checkProspect.DepartmentId);
             var getHNCountries = await _clientCountryHNAsync.ListAsync(new
                 ClientCountryIncludesSpecification());
             var getHNCountry = getHNCountries.Find(x => x.Name == getMotorsCountry!.Name);

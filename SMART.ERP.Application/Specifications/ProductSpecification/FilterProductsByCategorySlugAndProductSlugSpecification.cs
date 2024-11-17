@@ -9,9 +9,9 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
         {
             Query.Include(x => x.Brand)
                 .Include(x => x.ProductImages)
-                .Include(x => x.SubCategory).ThenInclude(x => x.Category)
+                .Include(x => x.SubCategory).ThenInclude(x => x!.Category)
                 .Include(x => x.Status)
-                .Where(x => x.SubCategory.Category.Slug == categorySlug && x.Slug != productSlug && x.ShowInEcommerce == true).AsNoTracking();
+                .Where(x => x.SubCategory!.Category!.Slug == categorySlug && x.Slug != productSlug && x.ShowInEcommerce == true).AsNoTracking();
         }
     }
 }

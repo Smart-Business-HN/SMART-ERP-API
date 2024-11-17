@@ -148,7 +148,7 @@ namespace SMART.ERP.Application.Features.PurchaseOrderFeature.Commands.UpdatePur
                 {
                     if (item == product.TaxId)
                     {
-                        tax = taxes.Find(x => x.Id == item);
+                        tax = taxes.Find(x => x.Id == item)!;
                         decimal subTotalAmount = product.Quantity * product.UnitPrice;
                         decimal rates = 1 + (tax.Rate / 100);
                         decimal totalAmountWithTaxes = subTotalAmount * rates;
@@ -235,7 +235,7 @@ namespace SMART.ERP.Application.Features.PurchaseOrderFeature.Commands.UpdatePur
         }
         static public decimal TaxCalculator(ProductToBuyDto product, List<Tax> taxes)
         {
-            Tax productTax = taxes.Find(x => x.Id == product.TaxId);
+            Tax productTax = taxes.Find(x => x.Id == product.TaxId)!;
             decimal gravable = product.Quantity * product.RecomendedBuyPrice;
             decimal total = gravable * ((productTax!.Rate / 100) + 1);
             decimal tax = total - gravable;

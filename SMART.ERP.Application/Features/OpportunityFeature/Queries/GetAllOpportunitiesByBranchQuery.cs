@@ -77,7 +77,7 @@ namespace SMART.ERP.Application.Features.OpportunityFeature.Queries
             {
                 if (request.Parameter != null)
                 {
-                    dto = dto.FindAll(x => x.Code.ToLower().Contains(request.Parameter.ToLower()) || x.Customer.FullName.ToLower().Contains(request.Parameter.ToLower()) || x.User.FullName.ToLower().Contains(request.Parameter.ToLower()));
+                    dto = dto.FindAll(x => x.Code.ToLower().Contains(request.Parameter.ToLower()) || x.Customer.FullName.ToLower().Contains(request.Parameter.ToLower()) || x.User!.FullName.ToLower().Contains(request.Parameter.ToLower()));
                 }
             }
 

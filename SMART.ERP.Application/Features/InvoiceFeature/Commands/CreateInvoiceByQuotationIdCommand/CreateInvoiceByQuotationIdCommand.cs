@@ -75,7 +75,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             }
             if (!caiExist.IsGeneralCai && caiExist.BranchOfficeId != request.BranchOfficeId)
             {
-                throw new ApiException($"El CAI {caiExist.Name} no pertenece a la sucursal {quotationExist.BranchOffice.Name}");
+                throw new ApiException($"El CAI {caiExist.Name} no pertenece a la sucursal {quotationExist.BranchOffice!.Name}");
             }
             if (DateTime.UtcNow.Date > caiExist.ValidUntil)
             {
@@ -132,9 +132,9 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             for (int i = 0; i < quotationExist?.ProductsOffered?.Count; i++)
             {
                 quotationExist.ProductsOffered[i].Tax = null;
-                quotationExist.ProductsOffered[i].Product.Brand = null;
+                quotationExist.ProductsOffered[i].Product!.Brand = null;
             }
-            quotationExist.StatusId = 7;
+            quotationExist!.StatusId = 7;
             quotationExist.InvoiceDestinationId = invoiceResponse.Id;
             var productsOffered = quotationExist.ProductsOffered;
             quotationExist.ProductsOffered = null;
@@ -206,7 +206,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             {
                 foreach (var product in products)
                 {
-                    var productExist = warehouseExist.InventoryDistributions.FirstOrDefault(x => x.ProductId == product.ProductId);
+                    var productExist = warehouseExist!.InventoryDistributions!.FirstOrDefault(x => x.ProductId == product.ProductId);
                     if (productExist != null)
                     {
                         productExist.Quantity = productExist.Quantity - product.Quantity;
@@ -216,7 +216,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
                     {
                         var newInventoryDistribution = new InventoryDistribution
                         {
-                            ProductId = product.ProductId.Value,
+                            ProductId = product.ProductId!.Value,
                             WarehouseId = warehouseExist.Id,
                             Quantity = 0 - product.Quantity
                         };
@@ -227,8 +227,8 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
             }
             foreach (var product in products)
             {
-                var productExist = await _productRepositoryAsync.GetByIdAsync(product.ProductId.Value);
-                productExist.CurrentStock -= (int)product.Quantity;
+                var productExist = await _productRepositoryAsync.GetByIdAsync(product.ProductId!.Value);
+                productExist!.CurrentStock -= (int)product.Quantity;
                 await _productRepositoryAsync.UpdateAsync(productExist);
             }
             await _productRepositoryAsync.SaveChangesAsync();
@@ -261,10 +261,10 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceBy
         }
         static public decimal TaxCalculator(ProductOfferedDto product, List<Tax> taxes)
         {
-            Tax productTax = null;
+            Tax? productTax = null;
             productTax = taxes.Find(x => x.Id == product.TaxId);
             decimal gravable = product.Quantity * product.UnitPrice;
-            decimal total = gravable * ((productTax.Rate / 100) + 1);
+            decimal total = gravable * ((productTax!.Rate / 100) + 1);
             decimal tax = total - gravable;
             return tax;
         }

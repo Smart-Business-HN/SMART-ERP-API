@@ -27,8 +27,7 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.ProspectMetric
             PieChartDto dto = new PieChartDto();
             dto.labels = new List<string>();
             dto.series = new List<decimal>();
-            dto.series.Add(prospects.FindAll(x => x.ProspectStep.Name != "Convertido").Count);
-            dto.series.Add(prospects.FindAll(x => x.ProspectStep!.Name == "Convertido").Count);
+            dto.series.Add(prospects.FindAll(x => x.ProspectStep!.Name != "Convertido").Count);
             dto.labels.Add("Prospectos");
             dto.labels.Add("Convertidos");
             return new Response<PieChartDto>(dto);

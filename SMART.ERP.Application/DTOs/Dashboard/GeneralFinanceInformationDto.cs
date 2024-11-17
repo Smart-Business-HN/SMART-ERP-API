@@ -10,8 +10,8 @@ namespace SMART.ERP.Application.DTOs.Dashboard
         public decimal CurrentMonthExpenses { get; set; }
         public decimal PreviousMonthSales { get; set; }
         public decimal PreviousMonthExpenses { get; set; }
-        public BrandSalesDto BrandSales { get; set; }
-        public ExpensesDto Expenses { get; set; }
+        public BrandSalesDto BrandSales { get; set; } = new BrandSalesDto();
+        public ExpensesDto Expenses { get; set; } = new ExpensesDto();
         public decimal Receivable { get; set; }
         public decimal Payable { get; set; }
         public decimal AcidTest { get; set; }

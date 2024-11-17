@@ -174,7 +174,7 @@ app.UseStaticFiles();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapControllers();
+   _ = endpoints.MapControllers();
 });
 app.MapHub<NotificationHub>("hub/notification");
 app.MapControllers();

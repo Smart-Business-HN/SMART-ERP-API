@@ -45,7 +45,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                 {
                     foreach (var item in products)
                     {
-                        item.RecomendedSalePrice = Math.Ceiling((item.CostPrice * (decimal)1.2) * (1 + (item.Tax.Rate / 100)));
+                        item.RecomendedSalePrice = Math.Ceiling((item.CostPrice * (decimal)1.2) * (1 + (item.Tax!.Rate / 100)));
                         item.CostPrice = 0;
                         item.Tax = null;
                     }
@@ -54,7 +54,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                 {
                     foreach (var item in products)
                     {
-                        item.RecomendedSalePrice = Math.Ceiling((item.CostPrice * (decimal)1.3) * (1 + (item.Tax.Rate / 100)));
+                        item.RecomendedSalePrice = Math.Ceiling((item.CostPrice * (decimal)1.3) * (1 + (item.Tax!.Rate / 100)));
                         item.CostPrice = 0;
                         item.Tax = null;
                     }
