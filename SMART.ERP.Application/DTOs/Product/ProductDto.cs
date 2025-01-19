@@ -1,4 +1,5 @@
 ﻿using SMART.ERP.Application.DTOs.Company;
+using SMART.ERP.Application.DTOs.InventoryDistribution;
 using SMART.ERP.Application.DTOs.ProductPurchasePriceLog;
 using SMART.ERP.Application.DTOs.Provider;
 using SMART.ERP.Application.DTOs.Status;
@@ -38,5 +39,6 @@ namespace SMART.ERP.Application.DTOs.Product
         public List<ProductFeatureDto>? ProductFeatures { get; set; }
         public List<ProductImageDto>? ProductImages { get; set; }
         public List<ProductPurchasePriceLogDto>? ProductPurchasePriceLogs { get; set; }
+        public List<InventoryDistributionDto>? InventoryDistributions { get; set; }
     }
 }
