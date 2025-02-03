@@ -19,7 +19,7 @@ namespace SMART.ERP.API.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
         [HttpGet("GetAll")]
-        [Authorize(Roles = "SuperAdmin, Manager, Admin")]
+        [AllowAnonymous]
         [OutputCache(PolicyName = "cache_monthlyPurchaseDeclaration")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {

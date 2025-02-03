@@ -25,7 +25,7 @@ namespace SMART.ERP.API.Controllers.v1
         }
 
         [HttpGet("ClientGetAll")]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> ClientGetAll()
         {
             return Ok(await Mediator.Send(new GetAllClientGenderQuery()));

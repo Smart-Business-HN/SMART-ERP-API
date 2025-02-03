@@ -26,7 +26,7 @@ namespace SMART.ERP.API.Controllers.v1
             return Ok(await Mediator.Send(new GetNonBillableExpenseByIdQuery { Id = id }));
         }
         [HttpGet("GetAll")]
-        [Authorize(Roles = "SuperAdmin, Manager, Admin")]
+        [AllowAnonymous]
         [OutputCache(PolicyName = "cache_nonBillableExpense")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {

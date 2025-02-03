@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Quartz;
 using SMART.ERP.API.Extensions;
+using SMART.ERP.API.Middlewares;
 using SMART.ERP.Application;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.SignalRHub;
@@ -21,10 +22,20 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins("https://*.vercel.app").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod().AllowCredentials();
-            policy.WithOrigins("https://www.smartbusiness.site", "https://admin.smartbusiness.site").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+            policy.WithOrigins("https://*.vercel.app")
+            .SetIsOriginAllowedToAllowWildcardSubdomains()
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+            policy.WithOrigins("https://www.smartbusiness.site", "https://admin.smartbusiness.site")
+            .SetIsOriginAllowedToAllowWildcardSubdomains()
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
             policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
-            .AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
         });
 });
 builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -89,32 +100,31 @@ builder.Services.AddStackExchangeRedisOutputCache(options =>
 builder.Services.AddOutputCache(opt =>
     {
         //PANEL ADMIN CACHE
-        opt.AddPolicy("cache_brands", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_brands"));
-        opt.AddPolicy("cache_categories", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_categories"));
-        opt.AddPolicy("cache_cities", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_cities"));
-        opt.AddPolicy("cache_departments", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_departments"));
-        opt.AddPolicy("cache_subCategories", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_subCategories"));
-        opt.AddPolicy("cache_salesAdvisors", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_salesAdvisors"));
-        opt.AddPolicy("cache_branchOffices", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_branchOffices"));
-        opt.AddPolicy("cache_cais", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_cais"));
-        opt.AddPolicy("cache_products", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_products"));
-        opt.AddPolicy("cache_banks", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_banks"));
-        opt.AddPolicy("cache_customer", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_customer"));
-        opt.AddPolicy("cache_genders", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_genders"));
-        opt.AddPolicy("cache_headings", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_headings"));
-        opt.AddPolicy("cache_internalBankAccounts", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_internalBankAccounts"));
-        opt.AddPolicy("cache_socialReasons", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_socialReasons"));
-        opt.AddPolicy("cache_providers", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_providers"));
-        opt.AddPolicy("cache_taxes", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_tax"));
-        opt.AddPolicy("cache_typeOfPayment", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_typeOfPayment"));
-        opt.AddPolicy("cache_statuses", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_statuses"));
-        opt.AddPolicy("cache_major_expense_account", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_major_expense_account"));
-        opt.AddPolicy("cache_major_income_account", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_major_income_account"));
-        opt.AddPolicy("cache_income_account", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_income_account"));
-        opt.AddPolicy("cache_expense_account", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_expense_account"));
-        opt.AddPolicy("cache_nonBillableExpense", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_nonBillableExpense"));
-        opt.AddPolicy("cache_dailyClose", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_dailyClose"));
-        opt.AddPolicy("cache_monthlyPurchaseDeclaration", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_monthlyPurchaseDeclaration"));
+        opt.AddPolicy("cache_brands", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_categories", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_cities", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_departments", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_subCategories", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_branchOffices", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_cais", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_products", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_banks", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_customer", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_genders", builder => builder.Expire(TimeSpan.FromDays(10)));
+        opt.AddPolicy("cache_headings", builder => builder.Expire(TimeSpan.FromDays(10)));
+        opt.AddPolicy("cache_internalBankAccounts", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_socialReasons", builder => builder.Expire(TimeSpan.FromDays(10)));
+        opt.AddPolicy("cache_providers", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_taxes", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_typeOfPayment", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_statuses", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_major_expense_account", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_major_income_account", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_income_account", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_expense_account", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_nonBillableExpense", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_dailyClose", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_monthlyPurchaseDeclaration", builder => builder.Expire(TimeSpan.FromDays(10)).SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
         //ECOMMERCE CACHE
         opt.AddPolicy("cache_getAllNavCategories", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_getAllNavCategories"));
         opt.AddPolicy("cache_productsEcommerce", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsEcommerce"));
@@ -125,6 +135,33 @@ builder.Services.AddOutputCache(opt =>
 var app = builder.Build();
 app.UseSentryTracing();
 
+if (!app.Environment.IsDevelopment())
+{
+    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    });
+}
+app.UseErrorHandlingMiddleware();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+app.UseStaticFiles(); app.UseStaticFiles();
+app.UseRouting();
+var webSocketOptions = new WebSocketOptions
+{
+    KeepAliveInterval = TimeSpan.FromMinutes(2)
+};
+webSocketOptions.AllowedOrigins.Add("http://localhost:4200");
+webSocketOptions.AllowedOrigins.Add("https://admin.smartbusiness.site");
+webSocketOptions.AllowedOrigins.Add("https://www.smartbusiness.site");
+app.UseWebSockets(webSocketOptions);
+app.UseCors();
+
+app.UseOutputCache();
+app.UseAuthentication();
+app.UseAuthorization();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -142,40 +179,9 @@ if (app.Environment.IsDevelopment())
         });
 }
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
-
-var webSocketOptions = new WebSocketOptions
-{
-    KeepAliveInterval = TimeSpan.FromMinutes(2)
-};
-
-webSocketOptions.AllowedOrigins.Add("http://localhost:4200");
-webSocketOptions.AllowedOrigins.Add("https://admin.smartbusiness.site");
-webSocketOptions.AllowedOrigins.Add("https://www.smartbusiness.site");
-app.UseRouting();
-app.UseCors();
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseOutputCache();
-app.UseErrorHandlingMiddleware();
-app.UseWebSockets(webSocketOptions);
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseForwardedHeaders(new ForwardedHeadersOptions
-    {
-        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-    });
-}
-app.UseStaticFiles();
-
 app.UseEndpoints(endpoints =>
 {
-   _ = endpoints.MapControllers();
+    endpoints.MapControllers();
+    endpoints.MapHub<NotificationHub>("hub/notification");
 });
-app.MapHub<NotificationHub>("hub/notification");
-app.MapControllers();
 app.Run();

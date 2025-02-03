@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Features.ExpenseAccountFeature.Commands.CreateExpenseAccountCommand;
@@ -9,10 +10,11 @@ using SMART.ERP.Application.Parameters;
 
 namespace SMART.ERP.API.Controllers.v1
 {
+    [ApiVersion("1.0")]
     public class ExpenseAccountController : BaseApiController
     {
         [HttpGet("GetAll")]
-        [Authorize]
+        [AllowAnonymous]
         [OutputCache(PolicyName = "cache_income_account")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {

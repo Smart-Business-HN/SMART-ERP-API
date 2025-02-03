@@ -45,8 +45,8 @@ namespace SMART.ERP.API.Controllers.v1
         [AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] CreateMessageCommand command)
         {
-            //if (!_headerService.VerificatedSecretKey())
-            //    return Unauthorized();
+            if (!_headerService.VerificatedSecretKey())
+                return Unauthorized();
 
             return Ok(await Mediator.Send(command));
         }

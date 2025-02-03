@@ -40,9 +40,6 @@ namespace SMART.ERP.API.Controllers.v1
         [OutputCache(PolicyName = "cache_brands")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
-            //if (!_headerService.VerificatedSecretKey())
-            //    return Unauthorized();
-
             return Ok(await Mediator.Send(new GetAllBrandQuery
             {
                 Parameter = filter.Parameter,

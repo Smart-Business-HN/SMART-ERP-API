@@ -21,7 +21,7 @@ namespace SMART.ERP.API.Controllers.v1
         }
 
         [HttpGet("GetAll")]
-        [Authorize]
+        [AllowAnonymous]
         [OutputCache(PolicyName = "cache_providers")]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
         {
