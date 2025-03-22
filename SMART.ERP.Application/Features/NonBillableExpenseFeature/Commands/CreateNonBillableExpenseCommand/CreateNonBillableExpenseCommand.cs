@@ -75,7 +75,11 @@ namespace SMART.ERP.Application.Features.NonBillableExpenseFeature.Commands.Crea
             var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
             await _outputCacheStored.EvictByTagAsync("cache_nonBillableExpense", cancellationToken);
+            data.Prefix = prefixExist;
+            data.Provider = providerExist;
+            data.ExpenseAccount = expenseAccountExist;
             var dto = _mapper.Map<NonBillableExpenseDto>(data);
+            
             return new Response<NonBillableExpenseDto>(dto, message: $"Nuevo recibo de gasto creado exitosamente");
         }
         public static string CreateNonBillableExpenseCode(Prefix prefix, NonBillableExpense lastNonBillableExpense)

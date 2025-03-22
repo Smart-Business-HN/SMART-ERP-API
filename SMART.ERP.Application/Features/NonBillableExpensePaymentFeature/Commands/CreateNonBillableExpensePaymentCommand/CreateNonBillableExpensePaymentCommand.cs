@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.NonBillableExpensePayment;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
@@ -27,13 +28,15 @@ namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Comman
         private readonly IRepositoryAsync<TypeOfPaymentMethod> _typeOfPaymentMethodRepositoryAsync;
         private readonly IJwtService _jwtService;
         private readonly IMapper _mapper;
-        public CreateNonBillableExpensePaymentCommandHandler(IRepositoryAsync<NonBillableExpensePayment> repositoryAsync, IJwtService jwtService, IRepositoryAsync<NonBillableExpense> nonBillableExpenseRepositoryAsync, IRepositoryAsync<InternalBankAccount> internalBankAccountRepositoryAsync, IRepositoryAsync<TypeOfPaymentMethod> typeOfPaymentMethodRepositoryAsync, IMapper mapper)
+        private readonly IOutputCacheStore _outputCacheStored;
+        public CreateNonBillableExpensePaymentCommandHandler(IRepositoryAsync<NonBillableExpensePayment> repositoryAsync, IJwtService jwtService, IRepositoryAsync<NonBillableExpense> nonBillableExpenseRepositoryAsync, IRepositoryAsync<InternalBankAccount> internalBankAccountRepositoryAsync, IRepositoryAsync<TypeOfPaymentMethod> typeOfPaymentMethodRepositoryAsync, IMapper mapper, IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
             _nonBillableExpenseRepositoryAsync = nonBillableExpenseRepositoryAsync;
             _internalBankAccountRepositoryAsync = internalBankAccountRepositoryAsync;
             _typeOfPaymentMethodRepositoryAsync = typeOfPaymentMethodRepositoryAsync;
             _mapper = mapper;
+            _outputCacheStored = outputCacheStored;
             _jwtService = jwtService;
         }
 
@@ -80,6 +83,7 @@ namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Comman
             await _nonBillableExpenseRepositoryAsync.SaveChangesAsync();
 
             var dto = _mapper.Map<NonBillableExpensePaymentDto>(response);
+            await _outputCacheStored.EvictByTagAsync("cache_nonBillableExpense", cancellationToken);
             return new Response<NonBillableExpensePaymentDto>(dto, $"Pago recibido exitosamente");
         }
     }
