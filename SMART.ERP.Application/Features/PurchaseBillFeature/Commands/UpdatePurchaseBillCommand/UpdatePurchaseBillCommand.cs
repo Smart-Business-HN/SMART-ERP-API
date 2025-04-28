@@ -49,14 +49,14 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.UpdatePurc
         }
         public async Task<Response<PurchaseBillDto>> Handle(UpdatePurchaseBillCommand request, CancellationToken cancellationToken)
         {
-            var purchaseBillExist = await _repositoryAsync.GetByIdAsync(request.Id);
+            var purchaseBillExist = await _repositoryAsync.GetByIdAsync(request.Id, cancellationToken);
             if (purchaseBillExist == null)
             {
                 throw new ApiException($"No existe una factura de compra con el Id {request.Id}");
             }
             if(request.ProviderId != null && request.ProviderId != 0)
             {
-                var providerExist = await _providerRepositoryAsync.GetByIdAsync((int)request.ProviderId);
+                var providerExist = await _providerRepositoryAsync.GetByIdAsync((int)request.ProviderId, cancellationToken);
                 if (providerExist == null)
                 {
                     throw new ApiException($"No existe un proveedor con el Id {request.ProviderId}");
@@ -64,7 +64,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.UpdatePurc
             }
             if(request.StatusId != null && request.StatusId != 0)
             {
-                var statusExist = await _statusRepositoryAsync.GetByIdAsync((int)request.StatusId);
+                var statusExist = await _statusRepositoryAsync.GetByIdAsync((int)request.StatusId, cancellationToken);
                 if (statusExist == null)
                 {
                     throw new ApiException($"No existe un estaddo con el Id {request.StatusId}");
@@ -72,7 +72,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.UpdatePurc
             }
             if(request.PurchaseOrderOriginId!=null&&request.PurchaseOrderOriginId!=0)
             {
-                var purchaseOrderExist = await _purchaseOrderRepositoryAsync.GetByIdAsync((int)request.PurchaseOrderOriginId);
+                var purchaseOrderExist = await _purchaseOrderRepositoryAsync.GetByIdAsync((int)request.PurchaseOrderOriginId, cancellationToken);
                 if (purchaseOrderExist == null)
                 {
                     throw new ApiException($"No existe una orden de compra con el Id {request.PurchaseOrderOriginId}");
@@ -131,13 +131,12 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.UpdatePurc
                 purchaseBillExist.ExpenseAccountId = request.ExpenseAccountId;
             }
             purchaseBillExist.Total = (decimal)(request.Exempt + request.Exonerated + request.Taxes15Percent + request.Taxes18Percent + request.TaxedAt15Percent + request.TaxedAt18Percent);
-            purchaseBillExist.Outstanding = purchaseBillExist.Total;
-            await _repositoryAsync.UpdateAsync(purchaseBillExist);
-            await _repositoryAsync.SaveChangesAsync();
+            await _repositoryAsync.UpdateAsync(purchaseBillExist, cancellationToken);
+            await _repositoryAsync.SaveChangesAsync(cancellationToken);
             var dto = _mapper.Map<PurchaseBillDto>(purchaseBillExist);
             return new Response<PurchaseBillDto>(dto, message: $"{purchaseBillExist.Id} actualizado correctamente");
         }
-        public async Task UpdateProductPurchasePriceLogs (DateTime invoiceDate, PurchaseBill purchaseBill)
+        private async Task UpdateProductPurchasePriceLogs (DateTime invoiceDate, PurchaseBill purchaseBill)
         {
             var productPurchasePriceLogs = await _productPurchasePriceLogRepositoryAsync.ListAsync(new FilterProductPurchasePriceLogByPurchaseBillId(purchaseBill.Id));
             foreach (var log in productPurchasePriceLogs)
