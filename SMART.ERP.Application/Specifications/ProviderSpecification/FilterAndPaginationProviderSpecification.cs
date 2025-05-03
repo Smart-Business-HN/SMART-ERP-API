@@ -3,7 +3,7 @@ using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.ProviderSpecification
 {
-    public class FilterAndPaginationProviderSpecification : Specification<Provider>
+    public sealed class FilterAndPaginationProviderSpecification : Specification<Provider>
     {
         public FilterAndPaginationProviderSpecification(string? parameter, int pageNumber,
             int pageSize, string? order, string? column)
@@ -17,21 +17,21 @@ namespace SMART.ERP.Application.Specifications.ProviderSpecification
                 || x.PhoneNumber.Contains(parameter));
             }
 
-            if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))
+            if (string.IsNullOrEmpty(order) || string.IsNullOrEmpty(column)) return;
             {
                 if (order == "desc")
                 {
                     Query.OrderByDescending(x => column == "Name" ? x.Name
-                    : column == "RTN" ? x.RTN
-                    : column == "PhoneNumber" ? x.PhoneNumber
-                    : null);
+                        : column == "RTN" ? x.RTN
+                        : column == "PhoneNumber" ? x.PhoneNumber
+                        : null);
                 }
                 else
                 {
                     Query.OrderBy(x => column == "Name" ? x.Name
-                    : column == "RTN" ? x.RTN
-                    : column == "PhoneNumber" ? x.PhoneNumber
-                    : null);
+                        : column == "RTN" ? x.RTN
+                        : column == "PhoneNumber" ? x.PhoneNumber
+                        : null);
                 }
             }
         }

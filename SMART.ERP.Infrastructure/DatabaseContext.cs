@@ -536,6 +536,14 @@ namespace SMART.ERP.Infrastructure
                 .WithMany()
                 .HasForeignKey(x => x.TypeProviderId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Provider>()
+                .HasMany<NonBillableExpense>(x=>x.NonBillableExpenses)
+                .WithOne(x => x.Provider)
+                .HasForeignKey(x => x.ProviderId);
+            modelBuilder.Entity<Provider>()
+                .HasMany<PurchaseBill>(x => x.PurchaseBills)
+                .WithOne(x => x.Provider)
+                .HasForeignKey(x => x.ProviderId);
 
             //QuoteProduct
             modelBuilder.Entity<QuoteProduct>().ToTable("QuoteProduct");
@@ -1153,12 +1161,6 @@ namespace SMART.ERP.Infrastructure
             //Purchase Bill
             modelBuilder.Entity<PurchaseBill>().ToTable("PurchaseBill");
             modelBuilder.Entity<PurchaseBill>(o => o.HasKey(x => x.Id));
-
-            modelBuilder.Entity<PurchaseBill>()
-               .HasOne(x => x.Provider)
-               .WithMany()
-               .HasForeignKey(x => x.ProviderId)
-               .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<PurchaseBill>()
                .HasOne(x => x.Status)
                .WithMany()
@@ -1230,11 +1232,6 @@ namespace SMART.ERP.Infrastructure
             //NonBillable Expense
             modelBuilder.Entity<NonBillableExpense>().ToTable("NonBillableExpense");
             modelBuilder.Entity<NonBillableExpense>(o => o.HasKey(x => x.Id));
-            modelBuilder.Entity<NonBillableExpense>()
-             .HasOne(x => x.Provider)
-             .WithMany()
-             .HasForeignKey(x => x.ProviderId)
-             .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<NonBillableExpense>()
             .HasOne(x => x.Prefix)
             .WithMany()

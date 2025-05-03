@@ -34,9 +34,9 @@ namespace SMART.ERP.Application.Features.AccountsReceivableFeature.Queries
             if (request.All)
             {
                 request.PageNumber = 0;
-                request.PageSize = await _repositoryAsync.CountAsync();
+                request.PageSize = await _repositoryAsync.CountAsync(cancellationToken);
             }
-            var customers = await _repositoryAsync.ListAsync(new FilterCustomerWithPendingInvoicesSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
+            var customers = await _repositoryAsync.ListAsync(new FilterCustomerWithPendingInvoicesSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column), cancellationToken);
             customers.ForEach(customer =>
             {
                 var invoices = customer.PendingInvoices;
@@ -46,13 +46,13 @@ namespace SMART.ERP.Application.Features.AccountsReceivableFeature.Queries
                     Customer = _mapper.Map<CustomerDto>(customer),
                     TotalAmount = invoices!.Sum(i => i.Outstanding),
                     OverdueAmount = invoices!.Where(i => i.ExpectedPaymentDate.HasValue && DateTime.Now.Date > i.ExpectedPaymentDate.Value.ToDateTime(TimeOnly.MinValue)).Sum(i => i.Outstanding),
-                    TotalInvoices = invoices!.Where(i => i.Outstanding > 0).Count(),
+                    TotalInvoices = invoices!.Count(i => i.Outstanding > 0),
                     Invoices = _mapper.Map<List<InvoiceDto>>(invoices)
                 });
             });
 
 
-            return new PagedResponse<List<AccountsReceivableDto>>(accountsRecivables, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync(new FilterCustomerWithPendingInvoicesSpecification(null, 0, await _repositoryAsync.CountAsync(), request.Order, request.Column)));
+            return new PagedResponse<List<AccountsReceivableDto>>(accountsRecivables, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync(new FilterCustomerWithPendingInvoicesSpecification(null, 0, await _repositoryAsync.CountAsync(cancellationToken), request.Order, request.Column),cancellationToken));
         }
     }
 }

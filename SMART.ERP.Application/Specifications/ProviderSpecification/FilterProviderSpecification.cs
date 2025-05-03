@@ -3,7 +3,7 @@ using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.ProviderSpecification
 {
-    public class FilterProviderSpecification : Specification<Provider>
+    public sealed class FilterProviderSpecification : Specification<Provider>
     {
         public FilterProviderSpecification(string? filter, int? id)
         {
