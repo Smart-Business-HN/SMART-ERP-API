@@ -21,4 +21,10 @@ public class AccountsPayableController : BaseApiController
             All = filter.All
         }));
     }
+    [HttpGet("GetByProviderId/{id}")]
+    [Authorize]
+    public async Task<IActionResult> GetByProviderId(int id)
+    {
+        return Ok(await Mediator.Send(new GetAccountPaymentByProviderIdQuery { Id = id }));
+    }
 }
