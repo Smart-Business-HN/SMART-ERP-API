@@ -40,5 +40,6 @@ namespace SMART.ERP.Application.DTOs.Product
         public List<ProductImageDto>? ProductImages { get; set; }
         public List<ProductPurchasePriceLogDto>? ProductPurchasePriceLogs { get; set; }
         public List<InventoryDistributionDto>? InventoryDistributions { get; set; }
+        public string? EcommerceDescription { get; set; }
     }
 }

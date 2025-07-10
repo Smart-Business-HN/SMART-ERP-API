@@ -38,5 +38,6 @@
         public List<ProductImage>? ProductImages { get; set; }
         public List<InventoryDistribution>? InventoryDistributions { get; set; }
         public List<ProductPurchasePriceLog>? ProductPurchasePriceLogs { get; set; }
+        public string? EcommerceDescription { get; set; }
     }
 }

@@ -9,7 +9,7 @@
         public string? Column { get; set; }
         public bool All { get; set; }
         public bool IsUserSignIn { get; set; }
-        public int CustomerTypeId { get; set; }
+        public int? CustomerTypeId { get; set; }
 
         public RequestEcommerceParameter()
         {

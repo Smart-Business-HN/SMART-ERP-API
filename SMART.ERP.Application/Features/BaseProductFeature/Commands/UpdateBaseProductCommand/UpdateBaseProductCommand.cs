@@ -33,6 +33,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
         public decimal CostPrice { get; set; }
         public decimal RecomendedSalePrice { get; set; }
         public int CurrentStock { get; set;}
+        public string? EcommerceDescription { get; set; }
     }
 
     public class UpdateBaseProductCommandHandler : IRequestHandler<UpdateBaseProductCommand, Response<ProductDto>>
@@ -130,7 +131,8 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
                 product.CostPrice = request.CostPrice;
                 product.CurrentStock = request.CurrentStock;
                 product.RecomendedSalePrice = request.RecomendedSalePrice;
-                await _repositoryAsync.UpdateAsync(product);
+                product.EcommerceDescription = request.EcommerceDescription;
+            await _repositoryAsync.UpdateAsync(product);
                 await _repositoryAsync.SaveChangesAsync();
                 await _outputCacheStored.EvictByTagAsync("cache_products", cancellationToken);
                 await _outputCacheStored.EvictByTagAsync("cache_productsEcommerce", cancellationToken);
