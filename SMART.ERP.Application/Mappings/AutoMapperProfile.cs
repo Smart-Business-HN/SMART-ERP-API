@@ -11,6 +11,7 @@ using SMART.ERP.Application.DTOs.DailyClose;
 using SMART.ERP.Application.DTOs.Dashboard;
 using SMART.ERP.Application.DTOs.DeclaratedPurchaseBill;
 using SMART.ERP.Application.DTOs.Discount;
+using SMART.ERP.Application.DTOs.EcommerceUser;
 using SMART.ERP.Application.DTOs.ExpenseAccount;
 using SMART.ERP.Application.DTOs.IncomeAccount;
 using SMART.ERP.Application.DTOs.InternalBankAccount;
@@ -64,6 +65,7 @@ using SMART.ERP.Application.Features.DataSheetFeature.Commands.CreateDataSheetCo
 using SMART.ERP.Application.Features.DepartmentFeature.Commands.CreateDepartmentCommand;
 using SMART.ERP.Application.Features.DiscountFeature.Commands.CreateDiscountCommand;
 using SMART.ERP.Application.Features.DocumentTypeFeature.Commands.CreateDocumentTypeCommand;
+using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.CreateEcommerceUserCommand;
 using SMART.ERP.Application.Features.ExpenseAccountFeature.Commands.CreateExpenseAccountCommand;
 using SMART.ERP.Application.Features.FinancingPlanFeature.Commands.CreateFinancingPlanCommand;
 using SMART.ERP.Application.Features.HeroSliderFeature.Commands.CreateHeroSliderCommand;
@@ -243,6 +245,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<DeclaratedPurchaseBill, DeclaratedPurchaseBillDto>().ReverseMap();
             CreateMap<InvoicePaymentType, InvoicePaymentTypeDto>().ReverseMap();
             CreateMap<Discount,DiscountDto>().ReverseMap();
+            CreateMap<EcommerceUser, EcommerceUserDto>().ReverseMap();
             #endregion
 
             #region Commands
@@ -318,6 +321,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateDailyCloseCommand, DailyClose>();
             CreateMap<CreateInvoiceFromPosScreenCommand, Invoice>();
             CreateMap<CreateDiscountCommand, Discount>();
+            CreateMap<CreateEcommerceUserCommand, EcommerceUser>();
             #endregion
         }
     }

@@ -93,6 +93,7 @@ namespace SMART.ERP.Infrastructure
         public DbSet<DeclaratedPurchaseBill> DeclaratedPurchaseBills { get; set; } = null!;
         public DbSet<InvoicePaymentType> InvoicePaymentTypes { get; set; } = null!;
         public DbSet<Discount> Discounts { get; set; } = null!;
+        public DbSet<EcommerceUser> EcommerceUsers { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1308,6 +1309,21 @@ namespace SMART.ERP.Infrastructure
             //Discount
             modelBuilder.Entity<Discount>().ToTable("Discount");
             modelBuilder.Entity<Discount>(o => o.HasKey(x => x.Id));
+            //Ecommerce User
+            modelBuilder.Entity<EcommerceUser>().ToTable("EcommerceUser");
+            modelBuilder.Entity<EcommerceUser>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<EcommerceUser>()
+                .HasOne(x => x.Department)
+                .WithMany()
+                .HasForeignKey(x => x.DepartmentId);
+            modelBuilder.Entity<EcommerceUser>()
+                .HasOne(x => x.Gender)
+                .WithMany()
+                .HasForeignKey(x => x.GenderId);
+            modelBuilder.Entity<EcommerceUser>()
+                .HasOne(x => x.CustomerType)
+                .WithMany()
+                .HasForeignKey(x => x.CustomerTypeId);
             base.OnModelCreating(modelBuilder);
         }
     }
