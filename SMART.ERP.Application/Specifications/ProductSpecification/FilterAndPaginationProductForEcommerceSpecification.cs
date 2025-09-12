@@ -3,7 +3,7 @@ using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.ProductSpecification
 {
-    public class FilterAndPaginationProductForEcommerceSpecification : Specification<Product>
+    public sealed class FilterAndPaginationProductForEcommerceSpecification : Specification<Product>
     {
         public FilterAndPaginationProductForEcommerceSpecification(string? parameter, int pageNumber, int pageSize,
             string? order, string? column)
@@ -17,8 +17,12 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
 
             if (!string.IsNullOrEmpty(parameter))
             {
-                Query.Where(x => x.Name.Contains(parameter) && x.ShowInEcommerce || x.Code.Contains(parameter) && x.ShowInEcommerce
-                || x.SubCategory!.Name.Contains(parameter) && x.ShowInEcommerce || x.Brand!.Name.Contains(parameter) && x.ShowInEcommerce);
+                Query.Where(x => x.Name.Like(parameter) && x.ShowInEcommerce 
+                                 || x.Code.Like(parameter) && x.ShowInEcommerce 
+                                 || x.SubCategory!.Name.Like(parameter) && x.ShowInEcommerce 
+                                 || x.Brand!.Name.Like(parameter) && x.ShowInEcommerce 
+                                 || x.Description != null && x.Description.Like(parameter) && x.ShowInEcommerce 
+                                 || x.EcommerceDescription != null && x.EcommerceDescription.Like(parameter) && x.ShowInEcommerce);
             }
 
             if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))
