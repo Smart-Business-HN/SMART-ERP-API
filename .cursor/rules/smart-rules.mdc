@@ -1,0 +1,115 @@
+---
+alwaysApply: true
+---
+
+# Cursor instructions for SMART-ERP-API
+
+These rules help AI coding agents work effectively in this .NET 9 Web API using Onion + DDD + CQRS, MediatR, EF Core, and Swagger.
+
+## Architecture overview
+- Solution layout: API (exposes endpoints), Application (CQRS, validators, services), Domain (entities/settings, no dependencies), Infrastructure (EF Core, repositories).
+- Data access: EF Core DbContext in `SMART.ERP.Infrastructure/DatabaseContext.cs` with NoTracking by default. Many entities and relationships are configured in `OnModelCreating` with Restrict deletes.
+- CQRS: Requests handled via MediatR. Commands/Queries live under `SMART.ERP.Application/Features/**` (per entity feature folder). Controllers in API layer call MediatR only.
+- API base: Controllers inherit from `SMART.ERP.API/Controllers/BaseApiController.cs` which provides `Mediator` and route `api/v{version}/[controller]`.
+- Cross-cutting:
+  - Validation: FluentValidation via pipeline `ValidationBehavior<,>` (`Application/Behaviours/ValidationBehavior.cs`). Throw `Application.Exceptions.ValidationException` on failures.
+  - Error handling: `ErrorHandlerMiddleware` serializes `Application.Wrappers.Response<T>` and maps exceptions to HTTP codes; Sentry captures unhandled/DB errors.
+  - Versioning & Swagger: API Versioning is configured in `Program.cs` with grouped Swagger per version; `ConfigureSwaggerOptions` and `SwaggerDefaultValues` included.
+  - Caching: `AddStackExchangeRedisOutputCache` + `AddOutputCache` policies in `Program.cs` (e.g., `cache_products`, `cache_categories`, etc.). Tag and vary by query.
+  - Realtime: SignalR hub at `hub/notification` with JWT support via query string.
+
+## Conventions and patterns
+- Controllers:
+  - Attribute routes already include version segment; define `[ApiVersion("1.0")]` on controllers and keep thin: map HTTP to `Mediator.Send(new ...Command/query)`.
+  - Return wrapper types `Application.Wrappers.Response<T>` or paged wrappers found in `Application/Wrappers`.
+- Features (CQRS):
+  - Per Domain entity, create a `Features/<Entity>/` folder with subfolders `Commands` and `Queries`.
+  - Command/Query classes implement `IRequest<Response<...>>`; handlers depend on abstractions (repositories/services), not DbContext directly.
+  - Validate with FluentValidation: add `AbstractValidator<TRequest>` in same folder; pipeline enforces automatically.
+- Data access:
+  - Prefer `Application.Repository.IRepositoryAsync<T>` (Ardalis.Specification). Concrete impl is registered as `CustomRepositoryAsync<>` in DI.
+  - For read models, consider `IReadRepositoryAsync<T>` and Specifications under `Application/Specifications`.
+- Mapping: Use AutoMapper profiles in `Application/Mappings` to map Domain to DTOs in `Application/DTOs/**`.
+- Caching: When modifying resources covered by an output cache policy, evict by tag using `IOutputCacheStore.EvictByTagAsync("cache_products", ...)`.
+- Auth: JWT configured in `Application/ServiceExtensions.cs` from `appsettings`. For SignalR, token can be passed via `?access_token=`.
+
+## Integration points and settings
+- Configuration: `SMART.ERP.API/appsettings*.json` for ConnectionStrings (Database, Redis, AzureBlobStorage), JWTSettings, MailSettings, MetaSettings, GoogleCalendar.
+- Jobs: Quartz scheduled jobs registered in `Application/ServiceExtensions.cs` (e.g., `AdvisorGoalJob`, `LongLivedOpportunitiesJob`, `LogSessionJob`). Use cron expressions there.
+- External services: Azure Blob Storage (`BlobServiceClient`), MailKit, Google Calendar, Meta (Facebook) APIs, RestSharp, Sentry.
+
+## Developer workflow
+- Build/run: Open the solution `SMART.ERP.sln`. Default profile serves at `https://localhost:7211` and `http://localhost:5211` with Swagger at `/swagger` (`API/Properties/launchSettings.json`).
+- Migrations/DB: EF Core DbContext is in Infrastructure. Create migrations in the Infrastructure project so the `DatabaseContext` is the target.
+- Testing: Not present in repo. When adding features, include unit tests in a new test project if needed; follow CQRS boundaries.
+- Debugging:
+  - Errors are normalized by `ErrorHandlerMiddleware`; database errors return user-friendly Spanish messages; check Sentry for details.
+  - API versioning: Swagger UI lists one doc per version group (`v1`, `v2`). Ensure new controllers declare `[ApiVersion]` and routes match.
+- CORS/WebSockets: CORS allows `*.vercel.app`, `smartbusiness.site`, and localhost. WebSockets origins must be listed in `Program.cs`.
+
+## Examples
+- Create a query handler skeleton:
+  - File: `Application/Features/Product/Queries/GetProductById/GetProductByIdQuery.cs`
+  - Pattern: `record GetProductByIdQuery(int Id) : IRequest<Response<ProductDto>>;` and handler uses `IReadRepositoryAsync<Product>` + AutoMapper to return `Response<ProductDto>`.
+- Controller action skeleton:
+  - Inherit `BaseApiController`, decorate controller with `[ApiVersion("1.0")]` and route defaults, then `return Ok(await Mediator.Send(new GetProductByIdQuery(id)));`
+
+## Quality bar for contributions
+- Respect layer boundaries (API -> MediatR -> Application -> Repository/Services -> Infrastructure). Domain remains dependency-free.
+- Use Response<T> wrappers and validations; surface meaningful messages in Spanish to align with existing responses.
+- When adding endpoints likely to be cached, add/align OutputCache policies and evict tags on writes.# Copilot instructions for SMART-ERP-API
+
+These rules help AI coding agents work effectively in this .NET 7 Web API using Onion + DDD + CQRS, MediatR, EF Core, and Swagger.
+
+## Architecture overview
+- Solution layout: API (exposes endpoints), Application (CQRS, validators, services), Domain (entities/settings, no dependencies), Infrastructure (EF Core, repositories).
+- Data access: EF Core DbContext in `SMART.ERP.Infrastructure/DatabaseContext.cs` with NoTracking by default. Many entities and relationships are configured in `OnModelCreating` with Restrict deletes.
+- CQRS: Requests handled via MediatR. Commands/Queries live under `SMART.ERP.Application/Features/**` (per entity feature folder). Controllers in API layer call MediatR only.
+- API base: Controllers inherit from `SMART.ERP.API/Controllers/BaseApiController.cs` which provides `Mediator` and route `api/v{version}/[controller]`.
+- Cross-cutting:
+  - Validation: FluentValidation via pipeline `ValidationBehavior<,>` (`Application/Behaviours/ValidationBehavior.cs`). Throw `Application.Exceptions.ValidationException` on failures.
+  - Error handling: `ErrorHandlerMiddleware` serializes `Application.Wrappers.Response<T>` and maps exceptions to HTTP codes; Sentry captures unhandled/DB errors.
+  - Versioning & Swagger: API Versioning is configured in `Program.cs` with grouped Swagger per version; `ConfigureSwaggerOptions` and `SwaggerDefaultValues` included.
+  - Caching: `AddStackExchangeRedisOutputCache` + `AddOutputCache` policies in `Program.cs` (e.g., `cache_products`, `cache_categories`, etc.). Tag and vary by query.
+  - Realtime: SignalR hub at `hub/notification` with JWT support via query string.
+
+## Conventions and patterns
+- Controllers:
+  - Attribute routes already include version segment; define `[ApiVersion("1.0")]` on controllers and keep thin: map HTTP to `Mediator.Send(new ...Command/query)`.
+  - Return wrapper types `Application.Wrappers.Response<T>` or paged wrappers found in `Application/Wrappers`.
+- Features (CQRS):
+  - Per Domain entity, create a `Features/<Entity>/` folder with subfolders `Commands` and `Queries`.
+  - Command/Query classes implement `IRequest<Response<...>>`; handlers depend on abstractions (repositories/services), not DbContext directly.
+  - Validate with FluentValidation: add `AbstractValidator<TRequest>` in same folder; pipeline enforces automatically.
+- Data access:
+  - Prefer `Application.Repository.IRepositoryAsync<T>` (Ardalis.Specification). Concrete impl is registered as `CustomRepositoryAsync<>` in DI.
+  - For read models, consider `IReadRepositoryAsync<T>` and Specifications under `Application/Specifications`.
+- Mapping: Use AutoMapper profiles in `Application/Mappings` to map Domain to DTOs in `Application/DTOs/**`.
+- Caching: When modifying resources covered by an output cache policy, evict by tag using `IOutputCacheStore.EvictByTagAsync("cache_products", ...)`.
+- Auth: JWT configured in `Application/ServiceExtensions.cs` from `appsettings`. For SignalR, token can be passed via `?access_token=`.
+
+## Integration points and settings
+- Configuration: `SMART.ERP.API/appsettings*.json` for ConnectionStrings (Database, Redis, AzureBlobStorage), JWTSettings, MailSettings, MetaSettings, GoogleCalendar.
+- Jobs: Quartz scheduled jobs registered in `Application/ServiceExtensions.cs` (e.g., `AdvisorGoalJob`, `LongLivedOpportunitiesJob`, `LogSessionJob`). Use cron expressions there.
+- External services: Azure Blob Storage (`BlobServiceClient`), MailKit, Google Calendar, Meta (Facebook) APIs, RestSharp, Sentry.
+
+## Developer workflow
+- Build/run: Open the solution `SMART.ERP.sln`. Default profile serves at `https://localhost:7211` and `http://localhost:5211` with Swagger at `/swagger` (`API/Properties/launchSettings.json`).
+- Migrations/DB: EF Core DbContext is in Infrastructure. Create migrations in the Infrastructure project so the `DatabaseContext` is the target.
+- Testing: Not present in repo. When adding features, include unit tests in a new test project if needed; follow CQRS boundaries.
+- Debugging:
+  - Errors are normalized by `ErrorHandlerMiddleware`; database errors return user-friendly Spanish messages; check Sentry for details.
+  - API versioning: Swagger UI lists one doc per version group (`v1`, `v2`). Ensure new controllers declare `[ApiVersion]` and routes match.
+- CORS/WebSockets: CORS allows `*.vercel.app`, `smartbusiness.site`, and localhost. WebSockets origins must be listed in `Program.cs`.
+
+## Examples
+- Create a query handler skeleton:
+  - File: `Application/Features/Product/Queries/GetProductById/GetProductByIdQuery.cs`
+  - Pattern: `record GetProductByIdQuery(int Id) : IRequest<Response<ProductDto>>;` and handler uses `IReadRepositoryAsync<Product>` + AutoMapper to return `Response<ProductDto>`.
+- Controller action skeleton:
+  - Inherit `BaseApiController`, decorate controller with `[ApiVersion("1.0")]` and route defaults, then `return Ok(await Mediator.Send(new GetProductByIdQuery(id)));`
+
+## Quality bar for contributions
+- Respect layer boundaries (API -> MediatR -> Application -> Repository/Services -> Infrastructure). Domain remains dependency-free.
+- Use Response<T> wrappers and validations; surface meaningful messages in Spanish to align with existing responses.
+- When adding endpoints likely to be cached, add/align OutputCache policies and evict tags on writes.
