@@ -3,7 +3,7 @@ using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.ProductSpecification
 {
-    public class FilterProductsByCategorySlugAndProductSlugSpecification : Specification<Product>
+    public sealed class FilterProductsByCategorySlugAndProductSlugSpecification : Specification<Product>
     {
         public FilterProductsByCategorySlugAndProductSlugSpecification(string categorySlug, string productSlug) 
         {

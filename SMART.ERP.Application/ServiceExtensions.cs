@@ -26,6 +26,7 @@ using SMART.ERP.Domain.Settings;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using SMART.ERP.Application.Services;
 
 namespace SMART.ERP.Application
 {
@@ -84,6 +85,7 @@ namespace SMART.ERP.Application
             services.AddTransient<IAssignUserToProspectService, AssignUserToProspectService>();
             services.AddTransient<IMetaPostService, MetaPostService>();
             services.AddTransient<IGoogleCalendarService, GoogleCalendarService>();
+            services.AddTransient<IProductPricingService, ProductPricingService>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

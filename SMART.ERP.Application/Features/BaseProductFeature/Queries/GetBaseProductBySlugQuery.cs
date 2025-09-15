@@ -2,7 +2,7 @@
 using MediatR;
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Repository;
-using SMART.ERP.Application.Services.JwtService;
+using SMART.ERP.Application.Services;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -19,13 +19,13 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Product> _repositoryAsync;
-        private readonly IJwtService _jwtService;
+        private readonly IProductPricingService _productPricingService;
 
-        public GetBaseProductBySlugQueryHandler(IMapper mapper, IRepositoryAsync<Product> repositoryAsync, IJwtService jwtService)
+        public GetBaseProductBySlugQueryHandler(IMapper mapper, IRepositoryAsync<Product> repositoryAsync, IProductPricingService productPricingService)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
-            _jwtService = jwtService;
+            _productPricingService = productPricingService;
         }
 
         public async Task<Response<ProductDto>> Handle(GetBaseProductBySlugQuery request, CancellationToken cancellationToken)
@@ -35,14 +35,12 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
             {
                 throw new KeyNotFoundException($"Registro no encontrado con el slug {request.Slug}");
             }
-            if (request.IsLogged.HasValue && request.IsLogged.Value)
-            {
-                product.RecomendedSalePrice = Math.Ceiling((product.CostPrice * (decimal)1.2) * (1 + (product.Tax!.Rate / 100)));
-            }
-            else
-            {
-                product.RecomendedSalePrice = Math.Ceiling((product.CostPrice * (decimal)1.3) * (1 + (product.Tax!.Rate / 100)));
-            }
+            
+            // Calcular precio usando el servicio
+            product.RecomendedSalePrice = _productPricingService.CalculateRecommendedSalePrice(
+                product, 
+                request.IsLogged ?? false, 
+                request.CustomerTypeId);
             product.Tax = null;
             product.CostPrice = 0;
 

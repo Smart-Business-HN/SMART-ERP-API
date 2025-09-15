@@ -2,6 +2,7 @@
 using MediatR;
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -12,22 +13,39 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
     {
         public string CategorySlug { get; set; } = null!;
         public string ProductSlug { get; set; } = null!;
+        public bool IsLogged { get; set; } = false;
+        public int? CustomerTypeId { get; set; }
     }
 
     public class GetProductsBySameCategorySlugQueryHandler : IRequestHandler<GetProductsBySameCategorySlugQuery, Response<List<ResumeProductDto>>>
     {
         private readonly IRepositoryAsync<Product> _repositoryAsync;
+        private readonly IProductPricingService _productPricingService;
         private readonly IMapper _mapper;
 
-        public GetProductsBySameCategorySlugQueryHandler(IRepositoryAsync<Product> repositoryAsync, IMapper mapper)
+        public GetProductsBySameCategorySlugQueryHandler(IRepositoryAsync<Product> repositoryAsync, IProductPricingService productPricingService, IMapper mapper)
         {
             _repositoryAsync = repositoryAsync;
+            _productPricingService = productPricingService;
             _mapper = mapper;
         }
 
         public async Task<Response<List<ResumeProductDto>>> Handle(GetProductsBySameCategorySlugQuery request, CancellationToken cancellationToken)
         {
             var products = await _repositoryAsync.ListAsync(new FilterProductsByCategorySlugAndProductSlugSpecification(request.CategorySlug, request.ProductSlug));
+            if (products == null || products.Count == 0)
+            {
+                throw new KeyNotFoundException($"No se encontraron productos en la categoría con slug {request.CategorySlug}");
+            }
+            foreach (var item in products)
+            {
+                item.RecomendedSalePrice = _productPricingService.CalculateRecommendedSalePrice(
+                    item,
+                    request.IsLogged,
+                    request.CustomerTypeId);
+                item.CostPrice = 0;
+                item.Tax = null;
+            }
             var dto = _mapper.Map<List<ResumeProductDto>>(products);
             var producsToShow = SelectRandomElements(dto, 4);
             return new Response<List<ResumeProductDto>>(producsToShow);

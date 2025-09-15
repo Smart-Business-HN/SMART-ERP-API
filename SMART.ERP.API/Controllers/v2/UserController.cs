@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.CreateEcommerceUserCommand;
 using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.LoginEcommerceUserCommand;
+using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.UpdateEcommerceUserProfileePhotoCommand;
+using SMART.ERP.Application.Features.EcommerceUserFeature.Queries.GetEcommerceUserByIdQuery;
 
 namespace SMART.ERP.API.Controllers.v2
 {
@@ -20,6 +22,18 @@ namespace SMART.ERP.API.Controllers.v2
         public async Task<IActionResult> Login([FromBody] LoginEcommerceUserCommand command)
         {
             return Ok(await Mediator.Send(command));
+        }
+        [HttpGet("GetById/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            return Ok(await Mediator.Send(new GetEcommerceUserByIdQuery { Id = id }));
+        }
+        [HttpPut("UpdateProfilePhoto/{id}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateProfilePhoto(Guid id, [FromForm] IFormFile file)
+        {
+            return Ok(await Mediator.Send(new UpdateEcommerceUserProfilePhotoCommand { Id = id, File = file }));
         }
 
         // [HttpPost("RecoveryCode")]

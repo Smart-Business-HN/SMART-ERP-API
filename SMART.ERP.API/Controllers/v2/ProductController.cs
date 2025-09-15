@@ -44,17 +44,17 @@ namespace SMART.ERP.API.Controllers.v2
         [HttpGet("GetProductsBySameCategorySlug/{categorySlug}/{productSlug}")]
         [AllowAnonymous]
         [OutputCache(PolicyName = "cache_productsBySameCategorySlug")]
-        public async Task<IActionResult> GetProductsBySameCategorySlug(string categorySlug, string productSlug)
+        public async Task<IActionResult> GetProductsBySameCategorySlug([FromQuery] bool isLogged, [FromQuery] int customerTypeId, string categorySlug, string productSlug)
         {
-            return Ok(await Mediator.Send(new GetProductsBySameCategorySlugQuery { CategorySlug = categorySlug, ProductSlug = productSlug }
+            return Ok(await Mediator.Send(new GetProductsBySameCategorySlugQuery { CategorySlug = categorySlug, ProductSlug = productSlug, IsLogged = isLogged, CustomerTypeId = customerTypeId }
             ));
         }
         [HttpGet("GetProductsBySameSubCategorySlug/{subCategorySlug}/{productSlug}")]
         [AllowAnonymous]
         [OutputCache(PolicyName = "cache_productsBySameSubCategorySlug")]
-        public async Task<IActionResult> GetProductsBySameSubCategorySlug(string subCategorySlug, string productSlug)
+        public async Task<IActionResult> GetProductsBySameSubCategorySlug([FromQuery] bool isLogged,[FromQuery] int customerTypeId, string subCategorySlug, string productSlug)
         {
-            return Ok(await Mediator.Send(new GetProductsBySameSubCategorySlugQuery { SubCategorySlug = subCategorySlug, ProductSlug = productSlug }
+            return Ok(await Mediator.Send(new GetProductsBySameSubCategorySlugQuery { SubCategorySlug = subCategorySlug, ProductSlug = productSlug, CustomerTypeId = customerTypeId, IsLogged = isLogged }
             ));
         }
         [HttpGet("GetProducsByCategorySlug/{categorySlug}")]

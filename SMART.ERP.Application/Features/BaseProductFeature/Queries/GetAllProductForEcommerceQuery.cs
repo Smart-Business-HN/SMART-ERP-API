@@ -2,6 +2,7 @@
 using MediatR;
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -23,13 +24,15 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
             private readonly IMapper _mapper;
             private readonly IRepositoryAsync<Product> _repositoryAsync;
             private readonly IRepositoryAsync<Category> _categoryRepositoryAsync;
+            private readonly IProductPricingService _productPricingService;
 
             public GetAllProductForEcommerceQueryHandler(IMapper mapper, IRepositoryAsync<Product> repositoryAsync,
-                IRepositoryAsync<Category> categoryRepositoryAsync)
+                IRepositoryAsync<Category> categoryRepositoryAsync, IProductPricingService productPricingService)
             {
                 _mapper = mapper;
                 _repositoryAsync = repositoryAsync;
                 _categoryRepositoryAsync = categoryRepositoryAsync;
+                _productPricingService = productPricingService;
             }
             public async Task<PagedResponse<List<ProductDto>>> Handle(GetAllProductForEcommerceQuery request, CancellationToken cancellationToken)
             {
@@ -40,23 +43,16 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                 }
                 var categories = await _categoryRepositoryAsync.ListAsync();
                 var products = await _repositoryAsync.ListAsync(new FilterAndPaginationProductForEcommerceSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
-                if (request.IsUserSignIn.HasValue && request.IsUserSignIn.Value)
+                
+                // Calcular precios usando el servicio
+                foreach (var item in products)
                 {
-                    foreach (var item in products)
-                    {
-                        item.RecomendedSalePrice = Math.Ceiling((item.CostPrice * (decimal)1.2) * (1 + (item.Tax!.Rate / 100)));
-                        item.CostPrice = 0;
-                        item.Tax = null;
-                    }
-                }
-                else
-                {
-                    foreach (var item in products)
-                    {
-                        item.RecomendedSalePrice = Math.Ceiling((item.CostPrice * (decimal)1.3) * (1 + (item.Tax!.Rate / 100)));
-                        item.CostPrice = 0;
-                        item.Tax = null;
-                    }
+                    item.RecomendedSalePrice = _productPricingService.CalculateRecommendedSalePrice(
+                        item, 
+                        request.IsUserSignIn ?? false, 
+                        request.CustomerTypeId);
+                    item.CostPrice = 0;
+                    item.Tax = null;
                 }
                 var dto = _mapper.Map<List<ProductDto>>(products);
                 var spec = new ProductsForEcommerceSpecification();
