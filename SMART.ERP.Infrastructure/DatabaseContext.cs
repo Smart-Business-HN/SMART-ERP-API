@@ -1324,6 +1324,29 @@ namespace SMART.ERP.Infrastructure
                 .HasOne(x => x.CustomerType)
                 .WithMany()
                 .HasForeignKey(x => x.CustomerTypeId);
+            //Cart
+                        modelBuilder.Entity<Cart>().ToTable("Cart");
+            modelBuilder.Entity<Cart>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<Cart>()
+                .HasOne(x => x.EcommerceUser)
+                .WithMany()
+                .HasForeignKey(x => x.EcommerceUserId);
+            modelBuilder.Entity<Cart>()
+                .HasMany(p => p.CartItems)
+                .WithOne(x => x.Cart)
+                .HasForeignKey(x => x.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
+            //Cart Item
+            modelBuilder.Entity<CartItem>().ToTable("CartItem");
+            modelBuilder.Entity<CartItem>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<CartItem>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId);
+            modelBuilder.Entity<CartItem>()
+                .Property(x=>x.TotalPrice)
+                .HasComputedColumnSql("[Quantity] * [UnitPrice] - ISNULL([Discount], 0)");
+
             base.OnModelCreating(modelBuilder);
         }
     }

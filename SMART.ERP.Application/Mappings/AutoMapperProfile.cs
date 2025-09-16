@@ -5,6 +5,8 @@ using SMART.ERP.Application.DTOs.AdvisorGoal;
 using SMART.ERP.Application.DTOs.Bank;
 using SMART.ERP.Application.DTOs.BillPayment;
 using SMART.ERP.Application.DTOs.Cai;
+using SMART.ERP.Application.DTOs.Cart;
+using SMART.ERP.Application.DTOs.CartItem;
 using SMART.ERP.Application.DTOs.Company;
 using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Application.DTOs.DailyClose;
@@ -246,6 +248,8 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<InvoicePaymentType, InvoicePaymentTypeDto>().ReverseMap();
             CreateMap<Discount,DiscountDto>().ReverseMap();
             CreateMap<EcommerceUser, EcommerceUserDto>().ReverseMap();
+            CreateMap<Cart, CartDto>().ReverseMap();
+            CreateMap<CartItem, CartItemDto>().ReverseMap();
             #endregion
 
             #region Commands
