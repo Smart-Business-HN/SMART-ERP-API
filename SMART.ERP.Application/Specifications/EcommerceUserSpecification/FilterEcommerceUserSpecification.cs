@@ -8,6 +8,7 @@ public sealed class FilterEcommerceUserSpecification : Specification<EcommerceUs
     public FilterEcommerceUserSpecification(string filter, Guid? id)
     {
         Query.Include(x=>x.CustomerType);
+        Query.Include(x=>x.Department);
         if (id.HasValue)
         {
             Query.Where(x=>x.Id==id.Value);

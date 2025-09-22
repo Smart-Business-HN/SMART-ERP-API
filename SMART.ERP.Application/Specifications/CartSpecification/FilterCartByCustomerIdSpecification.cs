@@ -14,7 +14,7 @@ namespace SMART.ERP.Application.Specifications.CartSpecification
             {
                 Query.Where(cart => cart.EcommerceUserId == customerId && cart.IsActive);
             }
-            Query.Include(cart => cart.CartItems);
+            Query.Include(cart => cart.CartItems).ThenInclude(ci => ci.Product);
         }
     }
 }

@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using SMART.ERP.Application.DTOs.EcommerceUser;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Specifications.EcommerceUserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
@@ -23,7 +24,7 @@ public class GetEcommerceUserByIdQueryHandler : IRequestHandler<GetEcommerceUser
     }
     public async Task<Response<EcommerceUserDto>> Handle(GetEcommerceUserByIdQuery request, CancellationToken cancellationToken)
     {
-        var user = await _repositoryAsync.GetByIdAsync(request.Id);
+        var user = await _repositoryAsync.FirstOrDefaultAsync(new FilterEcommerceUserSpecification("", request.Id), cancellationToken);
         if (user == null)
         {
             throw new KeyNotFoundException($"Registro no encontrado con el id {request.Id}");

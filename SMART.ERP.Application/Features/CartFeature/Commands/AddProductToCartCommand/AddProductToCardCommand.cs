@@ -2,6 +2,7 @@
 using MediatR;
 using SMART.ERP.Application.DTOs.Cart;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services;
 using SMART.ERP.Application.Specifications.CartSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -17,21 +18,37 @@ namespace SMART.ERP.Application.Features.CartFeature.Commands.AddProductToCartCo
     }
     public class AddProductToCartCommandHandler : IRequestHandler<AddProductToCartCommand, Response<CartDto>>
     {
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Cart> _cartRepositoryAsync;
         private readonly IRepositoryAsync<CartItem> _cartItemRepositoryAsync;
-       public AddProductToCartCommandHandler(IMapper mapper, IRepositoryAsync<Cart> cartRepositoryAsync, IRepositoryAsync<CartItem> cartItemRepositoryAsync)
+        private readonly IRepositoryAsync<Product> _productRepositoryAsync;
+        private readonly IRepositoryAsync<EcommerceUser> _ecommerceUserRepositoryAsync;
+        private readonly IProductPricingService _productPricingService;
+       public AddProductToCartCommandHandler(IMapper mapper, IRepositoryAsync<Cart> cartRepositoryAsync, IRepositoryAsync<CartItem> cartItemRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IProductPricingService productPricingService, IRepositoryAsync<EcommerceUser> ecommerceUserRepositoryAsync)
         {
             _mapper = mapper;
             _cartRepositoryAsync = cartRepositoryAsync;
             _cartItemRepositoryAsync = cartItemRepositoryAsync;
+            _productRepositoryAsync = productRepositoryAsync;
+            _productPricingService = productPricingService;
+            _ecommerceUserRepositoryAsync = ecommerceUserRepositoryAsync;
         }
         public async Task<Response<CartDto>> Handle(AddProductToCartCommand request, CancellationToken cancellationToken)
         {
-            var cartActive = await _cartRepositoryAsync.FirstOrDefaultAsync(new FilterCartByCustomerIdSpecification(request.CustomerId,request.CartId));
+            var user = await _ecommerceUserRepositoryAsync.GetByIdAsync(request.CustomerId, cancellationToken);
+            if (user == null)
+            {
+                throw new ApplicationException($"Couldn't find user with id: {request.CustomerId}");
+            }
+            var cartActive = await _cartRepositoryAsync.FirstOrDefaultAsync(new FilterCartByCustomerIdSpecification(request.CustomerId,request.CartId), cancellationToken);
             if (cartActive != null && cartActive.EcommerceUserId != request.CustomerId)
             {
                 throw new KeyNotFoundException($"The cart with id {request.CartId} does not belong to the customer with id {request.CustomerId}.");
+            }
+            var product = await _productRepositoryAsync.GetByIdAsync(request.ProductId, cancellationToken);
+            if (product == null)
+            {
+                throw new KeyNotFoundException($"Product not found with id {request.ProductId}");
             }
             if (cartActive == null)
             {
@@ -41,7 +58,7 @@ namespace SMART.ERP.Application.Features.CartFeature.Commands.AddProductToCartCo
                     CreationDate = DateTime.UtcNow,
                     IsActive = true
                 };
-                await _cartRepositoryAsync.AddAsync(newCart);
+                await _cartRepositoryAsync.AddAsync(newCart, cancellationToken);
                 cartActive = newCart;
             }
             var cartItem = new CartItem
@@ -50,9 +67,11 @@ namespace SMART.ERP.Application.Features.CartFeature.Commands.AddProductToCartCo
                 ProductId = request.ProductId,
                 Quantity = request.Quantity,
                 Discount = 0,
+                UnitPrice = _productPricingService.CalculateRecommendedSalePrice(product,true,user.CustomerTypeId),
+                TotalPrice = (request.Quantity * _productPricingService.CalculateRecommendedSalePrice(product,true,user.CustomerTypeId)),
                 CreationDate = DateTime.UtcNow
             };
-            var addedCartItem = await _cartItemRepositoryAsync.AddAsync(cartItem);
+            var addedCartItem = await _cartItemRepositoryAsync.AddAsync(cartItem, cancellationToken);
             cartActive.CartItems ??= new List<CartItem>();
             cartActive.CartItems.Add(addedCartItem);
             var dto = _mapper.Map<CartDto>(cartActive);

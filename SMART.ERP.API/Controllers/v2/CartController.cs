@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.CartFeature.Commands.AddProductToCartCommand;
+using SMART.ERP.Application.Features.CartFeature.Queries.GetCartByIdQuery;
+using SMART.ERP.Application.Features.CartFeature.Queries.GetCartsByCustomerIdQuery;
 
 namespace SMART.ERP.API.Controllers.v2
 {
@@ -19,6 +21,19 @@ namespace SMART.ERP.API.Controllers.v2
                 Quantity = quantity,
                 CustomerId = customerId
             }));
+        }
+        [Authorize]
+        [HttpGet("GetCarts/{customerId}")]
+        public async Task<IActionResult> GetCarts([FromRoute] Guid customerId)
+        {
+            return Ok(await Mediator.Send(new GetCartsByCustomerIdQuery { CustomerId = customerId }));
+        }
+
+        [Authorize]
+        [HttpGet("GetCartById/{id}")]
+        public async Task<IActionResult> GetCartById([FromRoute] Guid id)
+        {
+            return Ok(await Mediator.Send(new GetCartByIdQuery(){Id = id}));
         }
     }
 }

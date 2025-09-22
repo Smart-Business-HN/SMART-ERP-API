@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.CreateEcommerceUserCommand;
 using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.LoginEcommerceUserCommand;
+using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.UpdateEcommerceUserCommand;
 using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.UpdateEcommerceUserProfileePhotoCommand;
 using SMART.ERP.Application.Features.EcommerceUserFeature.Queries.GetEcommerceUserByIdQuery;
 
@@ -34,6 +35,16 @@ namespace SMART.ERP.API.Controllers.v2
         public async Task<IActionResult> UpdateProfilePhoto(Guid id, [FromForm] IFormFile file)
         {
             return Ok(await Mediator.Send(new UpdateEcommerceUserProfilePhotoCommand { Id = id, File = file }));
+        }
+        [HttpPut("Update/{id}")]
+        [Authorize]
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateEcommerceUserCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("El ID del usuario no coincide con el ID de la ruta.");
+            }
+            return Ok(await Mediator.Send(command));
         }
 
         // [HttpPost("RecoveryCode")]

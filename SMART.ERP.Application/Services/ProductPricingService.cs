@@ -22,8 +22,8 @@ namespace SMART.ERP.Application.Services
         {
             if (!customerTypeId.HasValue)
             {
-                // Si no se especifica tipo de cliente, usar margen por defecto del 20%
-                return (decimal)1.2;
+                // Si no se especifica tipo de cliente, usar margen por defecto del 30%
+                return (decimal)1.3;
             }
 
             return customerTypeId switch
