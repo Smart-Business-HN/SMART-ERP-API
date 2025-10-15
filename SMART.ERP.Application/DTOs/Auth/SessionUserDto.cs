@@ -27,5 +27,6 @@ namespace SMART.ERP.Application.DTOs.Auth
         public string Token { get; set; } = null!;
         public DateTime ExpirationDate { get; set; }
         public CustomerType? CustomerType { get; set; }
+        public Guid? ActiveCartId { get; set; }
     }
 }

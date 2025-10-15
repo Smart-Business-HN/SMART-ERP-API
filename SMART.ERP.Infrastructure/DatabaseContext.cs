@@ -1324,13 +1324,14 @@ namespace SMART.ERP.Infrastructure
                 .HasOne(x => x.CustomerType)
                 .WithMany()
                 .HasForeignKey(x => x.CustomerTypeId);
+            modelBuilder.Entity<EcommerceUser>()
+                .HasMany(x=>x.Carts)
+                .WithOne(y=>y.EcommerceUser)
+                .HasForeignKey(y=>y.EcommerceUserId)
+                .OnDelete(DeleteBehavior.Cascade);
             //Cart
-                        modelBuilder.Entity<Cart>().ToTable("Cart");
+            modelBuilder.Entity<Cart>().ToTable("Cart");
             modelBuilder.Entity<Cart>(o => o.HasKey(x => x.Id));
-            modelBuilder.Entity<Cart>()
-                .HasOne(x => x.EcommerceUser)
-                .WithMany()
-                .HasForeignKey(x => x.EcommerceUserId);
             modelBuilder.Entity<Cart>()
                 .HasMany(p => p.CartItems)
                 .WithOne(x => x.Cart)

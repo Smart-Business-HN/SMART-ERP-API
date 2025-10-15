@@ -131,6 +131,10 @@ builder.Services.AddOutputCache(opt =>
         opt.AddPolicy("cache_productsBySameCategorySlug", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsBySameCategorySlug"));
         opt.AddPolicy("cache_productsByCategorySlug", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsByCategorySlug"));
         opt.AddPolicy("cache_productsBySubCategorySlug", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsBySubCategorySlug"));
+        
+        // Políticas de cache optimizadas para búsqueda
+        opt.AddPolicy("cache_productSearch", builder => builder.Expire(TimeSpan.FromMinutes(30)).Tag("cache_productSearch").SetVaryByQuery(["*"]));
+        opt.AddPolicy("cache_searchSuggestions", builder => builder.Expire(TimeSpan.FromHours(2)).Tag("cache_searchSuggestions").SetVaryByQuery(["searchTerm", "limit"]));
     });
 var app = builder.Build();
 app.UseSentryTracing();

@@ -25,4 +25,5 @@ public class EcommerceUser
     public DateTime? ModificationDate { get; set; }
     public int CustomerTypeId { get; set; }
     public CustomerType? CustomerType { get; set; }
+    public ICollection<Cart>? Carts { get; set; }
 }

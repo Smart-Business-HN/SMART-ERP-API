@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using SMART.ERP.Application.DTOs.Auth;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Specifications.CartSpecification;
 using SMART.ERP.Application.Specifications.EcommerceUserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -42,7 +43,7 @@ public class LoginEcommerceUserCommandHandler : IRequestHandler<LoginEcommerceUs
         {
             throw new ApiException($"No se encontro ningun usuario con el correo {request.Email ?? request.UserName}");
         }
-        var result = Authenticated(user, request);
+        var result = await Authenticated(user, request);
         return new Response<SessionEcommerceUserDto>(result, message: $"Bienvenido {user.FullName}");
     }
     private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
@@ -63,7 +64,7 @@ public class LoginEcommerceUserCommandHandler : IRequestHandler<LoginEcommerceUs
 
         return true;
     }
-        private SessionEcommerceUserDto Authenticated(EcommerceUser user, LoginEcommerceUserCommand request)
+        private async Task<SessionEcommerceUserDto> Authenticated(EcommerceUser user, LoginEcommerceUserCommand request)
         {
             if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
@@ -82,15 +83,14 @@ public class LoginEcommerceUserCommandHandler : IRequestHandler<LoginEcommerceUs
                     new Claim("uid", user.Id.ToString())
                 ]),
                 //Expires = DateTime.UtcNow.AddMinutes(Int32.Parse(_jwtSettings.DurationInMinutes)),
-                Expires = DateTime.UtcNow.AddHours(8),
+                Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature),
                 Issuer = _jwtSettings.Issuer,
                 Audience = _jwtSettings.Audience,
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
-
+            var tokenString = tokenHandler.WriteToken(token); 
             var session = new SessionEcommerceUserDto
             {
                 Id = user.Id,
@@ -103,6 +103,7 @@ public class LoginEcommerceUserCommandHandler : IRequestHandler<LoginEcommerceUs
                 CustomerType = user.CustomerType,
                 ExpirationDate = tokenDescriptor.Expires.Value,
                 Token = tokenString,
+                ActiveCartId = user.Carts!.Any() ? user.Carts!.First(x=>x.IsActive).Id : null
             };
 
             return session;

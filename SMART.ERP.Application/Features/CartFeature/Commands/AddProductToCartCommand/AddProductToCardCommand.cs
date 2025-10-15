@@ -4,6 +4,7 @@ using SMART.ERP.Application.DTOs.Cart;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services;
 using SMART.ERP.Application.Specifications.CartSpecification;
+using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
@@ -45,7 +46,7 @@ namespace SMART.ERP.Application.Features.CartFeature.Commands.AddProductToCartCo
             {
                 throw new KeyNotFoundException($"The cart with id {request.CartId} does not belong to the customer with id {request.CustomerId}.");
             }
-            var product = await _productRepositoryAsync.GetByIdAsync(request.ProductId, cancellationToken);
+            var product = await _productRepositoryAsync.FirstOrDefaultAsync(new FilterProductSpecification(null,request.ProductId,null), cancellationToken);
             if (product == null)
             {
                 throw new KeyNotFoundException($"Product not found with id {request.ProductId}");

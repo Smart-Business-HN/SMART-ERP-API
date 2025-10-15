@@ -92,5 +92,25 @@ namespace SMART.ERP.API.Controllers.v2
             }));
         }
 
+        [HttpGet("Search")]
+        [AllowAnonymous]
+        [OutputCache(PolicyName = "cache_productSearch", VaryByQueryKeys = new[] { "*" })]
+        public async Task<IActionResult> SearchProducts([FromQuery] ProductSearchParameter searchParams)
+        {
+            return Ok(await Mediator.Send(new SearchProductsQuery { SearchParameters = searchParams }));
+        }
+
+        [HttpGet("SearchSuggestions")]
+        [AllowAnonymous]
+        [OutputCache(PolicyName = "cache_searchSuggestions", VaryByQueryKeys = new[] { "searchTerm", "limit" })]
+        public async Task<IActionResult> GetSearchSuggestions([FromQuery] string searchTerm, [FromQuery] int limit = 10)
+        {
+            return Ok(await Mediator.Send(new GetSearchSuggestionsQuery 
+            { 
+                SearchTerm = searchTerm, 
+                Limit = limit 
+            }));
+        }
+
     }
 }

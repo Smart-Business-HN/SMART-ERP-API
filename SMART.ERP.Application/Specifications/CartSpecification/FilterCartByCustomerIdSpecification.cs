@@ -4,7 +4,7 @@ namespace SMART.ERP.Application.Specifications.CartSpecification
 {
     public sealed class FilterCartByCustomerIdSpecification : Specification<Cart>
     {
-        public FilterCartByCustomerIdSpecification(Guid customerId, Guid? cartId)
+        public FilterCartByCustomerIdSpecification(Guid customerId, Guid? cartId, bool? onlyActive = false)
         {
             if (cartId.HasValue)
             {
