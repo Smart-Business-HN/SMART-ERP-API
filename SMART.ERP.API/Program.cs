@@ -74,9 +74,11 @@ builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSectio
 
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Database"),
-        sqlServerOptionsAction: sqlOptions =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("Database"),
+        sqlOptions =>
         {
+            sqlOptions.MigrationsAssembly(typeof(DatabaseContext).Assembly.FullName);
             sqlOptions.EnableRetryOnFailure();
         });
 });
