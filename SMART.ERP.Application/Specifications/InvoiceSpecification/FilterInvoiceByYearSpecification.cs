@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.Specifications.InvoiceSpecification
 {
-    public class FilterInvoiceByYearSpecification : Specification<Invoice>
+    public sealed class FilterInvoiceByYearSpecification : Specification<Invoice>
     {
         public FilterInvoiceByYearSpecification(DateTime date) {
             Query.Include(x=>x.ProductsSold!).ThenInclude(x=>x.Product!).ThenInclude(x=>x.Brand)!

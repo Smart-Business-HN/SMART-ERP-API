@@ -38,6 +38,8 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
             List<decimal> brandvalues = new List<decimal> { };
             List<string> expenses = new List<string> { };
             List<decimal> expensesValues = new List<decimal> { };
+            List<string> categories = new List<string>() { };
+            List<decimal> categoryValues = new List<decimal>() { };
 
             var purchaseBillsPendingToPay = await _purchaseBillRepositoryAsync.ListAsync(new FilterPurchaseBillByPendingValuesSpecification(),cancellationToken);
             var nonBillableExpensePendingToPay = await _nonBillableExpenseRepositoryAsync.ListAsync(new FilterNonBillableExpenseByPendingValuesSpecification(),cancellationToken);
@@ -104,6 +106,12 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
                     {
                         brands.Add(product.Product.Brand.Name);
                     }
+
+                    exist = categories.Contains(product.Product.SubCategory.Category.Name);
+                    if (!exist)
+                    {
+                        categories.Add(product.Product.SubCategory.Category.Name);
+                    }
                 });
             });
             brands.ForEach(brand =>
@@ -121,10 +129,30 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
                 });
                 brandvalues.Add(value);
             });
+            categories.ForEach(category =>
+            {
+                decimal value = 0;
+                invoices.ForEach(invoice =>
+                {
+                   invoice.ProductsSold!.ForEach(product =>
+                   {
+                       if (product.Product!.SubCategory!.Category!.Name == category)
+                       {
+                           value += product.TotalLine;
+                       }
+                   });
+                });
+                categoryValues.Add(value);
+            });
             var brandsSales = new BrandSalesDto
             {
                 Brands = brands,
                 Values = brandvalues
+            };
+            var categorySales = new CategorySalesDto()
+            {
+                Categories = categories,
+                Values = categoryValues
             };
             var expenseValues = new ExpensesDto
             {
@@ -141,6 +169,7 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
                 PreviousMonthExpenses = billOfLastMonth.Sum(x => x.Total) + nonBillableExpensesOfLastMonth.Sum(x => x.Amount),
                 PreviousMonthSales = invoicesOfLastMonth.Sum(x => x.Total),
                 BrandSales = brandsSales,
+                CategorySales = categorySales,
                 Expenses = expenseValues,
                 Payable = payable,
                 Receivable = receivable,
