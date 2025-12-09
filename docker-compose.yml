@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  smart-erp-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart-erp-api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      # Connection Strings
+      - ConnectionStrings__Database=Server=tcp:smarterp.database.windows.net,1433;Initial Catalog=SmartERP;Persist Security Info=False;User ID=toor;Password=SomeThingComplicated1234;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=60;
+      - ConnectionStrings__RedisServer=sb-redis.redis.cache.windows.net:6380,password=aXxJK28lOp1V0jWqQWk1zxk2tKrFnDDH1AzCaKeoDjw=,ssl=True,abortConnect=False
+      - ConnectionStrings__AzureBlobStorage=DefaultEndpointsProtocol=https;AccountName=smarterpstorage;AccountKey=CoeNBEPVlSGjQx2wu7WoQ606DD2o70B1qFOQ6d45KUcavhso9hk8RlFS/WMzvTJ4oswRRF9Hs1Pe+AStj1OGYQ==;EndpointSuffix=core.windows.net
+      # JWT Settings
+      - JWTSettings__Key=ThebirdofHermezismynameandeatmywingstomakemetame.PleaseBenice.
+      - JWTSettings__Issuer=www.smartbusiness.site
+      - JWTSettings__Audience=https://www.smartbusiness.site/
+      - JWTSettings__DurationInMinutes=7200
+      # Sentry
+      - Sentry__Dsn=https://e4e5b0906fb2111fa3c412b84577c981@o4505616174809088.ingest.sentry.io/4505616177037312
+      - Sentry__MaxRequestBodySize=Always
+      - Sentry__SendDefaultPii=true
+      - Sentry__MinimumBreadcrumbLevel=Debug
+      - Sentry__MinimumEventLevel=Error
+      - Sentry__AttachStackTrace=true
+      - Sentry__Debug=false
+      - Sentry__DiagnosticsLevel=Error
+      # Mail Settings
+      - MailSettings__Mail=no-reply@smartbusiness.site
+      - MailSettings__DisplayName=Smart Business
+      - MailSettings__Password=Anotherdayinthemon26@
+      - MailSettings__Host=smtp.hostinger.com
+      - MailSettings__Port=587
+      # Azure SignalR
+      - Azure__SignalR__Enabled=true
+      - AzureSignalRSTIUF__PrimaryConnectionString=Endpoint=https://smarterpapi.service.signalr.net;AccessKey=mzRLU703WSWxUJa8yW+1jrwJDfYMFqYTTVMNJ3PNxQs=;Version=1.0;
+      # Access Key
+      - AccessKey=8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J@NcRfUjXn2r5u8x/A?D*G-KaPdSgVkYp3
+    restart: unless-stopped
+    # Health check opcional (descomentar si tienes endpoint /health)
+    # healthcheck:
+    #   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 40s
+    networks:
+      - smart-erp-network
+
+networks:
+  smart-erp-network:
+    driver: bridge
+
