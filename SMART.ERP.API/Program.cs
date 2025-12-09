@@ -73,6 +73,7 @@ builder.Services.AddSignalR();
 // Configurar Kestrel solo si no estamos en producción
 // En producción, ASPNETCORE_URLS maneja la configuración del puerto
 // No configurar Kestrel manualmente en producción para evitar conflictos de "address already in use"
+// IMPORTANTE: En producción, NO cargar configuración de Kestrel desde appsettings para evitar que sobrescriba ASPNETCORE_URLS
 if (!builder.Environment.IsProduction())
 {
     builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
