@@ -33,6 +33,16 @@ Si usas Git para el despliegue automático:
 - **Dockerfile Path**: `Dockerfile` (raíz del proyecto)
 - **Build Context**: `.` (directorio raíz)
 
+#### ⚠️ Importante: Forzar uso de Dockerfile
+
+Dokploy puede intentar usar Nixpacks automáticamente. Para asegurar que use el Dockerfile:
+
+1. **Opción 1 (Recomendada)**: En la configuración de la aplicación en Dokploy, busca la opción **"Build Type"** o **"Build Method"** y selecciona **"Dockerfile"** explícitamente.
+
+2. **Opción 2**: Si Dokploy usa Nixpacks automáticamente, el archivo `nixpacks.toml` en la raíz del proyecto está configurado para usar .NET 9.0. Asegúrate de que este archivo esté en el repositorio.
+
+3. **Opción 3**: Si no puedes forzar el Dockerfile, verifica que el archivo `nixpacks.toml` esté presente y configurado correctamente (ya está incluido en el repositorio).
+
 ### 3. Variables de Entorno
 
 Configura las siguientes variables de entorno en Dokploy. Ve a **Environment Variables** y agrega cada una:
@@ -221,6 +231,30 @@ En Dokploy, ve a **Logs** de la aplicación para verificar:
 - **SignalR**: Verificar conexión a Azure SignalR
 
 ## Troubleshooting
+
+### Problema: Error "The current .NET SDK does not support targeting .NET 9.0"
+
+**Causa**: Dokploy está usando Nixpacks automáticamente y detecta .NET 6.0 en lugar de .NET 9.0.
+
+**Solución Paso a Paso**:
+
+1. **Opción Preferida - Forzar uso de Dockerfile**:
+   - En Dokploy, ve a la configuración de tu aplicación
+   - Busca la sección **"Build Settings"** o **"Build Configuration"**
+   - Cambia el **"Build Type"** o **"Build Method"** de **"Auto"** o **"Nixpacks"** a **"Dockerfile"**
+   - Asegúrate de que el campo **"Dockerfile Path"** esté configurado como `Dockerfile`
+   - Guarda los cambios y vuelve a intentar el despliegue
+
+2. **Si no puedes cambiar el Build Type**:
+   - Verifica que el archivo `nixpacks.toml` esté presente en la raíz del repositorio (ya está incluido)
+   - El archivo está configurado para usar .NET 9.0: `dotnet-sdk_9`
+   - Haz commit y push del archivo `nixpacks.toml` si no estaba en el repositorio
+   - Vuelve a intentar el despliegue
+
+3. **Verificación**:
+   - Asegúrate de que el `Dockerfile` esté en la raíz del proyecto
+   - Verifica que el Dockerfile use `mcr.microsoft.com/dotnet/sdk:9.0` y `mcr.microsoft.com/dotnet/aspnet:9.0`
+   - Verifica que el archivo `nixpacks.toml` esté presente y tenga la configuración correcta
 
 ### Problema: La aplicación no inicia
 

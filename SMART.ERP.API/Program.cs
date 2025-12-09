@@ -22,17 +22,44 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins("https://*.vercel.app")
-            .SetIsOriginAllowedToAllowWildcardSubdomains()
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-            policy.WithOrigins("https://www.smartbusiness.site", "https://admin.smartbusiness.site", "https://api.smartbusiness.site")
-            .SetIsOriginAllowedToAllowWildcardSubdomains()
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-            policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+            // Configurar orígenes permitidos usando SetIsOriginAllowed para combinar todos los casos
+            policy.SetIsOriginAllowed(origin =>
+            {
+                if (string.IsNullOrEmpty(origin))
+                    return false;
+                    
+                try
+                {
+                    var uri = new Uri(origin);
+                    var host = uri.Host.ToLower();
+                    
+                    // Dominios específicos de smartbusiness.site
+                    if (host == "www.smartbusiness.site" ||
+                        host == "admin.smartbusiness.site" ||
+                        host == "api.smartbusiness.site")
+                    {
+                        return true;
+                    }
+                    
+                    // Localhost para desarrollo (con cualquier puerto)
+                    if (host == "localhost" || host == "127.0.0.1")
+                    {
+                        return true;
+                    }
+                    
+                    // Subdominios de vercel.app
+                    if (host.EndsWith(".vercel.app"))
+                    {
+                        return true;
+                    }
+                    
+                    return false;
+                }
+                catch
+                {
+                    return false;
+                }
+            })
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -68,7 +95,10 @@ builder.Services.AddSwaggerGen(
         options.IncludeXmlComments(filePath);
     });
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
 
 // Configurar Kestrel solo si no estamos en producción
 // En producción, ASPNETCORE_URLS maneja la configuración del puerto
@@ -168,8 +198,13 @@ app.UseErrorHandlingMiddleware();
 // {
 //     app.UseHttpsRedirection();
 // }
-app.UseStaticFiles(); app.UseStaticFiles();
+app.UseStaticFiles();
 app.UseRouting();
+
+// Configurar CORS ANTES de WebSockets y otros middlewares
+app.UseCors();
+
+// Configurar WebSockets con los mismos orígenes permitidos
 var webSocketOptions = new WebSocketOptions
 {
     KeepAliveInterval = TimeSpan.FromMinutes(2)
@@ -179,7 +214,6 @@ webSocketOptions.AllowedOrigins.Add("https://admin.smartbusiness.site");
 webSocketOptions.AllowedOrigins.Add("https://www.smartbusiness.site");
 webSocketOptions.AllowedOrigins.Add("https://api.smartbusiness.site");
 app.UseWebSockets(webSocketOptions);
-app.UseCors();
 
 app.UseOutputCache();
 app.UseAuthentication();
