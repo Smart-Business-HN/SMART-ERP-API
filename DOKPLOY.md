@@ -97,6 +97,11 @@ ASPNETCORE_ENVIRONMENT=Production
 ASPNETCORE_URLS=http://+:8080
 ```
 
+**⚠️ IMPORTANTE sobre ASPNETCORE_URLS:**
+- ✅ **CORRECTO:** `ASPNETCORE_URLS=http://+:8080` (HTTP, sin la 's')
+- ❌ **INCORRECTO:** `ASPNETCORE_URLS=https://+:8080` (causará error de certificado SSL)
+- El proxy reverso (Dokploy/Nginx) maneja HTTPS, la aplicación .NET solo necesita escuchar en HTTP
+
 **Nota:** En Dokploy, las variables de entorno anidan usando doble guion bajo (`__`) en lugar de dos puntos (`:`).
 
 ### 4. Configuración de Puertos y Dominio

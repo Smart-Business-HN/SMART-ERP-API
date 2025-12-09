@@ -70,7 +70,25 @@ builder.Services.AddSwaggerGen(
 
 builder.Services.AddSignalR();
 
-builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
+// Configurar Kestrel para escuchar solo en HTTP cuando está detrás de un proxy (Dokploy)
+// El proxy reverso maneja HTTPS, la aplicación solo necesita HTTP
+builder.Services.Configure<KestrelServerOptions>(options =>
+{
+    // Si hay configuración en appsettings, la respetamos, pero forzamos HTTP en producción
+    if (builder.Environment.IsProduction())
+    {
+        // Limpiar cualquier configuración de HTTPS
+        options.ListenAnyIP(8080, listenOptions =>
+        {
+            listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+        });
+    }
+    else
+    {
+        // En desarrollo, usar la configuración del appsettings
+        builder.Configuration.GetSection("Kestrel").Bind(options);
+    }
+});
 
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {

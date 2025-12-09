@@ -30,12 +30,19 @@ El error Bad Gateway generalmente ocurre cuando el proxy reverso (Dokploy/Nginx)
 
 ### 3. Verificar Variables de Entorno
 
-Asegúrate de que estas variables estén configuradas en Dokploy:
+**⚠️ CRÍTICO:** Asegúrate de que estas variables estén configuradas correctamente en Dokploy:
 
 ```
 ASPNETCORE_URLS=http://+:8080
 ASPNETCORE_ENVIRONMENT=Production
 ```
+
+**IMPORTANTE:** 
+- ❌ **NO uses** `https://+:8080` - esto causará el error de certificado SSL
+- ✅ **DEBE ser** `http://+:8080` (sin la 's' de https)
+- El proxy reverso (Dokploy/Nginx) maneja HTTPS, la aplicación solo necesita HTTP
+
+Si tienes `ASPNETCORE_URLS` configurada como `https://+:8080`, cámbiala inmediatamente a `http://+:8080`.
 
 ### 4. Verificar Healthcheck
 

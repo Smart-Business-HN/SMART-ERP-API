@@ -50,8 +50,11 @@ USER appuser
 EXPOSE 8080
 
 # Variables de entorno por defecto
+# IMPORTANTE: Usar HTTP (no HTTPS) porque Dokploy/Nginx maneja HTTPS
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
+# Deshabilitar HTTPS en la aplicación (el proxy reverso lo maneja)
+ENV ASPNETCORE_Kestrel__Endpoints__Http__Url=http://+:8080
 
 # Healthcheck - verifica que la aplicación responda
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
