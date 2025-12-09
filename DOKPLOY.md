@@ -19,9 +19,24 @@ Este documento describe cómo desplegar SMART-ERP-API en Dokploy.
 3. Elige la rama principal (generalmente `main` o `master`)
 4. Selecciona el tipo: **Docker**
 
-### 2. Configurar el Dockerfile
+### 2. Configurar el Dockerfile y Build Settings
 
-Dokploy detectará automáticamente el `Dockerfile` en la raíz del proyecto.
+En la sección de configuración de GitHub y Build, configura lo siguiente:
+
+#### Configuración de GitHub:
+- **Github Account:** Selecciona tu cuenta de GitHub conectada (ej: "Dokploy-smartbusiness")
+- **Repository:** Selecciona "SMART-ERP-API"
+- **Branch:** Selecciona "main" (o la rama que quieras usar)
+- **Build Path:** Debe estar vacío o configurado como `/` (raíz del repositorio)
+- **Trigger Type:** "On Push" (para despliegues automáticos)
+
+#### Configuración de Build Type:
+- **Build Type:** Selecciona **"Dockerfile"**
+- **Docker File:** Debe estar configurado como `Dockerfile` (sin la barra inicial) o simplemente `./Dockerfile`. **IMPORTANTE:** No uses solo `/` porque causará el error "failed to read dockerfile"
+- **Docker Context Path:** Debe estar configurado como `.` (punto, que significa el directorio actual)
+- **Docker Build Stage:** Déjalo vacío (o pon `final` si quieres especificar la etapa final del multi-stage build)
+
+**⚠️ Solución al Error:** Si ves el error `failed to read dockerfile: open code: no such file or directory`, asegúrate de que el campo "Docker File" contenga exactamente `Dockerfile` y no `/`.
 
 ### 3. Variables de Entorno
 
@@ -84,10 +99,26 @@ ASPNETCORE_URLS=http://+:8080
 
 **Nota:** En Dokploy, las variables de entorno anidan usando doble guion bajo (`__`) en lugar de dos puntos (`:`).
 
-### 4. Configuración de Puertos
+### 4. Configuración de Puertos y Dominio
 
-- **Puerto Interno del Contenedor:** 8080
-- **Puerto Externo:** Dokploy lo configurará automáticamente o puedes especificarlo
+#### Configuración de Puerto:
+- **Puerto Interno del Contenedor:** 8080 (debe coincidir con `EXPOSE 8080` en Dockerfile)
+- **En Dokploy:** Ve a la configuración de tu aplicación y asegúrate de que el puerto interno esté configurado como **8080**
+- **Puerto Externo:** Dokploy lo configurará automáticamente
+
+#### Configuración de Dominio:
+1. **Agrega el dominio en Dokploy:**
+   - Ve a la configuración de tu aplicación
+   - Busca la sección "Domains" o "Custom Domain"
+   - Agrega: `api.smartbusiness.site`
+
+2. **Configuración DNS:**
+   - Asegúrate de que los registros DNS apunten correctamente al servidor de Dokploy
+   - Tipo A o CNAME apuntando a la IP de Dokploy
+
+3. **SSL/TLS:**
+   - Dokploy puede configurar automáticamente SSL con Let's Encrypt
+   - Verifica que SSL esté habilitado para tu dominio
 
 ### 5. Health Check
 
@@ -132,6 +163,18 @@ Configura esto en la sección "Auto Deploy" de tu aplicación en Dokploy.
 
 ## Troubleshooting
 
+### Error: "failed to read dockerfile: open code: no such file or directory"
+
+Este error ocurre cuando la configuración del Dockerfile en Dokploy es incorrecta. Solución:
+
+1. Ve a la configuración de tu aplicación en Dokploy
+2. En la sección "Build Type", verifica:
+   - **Docker File:** Debe contener exactamente `Dockerfile` (sin barras iniciales)
+   - **Docker Context Path:** Debe ser `.` (un punto)
+   - **Build Path:** Debe estar vacío o ser `/`
+
+Si el campo "Docker File" contiene solo `/` o está vacío, cámbialo a `Dockerfile`.
+
 ### La aplicación no inicia
 
 - Verifica los logs en Dokploy
@@ -154,6 +197,34 @@ Configura esto en la sección "Auto Deploy" de tu aplicación en Dokploy.
 
 - En producción, Swagger solo está disponible si `ASPNETCORE_ENVIRONMENT` no es `Production`
 - Puedes cambiar esto modificando `Program.cs` o ajustando la variable de entorno
+
+### Error: Bad Gateway (502)
+
+Este error generalmente ocurre cuando el proxy reverso (Dokploy/Nginx) no puede comunicarse con el contenedor. Verifica:
+
+1. **Puerto Interno Configurado Correctamente:**
+   - En Dokploy, verifica que el puerto interno del contenedor esté configurado como **8080**
+   - Debe coincidir con `EXPOSE 8080` en el Dockerfile
+
+2. **La aplicación está escuchando correctamente:**
+   - Verifica los logs de la aplicación en Dokploy
+   - Asegúrate de que veas mensajes como "Now listening on: http://[::]:8080"
+
+3. **Variables de Entorno:**
+   - Verifica que `ASPNETCORE_URLS=http://+:8080` esté configurado
+   - O asegúrate de que el Dockerfile tenga esta variable (ya está incluida)
+
+4. **Healthcheck:**
+   - Verifica que el contenedor esté saludable
+   - El healthcheck debería pasar después de ~40 segundos
+
+5. **Headers de Proxy:**
+   - El código ya está configurado con `UseForwardedHeaders()` para manejar correctamente los headers del proxy
+   - Asegúrate de que el despliegue incluya estos cambios
+
+6. **Reinicia la aplicación:**
+   - Después de hacer cambios, reinicia la aplicación en Dokploy
+   - Espera a que el contenedor se inicie completamente antes de probar
 
 ## Notas Importantes
 

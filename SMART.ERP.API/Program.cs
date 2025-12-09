@@ -27,7 +27,7 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
-            policy.WithOrigins("https://www.smartbusiness.site", "https://admin.smartbusiness.site")
+            policy.WithOrigins("https://www.smartbusiness.site", "https://admin.smartbusiness.site", "https://api.smartbusiness.site")
             .SetIsOriginAllowedToAllowWildcardSubdomains()
             .AllowAnyHeader()
             .AllowAnyMethod()
@@ -136,21 +136,31 @@ builder.Services.AddOutputCache(opt =>
         opt.AddPolicy("cache_productSearch", builder => builder.Expire(TimeSpan.FromMinutes(30)).Tag("cache_productSearch").SetVaryByQuery(["*"]));
         opt.AddPolicy("cache_searchSuggestions", builder => builder.Expire(TimeSpan.FromHours(2)).Tag("cache_searchSuggestions").SetVaryByQuery(["searchTerm", "limit"]));
     });
+
+// Configurar ForwardedHeaders para proxy reverso (Dokploy/Nginx)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    // Permitir todos los proxies conocidos (para Dokploy)
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+    // No requerir simetría en headers
+    options.RequireHeaderSymmetry = false;
+});
+
 var app = builder.Build();
 app.UseSentryTracing();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseForwardedHeaders(new ForwardedHeadersOptions
-    {
-        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-    });
+    app.UseForwardedHeaders();
 }
 app.UseErrorHandlingMiddleware();
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
+// Comentar HttpsRedirection si Dokploy/Nginx ya maneja HTTPS
+// if (!app.Environment.IsDevelopment())
+// {
+//     app.UseHttpsRedirection();
+// }
 app.UseStaticFiles(); app.UseStaticFiles();
 app.UseRouting();
 var webSocketOptions = new WebSocketOptions
@@ -160,6 +170,7 @@ var webSocketOptions = new WebSocketOptions
 webSocketOptions.AllowedOrigins.Add("http://localhost:4200");
 webSocketOptions.AllowedOrigins.Add("https://admin.smartbusiness.site");
 webSocketOptions.AllowedOrigins.Add("https://www.smartbusiness.site");
+webSocketOptions.AllowedOrigins.Add("https://api.smartbusiness.site");
 app.UseWebSockets(webSocketOptions);
 app.UseCors();
 
