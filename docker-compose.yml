@@ -13,7 +13,7 @@ services:
       - ASPNETCORE_URLS=http://+:8080
       # Connection Strings
       - ConnectionStrings__Database=Server=tcp:smarterp.database.windows.net,1433;Initial Catalog=SmartERP;Persist Security Info=False;User ID=toor;Password=SomeThingComplicated1234;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=60;
-      - ConnectionStrings__RedisServer=sb-redis.redis.cache.windows.net:6380,password=aXxJK28lOp1V0jWqQWk1zxk2tKrFnDDH1AzCaKeoDjw=,ssl=True,abortConnect=False
+      - ConnectionStrings__RedisServer=smart-business-redis-server-ajehyo:6379,password=aXxJK28lOp1V0jWqQWk1zxk2tKrFnDDH1AzCaKeoDjw=,ssl=False,abortConnect=False
       - ConnectionStrings__AzureBlobStorage=DefaultEndpointsProtocol=https;AccountName=smarterpstorage;AccountKey=CoeNBEPVlSGjQx2wu7WoQ606DD2o70B1qFOQ6d45KUcavhso9hk8RlFS/WMzvTJ4oswRRF9Hs1Pe+AStj1OGYQ==;EndpointSuffix=core.windows.net
       # JWT Settings
       - JWTSettings__Key=ThebirdofHermezismynameandeatmywingstomakemetame.PleaseBenice.
