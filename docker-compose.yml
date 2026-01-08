@@ -8,11 +8,13 @@ services:
     container_name: smart-erp-api
     ports:
       - "8080:8080"
+    networks:
+      - app-network
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       # Connection Strings
-      - ConnectionStrings__Database=Server=tcp:smarterp.database.windows.net,1433;Initial Catalog=SmartERP;Persist Security Info=False;User ID=toor;Password=SomeThingComplicated1234;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=60;
+      - ConnectionStrings__Database=Server=sqlserver,1433;Initial Catalog=SmartERP;Persist Security Info=False;User ID=toor;Password=SomeThingComplicated1234;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=60;
       - ConnectionStrings__RedisServer=smart-business-redis-server-ajehyo:6379,password=aXxJK28lOp1V0jWqQWk1zxk2tKrFnDDH1AzCaKeoDjw=,ssl=False,abortConnect=False
       - ConnectionStrings__AzureBlobStorage=DefaultEndpointsProtocol=https;AccountName=smarterpstorage;AccountKey=CoeNBEPVlSGjQx2wu7WoQ606DD2o70B1qFOQ6d45KUcavhso9hk8RlFS/WMzvTJ4oswRRF9Hs1Pe+AStj1OGYQ==;EndpointSuffix=core.windows.net
       # JWT Settings
@@ -48,10 +50,8 @@ services:
     #   timeout: 10s
     #   retries: 3
     #   start_period: 40s
-    networks:
-      - smart-erp-network
-
 networks:
-  smart-erp-network:
-    driver: bridge
+  app-network:
+    name: internal-app-network
+    external: true
 
