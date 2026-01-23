@@ -40,39 +40,93 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.ProspectMetric
             {
                 throw new KeyNotFoundException($"No se encontro la campaña con Id {request.Id}");
             }
-            var prospects = await _prospectRepositoryAsync.ListAsync(new FilterProspectByCampaignIdSpecification(request.Id, true));
-            var customers = await _customerRepositoryAsync.ListAsync();
-            var clients = await _repositoryHNAsync.ListAsync(new FilterClientFromMotors(customers.Select(x => x.Id).ToList()));
-            var prospectClients = clients.FindAll(x => prospects.Any(y => y.FullName == x.FullName && x.PhoneNumber == y.PhoneNumber));
-            var prospectCustomers = customers.FindAll(x => prospectClients.Any(y => y.Id == x.Id));
-            var opportunities = await _opportunityRepositoryAsync.ListAsync(new FilterWonOpportunitiesSpecification(null));
-            MetaAdCampaignRoiDto dto = new();
-            dto.Budget = campaign.Lifetime_Budget;
-            dto.NumConverted = prospectCustomers.Count;
-            foreach (var prospectCustomer in prospectCustomers)
+
+            // ✓ Optimización: Obtener prospects convertidos de la campaña
+            var prospects = await _prospectRepositoryAsync.ListAsync(
+                new FilterProspectByCampaignIdSpecification(request.Id, true),
+                cancellationToken
+            );
+
+            // Si no hay prospects convertidos, retornar resultado vacío inmediatamente
+            if (prospects.Count == 0)
             {
-                var prospectOpportunities = opportunities.FindAll(x => x.CustomerId == prospectCustomer.Id);
-                if (prospectOpportunities.Count > 0)
+                return new Response<MetaAdCampaignRoiDto>(new MetaAdCampaignRoiDto
                 {
-                    dto.Total += prospectOpportunities.Sum(x => x.Total);
+                    Budget = campaign.Lifetime_Budget,
+                    Roi = 0,
+                    Total = 0,
+                    NumConverted = 0
+                });
+            }
+
+            // ✓ Optimización: Crear HashSet de prospects para búsqueda O(1)
+            // Usamos tupla (FullName, PhoneNumber) como clave única
+            var prospectKeys = prospects
+                .Select(p => (p.FullName.Trim().ToLower(), p.PhoneNumber.Trim()))
+                .ToHashSet();
+
+            // ✓ Optimización: Obtener todos los customers en una sola query
+            var customers = await _customerRepositoryAsync.ListAsync(cancellationToken);
+
+            // ✓ Optimización: Filtrar customers que coincidan con prospects usando HashSet O(n)
+            var matchedCustomerIds = new HashSet<Guid>();
+            foreach (var customer in customers)
+            {
+                if (customer.FullName != null && customer.PhoneNumber != null)
+                {
+                    var customerKey = (customer.FullName.Trim().ToLower(), customer.PhoneNumber.Trim());
+                    if (prospectKeys.Contains(customerKey))
+                    {
+                        matchedCustomerIds.Add(customer.Id);
+                    }
                 }
             }
+
+            // Si no hay customers que coincidan, retornar resultado vacío
+            if (matchedCustomerIds.Count == 0)
+            {
+                return new Response<MetaAdCampaignRoiDto>(new MetaAdCampaignRoiDto
+                {
+                    Budget = campaign.Lifetime_Budget,
+                    Roi = 0,
+                    Total = 0,
+                    NumConverted = 0
+                });
+            }
+
+            // ✓ Optimización: Obtener oportunidades ganadas con información del cliente
+            var opportunities = await _opportunityRepositoryAsync.ListAsync(
+                new FilterWonOpportunitiesWithCustomerInfoSpecification(),
+                cancellationToken
+            );
+
+            // ✓ Optimización: Calcular total de ventas usando HashSet para búsqueda O(1)
+            decimal totalSales = 0;
+            foreach (var opportunity in opportunities)
+            {
+                if (matchedCustomerIds.Contains(opportunity.CustomerId))
+                {
+                    totalSales += opportunity.Total;
+                }
+            }
+
+            // Calcular ROI
+            var dto = new MetaAdCampaignRoiDto
+            {
+                Budget = campaign.Lifetime_Budget,
+                Total = totalSales,
+                NumConverted = matchedCustomerIds.Count
+            };
+
             if (dto.Budget > 0)
             {
                 dto.Roi = Math.Round(dto.Total / dto.Budget * 100, 2);
             }
             else
             {
-                if (dto.Total > 0)
-                {
-                    dto.Roi = 100;
-                }
-                else
-                {
-                    dto.Roi = 0;
-                }
-
+                dto.Roi = dto.Total > 0 ? 100 : 0;
             }
+
             return new Response<MetaAdCampaignRoiDto>(dto);
         }
     }

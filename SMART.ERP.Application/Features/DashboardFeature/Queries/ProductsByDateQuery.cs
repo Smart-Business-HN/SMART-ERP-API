@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.CategorySpecification;
 using SMART.ERP.Application.Specifications.OpportunitySpecification;
@@ -29,60 +29,76 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries
 
         public async Task<Response<List<MonthlyProductDto>>> Handle(ProductsByDateQuery request, CancellationToken cancellationToken)
         {
-            var productsMonth = new List<MonthlyProductDto>();
-            if (request.Date != null)
+            var targetDate = request.Date ?? DateTime.Now;
+
+            // ✓ Optimización: Cargar categorías con subcategorías en una sola query
+            var categories = await _categoryRepositoryAsync.ListAsync(
+                new IncludeCategorySpecification(),
+                cancellationToken
+            );
+
+            // ✓ Optimización: Obtener oportunidades con filtrado en SQL usando Specification optimizada
+            var closedOpportunities = await _repositoryAsync.ListAsync(
+                new FilterClosedOpportunitiesWithProductsSpecification(
+                    targetDate,
+                    request.Time,
+                    request.BranchOfficeId
+                ),
+                cancellationToken
+            );
+
+            // ✓ Optimización: Si es filtro por semana, aplicar filtro adicional en memoria
+            if (request.Time.ToLower() == "semana" && closedOpportunities.Count > 0)
             {
-                var categories = await _categoryRepositoryAsync.ListAsync(new IncludeCategorySpecification());
-                var doneOpportunitiesFromMonth = await _repositoryAsync.ListAsync(new FilterOpportunityFromDateSpecification((DateTime)request.Date, request.Time, request.BranchOfficeId));
-                if (request.Time.ToLower() == "semana" && doneOpportunitiesFromMonth.Count > 0)
-                {
-                    var cal = CultureInfo.InvariantCulture.Calendar;
-                    doneOpportunitiesFromMonth = doneOpportunitiesFromMonth.FindAll(x => cal.GetWeekOfYear((DateTime)x.ClosingDate!, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday) == cal.GetWeekOfYear((DateTime)request.Date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday));
-                }
-                foreach (var category in categories)
-                {
-                    var dto = new MonthlyProductDto();
-                    dto.Name = category.Name;
-                    dto.SoldProducts = 0;
-                    var filteredOpportunities = doneOpportunitiesFromMonth.Where(x => x.QuoteProducts!.Exists(y => y.Product!.SubCategory!.Name == category.Name));
-                    foreach (var opportunity in filteredOpportunities)
-                    {
-                        foreach (var product in opportunity.QuoteProducts!)
-                        {
-                            if (category.Subcategories.Any(a => a.Name == product.Product!.SubCategory!.Name))
-                            {
-                                dto.SoldProducts += product.Quantity;
-                            }
-                        }
-                    }
-                    productsMonth.Add(dto);
-                }
-                return new Response<List<MonthlyProductDto>>(productsMonth);
+                closedOpportunities = FilterClosedOpportunitiesWithProductsSpecification
+                    .FilterByWeek(closedOpportunities, targetDate);
             }
-            else
+
+            // ✓ Optimización: Crear diccionario de subcategorías para búsqueda O(1)
+            var subcategoryToCategoryMap = new Dictionary<string, string>();
+            foreach (var category in categories)
             {
-                var categories = await _categoryRepositoryAsync.ListAsync(new IncludeCategorySpecification());
-                var doneOpportunitiesFromMonth = await _repositoryAsync.ListAsync(new FilterOpportunityFromDateSpecification(DateTime.Now, request.Time, request.BranchOfficeId));
-                foreach (var category in categories)
+                foreach (var subcategory in category.Subcategories)
                 {
-                    var dto = new MonthlyProductDto();
-                    dto.Name = category.Name;
-                    dto.SoldProducts = 0;
-                    var filteredOpportunities = doneOpportunitiesFromMonth.Where(x => x.QuoteProducts!.Exists(y => y.Product!.SubCategory!.Name == category.Name)); // Revisar
-                    foreach (var opportunity in filteredOpportunities)
-                    {
-                        foreach (var product in opportunity.QuoteProducts!)
-                        {
-                            if (category.Subcategories.Any(a => a.Name == product.Product!.SubCategory!.Name))
-                            {
-                                dto.SoldProducts += product.Quantity;
-                            }
-                        }
-                    }
-                    productsMonth.Add(dto);
+                    subcategoryToCategoryMap[subcategory.Name] = category.Name;
                 }
-                return new Response<List<MonthlyProductDto>>(productsMonth);
             }
+
+            // ✓ Optimización: Usar Dictionary para agrupación por categoría O(n)
+            var categorySalesDict = new Dictionary<string, int>();
+
+            // Inicializar todas las categorías con 0
+            foreach (var category in categories)
+            {
+                categorySalesDict[category.Name] = 0;
+            }
+
+            // ✓ Optimización: Procesar en un solo recorrido
+            foreach (var opportunity in closedOpportunities)
+            {
+                if (opportunity.QuoteProducts == null) continue;
+
+                foreach (var product in opportunity.QuoteProducts)
+                {
+                    var subcategoryName = product.Product?.SubCategory?.Name;
+                    if (subcategoryName != null && subcategoryToCategoryMap.TryGetValue(subcategoryName, out var categoryName))
+                    {
+                        categorySalesDict[categoryName] += product.Quantity;
+                    }
+                }
+            }
+
+            // ✓ Convertir Dictionary a List de DTOs
+            var response = categorySalesDict
+                .Select(kvp => new MonthlyProductDto
+                {
+                    Name = kvp.Key,
+                    SoldProducts = kvp.Value
+                })
+                .OrderByDescending(x => x.SoldProducts)
+                .ToList();
+
+            return new Response<List<MonthlyProductDto>>(response);
         }
     }
 }
