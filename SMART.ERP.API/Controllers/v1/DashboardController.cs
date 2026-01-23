@@ -198,5 +198,53 @@ namespace SMART.ERP.API.Controllers.v1
         {
             return Ok(await Mediator.Send(new GeneralFinanceQuery()));
         }
+
+        [HttpGet("FinancialKpis")]
+        public async Task<IActionResult> GetFinancialKpis()
+        {
+            return Ok(await Mediator.Send(new GetFinancialKpisQuery()));
+        }
+
+        [HttpGet("AccountsReceivableAging")]
+        public async Task<IActionResult> GetAccountsReceivableAging()
+        {
+            return Ok(await Mediator.Send(new GetAccountsReceivableAgingQuery()));
+        }
+
+        [HttpGet("AccountsPayableAging")]
+        public async Task<IActionResult> GetAccountsPayableAging()
+        {
+            return Ok(await Mediator.Send(new GetAccountsPayableAgingQuery()));
+        }
+
+        [HttpGet("MonthlyCashFlow")]
+        public async Task<IActionResult> GetMonthlyCashFlow([FromQuery] int months = 12)
+        {
+            return Ok(await Mediator.Send(new GetMonthlyCashFlowQuery { Months = months }));
+        }
+
+        [HttpGet("SalesTrend")]
+        public async Task<IActionResult> GetSalesTrend([FromQuery] int months = 12)
+        {
+            return Ok(await Mediator.Send(new GetSalesTrendQuery { Months = months }));
+        }
+
+        [HttpGet("TopCustomersOutstanding")]
+        public async Task<IActionResult> GetTopCustomersOutstanding([FromQuery] int top = 5)
+        {
+            return Ok(await Mediator.Send(new GetTopCustomersOutstandingQuery { Top = top }));
+        }
+
+        [HttpGet("TopSuppliersOutstanding")]
+        public async Task<IActionResult> GetTopSuppliersOutstanding([FromQuery] int top = 5)
+        {
+            return Ok(await Mediator.Send(new GetTopSuppliersOutstandingQuery { Top = top }));
+        }
+
+        [HttpGet("SalesPipeline")]
+        public async Task<IActionResult> GetSalesPipeline()
+        {
+            return Ok(await Mediator.Send(new GetSalesPipelineQuery()));
+        }
     }
 }
