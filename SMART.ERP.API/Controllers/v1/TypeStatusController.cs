@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.TypeStatusFeature.Commands.CreateTypeStatusCommand;
 using SMART.ERP.Application.Features.TypeStatusFeature.Commands.DeleteTypeStatusCommand;
+using SMART.ERP.Application.Features.TypeStatusFeature.Commands.UpdateTypeStatusCommand;
 using SMART.ERP.Application.Features.TypeStatusFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.Application.Features.TypeStatusFeature.Commands.CreateTypeStatusCommand;
-using SMART.ERP.Application.Features.TypeStatusFeature.Commands.UpdateTypeStatusCommand;
-using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

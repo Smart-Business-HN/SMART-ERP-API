@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using SMART.ERP.Application.Features.StatusFeature.Commands.CreateStatusCommand;
 using SMART.ERP.Application.Features.StatusFeature.Commands.DeleteStatusCommand;
+using SMART.ERP.Application.Features.StatusFeature.Commands.UpdateStatusCommand;
 using SMART.ERP.Application.Features.StatusFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.Application.Features.StatusFeature.Commands.CreateStatusCommand;
-using SMART.ERP.Application.Features.StatusFeature.Commands.UpdateStatusCommand;
-using Microsoft.AspNetCore.OutputCaching;
-using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

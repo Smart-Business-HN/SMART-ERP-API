@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.BaseProductFeature.Queries;
+using SMART.ERP.Application.Features.HeroSliderFeature.Commands.CreateHeroSliderCommand;
 using SMART.ERP.Application.Features.HeroSliderFeature.Commands.DeleteHeroSliderCommand;
 using SMART.ERP.Application.Features.HeroSliderFeature.Commands.DeleteProductSliderCommand;
-using SMART.ERP.Application.Features.HeroSliderFeature.Queries;
-using SMART.ERP.Application.Features.HeroSliderFeature.Commands.CreateHeroSliderCommand;
 using SMART.ERP.Application.Features.HeroSliderFeature.Commands.UpdateCategoryPositionCommand;
 using SMART.ERP.Application.Features.HeroSliderFeature.Commands.UpdateHeroSliderCommand;
-using Asp.Versioning;
+using SMART.ERP.Application.Features.HeroSliderFeature.Queries;
 
 namespace SMART.ERP.API.Controllers.v1
 {

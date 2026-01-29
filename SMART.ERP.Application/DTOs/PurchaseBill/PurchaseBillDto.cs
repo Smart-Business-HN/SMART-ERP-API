@@ -4,7 +4,6 @@ using SMART.ERP.Application.DTOs.Provider;
 using SMART.ERP.Application.DTOs.PurchaseBillPayment;
 using SMART.ERP.Application.DTOs.PurchaseOrder;
 using SMART.ERP.Application.DTOs.Status;
-using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.DTOs.PurchaseBill
 {

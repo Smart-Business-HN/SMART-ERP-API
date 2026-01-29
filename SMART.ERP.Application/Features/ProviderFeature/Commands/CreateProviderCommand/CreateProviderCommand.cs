@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
+using SMART.ERP.Application.DTOs.Provider;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.ProviderSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using Microsoft.AspNetCore.OutputCaching;
-using SMART.ERP.Application.DTOs.Provider;
 
 namespace SMART.ERP.Application.Features.ProviderFeature.Commands.CreateProviderCommand
 {

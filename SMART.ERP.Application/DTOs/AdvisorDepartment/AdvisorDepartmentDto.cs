@@ -1,5 +1,5 @@
-﻿using SMART.ERP.Application.DTOs.User;
-using SMART.ERP.Application.DTOs.Address;
+﻿using SMART.ERP.Application.DTOs.Address;
+using SMART.ERP.Application.DTOs.User;
 
 namespace SMART.ERP.Application.DTOs.AdvisorDepartment
 {

@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
+using SMART.ERP.Application.DTOs.Address;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.CitySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.Address;
-using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.Application.Features.CityFeature.Commands.CreateCityCommand
 {

@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using MediatR;
-using SMART.ERP.Application.Repository;
-using SMART.ERP.Application.Wrappers;
         
 using SMART.ERP.Application.DTOs.Customer;
+using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.ClientDeliveryDirectionFeature.Commands.UpdateDeliveryDirectionCommand

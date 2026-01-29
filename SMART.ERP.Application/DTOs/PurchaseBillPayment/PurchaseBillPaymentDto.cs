@@ -1,11 +1,6 @@
 ﻿using SMART.ERP.Application.DTOs.InternalBankAccount;
 using SMART.ERP.Application.DTOs.PurchaseBill;
 using SMART.ERP.Application.DTOs.TypeOfPaymentMethod;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.DTOs.PurchaseBillPayment
 {

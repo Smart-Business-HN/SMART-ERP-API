@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using SMART.ERP.Application.DTOs.Mail;
 using SMART.ERP.Application.DTOs.Notification;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 using SMART.ERP.Application.Services.MailService;
 using SMART.ERP.Application.Services.SignalRHub;
 using SMART.ERP.Application.Specifications.InterestLevelSpecification;
@@ -16,7 +17,6 @@ using SMART.ERP.Application.Specifications.WishListProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Domain.Enums;
-using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 
 namespace SMART.ERP.Application.Features.OpportunityFeature.Commands.CreateOpportunityCartCommand
 {

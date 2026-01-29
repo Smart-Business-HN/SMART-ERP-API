@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SMART.ERP.Application.Features.RegionFeature.Commands.DeleteRegionCommand;
-using SMART.ERP.Application.Features.RegionFeature.Queries;
-using SMART.ERP.Application.Parameters;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.RegionFeature.Commands.AssignRegionDepartmentCommand;
 using SMART.ERP.Application.Features.RegionFeature.Commands.CreateRegionCommand;
+using SMART.ERP.Application.Features.RegionFeature.Commands.DeleteRegionCommand;
 using SMART.ERP.Application.Features.RegionFeature.Commands.RemoveRegionDepartmentCommand;
 using SMART.ERP.Application.Features.RegionFeature.Commands.UpdateRegionCommand;
-using Asp.Versioning;
+using SMART.ERP.Application.Features.RegionFeature.Queries;
+using SMART.ERP.Application.Parameters;
 
 namespace SMART.ERP.API.Controllers.v1
 {

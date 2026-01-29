@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Quartz;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.SignalRHub;
 using SMART.ERP.Application.Specifications.AdvisorGoalSpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Domain.Entities;
-using Quartz;
 
 namespace SMART.ERP.Application.Jobs.AdvisorGoalJob
 {

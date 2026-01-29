@@ -1,17 +1,10 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.OutputCaching;
-using SMART.ERP.Application.DTOs.Address;
 using SMART.ERP.Application.DTOs.InternalBankAccount;
-using SMART.ERP.Application.Features.CityFeature.Commands.UpdateCityCommand;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.UpdateInternalBankAccountCommand
 {

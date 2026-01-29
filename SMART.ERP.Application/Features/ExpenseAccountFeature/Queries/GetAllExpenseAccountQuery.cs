@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
 using MediatR;
 using SMART.ERP.Application.DTOs.ExpenseAccount;
-using SMART.ERP.Application.DTOs.IncomeAccount;
-using SMART.ERP.Application.Features.IncomeAccountFeature.Queries;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.ExpenseAccountSpecification;
-using SMART.ERP.Application.Specifications.IncomeAccountSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 

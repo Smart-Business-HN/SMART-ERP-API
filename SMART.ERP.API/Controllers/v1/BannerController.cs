@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.BannerFeature.Commands.CreateBannerCommand;
 using SMART.ERP.Application.Features.BannerFeature.Commands.DeleteBannerCommand;
 using SMART.ERP.Application.Features.BannerFeature.Queries;
-using SMART.ERP.Application.Features.BannerFeature.Commands.CreateBannerCommand;
-using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

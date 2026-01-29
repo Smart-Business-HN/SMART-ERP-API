@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace SMART.ERP.Domain.Entities
-{   
+{
     public class ProductPurchasePriceLog
     {
         public int Id { get; init; }
@@ -14,7 +10,9 @@ namespace SMART.ERP.Domain.Entities
         public DateTime PurchaseDate { get; set; }
         public int PurchaseBillOriginId { get; set; }
         public virtual PurchaseBill? PurchaseBillOrigin { get; set; }
+        [Precision(18, 2)]
         public decimal UnitsPurchased { get; set; }
+        [Precision(18, 2)]
         public decimal Price { get; set; }
     }
 }

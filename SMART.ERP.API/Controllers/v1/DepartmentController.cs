@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using SMART.ERP.Application.Features.DepartmentFeature.Commands.CreateDepartmentCommand;
 using SMART.ERP.Application.Features.DepartmentFeature.Commands.DeleteDepartmentCommand;
+using SMART.ERP.Application.Features.DepartmentFeature.Commands.UpdateDepartmentCommand;
 using SMART.ERP.Application.Features.DepartmentFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.Application.Features.DepartmentFeature.Commands.CreateDepartmentCommand;
-using SMART.ERP.Application.Features.DepartmentFeature.Commands.UpdateDepartmentCommand;
-using Microsoft.AspNetCore.OutputCaching;
-using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

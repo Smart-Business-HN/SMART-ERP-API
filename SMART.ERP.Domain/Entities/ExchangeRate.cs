@@ -1,8 +1,11 @@
-﻿namespace SMART.ERP.Domain.Entities
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace SMART.ERP.Domain.Entities
 {
     public class ExchangeRate
     {
         public int Id { get; init; }
+        [Precision(18, 2)]
         public decimal Value { get; set; }
         public DateTime Date { get; set; }
         public int CurrencyId { get; set; }

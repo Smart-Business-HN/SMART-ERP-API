@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
+using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.ClientSpecification;
@@ -7,8 +9,6 @@ using SMART.ERP.Application.Specifications.CustomerSpecification;
 using SMART.ERP.Application.Specifications.ProspectSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.Customer;
-using Microsoft.AspNetCore.OutputCaching;
 
 namespace SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomerCommand
 {

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.CountrySpecification;
 using SMART.ERP.Application.Specifications.InterestLevelSpecification;
@@ -11,7 +12,6 @@ using SMART.ERP.Application.Specifications.TypeOriginSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Domain.Enums;
-using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 
 namespace SMART.ERP.Application.Features.ProspectFeature.Commands.CreateProspectXpressCommand
 {

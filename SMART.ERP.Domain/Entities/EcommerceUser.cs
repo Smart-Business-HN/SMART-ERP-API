@@ -1,14 +1,22 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace SMART.ERP.Domain.Entities;
 
 public class EcommerceUser
 {
     public Guid Id { get; init; }
+    [MaxLength(100)]
     public string Email { get; set; } = null!;
+    [MaxLength(50)]
     public string UserName { get; set; } = null!;
+    [MaxLength(100)]
     public string FullName { get; set; } = null!;
+    [MaxLength(50)]
     public string FirstName { get; set; } = null!;
+    [MaxLength(50)]
     public string LastName { get; set; } = null!;
     public string? Photo { get; set; }
+    [MaxLength(14)]
     public string PhoneNumber { get; set; } = null!;
     public int? DepartmentId { get; set; }
     public Department? Department { get; set; }

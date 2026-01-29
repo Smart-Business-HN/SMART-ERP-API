@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using SMART.ERP.Application.DTOs.AdvisorGoal;
 using SMART.ERP.Application.DTOs.Notification;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
@@ -8,7 +9,6 @@ using SMART.ERP.Application.Services.SignalRHub;
 using SMART.ERP.Application.Specifications.AdvisorGoalSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.AdvisorGoal;
 using System.Globalization;
 
 namespace SMART.ERP.Application.Features.AdvisorGoalFeature.Commands.UpdateAdvisorGoalCommand

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Application.DTOs.Opportunity;
 using SMART.ERP.Application.DTOs.User;
 using SMART.ERP.Application.Exceptions;
@@ -10,7 +11,6 @@ using SMART.ERP.Application.Specifications.OpportunitySpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.Customer;
 
 namespace SMART.ERP.Application.Features.UserFeature.Commands.AssignUserWalletCommand
 {

@@ -2,16 +2,9 @@
 using MediatR;
 using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.ExpenseAccount;
-using SMART.ERP.Application.DTOs.IncomeAccount;
-using SMART.ERP.Application.Features.IncomeAccountFeature.Commands.UpdateIncomeAccountCommand;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMART.ERP.Application.Features.ExpenseAccountFeature.Commands.UpdateExpenseAccountCommand
 {

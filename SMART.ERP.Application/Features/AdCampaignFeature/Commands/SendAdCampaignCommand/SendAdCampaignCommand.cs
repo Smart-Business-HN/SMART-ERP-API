@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
+using SMART.ERP.Application.DTOs.Mail;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.MailService;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.Mail;
 
 namespace SMART.ERP.Application.Features.AdCampaignFeature.Commands.SendAdCampaignCommand
 {

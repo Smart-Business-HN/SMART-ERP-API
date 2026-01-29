@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.WinReasonFeature.Commands.CreateWinReasonCommand;
 using SMART.ERP.Application.Features.WinReasonFeature.Commands.DeleteWinReasonCommand;
+using SMART.ERP.Application.Features.WinReasonFeature.Commands.UpdateWinReasonCommand;
 using SMART.ERP.Application.Features.WinReasonFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.Application.Features.WinReasonFeature.Commands.CreateWinReasonCommand;
-using SMART.ERP.Application.Features.WinReasonFeature.Commands.UpdateWinReasonCommand;
-using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

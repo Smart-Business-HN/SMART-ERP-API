@@ -1,11 +1,10 @@
 ﻿using MediatR;
+using SMART.ERP.Application.DTOs.Dashboard;
 using SMART.ERP.Application.Repository;
-using SMART.ERP.Application.Specifications.OpportunitySpecification;
+using SMART.ERP.Application.Specifications.InvoiceSpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.Dashboard;
-using SMART.ERP.Application.Specifications.InvoiceSpecification;
 
 namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorMetrics
 {

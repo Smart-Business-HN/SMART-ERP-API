@@ -6,10 +6,6 @@ using SMART.ERP.Application.Features.BankFeature.Commands.CreateBankCommand;
 using SMART.ERP.Application.Features.BankFeature.Commands.DeleteBankCommand;
 using SMART.ERP.Application.Features.BankFeature.Commands.UpdateBankCommand;
 using SMART.ERP.Application.Features.BankFeature.Queries;
-using SMART.ERP.Application.Features.CityFeature.Commands.CreateCityCommand;
-using SMART.ERP.Application.Features.CityFeature.Commands.DeleteCityCommand;
-using SMART.ERP.Application.Features.CityFeature.Commands.UpdateCityCommand;
-using SMART.ERP.Application.Features.CityFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
 namespace SMART.ERP.API.Controllers.v1

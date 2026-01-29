@@ -1,16 +1,16 @@
 ﻿using AutoMapper;
 using MediatR;
+using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 using SMART.ERP.Application.Services.JwtService;
+using SMART.ERP.Application.Services.RegisterClientService;
 using SMART.ERP.Application.Specifications.CustomerSpecification;
 using SMART.ERP.Application.Specifications.DepartmentSpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.Customer;
-using SMART.ERP.Application.Services.AssignUserToOpportunityService;
-using SMART.ERP.Application.Services.RegisterClientService;
 
 namespace SMART.ERP.Application.Features.CustomerFeature.Commands.ImportCustomerCommand
 {

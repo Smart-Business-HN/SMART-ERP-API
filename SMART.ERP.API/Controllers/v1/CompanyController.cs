@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SMART.ERP.Application.Features.CompanyFeature.Queries;
 using SMART.ERP.Application.Features.CompanyFeature.Commands.CreateCompanyCommand;
 using SMART.ERP.Application.Features.CompanyFeature.Commands.UpdateCompanyCommand;
-using Asp.Versioning;
+using SMART.ERP.Application.Features.CompanyFeature.Queries;
 
 namespace SMART.ERP.API.Controllers.v1
 {

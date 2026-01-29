@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using MediatR;
+using SMART.ERP.Application.DTOs.AdvisorDepartment;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.AdvisorDepartmentSpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.AdvisorDepartment;
 
 namespace SMART.ERP.Application.Features.AdvisorDepartmentFeature.Commands.CreateAdvisorDepartmentCommand
 {

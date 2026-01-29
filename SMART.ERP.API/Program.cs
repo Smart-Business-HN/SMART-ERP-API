@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Quartz;
 using SMART.ERP.API.Extensions;
-using SMART.ERP.API.Middlewares;
 using SMART.ERP.Application;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.SignalRHub;

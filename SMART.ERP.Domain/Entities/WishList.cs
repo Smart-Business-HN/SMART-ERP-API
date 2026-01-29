@@ -1,8 +1,11 @@
-﻿namespace SMART.ERP.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SMART.ERP.Domain.Entities
 {
     public class WishList
     {
         public int Id { get; init; }
+        [Column(TypeName = "varchar(30)")]
         public string Code { get; set; } = null!;
         public int CantItems { get; set; }
         public Guid CustomerId { get; set; }

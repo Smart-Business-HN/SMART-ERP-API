@@ -1,6 +1,6 @@
-﻿using SMART.ERP.Application.DTOs.Opportunity;
+﻿using SMART.ERP.Application.DTOs.Customer;
+using SMART.ERP.Application.DTOs.Opportunity;
 using SMART.ERP.Application.DTOs.Status;
-using SMART.ERP.Application.DTOs.Customer;
 
 namespace SMART.ERP.Application.DTOs.SaleOrder
 {

@@ -5,7 +5,6 @@ using SMART.ERP.Application.Features.BillPaymentFeature.Commands.CreateBillPayme
 using SMART.ERP.Application.Features.BillPaymentFeature.Commands.DeleteBillPaymentCommand;
 using SMART.ERP.Application.Features.BillPaymentFeature.Commands.UpdateBillPaymentCommand;
 using SMART.ERP.Application.Features.BillPaymentFeature.Queries;
-using SMART.ERP.Application.Parameters;
 
 namespace SMART.ERP.API.Controllers.v1
 {

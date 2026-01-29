@@ -11,6 +11,7 @@ using SMART.ERP.Application.Behaviours;
 using SMART.ERP.Application.Jobs.AdvisorGoalJob;
 using SMART.ERP.Application.Jobs.LogSessionJob;
 using SMART.ERP.Application.Jobs.LongLivedOpportunitiesJob;
+using SMART.ERP.Application.Services;
 using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 using SMART.ERP.Application.Services.AssignUserToProspectService;
 using SMART.ERP.Application.Services.BlobStorageService;
@@ -26,7 +27,6 @@ using SMART.ERP.Domain.Settings;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using SMART.ERP.Application.Services;
 
 namespace SMART.ERP.Application
 {

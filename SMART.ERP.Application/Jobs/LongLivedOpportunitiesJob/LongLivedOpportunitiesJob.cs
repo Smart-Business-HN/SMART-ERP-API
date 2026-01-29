@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
+using Quartz;
+using SMART.ERP.Application.DTOs.Notification;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.SignalRHub;
 using SMART.ERP.Application.Specifications.OpportunitySpecification;
-using SMART.ERP.Domain.Entities;
-using Quartz;
 using SMART.ERP.Application.Specifications.UserSpecification;
-using SMART.ERP.Application.DTOs.Notification;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Jobs.LongLivedOpportunitiesJob
 {

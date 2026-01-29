@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using SMART.ERP.Application.Features.BranchOfficeFeature.Commands.CreateBranchOfficeCommand;
 using SMART.ERP.Application.Features.BranchOfficeFeature.Commands.DeleteBranchOfficeCommand;
+using SMART.ERP.Application.Features.BranchOfficeFeature.Commands.UpdateBranchOfficeCommand;
 using SMART.ERP.Application.Features.BranchOfficeFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.Application.Features.BranchOfficeFeature.Commands.CreateBranchOfficeCommand;
-using SMART.ERP.Application.Features.BranchOfficeFeature.Commands.UpdateBranchOfficeCommand;
-using Microsoft.AspNetCore.OutputCaching;
-using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SMART.ERP.Application.Features.ProductFtrFeature.Commands.DeleteProductFtrCommand;
-using SMART.ERP.Application.Features.ProductFtrFeature.Queries;
 using SMART.ERP.Application.Features.ProductFtrFeature.Commands.CreateProductFtrCommand;
+using SMART.ERP.Application.Features.ProductFtrFeature.Commands.DeleteProductFtrCommand;
 using SMART.ERP.Application.Features.ProductFtrFeature.Commands.UpdateProductFtrCommand;
-using Asp.Versioning;
+using SMART.ERP.Application.Features.ProductFtrFeature.Queries;
 
 namespace SMART.ERP.API.Controllers.v1
 {

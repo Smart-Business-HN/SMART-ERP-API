@@ -4,12 +4,12 @@ using SMART.ERP.Application.DTOs.EcommerceUser;
 using SMART.ERP.Application.DTOs.Mail;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.MailService;
 using SMART.ERP.Application.Services.NewEncryptionService;
 using SMART.ERP.Application.Specifications.EcommerceUserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Domain.Enums;
-using SMART.ERP.Application.Services.MailService;
 
 namespace SMART.ERP.Application.Features.EcommerceUserFeature.Commands.CreateEcommerceUserCommand;
 

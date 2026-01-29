@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.AdvisorDepartmentFeature.Commands.CreateAdvisorDepartmentCommand;
 using SMART.ERP.Application.Features.AdvisorDepartmentFeature.Commands.DeleteAdvisorDepartmentCommand;
 using SMART.ERP.Application.Features.AdvisorDepartmentFeature.Queries;
-using SMART.ERP.Application.Features.AdvisorDepartmentFeature.Commands.CreateAdvisorDepartmentCommand;
-using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

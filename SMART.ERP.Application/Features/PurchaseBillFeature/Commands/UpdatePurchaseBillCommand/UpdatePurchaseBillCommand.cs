@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.OutputCaching;
-using Quartz.Impl.AdoJobStore.Common;
-using SMART.ERP.Application.DTOs.Provider;
 using SMART.ERP.Application.DTOs.PurchaseBill;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.ProductPurchasePriceLogSpecification;
-using SMART.ERP.Application.Specifications.PurchaseOrderSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 

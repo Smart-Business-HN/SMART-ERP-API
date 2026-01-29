@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SMART.ERP.Application.Features.CustomerFeature.Queries;
-using SMART.ERP.Application.Parameters;
+using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomerCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.ImportCustomerCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.LoginCustomerCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomerCommand;
-using Microsoft.AspNetCore.OutputCaching;
-using Asp.Versioning;
+using SMART.ERP.Application.Features.CustomerFeature.Queries;
+using SMART.ERP.Application.Parameters;
 
 namespace SMART.ERP.API.Controllers.v1
 {

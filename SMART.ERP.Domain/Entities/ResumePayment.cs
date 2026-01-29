@@ -1,4 +1,6 @@
-﻿namespace SMART.ERP.Domain.Entities
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace SMART.ERP.Domain.Entities
 {
     public class ResumePayment
     {
@@ -7,6 +9,7 @@
         public DailyClose? DailyClose { get; set; }
         public int TypeOfPaymentMethodId { get; set; }
         public TypeOfPaymentMethod? TypeOfPayment { get; set; }
+        [Precision(18, 2)]
         public decimal Amount { get; set; }
     }
 }

@@ -1,12 +1,17 @@
-﻿namespace SMART.ERP.Domain.Entities
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SMART.ERP.Domain.Entities
 {
     public class SaleOrder
     {
         public int Id { get; init; }
+        [Column(TypeName = "varchar(50)")]
         public string Code { get; set; } = null!;
         public Guid CustomerId { get; set; }
-        public virtual Customer? Customer { get; set; } 
+        public virtual Customer? Customer { get; set; }
         public int? CantItems { get; set; }
+        [Precision(18, 2)]
         public decimal TotalToPay { get; set; }
         public int OpportunityId { get; set; }
         public virtual Opportunity? Opportunity { get; set; }
@@ -15,8 +20,10 @@
         public int StatusId { get; set; }
         public virtual Status? Status { get; set; }
         public DateTime CreationDate { get; set; }
+        [Column(TypeName = "varchar(50)")]
         public string CreatedBy { get; set; } = null!;
         public DateTime? ModificationDate { get; set; }
+        [Column(TypeName = "varchar(50)")]
         public string? ModificatedBy { get; set; }
         public bool IsActive { get; set; }
         public List<SaleOrderProduct>? SaleOrderProducts { get; set; }

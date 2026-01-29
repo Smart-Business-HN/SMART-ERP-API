@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.TypeOriginFeature.Commands.CreateTypeOriginCommand;
 using SMART.ERP.Application.Features.TypeOriginFeature.Commands.DeleteTypeOriginCommand;
+using SMART.ERP.Application.Features.TypeOriginFeature.Commands.UpdateTypeOriginCommand;
 using SMART.ERP.Application.Features.TypeOriginFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.Application.Features.TypeOriginFeature.Commands.CreateTypeOriginCommand;
-using SMART.ERP.Application.Features.TypeOriginFeature.Commands.UpdateTypeOriginCommand;
-using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

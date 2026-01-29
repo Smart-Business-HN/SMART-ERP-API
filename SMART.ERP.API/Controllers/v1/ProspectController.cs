@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SMART.ERP.Application.Features.ProspectFeature.Queries;
-using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Features.ProspectFeature.Commands.ConvertProspectCommand;
 using SMART.ERP.Application.Features.ProspectFeature.Commands.CreateProspectCommand;
 using SMART.ERP.Application.Features.ProspectFeature.Commands.CreateProspectXpressCommand;
 using SMART.ERP.Application.Features.ProspectFeature.Commands.UpdateProspectCommand;
 using SMART.ERP.Application.Features.ProspectFeature.Commands.UpdateProspectStepCommand;
+using SMART.ERP.Application.Features.ProspectFeature.Queries;
+using SMART.ERP.Application.Parameters;
 
 namespace SMART.ERP.API.Controllers.v1
 {

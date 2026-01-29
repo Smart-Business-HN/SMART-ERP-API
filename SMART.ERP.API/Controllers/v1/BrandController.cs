@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using SMART.ERP.Application.Features.BrandFeature.Commands.CreateBrandCommand;
 using SMART.ERP.Application.Features.BrandFeature.Commands.DeleteBrandCommand;
+using SMART.ERP.Application.Features.BrandFeature.Commands.UpdateBrandCommand;
 using SMART.ERP.Application.Features.BrandFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Services.HeaderService;
-using SMART.ERP.Application.Features.BrandFeature.Commands.CreateBrandCommand;
-using SMART.ERP.Application.Features.BrandFeature.Commands.UpdateBrandCommand;
-using Microsoft.AspNetCore.OutputCaching;
-using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

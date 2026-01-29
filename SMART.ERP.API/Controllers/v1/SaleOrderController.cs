@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.SaleOrderFeature.Commands.CreateSaleOrderCommand;
 using SMART.ERP.Application.Features.SaleOrderFeature.Commands.DeleteSaleOrderCommand;
 using SMART.ERP.Application.Features.SaleOrderFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.Application.Features.SaleOrderFeature.Commands.CreateSaleOrderCommand;
-using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

@@ -1348,6 +1348,20 @@ namespace SMART.ERP.Infrastructure
                 .Property(x=>x.TotalPrice)
                 .HasComputedColumnSql("[Quantity] * [UnitPrice] - ISNULL([Discount], 0)");
 
+            //Product Parts
+            modelBuilder.Entity<ProductPart>().ToTable("ProductParts");
+            modelBuilder.Entity<ProductPart>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<ProductPart>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ProductPart>()
+                .HasOne(x => x.FatherProduct)
+                .WithMany()
+                .HasForeignKey(x => x.FatherProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             base.OnModelCreating(modelBuilder);
         }
     }

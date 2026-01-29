@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using SMART.ERP.Application.DTOs.Auth;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.HeaderService;
@@ -9,7 +10,6 @@ using SMART.ERP.Application.Specifications.CustomerSpecification;
 using SMART.ERP.Application.Specifications.WishListSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.Auth;
 using SMART.ERP.Domain.Settings;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

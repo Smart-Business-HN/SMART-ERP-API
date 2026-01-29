@@ -4,7 +4,6 @@ using SMART.ERP.Application.Features.WarehouseFeature.Commands.CreateWarehouseCo
 using SMART.ERP.Application.Features.WarehouseFeature.Commands.UpdateWarehouseCommand;
 using SMART.ERP.Application.Features.WarehouseFeature.Queries;
 using SMART.ERP.Application.Features.WinReasonFeature.Commands.DeleteWinReasonCommand;
-using SMART.ERP.Application.Features.WishListFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
 namespace SMART.ERP.API.Controllers.v1

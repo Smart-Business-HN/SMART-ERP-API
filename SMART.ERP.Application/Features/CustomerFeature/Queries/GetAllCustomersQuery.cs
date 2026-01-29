@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using MediatR;
+using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Application.Repository;
-using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.CustomerSpecification;
 using SMART.ERP.Application.Wrappers;
-using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Application.DTOs.Quotation;
 
 namespace SMART.ERP.Application.Features.CustomerFeature.Queries
 {

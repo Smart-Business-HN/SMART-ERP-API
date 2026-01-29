@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.InterestLevelFeature.Commands.CreateInterestLevelCommand;
 using SMART.ERP.Application.Features.InterestLevelFeature.Commands.DeleteInterestLevelCommand;
+using SMART.ERP.Application.Features.InterestLevelFeature.Commands.UpdateInterestLevelCommand;
 using SMART.ERP.Application.Features.InterestLevelFeature.Queries;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.Application.Features.InterestLevelFeature.Commands.CreateInterestLevelCommand;
-using SMART.ERP.Application.Features.InterestLevelFeature.Commands.UpdateInterestLevelCommand;
-using Asp.Versioning;
 
 namespace SMART.ERP.API.Controllers.v1
 {

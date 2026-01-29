@@ -1,5 +1,5 @@
-﻿using SMART.ERP.Domain.Entities;
-using Ardalis.Specification;
+﻿using Ardalis.Specification;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Specifications.QuotationSpecification
 {

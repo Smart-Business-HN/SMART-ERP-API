@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Options;
+using RestSharp;
+using SMART.ERP.Application.DTOs.Meta.MetAdCampaign;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
-using RestSharp;
-using SMART.ERP.Application.DTOs.Meta.MetAdCampaign;
 using SMART.ERP.Domain.Settings;
 using System.Text.Json;
 

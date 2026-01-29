@@ -1,24 +1,37 @@
-﻿namespace SMART.ERP.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SMART.ERP.Domain.Entities
 {
     public class Customer
     {
         public Guid Id { get; init; }
+        [MaxLength(100)]
         public string FullName { get; set; } = null!;
+        [MaxLength(50)]
         public string? FirstName { get; set; }
+        [MaxLength(50)]
         public string? LastName { get; set; }
+        [MaxLength(50)]
         public string? DNI { get; set; }
+        [MaxLength(50)]
         public string? RTN { get; set; }
+        [MaxLength(100)]
         public string? Company { get; set; }
         public DateTime? ConstitutionDate { get; set; }
         public DateTime? BirthDate { get; set; }
         public int? Age { get; set; }
+        [MaxLength(70)]
         public string? Email { get; set; }
         public bool ConfirmedEmail { get; set; }
+        [MaxLength(70)]
         public string? SecondaryEmail { get; set; }
+        [MaxLength(50)]
         public string? PhoneNumber { get; set; }
         public bool ConfirmedPhoneNumber { get; set; }
+        [MaxLength(50)]
         public string? SecondaryPhoneNumber { get; set; } = null!;
         public string? Avatar { get; set; }
+        [MaxLength(50)]
         public string? CivilStatus { get; set; }
         public byte[]? PasswordHash { get; set; } = null!;
         public byte[]? PasswordSalt { get; set; } = null!;
@@ -37,8 +50,11 @@
         public int? DepartmentId { get; set; }
         public virtual Department? Department { get; set; }
         public bool IsHisOwnContactPerson { get; set; }
+        [MaxLength(50)]
         public string? ContactPerson { get; set; }
+        [MaxLength(50)]
         public string? ContactPersonPhone { get; set; }
+        [MaxLength(50)]
         public string? ContactPersonEmail { get; set; }
         public List<DeliveryDirection>? DeliveryDirections { get; set; }
         public bool IsActive { get; set; }

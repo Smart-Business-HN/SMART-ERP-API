@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SMART.ERP.Application.Features.WishListProductFeature.Commands.DeleteWishListProductCommand;
-using SMART.ERP.Application.Features.WishListProductFeature.Queries;
 using SMART.ERP.Application.Features.WishListProductFeature.Commands.CreateWishListProductCommand;
+using SMART.ERP.Application.Features.WishListProductFeature.Commands.DeleteWishListProductCommand;
 using SMART.ERP.Application.Features.WishListProductFeature.Commands.UpdateWishListProductCommand;
-using Asp.Versioning;
+using SMART.ERP.Application.Features.WishListProductFeature.Queries;
 
 namespace SMART.ERP.API.Controllers.v1
 {

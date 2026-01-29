@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Features.DashboardFeature.Queries;
+using SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard;
 using SMART.ERP.Application.Features.DashboardFeature.Queries.AdvisorMetrics;
 using SMART.ERP.Application.Features.DashboardFeature.Queries.OpportunityMetrics;
 using SMART.ERP.Application.Features.DashboardFeature.Queries.ProductMetrics;
 using SMART.ERP.Application.Features.DashboardFeature.Queries.ProspectMetrics;
 using SMART.ERP.Application.Parameters;
-using SMART.ERP.Application.Features.DashboardFeature.Queries;
-using Asp.Versioning;
-using SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard;
 
 namespace SMART.ERP.API.Controllers.v1
 {

@@ -1,5 +1,4 @@
 ﻿using SMART.ERP.Application.DTOs.Status;
-using System.Security.Policy;
 
 namespace SMART.ERP.Application.DTOs.Product
 {

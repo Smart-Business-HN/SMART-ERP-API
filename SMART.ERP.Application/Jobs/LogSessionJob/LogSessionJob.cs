@@ -1,10 +1,10 @@
-﻿using SMART.ERP.Application.Repository;
+﻿using Quartz;
+using SMART.ERP.Application.DTOs.Mail;
+using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.MailService;
 using SMART.ERP.Application.Specifications.LogSessionSpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Domain.Entities;
-using Quartz;
-using SMART.ERP.Application.DTOs.Mail;
 
 namespace SMART.ERP.Application.Jobs.LogSessionJob
 {
