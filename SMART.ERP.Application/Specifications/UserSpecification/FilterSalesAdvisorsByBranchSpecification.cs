@@ -8,9 +8,13 @@ namespace SMART.ERP.Application.Specifications.UserSpecification
         public FilterSalesAdvisorsByBranchSpecification(int branchId)
         {
             if (branchId > 0)
-                Query.Where(x => x.Role!.Name == "Sales Advisor" && x.BranchOfficeId == branchId).AsNoTracking();
+                Query.Where(x => x.Role!.Name == "Sales Advisor" && x.BranchOfficeId == branchId)
+                    .Include(x => x.Role)
+                    .AsNoTracking();
             else
-                Query.Where(x => x.Role!.Name == "Sales Advisor").AsNoTracking();
+                Query.Where(x => x.Role!.Name == "Sales Advisor")
+                    .Include(x => x.Role)
+                    .AsNoTracking();
         }
     }
 }
