@@ -31,6 +31,7 @@ using SMART.ERP.Application.DTOs.NonBilllableExpense;
 using SMART.ERP.Application.DTOs.Notification;
 using SMART.ERP.Application.DTOs.Opportunity;
 using SMART.ERP.Application.DTOs.Product;
+using SMART.ERP.Application.DTOs.Project;
 using SMART.ERP.Application.DTOs.ProductEntry;
 using SMART.ERP.Application.DTOs.ProductPurchasePriceLog;
 using SMART.ERP.Application.DTOs.ProductToPurchase;
@@ -93,6 +94,7 @@ using SMART.ERP.Application.Features.OpportunityDocumentFeature.Commands.CreateO
 using SMART.ERP.Application.Features.OpportunityFeature.Commands.CreateOpportunityCommand;
 using SMART.ERP.Application.Features.PrefixFeature.Command.CreatePrefixCommand;
 using SMART.ERP.Application.Features.ProductDataSheetFeature.Commands.CreateProductDataSheetCommand;
+using SMART.ERP.Application.Features.ProjectFeature.Commands.CreateProjectCommand;
 using SMART.ERP.Application.Features.ProductFtrFeature.Commands.CreateProductFtrCommand;
 using SMART.ERP.Application.Features.ProductImageFeature.Commands.CreateProductImageCommand;
 using SMART.ERP.Application.Features.ProviderFeature.Commands.CreateProviderCommand;
@@ -238,6 +240,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<IncomeAccount, IncomeAccountDto>().ReverseMap();
             CreateMap<ExpenseAccount, ExpenseAccountDto>().ReverseMap();
             CreateMap<ProductPurchasePriceLogDto, ProductPurchasePriceLog>().ReverseMap();
+            CreateMap<Project, ProjectDto>().ReverseMap();
             CreateMap<NonBillableExpense, NonBillableExpenseDto>().ReverseMap();
             CreateMap<NonBillableExpensePayment, NonBillableExpensePaymentDto>().ReverseMap();
             CreateMap<ProductToBuyDto, ProductEntry>();
@@ -318,6 +321,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateMajorIncomeAccountCommand, MajorIncomeAccount>();
             CreateMap<CreateIncomeAccountCommand, IncomeAccount>();
             CreateMap<CreateExpenseAccountCommand, ExpenseAccount>();
+            CreateMap<CreateProjectCommand, Project>();
             CreateMap<CreateNonBillableExpenseCommand, NonBillableExpense>();
             CreateMap<CreateNonBillableExpensePaymentCommand, NonBillableExpensePayment>();
             CreateMap<CancelInvoiceCommand, InvoiceDto>();

@@ -18,6 +18,7 @@ namespace SMART.ERP.Application.Features.NonBillableExpenseFeature.Commands.Upda
         public string Description { get; set; } = null!;
         public int ExpenseAccountId { get; set; }
         public int PrefixId { get; set; }
+        public int? ProjectId { get; set; }
     }
     public class UpdateNonBillableExpenseCommandHandler : IRequestHandler<UpdateNonBillableExpenseCommand, Response<NonBillableExpenseDto>>
     {
@@ -67,6 +68,7 @@ namespace SMART.ERP.Application.Features.NonBillableExpenseFeature.Commands.Upda
             nonBillableExpense.ExpenseAccountId = request.ExpenseAccountId;
             nonBillableExpense.Amount = request.Amount;
             nonBillableExpense.Outstanding = request.Amount;
+            nonBillableExpense.ProjectId = request.ProjectId;
             await _repositoryAsync.UpdateAsync(nonBillableExpense);
             await _repositoryAsync.SaveChangesAsync();
             await _outputCacheStored.EvictByTagAsync("cache_nonBillableExpense", cancellationToken);

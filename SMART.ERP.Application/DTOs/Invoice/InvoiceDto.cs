@@ -47,6 +47,7 @@ namespace SMART.ERP.Application.DTOs.Invoice
         public DateTime InsertedDate { get; set; }
         public string? ModificatedBy { get; set; }
         public DateTime? ModificationDate { get; set; }
+        public int? ProjectId { get; set; }
         public List<ProductSoldDto>? ProductsSold { get; set; }
         public List<BillPaymentDto>? BillPayments { get; set; }
     }

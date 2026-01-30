@@ -30,6 +30,7 @@ namespace SMART.ERP.Application.DTOs.Quotation
         public decimal? Profitability { get; set; }
         public int? InvoiceDestinationId { get; set; }
         public InvoiceDto? InvoiceDestination { get; set; }
+        public int? ProjectId { get; set; }
         public string CreatedBy { get; set; } = null!;
         public DateTime InsertedDate { get; set; }
         public string? ModificatedBy { get; set; }

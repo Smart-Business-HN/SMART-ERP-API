@@ -39,6 +39,8 @@ namespace SMART.ERP.Domain.Entities
         public int? InventoryInputDestinationId { get; set; }
         public int PrefixId {  get; set; }
         public virtual Prefix? Prefix { get; set; }
+        public int? ProjectId { get; set; }
+        public virtual Project? Project { get; set; }
         public virtual List<PurchaseBillPayment>? PurchaseBillPayments { get; set; }
         public int ExpenseAccountId { get; set; }
         public virtual ExpenseAccount? ExpenseAccount { get; set; }

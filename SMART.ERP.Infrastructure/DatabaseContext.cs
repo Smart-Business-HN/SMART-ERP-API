@@ -85,6 +85,7 @@ namespace SMART.ERP.Infrastructure
         public DbSet<PurchaseOrder> PurchaseOrders { get; set; } = null!;
         public DbSet<PurchaseBill> PurchaseBills { get; set; } = null!;
         public DbSet<ProductPurchasePriceLog> ProductPurchasePriceLog { get; set; } = null!;
+        public DbSet<Project> Projects { get; set; } = null!;
         public DbSet<NonBillableExpense> NonBillableExpenses { get; set; } = null!;
         public DbSet<NonBillableExpensePayment> NonBillableExpensePayments { get; set; } = null!;
         public DbSet<DailyClose> DailyCloses { get; set; } = null!;

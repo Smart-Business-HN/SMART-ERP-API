@@ -23,6 +23,8 @@ namespace SMART.ERP.Domain.Entities
         public virtual Status? Status { get; set; }
         [MaxLength(8)]
         public string ExpenseCode { get; set; } = null!;
+        public int? ProjectId { get; set; }
+        public virtual Project? Project { get; set; }
         public virtual List<NonBillableExpensePayment>? NonBillableExpensePayments { get; set; }
     }
 }

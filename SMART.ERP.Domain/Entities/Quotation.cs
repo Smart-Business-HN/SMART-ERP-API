@@ -33,6 +33,8 @@ namespace SMART.ERP.Domain.Entities
         public decimal? Profitability { get; set; }
         public int? InvoiceDestinationId { get; set; }
         public virtual Invoice? InvoiceDestination { get; set; }
+        public int? ProjectId { get; set; }
+        public virtual Project? Project { get; set; }
         [MaxLength(50)]
         public string CreatedBy { get; set; } = null!;
         public DateTime InsertedDate { get; set; }

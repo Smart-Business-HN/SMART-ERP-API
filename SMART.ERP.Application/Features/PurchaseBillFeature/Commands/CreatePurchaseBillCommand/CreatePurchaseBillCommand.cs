@@ -26,6 +26,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
         public decimal? Taxes18Percent { get; set; }
         public int PrefixId { get; set; }
         public int ExpenseAccountId { get; set; }
+        public int? ProjectId { get; set; }
     }
     public class CreatePurchaseBillCommandHandler : IRequestHandler<CreatePurchaseBillCommand,Response<PurchaseBillDto>>
     {

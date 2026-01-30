@@ -159,6 +159,7 @@ builder.Services.AddOutputCache(opt =>
         opt.AddPolicy("cache_income_account", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_income_account").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
         opt.AddPolicy("cache_expense_account", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_expense_account").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
         opt.AddPolicy("cache_nonBillableExpense", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_nonBillableExpense").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_project", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_project").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
         opt.AddPolicy("cache_dailyClose", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_dailyClose").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
         opt.AddPolicy("cache_monthlyPurchaseDeclaration", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_monthlyPurchaseDeclaration").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
         //ECOMMERCE CACHE

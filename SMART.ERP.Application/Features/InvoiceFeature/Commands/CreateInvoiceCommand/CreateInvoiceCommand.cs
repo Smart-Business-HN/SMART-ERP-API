@@ -30,6 +30,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CreateInvoiceCo
         public string? ExemptedRegistrationCertificateNumber { get; set; }
         public int InvoicePaymentTypeId { get; set; }
         public DateOnly? ExpectedPaymentDate { get; set; }
+        public int? ProjectId { get; set; }
     }
     public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand, Response<InvoiceDto>>
     {

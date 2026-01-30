@@ -32,6 +32,7 @@ namespace SMART.ERP.Application.DTOs.PurchaseBill
         public int? InventoryInputDestinationId { get; set; }
         public int PrefixId {  get; set; }
         public PrefixDto? Prefix { get; set; }
+        public int? ProjectId { get; set; }
         public List<PurchaseBillPaymentDto>? PurchaseBillPayments { get; set; }
         public int ExpenseAccountId { get; set; }
         public ExpenseAccountDto? ExpenseAccount { get; set; }

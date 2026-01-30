@@ -23,6 +23,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
         public List<ProductToOfferdDto>? ProductsToOffered { get; set; }
         public int StatusId { get; set; }
         public int PrefixId { get; set; }
+        public int? ProjectId { get; set; }
     }
     public class CreateQuotationCommandHandler : IRequestHandler<CreateQuotationCommand, Response<QuotationDto>>
     {

@@ -58,6 +58,8 @@ namespace SMART.ERP.Domain.Entities
         [MaxLength(50)]
         public string? ModificatedBy { get; set; }
         public DateTime? ModificationDate { get; set; }
+        public int? ProjectId { get; set; }
+        public virtual Project? Project { get; set; }
         public List<ProductSold>? ProductsSold { get; set; }
         public List<BillPayment>? BillPayments { get; set; }
     }

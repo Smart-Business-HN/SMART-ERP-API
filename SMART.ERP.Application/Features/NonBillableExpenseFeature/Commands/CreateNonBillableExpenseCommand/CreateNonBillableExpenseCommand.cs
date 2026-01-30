@@ -17,6 +17,7 @@ namespace SMART.ERP.Application.Features.NonBillableExpenseFeature.Commands.Crea
         public string Description { get; set; } = null!;
         public int ExpenseAccountId { get; set; }
         public int PrefixId { get; set; }
+        public int? ProjectId { get; set; }
     }
 
     public class CreateNonBillableExpenseCommandHandler : IRequestHandler<CreateNonBillableExpenseCommand, Response<NonBillableExpenseDto>>

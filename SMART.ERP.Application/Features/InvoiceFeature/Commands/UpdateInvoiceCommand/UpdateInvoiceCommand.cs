@@ -31,6 +31,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
         public string? ExemptedRegistrationCertificateNumber { get; set; }
         public int InvoicePaymentTypeId { get; set; }
         public DateOnly? ExpectedPaymentDate { get; set; }
+        public int? ProjectId { get; set; }
     }
     public class UpdateInvoiceCommandHandler : IRequestHandler<UpdateInvoiceCommand, Response<InvoiceDto>>
     {
@@ -151,6 +152,10 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             if (invoiceExist.ExpectedPaymentDate != request.ExpectedPaymentDate)
             {
                 invoiceExist.ExpectedPaymentDate = request.ExpectedPaymentDate;
+            }
+            if (invoiceExist.ProjectId != request.ProjectId)
+            {
+                invoiceExist.ProjectId = request.ProjectId;
             }
             var taxesRates = await _taxRepositoryAsync.ListAsync();
             string localProductSoldJson = JsonConvert.SerializeObject(request.ProductsSold);

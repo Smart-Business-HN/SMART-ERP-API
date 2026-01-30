@@ -22,6 +22,7 @@ namespace SMART.ERP.Application.DTOs.NonBilllableExpense
         public int StatusId { get; set; }
         public virtual StatusDto? Status { get; set; }
         public string ExpenseCode { get; set; } = null!;
+        public int? ProjectId { get; set; }
         public List<NonBillableExpensePaymentDto>? NonBillableExpensePayments { get; set; }
     }
 }

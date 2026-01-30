@@ -25,6 +25,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.UpdatePurc
         public decimal? Taxes15Percent { get; set; }
         public decimal? Taxes18Percent { get; set; }
         public int ExpenseAccountId { get; set; }
+        public int? ProjectId { get; set; }
     }
     public class UpdatePurchaseBillCommandHandler : IRequestHandler<UpdatePurchaseBillCommand,Response<PurchaseBillDto>>
     {
@@ -125,6 +126,10 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.UpdatePurc
             if (purchaseBillExist.ExpenseAccountId != request.ExpenseAccountId)
             {
                 purchaseBillExist.ExpenseAccountId = request.ExpenseAccountId;
+            }
+            if (purchaseBillExist.ProjectId != request.ProjectId)
+            {
+                purchaseBillExist.ProjectId = request.ProjectId;
             }
             purchaseBillExist.Total = (decimal)(request.Exempt + request.Exonerated + request.Taxes15Percent + request.Taxes18Percent + request.TaxedAt15Percent + request.TaxedAt18Percent);
             await _repositoryAsync.UpdateAsync(purchaseBillExist, cancellationToken);

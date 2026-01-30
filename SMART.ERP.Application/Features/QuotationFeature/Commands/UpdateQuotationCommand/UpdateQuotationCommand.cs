@@ -26,6 +26,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
         public List<ProductOfferedDto> ProductsOffered { get; set; } = null!;
         public int StatusId { get; set; }
         public int PrefixId { get; set; }
+        public int? ProjectId { get; set; }
     }
     public class UpdateQuotationCommandHandler : IRequestHandler<UpdateQuotationCommand, Response<QuotationDto>>
     {
@@ -115,6 +116,10 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             if (request.DueDate != null && quotationExist.DueDate != request.DueDate)
             {
                 quotationExist.DueDate = (DateTime)request.DueDate;
+            }
+            if (quotationExist.ProjectId != request.ProjectId)
+            {
+                quotationExist.ProjectId = request.ProjectId;
             }
             //PRODUCS to offered
             var taxesInDatabase = await _taxRepositoryAsync.ListAsync();
