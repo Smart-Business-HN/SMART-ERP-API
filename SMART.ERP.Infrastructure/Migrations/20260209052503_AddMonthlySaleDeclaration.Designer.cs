@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SMART.ERP.Infrastructure;
 
@@ -11,9 +12,11 @@ using SMART.ERP.Infrastructure;
 namespace SMART.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260209052503_AddMonthlySaleDeclaration")]
+    partial class AddMonthlySaleDeclaration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1000,11 +1003,6 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .HasMaxLength(37)
                         .HasColumnType("nvarchar(37)");
 
-                    b.Property<string>("CaiName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<string>("Correlative")
                         .IsRequired()
                         .HasMaxLength(8)
@@ -1017,8 +1015,8 @@ namespace SMART.ERP.Infrastructure.Migrations
 
                     b.Property<string>("CustomerRTN")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(14)
+                        .HasColumnType("nvarchar(14)");
 
                     b.Property<string>("EmissionPoint")
                         .IsRequired()

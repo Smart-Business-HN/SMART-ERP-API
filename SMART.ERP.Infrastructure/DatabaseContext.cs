@@ -92,6 +92,8 @@ namespace SMART.ERP.Infrastructure
         public DbSet<ResumePayment> ResumePayments { get; set; } = null!;
         public DbSet<MonthlyPurchaseDeclaration> MonthlyPurchaseDeclarations { get; set; } = null!;
         public DbSet<DeclaratedPurchaseBill> DeclaratedPurchaseBills { get; set; } = null!;
+        public DbSet<MonthlySaleDeclaration> MonthlySaleDeclarations { get; set; } = null!;
+        public DbSet<DeclaredSaleInvoice> DeclaredSaleInvoices { get; set; } = null!;
         public DbSet<InvoicePaymentType> InvoicePaymentTypes { get; set; } = null!;
         public DbSet<Discount> Discounts { get; set; } = null!;
         public DbSet<EcommerceUser> EcommerceUsers { get; set; } = null!;
@@ -1304,6 +1306,22 @@ namespace SMART.ERP.Infrastructure
             //Declarated Purchase Bill
             modelBuilder.Entity<DeclaratedPurchaseBill>().ToTable("DeclaratedPurchaseBill");
             modelBuilder.Entity<DeclaratedPurchaseBill>(o => o.HasKey(x => x.Id));
+            // Monthly Sale Declaration
+            modelBuilder.Entity<MonthlySaleDeclaration>().ToTable("MonthlySaleDeclaration");
+            modelBuilder.Entity<MonthlySaleDeclaration>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<MonthlySaleDeclaration>()
+             .HasMany(x => x.DeclaredSaleInvoices)
+             .WithOne(x => x.MonthlySaleDeclaration)
+             .HasForeignKey(x => x.MonthlySaleDeclarationId)
+             .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<MonthlySaleDeclaration>()
+             .HasOne(x => x.Status)
+             .WithMany()
+             .HasForeignKey(x => x.StatusId)
+             .OnDelete(DeleteBehavior.Restrict);
+            //Declared Sale Invoice
+            modelBuilder.Entity<DeclaredSaleInvoice>().ToTable("DeclaredSaleInvoice");
+            modelBuilder.Entity<DeclaredSaleInvoice>(o => o.HasKey(x => x.Id));
             //Invoice Payment Type
             modelBuilder.Entity<InvoicePaymentType>().ToTable("InvoicePaymentType");
             modelBuilder.Entity<InvoicePaymentType>(o => o.HasKey(x => x.Id));
