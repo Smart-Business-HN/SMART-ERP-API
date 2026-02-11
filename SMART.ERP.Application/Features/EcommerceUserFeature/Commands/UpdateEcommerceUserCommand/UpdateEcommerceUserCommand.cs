@@ -6,12 +6,13 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.EcommerceUserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.Features.EcommerceUserFeature.Commands.UpdateEcommerceUserCommand;
 
 public class UpdateEcommerceUserCommand : IRequest<Response<EcommerceUserDto>>
 {
-    public Guid Id { get; set; } 
+    public Guid Id { get; set; }
     public string Email { get; set; } = null!;
     public string UserName { get; set; } = null!;
     public string FirstName { get; set; } = null!;
@@ -26,14 +27,21 @@ public class UpdateEcommerceUserCommandHandler : IRequestHandler<UpdateEcommerce
     public readonly IRepositoryAsync<EcommerceUser> _repositoryAsync;
     public readonly IRepositoryAsync<Department> _departmentRepositoryAsync;
     public readonly IRepositoryAsync<Gender> _genderRepositoryAsync;
+    public readonly IRepositoryAsync<LogEcommerceUser> _logRepositoryAsync;
     public readonly IMapper _mapper;
 
-    public UpdateEcommerceUserCommandHandler(IRepositoryAsync<EcommerceUser> repositoryAsync, IMapper mapper, IRepositoryAsync<Department> departmentRepositoryAsync, IRepositoryAsync<Gender> genderRepositoryAsync)
+    public UpdateEcommerceUserCommandHandler(
+        IRepositoryAsync<EcommerceUser> repositoryAsync,
+        IMapper mapper,
+        IRepositoryAsync<Department> departmentRepositoryAsync,
+        IRepositoryAsync<Gender> genderRepositoryAsync,
+        IRepositoryAsync<LogEcommerceUser> logRepositoryAsync)
     {
         _repositoryAsync = repositoryAsync;
         _mapper = mapper;
         _departmentRepositoryAsync = departmentRepositoryAsync;
         _genderRepositoryAsync = genderRepositoryAsync;
+        _logRepositoryAsync = logRepositoryAsync;
     }
     public async Task<Response<EcommerceUserDto>> Handle(UpdateEcommerceUserCommand request, CancellationToken cancellationToken)
     {
@@ -47,10 +55,21 @@ public class UpdateEcommerceUserCommandHandler : IRequestHandler<UpdateEcommerce
         }
         var gender = await _genderRepositoryAsync.GetByIdAsync(request.GenderId, cancellationToken);
         if(gender == null ) throw new ApiException("Género no encontrado");
+
+        var changes = new List<string>();
+        if (user.Email != request.Email) changes.Add("Email");
+        if (user.UserName != request.UserName) changes.Add("UserName");
+        if (user.FirstName != request.FirstName) changes.Add("FirstName");
+        if (user.LastName != request.LastName) changes.Add("LastName");
+        if (user.PhoneNumber != request.PhoneNumber) changes.Add("PhoneNumber");
+        if (user.DepartmentId != request.DepartmentId) changes.Add("DepartmentId");
+        if (user.GenderId != request.GenderId) changes.Add("GenderId");
+        if (user.BirthDay != request.BirthDay) changes.Add("BirthDay");
+
         if (user.Email != request.Email)
         {
             var previousUser = await _repositoryAsync.FirstOrDefaultAsync(new FilterEcommerceUserSpecification(request.Email,null), cancellationToken);
-            if(previousUser != null && previousUser.Id != user.Id) 
+            if(previousUser != null && previousUser.Id != user.Id)
                 throw new ApiException("Este correo ya está en uso por otro usuario");
             user.Email = request.Email;
         }
@@ -71,6 +90,19 @@ public class UpdateEcommerceUserCommandHandler : IRequestHandler<UpdateEcommerce
         user.BirthDay = request.BirthDay;
         user.ModificationDate = DateTime.UtcNow;
         await _repositoryAsync.UpdateAsync(user, cancellationToken);
+
+        if (changes.Count > 0)
+        {
+            await _logRepositoryAsync.AddAsync(new LogEcommerceUser
+            {
+                EcommerceUserId = user.Id,
+                ActionType = (int)EcommerceUserActionType.ProfileUpdate,
+                Details = string.Join(", ", changes),
+                CreationDate = DateTime.UtcNow
+            }, cancellationToken);
+            await _logRepositoryAsync.SaveChangesAsync(cancellationToken);
+        }
+
         user.Department = department;
         user.Gender = gender;
         var userDto = _mapper.Map<EcommerceUserDto>(user);

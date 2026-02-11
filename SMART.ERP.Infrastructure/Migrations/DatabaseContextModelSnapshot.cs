@@ -76,6 +76,51 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.ToTable("AdvisorGoal", (string)null);
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.AssociatedCompany", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EcommerceUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("RTN")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EcommerceUserId");
+
+                    b.ToTable("AssociatedCompany", (string)null);
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Bank", b =>
                 {
                     b.Property<int>("Id")
@@ -375,6 +420,10 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Property<decimal?>("Discount")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ProductDescription")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -1842,6 +1891,34 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.ToTable("InvoicePaymentType", (string)null);
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.LogEcommerceUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActionType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Details")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("EcommerceUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EcommerceUserId");
+
+                    b.ToTable("LogEcommerceUser", (string)null);
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.LogRecovery", b =>
                 {
                     b.Property<int>("Id")
@@ -2694,6 +2771,61 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OpportunityStep", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.PaymentMethod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("CardBrand")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("CardholderName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EcommerceUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EncryptedCardNumber")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ExpirationMonth")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExpirationYear")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Last4Digits")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("nvarchar(4)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EcommerceUserId");
+
+                    b.ToTable("PaymentMethod", (string)null);
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Prefix", b =>
@@ -4572,6 +4704,17 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.AssociatedCompany", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.EcommerceUser", "EcommerceUser")
+                        .WithMany()
+                        .HasForeignKey("EcommerceUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EcommerceUser");
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Banner", b =>
                 {
                     b.HasOne("SMART.ERP.Domain.Entities.Company", "Company")
@@ -5072,6 +5215,17 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.LogEcommerceUser", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.EcommerceUser", "EcommerceUser")
+                        .WithMany()
+                        .HasForeignKey("EcommerceUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("EcommerceUser");
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.LogSession", b =>
                 {
                     b.HasOne("SMART.ERP.Domain.Entities.User", "User")
@@ -5358,6 +5512,17 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.PaymentMethod", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.EcommerceUser", "EcommerceUser")
+                        .WithMany()
+                        .HasForeignKey("EcommerceUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EcommerceUser");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Prefix", b =>

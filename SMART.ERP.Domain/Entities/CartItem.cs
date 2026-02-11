@@ -17,5 +17,6 @@ namespace SMART.ERP.Domain.Entities
         [Precision(18, 2)]
         public decimal TotalPrice { get; set; }
         public DateTime CreationDate { get; set; }
+        public string? ProductDescription { get; set; }
     }
 }

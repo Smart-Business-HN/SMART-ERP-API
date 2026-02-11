@@ -7,6 +7,7 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.EcommerceUserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 using SMART.ERP.Domain.Settings;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -24,16 +25,15 @@ public class LoginEcommerceUserCommand : IRequest<Response<SessionEcommerceUserD
 public class LoginEcommerceUserCommandHandler : IRequestHandler<LoginEcommerceUserCommand, Response<SessionEcommerceUserDto>>
 {
     private readonly IRepositoryAsync<EcommerceUser> _repositoryAsync;
+    private readonly IRepositoryAsync<LogEcommerceUser> _logRepositoryAsync;
     private readonly JWTSettings _jwtSettings;
-    //private readonly IRepositoryAsync<LogSession> _logSessionRepositoryAsync;
     public LoginEcommerceUserCommandHandler(IRepositoryAsync<EcommerceUser> repositoryAsync,
-        IOptions<JWTSettings> jwtSettings
-        //IRepositoryAsync<LogSession> logSessionRepositoryAsync
-        )
+        IOptions<JWTSettings> jwtSettings,
+        IRepositoryAsync<LogEcommerceUser> logRepositoryAsync)
     {
         _repositoryAsync = repositoryAsync;
         _jwtSettings = jwtSettings.Value;
-        //_logSessionRepositoryAsync = logSessionRepositoryAsync;
+        _logRepositoryAsync = logRepositoryAsync;
     }
     public async Task<Response<SessionEcommerceUserDto>> Handle(LoginEcommerceUserCommand request, CancellationToken cancellationToken)
     {
@@ -42,7 +42,7 @@ public class LoginEcommerceUserCommandHandler : IRequestHandler<LoginEcommerceUs
         {
             throw new ApiException($"No se encontro ningun usuario con el correo {request.Email ?? request.UserName}");
         }
-        var result = await Authenticated(user, request);
+        var result = await Authenticated(user, request, cancellationToken);
         return new Response<SessionEcommerceUserDto>(result, message: $"Bienvenido {user.FullName}");
     }
     private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
@@ -63,48 +63,56 @@ public class LoginEcommerceUserCommandHandler : IRequestHandler<LoginEcommerceUs
 
         return true;
     }
-        private async Task<SessionEcommerceUserDto> Authenticated(EcommerceUser user, LoginEcommerceUserCommand request)
+    private async Task<SessionEcommerceUserDto> Authenticated(EcommerceUser user, LoginEcommerceUserCommand request, CancellationToken cancellationToken)
+    {
+        if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
         {
-            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-            {
-                if (!VerifyPasswordHash(request.Password, user.MasterPasswordHash, user.MasterPasswordSalt))
-                    throw new ApiException($"Verifique su contraseña");
-            }
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_jwtSettings.Key);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity([
-                    new Claim(JwtRegisteredClaimNames.Sub, user.FullName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim("uid", user.Id.ToString())
-                ]),
-                //Expires = DateTime.UtcNow.AddMinutes(Int32.Parse(_jwtSettings.DurationInMinutes)),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                SecurityAlgorithms.HmacSha256Signature),
-                Issuer = _jwtSettings.Issuer,
-                Audience = _jwtSettings.Audience,
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token); 
-            var session = new SessionEcommerceUserDto
-            {
-                Id = user.Id,
-                FullName = user.FullName,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                Photo = user.Photo,
-                UserName = user.UserName,
-                CustomerType = user.CustomerType,
-                ExpirationDate = tokenDescriptor.Expires.Value,
-                Token = tokenString,
-                ActiveCartId = user.Carts!.Any() ? user.Carts!.First(x=>x.IsActive).Id : null
-            };
-
-            return session;
+            if (!VerifyPasswordHash(request.Password, user.MasterPasswordHash, user.MasterPasswordSalt))
+                throw new ApiException($"Verifique su contraseña");
         }
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(_jwtSettings.Key);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity([
+                new Claim(JwtRegisteredClaimNames.Sub, user.FullName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("uid", user.Id.ToString())
+            ]),
+            //Expires = DateTime.UtcNow.AddMinutes(Int32.Parse(_jwtSettings.DurationInMinutes)),
+            Expires = DateTime.UtcNow.AddDays(7),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+            SecurityAlgorithms.HmacSha256Signature),
+            Issuer = _jwtSettings.Issuer,
+            Audience = _jwtSettings.Audience,
+        };
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        var tokenString = tokenHandler.WriteToken(token);
+        var session = new SessionEcommerceUserDto
+        {
+            Id = user.Id,
+            FullName = user.FullName,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            Photo = user.Photo,
+            UserName = user.UserName,
+            CustomerType = user.CustomerType,
+            ExpirationDate = tokenDescriptor.Expires.Value,
+            Token = tokenString,
+            ActiveCartId = user.Carts!.Any() ? user.Carts!.First(x=>x.IsActive).Id : null
+        };
+
+        await _logRepositoryAsync.AddAsync(new LogEcommerceUser
+        {
+            EcommerceUserId = user.Id,
+            ActionType = (int)EcommerceUserActionType.Login,
+            CreationDate = DateTime.UtcNow
+        }, cancellationToken);
+        await _logRepositoryAsync.SaveChangesAsync(cancellationToken);
+
+        return session;
+    }
 }

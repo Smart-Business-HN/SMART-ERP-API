@@ -15,5 +15,6 @@ namespace SMART.ERP.Application.DTOs.CartItem
         public decimal? Discount { get; set; } = 0;
         public decimal TotalPrice { get; set; }
         public DateTime CreationDate { get; set; }
+        public string? ProductDescription { get; set; }
     }
 }

@@ -20,6 +20,7 @@ using SMART.ERP.Application.Services.HeaderService;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Services.MailService;
 using SMART.ERP.Application.Services.MetaPostService;
+using SMART.ERP.Application.Services.CardEncryptionService;
 using SMART.ERP.Application.Services.NewEncryptionService;
 using SMART.ERP.Application.Services.RegisterClientService;
 using SMART.ERP.Application.Wrappers;
@@ -70,12 +71,14 @@ namespace SMART.ERP.Application
             services.Configure<MetaSettings>(configuration.GetSection("MetaSettings"));
             services.Configure<MetaAdSettings>(configuration.GetSection("MetaAdSettings"));
             services.Configure<GoogleCalendarSettings>(configuration.GetSection("GoogleCalendar"));
+            services.Configure<EncryptionSettings>(configuration.GetSection("EncryptionSettings"));
             // configure blob storage service
             services.AddScoped(_ =>
             {
                 return new BlobServiceClient(configuration.GetConnectionString("AzureBlobStorage"));
             });
             services.AddTransient<INewEncryptionService, NewEncryptionService>();
+            services.AddTransient<ICardEncryptionService, CardEncryptionService>();
             services.AddTransient<IMailService, MailService>();
             services.AddTransient<IBlobStorageService, BlobStorageService>();
             services.AddTransient<IRegisterClientService, RegisterClientService>();

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using SMART.ERP.Application.DTOs.Address;
 using SMART.ERP.Application.DTOs.AdvisorDepartment;
+using SMART.ERP.Application.DTOs.AssociatedCompany;
+using SMART.ERP.Application.DTOs.PaymentMethod;
 using SMART.ERP.Application.DTOs.AdvisorGoal;
 using SMART.ERP.Application.DTOs.Bank;
 using SMART.ERP.Application.DTOs.BillPayment;
@@ -15,6 +17,7 @@ using SMART.ERP.Application.DTOs.DeclaratedPurchaseBill;
 using SMART.ERP.Application.DTOs.DeclaredSaleInvoice;
 using SMART.ERP.Application.DTOs.Discount;
 using SMART.ERP.Application.DTOs.EcommerceUser;
+using SMART.ERP.Application.DTOs.LogEcommerceUser;
 using SMART.ERP.Application.DTOs.ExpenseAccount;
 using SMART.ERP.Application.DTOs.IncomeAccount;
 using SMART.ERP.Application.DTOs.InternalBankAccount;
@@ -52,6 +55,8 @@ using SMART.ERP.Application.DTOs.TypeProvider;
 using SMART.ERP.Application.DTOs.User;
 using SMART.ERP.Application.DTOs.Warehouse;
 using SMART.ERP.Application.DTOs.WishList;
+using SMART.ERP.Application.Features.AssociatedCompanyFeature.Commands.CreateAssociatedCompanyCommand;
+using SMART.ERP.Application.Features.PaymentMethodFeature.Commands.CreatePaymentMethodCommand;
 using SMART.ERP.Application.Features.BankFeature.Commands.CreateBankCommand;
 using SMART.ERP.Application.Features.BannerFeature.Commands.CreateBannerCommand;
 using SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseProductCommand;
@@ -70,6 +75,7 @@ using SMART.ERP.Application.Features.DataSheetFeature.Commands.CreateDataSheetCo
 using SMART.ERP.Application.Features.DepartmentFeature.Commands.CreateDepartmentCommand;
 using SMART.ERP.Application.Features.DiscountFeature.Commands.CreateDiscountCommand;
 using SMART.ERP.Application.Features.DocumentTypeFeature.Commands.CreateDocumentTypeCommand;
+using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.AdminCreateEcommerceUserCommand;
 using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.CreateEcommerceUserCommand;
 using SMART.ERP.Application.Features.ExpenseAccountFeature.Commands.CreateExpenseAccountCommand;
 using SMART.ERP.Application.Features.FinancingPlanFeature.Commands.CreateFinancingPlanCommand;
@@ -255,6 +261,14 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<InvoicePaymentType, InvoicePaymentTypeDto>().ReverseMap();
             CreateMap<Discount,DiscountDto>().ReverseMap();
             CreateMap<EcommerceUser, EcommerceUserDto>().ReverseMap();
+            CreateMap<LogEcommerceUser, LogEcommerceUserDto>()
+                .ForMember(dest => dest.ActionTypeName, opt => opt.MapFrom(src =>
+                    src.ActionType == 1 ? "Inicio de sesión" :
+                    src.ActionType == 2 ? "Cambio de contraseña" :
+                    src.ActionType == 3 ? "Actualización de perfil" :
+                    src.ActionType == 4 ? "Actualización de foto de perfil" : "Desconocido"));
+            CreateMap<AssociatedCompany, AssociatedCompanyDto>();
+            CreateMap<PaymentMethod, PaymentMethodDto>();
             CreateMap<Cart, CartDto>().ReverseMap();
             CreateMap<CartItem, CartItemDto>().ReverseMap();
             #endregion
@@ -334,6 +348,11 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateInvoiceFromPosScreenCommand, Invoice>();
             CreateMap<CreateDiscountCommand, Discount>();
             CreateMap<CreateEcommerceUserCommand, EcommerceUser>();
+            CreateMap<AdminCreateEcommerceUserCommand, EcommerceUser>();
+            CreateMap<CreateAssociatedCompanyCommand, AssociatedCompany>();
+            CreateMap<CreatePaymentMethodCommand, PaymentMethod>()
+                .ForMember(dest => dest.EncryptedCardNumber, opt => opt.Ignore())
+                .ForMember(dest => dest.Last4Digits, opt => opt.Ignore());
             #endregion
         }
     }

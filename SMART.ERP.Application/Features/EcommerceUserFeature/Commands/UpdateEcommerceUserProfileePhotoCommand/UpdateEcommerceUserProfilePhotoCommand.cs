@@ -4,6 +4,7 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.BlobStorageService;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.Features.EcommerceUserFeature.Commands.UpdateEcommerceUserProfileePhotoCommand;
 
@@ -16,12 +17,16 @@ public class UpdateEcommerceUserProfilePhotoCommandHandler : IRequestHandler<Upd
 {
     private readonly IBlobStorageService _blobStorageService;
     private readonly IRepositoryAsync<EcommerceUser> _repositoryAsync;
-    public UpdateEcommerceUserProfilePhotoCommandHandler(IBlobStorageService blobStorageService, IRepositoryAsync<EcommerceUser> repositoryAsync)
+    private readonly IRepositoryAsync<LogEcommerceUser> _logRepositoryAsync;
+    public UpdateEcommerceUserProfilePhotoCommandHandler(
+        IBlobStorageService blobStorageService,
+        IRepositoryAsync<EcommerceUser> repositoryAsync,
+        IRepositoryAsync<LogEcommerceUser> logRepositoryAsync)
     {
         _blobStorageService = blobStorageService;
         _repositoryAsync = repositoryAsync;
+        _logRepositoryAsync = logRepositoryAsync;
     }
-    // Implement the handler logic here
     public async Task<Response<string>> Handle(UpdateEcommerceUserProfilePhotoCommand request, CancellationToken cancellationToken)
     {
         var user = await _repositoryAsync.GetByIdAsync(request.Id);
@@ -34,6 +39,16 @@ public class UpdateEcommerceUserProfilePhotoCommandHandler : IRequestHandler<Upd
         user.Photo = getUrl;
         await _repositoryAsync.UpdateAsync(user);
         await _repositoryAsync.SaveChangesAsync();
+
+        await _logRepositoryAsync.AddAsync(new LogEcommerceUser
+        {
+            EcommerceUserId = user.Id,
+            ActionType = (int)EcommerceUserActionType.ProfilePhotoUpdate,
+            Details = getUrl,
+            CreationDate = DateTime.UtcNow
+        }, cancellationToken);
+        await _logRepositoryAsync.SaveChangesAsync(cancellationToken);
+
         return new Response<string>(getUrl, message: "Foto de perfil actualizada correctamente");
     }
 }

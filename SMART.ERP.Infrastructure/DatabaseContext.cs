@@ -97,6 +97,9 @@ namespace SMART.ERP.Infrastructure
         public DbSet<InvoicePaymentType> InvoicePaymentTypes { get; set; } = null!;
         public DbSet<Discount> Discounts { get; set; } = null!;
         public DbSet<EcommerceUser> EcommerceUsers { get; set; } = null!;
+        public DbSet<LogEcommerceUser> LogEcommerceUsers { get; set; } = null!;
+        public DbSet<AssociatedCompany> AssociatedCompanies { get; set; } = null!;
+        public DbSet<PaymentMethod> PaymentMethods { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1348,6 +1351,30 @@ namespace SMART.ERP.Infrastructure
                 .WithOne(y=>y.EcommerceUser)
                 .HasForeignKey(y=>y.EcommerceUserId)
                 .OnDelete(DeleteBehavior.Cascade);
+            //LogEcommerceUser
+            modelBuilder.Entity<LogEcommerceUser>().ToTable("LogEcommerceUser");
+            modelBuilder.Entity<LogEcommerceUser>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<LogEcommerceUser>()
+                .HasOne(x => x.EcommerceUser)
+                .WithMany()
+                .HasForeignKey(x => x.EcommerceUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            //AssociatedCompany
+            modelBuilder.Entity<AssociatedCompany>().ToTable("AssociatedCompany");
+            modelBuilder.Entity<AssociatedCompany>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<AssociatedCompany>()
+                .HasOne(x => x.EcommerceUser)
+                .WithMany()
+                .HasForeignKey(x => x.EcommerceUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            //PaymentMethod
+            modelBuilder.Entity<PaymentMethod>().ToTable("PaymentMethod");
+            modelBuilder.Entity<PaymentMethod>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<PaymentMethod>()
+                .HasOne(x => x.EcommerceUser)
+                .WithMany()
+                .HasForeignKey(x => x.EcommerceUserId)
+                .OnDelete(DeleteBehavior.Cascade);
             //Cart
             modelBuilder.Entity<Cart>().ToTable("Cart");
             modelBuilder.Entity<Cart>(o => o.HasKey(x => x.Id));
@@ -1366,6 +1393,9 @@ namespace SMART.ERP.Infrastructure
             modelBuilder.Entity<CartItem>()
                 .Property(x=>x.TotalPrice)
                 .HasComputedColumnSql("[Quantity] * [UnitPrice] - ISNULL([Discount], 0)");
+            modelBuilder.Entity<CartItem>()
+                .Property(x => x.ProductDescription)
+                .HasMaxLength(500);
 
             //Product Parts
             modelBuilder.Entity<ProductPart>().ToTable("ProductParts");
