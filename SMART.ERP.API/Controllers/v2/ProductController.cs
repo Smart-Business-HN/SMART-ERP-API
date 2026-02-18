@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Features.BaseProductFeature.Queries;
+using SMART.ERP.Application.Features.ProductDropshippingFeature.Queries;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Services.HeaderService;
 
@@ -105,10 +106,34 @@ namespace SMART.ERP.API.Controllers.v2
         [OutputCache(PolicyName = "cache_searchSuggestions", VaryByQueryKeys = new[] { "searchTerm", "limit" })]
         public async Task<IActionResult> GetSearchSuggestions([FromQuery] string searchTerm, [FromQuery] int limit = 10)
         {
-            return Ok(await Mediator.Send(new GetSearchSuggestionsQuery 
-            { 
-                SearchTerm = searchTerm, 
-                Limit = limit 
+            return Ok(await Mediator.Send(new GetSearchSuggestionsQuery
+            {
+                SearchTerm = searchTerm,
+                Limit = limit
+            }));
+        }
+
+        [HttpGet("GetAvailability/{productId}")]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin, SalesAdvisor")]
+        public async Task<IActionResult> GetAvailability(int productId)
+        {
+            return Ok(await Mediator.Send(new GetProductAvailabilityQuery { ProductId = productId }));
+        }
+
+        [HttpGet("GetPriceWithShipping/{productId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPriceWithShipping(
+            int productId,
+            [FromQuery] bool isUserSignedIn,
+            [FromQuery] int? customerTypeId,
+            [FromQuery] int? destinationCityId)
+        {
+            return Ok(await Mediator.Send(new GetProductPriceWithShippingQuery
+            {
+                ProductId = productId,
+                IsUserSignedIn = isUserSignedIn,
+                CustomerTypeId = customerTypeId,
+                DestinationCityId = destinationCityId
             }));
         }
 

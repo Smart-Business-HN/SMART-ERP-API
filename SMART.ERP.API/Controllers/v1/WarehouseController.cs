@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.WarehouseFeature.Commands.CreateWarehouseCommand;
 using SMART.ERP.Application.Features.WarehouseFeature.Commands.UpdateWarehouseCommand;
@@ -8,7 +9,7 @@ using SMART.ERP.Application.Parameters;
 
 namespace SMART.ERP.API.Controllers.v1
 {
-
+    [ApiVersion("1.0")]
     public class WarehouseController : BaseApiController
     {
         [HttpPost("Create")]

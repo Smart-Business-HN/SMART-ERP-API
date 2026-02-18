@@ -12,7 +12,7 @@ namespace SMART.ERP.API.Controllers.v2
     {
         [Authorize]
         [HttpPut("AddProduct/{productId}")]
-        public async Task<IActionResult> AddProduct([FromRoute] int productId, [FromQuery] int quantity, Guid customerId, Guid? cartId)
+        public async Task<IActionResult> AddProduct([FromRoute] int productId, [FromQuery] int quantity, [FromQuery] Guid customerId, [FromQuery] Guid? cartId)
         {
             return  Ok(await  Mediator.Send( new AddProductToCartCommand
             {

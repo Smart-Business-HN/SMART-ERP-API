@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.ProspectQuoteProductFeature.Commands.CreateProspectQuoteProductCommand;
 using SMART.ERP.Application.Features.ProspectQuoteProductFeature.Commands.DeactivateProspectQuoteProductCommand;
 
 namespace SMART.ERP.API.Controllers.v1
 {
+    [ApiVersion("1.0")]
     [Authorize]
     public class ProspectQuoteProductController : BaseApiController
     {

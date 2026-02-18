@@ -101,7 +101,7 @@ namespace SMART.ERP.API.Controllers.v1
         }
 
         [HttpGet("OpportunityOriginMetrics")]
-        public async Task<IActionResult> OpportunityWinReasonMetrics([FromQuery] int BranchOfficeId)
+        public async Task<IActionResult> OpportunityOriginMetrics([FromQuery] int BranchOfficeId)
         {
             return Ok(await Mediator.Send(new TypeOriginMetricQuery { BranchOfficeId = BranchOfficeId }));
         }

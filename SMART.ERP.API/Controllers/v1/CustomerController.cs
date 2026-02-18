@@ -69,17 +69,6 @@ namespace SMART.ERP.API.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
-        [HttpGet("GetAllHN")]
-        [Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
-        public async Task<IActionResult> GetAll([FromQuery] string? Parameter, [FromQuery] int PageNumber)
-        {
-            return Ok(await Mediator.Send(new GetAllHNClientQuery()
-            {
-                Parameter = Parameter,
-                PageNumber = PageNumber
-            }));
-        }
-
         [HttpPost("Import")]
         [Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
         public async Task<IActionResult> Import([FromBody] ImportCustomerCommand command)

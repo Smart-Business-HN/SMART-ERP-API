@@ -211,6 +211,8 @@ var webSocketOptions = new WebSocketOptions
     KeepAliveInterval = TimeSpan.FromMinutes(2)
 };
 webSocketOptions.AllowedOrigins.Add("http://localhost:4200");
+webSocketOptions.AllowedOrigins.Add("https://localhost:3000");
+webSocketOptions.AllowedOrigins.Add("http://localhost:3000");
 webSocketOptions.AllowedOrigins.Add("https://admin.smartbusiness.site");
 webSocketOptions.AllowedOrigins.Add("https://www.smartbusiness.site");
 webSocketOptions.AllowedOrigins.Add("https://api.smartbusiness.site");
@@ -240,5 +242,23 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
     endpoints.MapHub<NotificationHub>("hub/notification");
+    endpoints.MapHub<ChatHub>("hub/chat");
 });
+
+// Seed dropshipping data
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<DatabaseContext>();
+        await SMART.ERP.Infrastructure.Seeders.DropshippingSeed.SeedAsync(context);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding dropshipping data");
+    }
+}
+
 app.Run();

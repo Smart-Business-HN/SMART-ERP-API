@@ -79,7 +79,14 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
 
             if (inStock.HasValue && inStock.Value)
             {
-                Query.Where(x => x.CurrentStock > 0);
+                // Include con InventoryDistributions para verificar stock virtual
+                Query.Include(x => x.InventoryDistributions!)
+                    .ThenInclude(d => d.Warehouse);
+
+                // Mostrar productos con stock físico O virtual
+                Query.Where(x => x.CurrentStock > 0 ||
+                    x.InventoryDistributions!.Any(d =>
+                        d.Warehouse!.IsVirtual && d.Quantity > 0));
             }
 
             // Ordenamiento optimizado

@@ -18,5 +18,10 @@ namespace SMART.ERP.Application.DTOs.Quotation
         public TaxDto? Tax { get; set; }
         public decimal Taxes { get; set; }
         public decimal TotalLine { get; set; }
+        // Dropshipping fields
+        public int? SourceWarehouseId { get; set; }
+        public decimal ShippingCost { get; set; }
+        public decimal SubTotalWithoutShipping { get; set; }
+        public bool IsFromVirtualStock { get; set; }
     }
 }

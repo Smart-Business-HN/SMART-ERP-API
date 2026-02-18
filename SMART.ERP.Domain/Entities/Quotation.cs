@@ -41,5 +41,11 @@ namespace SMART.ERP.Domain.Entities
         [MaxLength(50)]
         public string? ModificatedBy { get; set; }
         public DateTime? ModificationDate { get; set; }
+
+        // Dropshipping support
+        [Precision(18, 2)]
+        public decimal TotalShippingCost { get; set; }
+        [Precision(18, 2)]
+        public decimal SubTotalWithoutShipping { get; set; }
     }
 }

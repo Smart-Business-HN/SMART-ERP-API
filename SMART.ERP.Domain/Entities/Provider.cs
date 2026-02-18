@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SMART.ERP.Domain.Entities
 {
@@ -34,5 +35,15 @@ namespace SMART.ERP.Domain.Entities
         public virtual TypeProvider? TypeProvider { get; set; } = null!;
         public virtual List<PurchaseBill>? PurchaseBills { get; set; }
         public virtual List<NonBillableExpense>? NonBillableExpenses { get; set; }
+
+        // Dropshipping support
+        public bool SupportsDropshipping { get; set; }
+        [Precision(18, 2)]
+        public decimal? DefaultShippingCost { get; set; }
+        [Column(TypeName = "varchar(50)")]
+        public string? DefaultShippingType { get; set; }
+        public int? DefaultShippingDays { get; set; }
+        public virtual List<ProviderWarehouse>? ProviderWarehouses { get; set; }
+        public virtual List<ShippingCostConfiguration>? ShippingCosts { get; set; }
     }
 }

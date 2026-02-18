@@ -14,12 +14,12 @@ public class CreateAssociatedCompanyCommandValidator : AbstractValidator<CreateA
             .MaximumLength(100).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres.");
 
         RuleFor(p => p.RTN)
-            .MaximumLength(14).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres.")
-            .When(x => x.RTN != null);
+            .Matches(@"^\d{14}$").WithMessage("El RTN debe tener exactamente 14 dígitos numéricos.")
+            .When(x => !string.IsNullOrEmpty(x.RTN));
 
         RuleFor(p => p.PhoneNumber)
-            .MaximumLength(20).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres.")
-            .When(x => x.PhoneNumber != null);
+            .Matches(@"^\d{4}-\d{4}$").WithMessage("Verifique el formato del teléfono. Ejemplo: 0000-0000")
+            .When(x => !string.IsNullOrEmpty(x.PhoneNumber));
 
         RuleFor(p => p.Address)
             .MaximumLength(300).WithMessage("{PropertyName} no debe exceder {MaxLength} caracteres.")
