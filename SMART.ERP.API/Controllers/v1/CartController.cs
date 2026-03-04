@@ -5,6 +5,7 @@ using SMART.ERP.Application.Features.CartFeature.Commands.AdminAddProductToCartC
 using SMART.ERP.Application.Features.CartFeature.Commands.AdminDeleteCartCommand;
 using SMART.ERP.Application.Features.CartFeature.Commands.AdminRemoveCartItemCommand;
 using SMART.ERP.Application.Features.CartFeature.Commands.AdminUpdateCartItemCommand;
+using SMART.ERP.Application.Features.CartFeature.Commands.AdminUpdateCartStatusCommand;
 using SMART.ERP.Application.Features.CartFeature.Queries.AdminGetCartsByEcommerceUserIdQuery;
 
 namespace SMART.ERP.API.Controllers.v1
@@ -49,6 +50,13 @@ namespace SMART.ERP.API.Controllers.v1
         public async Task<IActionResult> DeleteCart(Guid cartId)
         {
             return Ok(await Mediator.Send(new AdminDeleteCartCommand { CartId = cartId }));
+        }
+
+        [HttpPut("UpdateCartStatus")]
+        [Authorize(Roles = "SuperAdmin, Manager")]
+        public async Task<IActionResult> UpdateCartStatus([FromBody] AdminUpdateCartStatusCommand command)
+        {
+            return Ok(await Mediator.Send(command));
         }
     }
 }

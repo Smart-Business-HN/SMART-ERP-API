@@ -17,7 +17,9 @@ namespace SMART.ERP.Application.Features.BlobStorageFeature.Commands.UploadBlobS
                 || x.Equals("image/jpg")
                 || x.Equals("image/png")
                 || x.Equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-                || x.Equals("application/pdf"))
+                || x.Equals("application/pdf")
+                || x.Equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                || x.Equals("application/vnd.ms-excel"))
                 .WithMessage("Tipo de archivo no permitido");
         }
     }

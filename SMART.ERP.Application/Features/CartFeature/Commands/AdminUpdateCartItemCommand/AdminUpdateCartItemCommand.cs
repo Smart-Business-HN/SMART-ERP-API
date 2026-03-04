@@ -39,6 +39,11 @@ public class AdminUpdateCartItemCommandHandler : IRequestHandler<AdminUpdateCart
         if (cartItem == null)
             throw new KeyNotFoundException($"Item del carrito no encontrado con el id: {request.CartItemId}");
 
+        var cart = await _cartRepositoryAsync.FirstOrDefaultAsync(
+            new GetCartByIdSpecification(cartItem.CartId), cancellationToken);
+        if (cart != null && cart.Status != Domain.Enums.CartStatus.Active)
+            throw new ApplicationException("No se pueden modificar productos de un carrito en proceso de pago.");
+
         cartItem.Quantity = request.Quantity;
         cartItem.UnitPrice = request.UnitPrice;
         cartItem.Discount = request.Discount ?? 0;

@@ -9,6 +9,7 @@ using SMART.ERP.Application.Features.UserFeature.Commands.CreateUserCommand;
 using SMART.ERP.Application.Features.UserFeature.Commands.DeleteUserCommand;
 using SMART.ERP.Application.Features.UserFeature.Commands.ForgotPasswordCommand;
 using SMART.ERP.Application.Features.UserFeature.Commands.LoginUserCommand;
+using SMART.ERP.Application.Features.UserFeature.Commands.RefreshTokenCommand;
 using SMART.ERP.Application.Features.UserFeature.Commands.RemoveSessionCommand;
 using SMART.ERP.Application.Features.UserFeature.Commands.UpdateUserCommand;
 using SMART.ERP.Application.Features.UserFeature.Queries;
@@ -72,6 +73,13 @@ namespace SMART.ERP.API.Controllers.v1
         [HttpPost("Login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginUserCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
+        [HttpPost("RefreshToken")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
         {
             return Ok(await Mediator.Send(command));
         }

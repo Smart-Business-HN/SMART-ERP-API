@@ -37,6 +37,11 @@ public class AdminRemoveCartItemCommandHandler : IRequestHandler<AdminRemoveCart
 
         var cartId = cartItem.CartId;
 
+        var cart = await _cartRepositoryAsync.FirstOrDefaultAsync(
+            new GetCartByIdSpecification(cartId), cancellationToken);
+        if (cart != null && cart.Status != Domain.Enums.CartStatus.Active)
+            throw new ApplicationException("No se pueden modificar productos de un carrito en proceso de pago.");
+
         await _cartItemRepositoryAsync.DeleteAsync(cartItem, cancellationToken);
 
         var reloadedCart = await _cartRepositoryAsync.FirstOrDefaultAsync(

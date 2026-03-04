@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Infrastructure
 {
@@ -100,6 +101,9 @@ namespace SMART.ERP.Infrastructure
         public DbSet<LogEcommerceUser> LogEcommerceUsers { get; set; } = null!;
         public DbSet<AssociatedCompany> AssociatedCompanies { get; set; } = null!;
         public DbSet<PaymentMethod> PaymentMethods { get; set; } = null!;
+        public DbSet<ProjectAttachmentCategory> ProjectAttachmentCategories { get; set; } = null!;
+        public DbSet<ProjectAttachment> ProjectAttachments { get; set; } = null!;
+        public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -791,6 +795,19 @@ namespace SMART.ERP.Infrastructure
                .HasForeignKey(x => x.UserId)
                .OnDelete(DeleteBehavior.Restrict);
 
+            //RefreshToken
+            modelBuilder.Entity<RefreshToken>().ToTable("RefreshToken");
+            modelBuilder.Entity<RefreshToken>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<RefreshToken>()
+               .HasOne(x => x.User)
+               .WithMany()
+               .HasForeignKey(x => x.UserId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RefreshToken>()
+               .HasIndex(x => x.TokenHash);
+
             //LogRecovery
             modelBuilder.Entity<LogRecovery>().ToTable("LogRecovery");
             modelBuilder.Entity<LogRecovery>(o => o.HasKey(x => x.Id));
@@ -1379,6 +1396,12 @@ namespace SMART.ERP.Infrastructure
             modelBuilder.Entity<Cart>().ToTable("Cart");
             modelBuilder.Entity<Cart>(o => o.HasKey(x => x.Id));
             modelBuilder.Entity<Cart>()
+                .Property(x => x.Status)
+                .HasDefaultValue(CartStatus.Active);
+            modelBuilder.Entity<Cart>()
+                .Property(x => x.PaymentLinkUrl)
+                .HasMaxLength(500);
+            modelBuilder.Entity<Cart>()
                 .HasMany(p => p.CartItems)
                 .WithOne(x => x.Cart)
                 .HasForeignKey(x => x.CartId)
@@ -1410,6 +1433,36 @@ namespace SMART.ERP.Infrastructure
                 .WithMany()
                 .HasForeignKey(x => x.FatherProductId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            //ProjectAttachmentCategory
+            modelBuilder.Entity<ProjectAttachmentCategory>().ToTable("ProjectAttachmentCategory");
+            modelBuilder.Entity<ProjectAttachmentCategory>(o => o.HasKey(x => x.Id));
+
+            //ProjectAttachment
+            modelBuilder.Entity<ProjectAttachment>().ToTable("ProjectAttachment");
+            modelBuilder.Entity<ProjectAttachment>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<ProjectAttachment>()
+               .HasOne(x => x.User)
+               .WithMany()
+               .HasForeignKey(x => x.UserId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ProjectAttachment>()
+               .HasOne(x => x.ProjectAttachmentCategory)
+               .WithMany()
+               .HasForeignKey(x => x.ProjectAttachmentCategoryId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Project>()
+                .HasMany(p => p.ProjectAttachments)
+                .WithOne(x => x.Project)
+                .HasForeignKey(x => x.ProjectId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Project>()
+                .Navigation(b => b.ProjectAttachments)
+                .UsePropertyAccessMode(PropertyAccessMode.Property);
 
             base.OnModelCreating(modelBuilder);
         }

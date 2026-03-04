@@ -37,6 +37,8 @@ using SMART.ERP.Application.DTOs.Notification;
 using SMART.ERP.Application.DTOs.Opportunity;
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.DTOs.Project;
+using SMART.ERP.Application.DTOs.ProjectAttachment;
+using SMART.ERP.Application.DTOs.ProjectAttachmentCategory;
 using SMART.ERP.Application.DTOs.ProductEntry;
 using SMART.ERP.Application.DTOs.ProductPurchasePriceLog;
 using SMART.ERP.Application.DTOs.ProductToPurchase;
@@ -102,6 +104,8 @@ using SMART.ERP.Application.Features.OpportunityDocumentFeature.Commands.CreateO
 using SMART.ERP.Application.Features.OpportunityFeature.Commands.CreateOpportunityCommand;
 using SMART.ERP.Application.Features.PrefixFeature.Command.CreatePrefixCommand;
 using SMART.ERP.Application.Features.ProductDataSheetFeature.Commands.CreateProductDataSheetCommand;
+using SMART.ERP.Application.Features.ProjectAttachmentCategoryFeature.Commands.CreateProjectAttachmentCategoryCommand;
+using SMART.ERP.Application.Features.ProjectAttachmentFeature.Commands.CreateProjectAttachmentCommand;
 using SMART.ERP.Application.Features.ProjectFeature.Commands.CreateProjectCommand;
 using SMART.ERP.Application.Features.ProductFtrFeature.Commands.CreateProductFtrCommand;
 using SMART.ERP.Application.Features.ProductImageFeature.Commands.CreateProductImageCommand;
@@ -271,6 +275,8 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<PaymentMethod, PaymentMethodDto>();
             CreateMap<Cart, CartDto>().ReverseMap();
             CreateMap<CartItem, CartItemDto>().ReverseMap();
+            CreateMap<ProjectAttachmentCategory, ProjectAttachmentCategoryDto>();
+            CreateMap<ProjectAttachment, ProjectAttachmentDto>();
             #endregion
 
             #region Commands
@@ -339,6 +345,8 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateMajorIncomeAccountCommand, MajorIncomeAccount>();
             CreateMap<CreateIncomeAccountCommand, IncomeAccount>();
             CreateMap<CreateExpenseAccountCommand, ExpenseAccount>();
+            CreateMap<CreateProjectAttachmentCategoryCommand, ProjectAttachmentCategory>();
+            CreateMap<CreateProjectAttachmentCommand, ProjectAttachment>();
             CreateMap<CreateProjectCommand, Project>();
             CreateMap<CreateNonBillableExpenseCommand, NonBillableExpense>();
             CreateMap<CreateNonBillableExpensePaymentCommand, NonBillableExpensePayment>();

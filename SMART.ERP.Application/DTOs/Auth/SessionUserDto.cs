@@ -11,6 +11,7 @@ namespace SMART.ERP.Application.DTOs.Auth
         public string? Photo { get; set; }
         public string Role { get; set; } = null!;
         public string Token { get; set; } = null!;
+        public string RefreshToken { get; set; } = null!;
         public int? BranchOfficeId { get; set; }
         public DateTime ExpirationDate { get; set; }
         public int MainBranchOfficeId { get; set; }
