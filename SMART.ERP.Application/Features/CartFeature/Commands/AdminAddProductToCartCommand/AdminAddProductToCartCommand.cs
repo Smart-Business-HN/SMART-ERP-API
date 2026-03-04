@@ -77,6 +77,9 @@ public class AdminAddProductToCartCommandHandler : IRequestHandler<AdminAddProdu
             if (cart == null)
                 throw new KeyNotFoundException($"Carrito no encontrado con el id: {request.CartId}");
 
+            if (cart.Status != Domain.Enums.CartStatus.Active)
+                throw new ApplicationException("No se pueden modificar productos de un carrito en proceso de pago.");
+
             // Check for duplicate product in this cart
             if (cart.CartItems != null && cart.CartItems.Any(ci => ci.ProductId == request.ProductId))
                 throw new ApplicationException($"Este producto ya existe en el carrito.");

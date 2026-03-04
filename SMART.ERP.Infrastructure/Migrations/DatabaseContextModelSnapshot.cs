@@ -394,6 +394,15 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<string>("PaymentLinkUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.HasKey("Id");
 
                     b.HasIndex("DestinationQuotationId");
@@ -3534,6 +3543,82 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.ToTable("Projects");
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.ProjectAttachment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModificatedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("ProjectAttachmentCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectAttachmentCategoryId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ProjectAttachment", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.ProjectAttachmentCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProjectAttachmentCategory", (string)null);
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Prospect", b =>
                 {
                     b.Property<Guid>("Id")
@@ -4160,6 +4245,52 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("QuoteProduct", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedByIp")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ReplacedByTokenHash")
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<DateTime?>("RevokedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RevokedReason")
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshToken", (string)null);
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Region", b =>
@@ -6204,6 +6335,33 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("Status");
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.ProjectAttachment", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.ProjectAttachmentCategory", "ProjectAttachmentCategory")
+                        .WithMany()
+                        .HasForeignKey("ProjectAttachmentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Project", "Project")
+                        .WithMany("ProjectAttachments")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("ProjectAttachmentCategory");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Prospect", b =>
                 {
                     b.HasOne("SMART.ERP.Domain.Entities.City", "City")
@@ -6519,6 +6677,17 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("Opportunity");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Region", b =>
@@ -6944,6 +7113,8 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("Invoices");
 
                     b.Navigation("NonBillableExpenses");
+
+                    b.Navigation("ProjectAttachments");
 
                     b.Navigation("PurchaseBills");
 

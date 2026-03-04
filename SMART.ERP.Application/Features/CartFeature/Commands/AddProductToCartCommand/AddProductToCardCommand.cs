@@ -16,6 +16,7 @@ namespace SMART.ERP.Application.Features.CartFeature.Commands.AddProductToCartCo
         public Guid? CartId { get; set; }
         public int ProductId { get; set; }
         public int Quantity { get; set; }
+        public bool ForceNewCart { get; set; }
     }
     public class AddProductToCartCommandHandler : IRequestHandler<AddProductToCartCommand, Response<CartDto>>
     {
@@ -41,26 +42,43 @@ namespace SMART.ERP.Application.Features.CartFeature.Commands.AddProductToCartCo
             {
                 throw new ApplicationException($"Couldn't find user with id: {request.CustomerId}");
             }
-            var cartActive = await _cartRepositoryAsync.FirstOrDefaultAsync(new FilterCartByCustomerIdSpecification(request.CustomerId,request.CartId), cancellationToken);
-            if (cartActive != null && cartActive.EcommerceUserId != request.CustomerId)
-            {
-                throw new KeyNotFoundException($"The cart with id {request.CartId} does not belong to the customer with id {request.CustomerId}.");
-            }
             var product = await _productRepositoryAsync.FirstOrDefaultAsync(new FilterProductSpecification(null,request.ProductId,null), cancellationToken);
             if (product == null)
             {
                 throw new KeyNotFoundException($"Product not found with id {request.ProductId}");
             }
-            if (cartActive == null)
+            Cart cartActive;
+            if (request.ForceNewCart)
             {
-                var newCart = new Cart
+                cartActive = new Cart
                 {
                     EcommerceUserId = request.CustomerId,
                     CreationDate = DateTime.UtcNow,
                     IsActive = true
                 };
-                await _cartRepositoryAsync.AddAsync(newCart, cancellationToken);
-                cartActive = newCart;
+                await _cartRepositoryAsync.AddAsync(cartActive, cancellationToken);
+            }
+            else
+            {
+                cartActive = await _cartRepositoryAsync.FirstOrDefaultAsync(new FilterCartByCustomerIdSpecification(request.CustomerId,request.CartId), cancellationToken);
+                if (cartActive != null && cartActive.EcommerceUserId != request.CustomerId)
+                {
+                    throw new KeyNotFoundException($"The cart with id {request.CartId} does not belong to the customer with id {request.CustomerId}.");
+                }
+                if (cartActive != null && cartActive.Status != Domain.Enums.CartStatus.Active)
+                {
+                    throw new ApplicationException("No se pueden modificar productos de un carrito en proceso de pago.");
+                }
+                if (cartActive == null)
+                {
+                    cartActive = new Cart
+                    {
+                        EcommerceUserId = request.CustomerId,
+                        CreationDate = DateTime.UtcNow,
+                        IsActive = true
+                    };
+                    await _cartRepositoryAsync.AddAsync(cartActive, cancellationToken);
+                }
             }
             var cartItem = new CartItem
             {

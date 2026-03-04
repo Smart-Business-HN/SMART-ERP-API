@@ -32,5 +32,6 @@ namespace SMART.ERP.Domain.Entities
         public virtual List<NonBillableExpense>? NonBillableExpenses { get; set; }
         public virtual List<Invoice>? Invoices { get; set; }
         public virtual List<Quotation>? Quotations { get; set; }
+        public virtual List<ProjectAttachment>? ProjectAttachments { get; set; }
     }
 }

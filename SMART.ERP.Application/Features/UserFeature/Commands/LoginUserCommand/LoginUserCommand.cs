@@ -6,6 +6,7 @@ using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.HeaderService;
 using SMART.ERP.Application.Specifications.BranchOfficeSpecification;
+using SMART.ERP.Application.Specifications.RefreshTokenSpecification;
 using SMART.ERP.Application.Specifications.UserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -30,18 +31,21 @@ namespace SMART.ERP.Application.Features.UserFeature.Commands.LoginUserCommand
         private readonly JWTSettings _jwtSettings;
         private readonly IRepositoryAsync<LogSession> _logSessionRepositoryAsync;
         private readonly IRepositoryAsync<BranchOffices> _branchOfficeRepositoryAsync;
+        private readonly IRepositoryAsync<RefreshToken> _refreshTokenRepositoryAsync;
         private readonly IHeaderService _headerService;
 
         public LoginUserCommandHandler(IRepositoryAsync<User> repositoryAsync,
             IOptions<JWTSettings> jwtSettings,
             IRepositoryAsync<LogSession> logSessionRepositoryAsync,
             IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync,
+            IRepositoryAsync<RefreshToken> refreshTokenRepositoryAsync,
             IHeaderService headerService)
         {
             _repositoryAsync = repositoryAsync;
             _jwtSettings = jwtSettings.Value;
             _logSessionRepositoryAsync = logSessionRepositoryAsync;
             _branchOfficeRepositoryAsync = branchOfficeRepositoryAsync;
+            _refreshTokenRepositoryAsync = refreshTokenRepositoryAsync;
             _headerService = headerService;
         }
 
@@ -166,8 +170,7 @@ namespace SMART.ERP.Application.Features.UserFeature.Commands.LoginUserCommand
                     new Claim("uid", user.Id.ToString()),
                     new Claim("ip", _headerService.GetClientIP())
                 }),
-                //Expires = DateTime.UtcNow.AddMinutes(Int32.Parse(_jwtSettings.DurationInMinutes)),
-                Expires = DateTime.UtcNow.AddHours(8),
+                Expires = DateTime.UtcNow.AddMinutes(int.Parse(_jwtSettings.DurationInMinutes)),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature),
                 Issuer = _jwtSettings.Issuer,
@@ -176,6 +179,21 @@ namespace SMART.ERP.Application.Features.UserFeature.Commands.LoginUserCommand
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
+            var refreshTokenRaw = GenerateRefreshToken();
+            var refreshTokenHash = HashToken(refreshTokenRaw);
+
+            var refreshTokenEntity = new RefreshToken
+            {
+                TokenHash = refreshTokenHash,
+                UserId = user.Id,
+                CreatedDate = DateTime.UtcNow,
+                ExpirationDate = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenDurationInDays),
+                CreatedByIp = _headerService.GetClientIP(),
+                IsRevoked = false,
+            };
+
+            await _refreshTokenRepositoryAsync.AddAsync(refreshTokenEntity);
+            await _refreshTokenRepositoryAsync.SaveChangesAsync();
 
             int mainBranch = 0;
             var branchOffice = await _branchOfficeRepositoryAsync.FirstOrDefaultAsync(new GetMainBranchSpecification());
@@ -193,10 +211,26 @@ namespace SMART.ERP.Application.Features.UserFeature.Commands.LoginUserCommand
                 Role = user.Role != null ? user.Role!.Selector : string.Empty,
                 ExpirationDate = tokenDescriptor.Expires.Value,
                 Token = tokenString,
+                RefreshToken = refreshTokenRaw,
                 MainBranchOfficeId = mainBranch,
             };
 
             return sesion;
+        }
+
+        private static string GenerateRefreshToken()
+        {
+            var randomBytes = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomBytes);
+            return Convert.ToBase64String(randomBytes);
+        }
+
+        private static string HashToken(string token)
+        {
+            var bytes = Encoding.UTF8.GetBytes(token);
+            var hash = SHA256.HashData(bytes);
+            return Convert.ToHexString(hash).ToLowerInvariant();
         }
     }
 }
