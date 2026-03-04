@@ -23,6 +23,9 @@ namespace SMART.ERP.Application.DTOs.Quotation
         public List<ProductOfferedDto>? ProductsOffered { get; set; }
         public decimal SubTotal { get; set; }
         public decimal Total { get; set; }
+        // Dropshipping fields
+        public decimal TotalShippingCost { get; set; }
+        public decimal SubTotalWithoutShipping { get; set; }
         public int StatusId { get; set; }
         public StatusDto? Status { get; set; }
         public int PrefixId { get; set; }

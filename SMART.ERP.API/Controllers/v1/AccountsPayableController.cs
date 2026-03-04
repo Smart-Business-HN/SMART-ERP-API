@@ -1,10 +1,11 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.AccountsPayableFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
 namespace SMART.ERP.API.Controllers.v1;
-
+[ApiVersion("1.0")]
 public class AccountsPayableController : BaseApiController
 {
     [HttpGet("GetAll")]

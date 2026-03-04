@@ -23,6 +23,9 @@ using SMART.ERP.Application.Services.MetaPostService;
 using SMART.ERP.Application.Services.CardEncryptionService;
 using SMART.ERP.Application.Services.NewEncryptionService;
 using SMART.ERP.Application.Services.RegisterClientService;
+using SMART.ERP.Application.Services.ShippingCostCalculator;
+using SMART.ERP.Application.Services.WarehouseSelection;
+using SMART.ERP.Application.Services.VirtualStock;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Settings;
 using System.Reflection;
@@ -89,6 +92,9 @@ namespace SMART.ERP.Application
             services.AddTransient<IMetaPostService, MetaPostService>();
             services.AddTransient<IGoogleCalendarService, GoogleCalendarService>();
             services.AddTransient<IProductPricingService, ProductPricingService>();
+            services.AddTransient<IShippingCostCalculatorService, ShippingCostCalculatorService>();
+            services.AddTransient<IWarehouseSelectionService, WarehouseSelectionService>();
+            services.AddTransient<IVirtualStockService, VirtualStockService>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -144,7 +150,7 @@ namespace SMART.ERP.Application
                         // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/hub/notification")))
+                            (path.StartsWithSegments("/hub/notification") || path.StartsWithSegments("/hub/chat")))
                         {
                             // Read the token out of the query string
                             context.Token = accessToken;

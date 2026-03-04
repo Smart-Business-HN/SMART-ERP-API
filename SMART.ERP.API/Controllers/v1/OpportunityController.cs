@@ -73,7 +73,7 @@ namespace SMART.ERP.API.Controllers.v1
 
         [HttpGet("Active/{customerId}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAll(Guid customerId)
+        public async Task<IActionResult> GetAllActive(Guid customerId)
         {
             return Ok(await Mediator.Send(new GetLastOpportunityQuery { CustomerId = customerId }));
         }

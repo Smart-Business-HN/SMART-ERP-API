@@ -1,0 +1,81 @@
+using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.Services.VirtualStock;
+using SMART.ERP.Application.Wrappers;
+
+namespace SMART.ERP.API.Controllers.v1
+{
+    public class ImportCsvRequest
+    {
+        public int ProviderId { get; set; }
+        public int WarehouseId { get; set; }
+        public IFormFile File { get; set; } = null!;
+    }
+
+    [ApiVersion("1.0")]
+    [Authorize]
+    public class VirtualStockController : BaseApiController
+    {
+        private readonly IVirtualStockService _virtualStockService;
+
+        public VirtualStockController(IVirtualStockService virtualStockService)
+        {
+            _virtualStockService = virtualStockService;
+        }
+
+        [HttpPost("import/csv")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(typeof(Response<object>), 200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> ImportCsv([FromForm] ImportCsvRequest request)
+        {
+            if (request.File == null || request.File.Length == 0)
+            {
+                return BadRequest(new Response<object>("Archivo no proporcionado o vacío"));
+            }
+
+            if (!request.File.FileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest(new Response<object>("Solo se permiten archivos CSV"));
+            }
+
+            var userName = User.Identity?.Name ?? "Unknown";
+
+            using var stream = request.File.OpenReadStream();
+            var result = await _virtualStockService.ImportStockFromCsvAsync(
+                request.ProviderId,
+                request.WarehouseId,
+                stream,
+                request.File.FileName,
+                userName);
+
+            return Ok(new Response<object>(new
+            {
+                result.Id,
+                result.FileName,
+                result.TotalProducts,
+                result.SuccessfulImports,
+                result.FailedImports,
+                result.ImportDate,
+                ErrorLog = result.FailedImports > 0 ? result.ErrorLog : null
+            }, $"Importación completada. {result.SuccessfulImports} productos importados correctamente, {result.FailedImports} errores."));
+        }
+
+        [HttpGet("import-history/{providerId}")]
+        [ProducesResponseType(typeof(Response<List<object>>), 200)]
+        public async Task<IActionResult> GetImportHistory(int providerId)
+        {
+            // TODO: Implement GetImportHistory query
+            return Ok(new Response<List<object>>(new List<object>(), "Feature pendiente de implementación"));
+        }
+
+        [HttpGet("availability/{productId}")]
+        [ProducesResponseType(typeof(Response<object>), 200)]
+        public async Task<IActionResult> GetProductAvailability(int productId)
+        {
+            var availability = await _virtualStockService.GetProductAvailabilityAsync(productId);
+            return Ok(new Response<object>(availability, "Disponibilidad obtenida exitosamente"));
+        }
+    }
+}

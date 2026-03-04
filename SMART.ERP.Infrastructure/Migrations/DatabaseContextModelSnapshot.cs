@@ -507,6 +507,102 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.ToTable("Category", (string)null);
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.ChatMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChatSessionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("SenderAdminUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SenderName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("SenderType")
+                        .IsRequired()
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChatSessionId");
+
+                    b.HasIndex("SenderAdminUserId");
+
+                    b.ToTable("ChatMessage", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.ChatSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid?>("AssignedAdminUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ClosedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid?>("EcommerceUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsAuthenticated")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastMessageAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("LastMessagePreview")
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("SessionIdentifier")
+                        .IsRequired()
+                        .HasColumnType("varchar(36)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UnreadAdminCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VisitorEmail")
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("VisitorName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignedAdminUserId");
+
+                    b.HasIndex("EcommerceUserId");
+
+                    b.ToTable("ChatSession", (string)null);
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.City", b =>
                 {
                     b.Property<int>("Id")
@@ -3125,6 +3221,9 @@ namespace SMART.ERP.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("IsFromVirtualStock")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ProductCode")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -3143,6 +3242,17 @@ namespace SMART.ERP.Infrastructure.Migrations
 
                     b.Property<int>("QuotationId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("ShippingCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("SourceWarehouseId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("SubTotalWithoutShipping")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("TaxId")
                         .HasColumnType("int");
@@ -3164,6 +3274,8 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasIndex("ProductId");
 
                     b.HasIndex("QuotationId");
+
+                    b.HasIndex("SourceWarehouseId");
 
                     b.HasIndex("TaxId");
 
@@ -3691,6 +3803,16 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal?>("DefaultShippingCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("DefaultShippingDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DefaultShippingType")
+                        .HasColumnType("varchar(50)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
@@ -3716,6 +3838,9 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(16)");
 
+                    b.Property<bool>("SupportsDropshipping")
+                        .HasColumnType("bit");
+
                     b.Property<int>("TypeProviderId")
                         .HasColumnType("int");
 
@@ -3727,6 +3852,45 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasIndex("TypeProviderId");
 
                     b.ToTable("Provider", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.ProviderWarehouse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModificatedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProviderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderId");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("ProviderWarehouse", (string)null);
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.PurchaseBill", b =>
@@ -4012,11 +4176,19 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal>("SubTotalWithoutShipping")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("TermsAndConditions")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
                     b.Property<decimal>("Total")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalShippingCost")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
@@ -4285,6 +4457,87 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasIndex("SaleOrderId");
 
                     b.ToTable("SaleOrderProduct", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.ShippingCostConfiguration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CostType")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("DefaultCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("DestinationCityId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DestinationDepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("MaxCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("MinCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ModificatedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SourceCityId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SourceProviderId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SourceWarehouseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DestinationCityId");
+
+                    b.HasIndex("DestinationDepartmentId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SourceCityId");
+
+                    b.HasIndex("SourceProviderId");
+
+                    b.HasIndex("SourceWarehouseId");
+
+                    b.ToTable("ShippingCostConfiguration", (string)null);
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.SocialReason", b =>
@@ -4643,6 +4896,93 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.ToTable("User", (string)null);
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.VirtualStockImport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ErrorLog")
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<int>("FailedImports")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime>("ImportDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImportedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("ProviderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SuccessfulImports")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalProducts")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderId");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("VirtualStockImport", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.VirtualStockImportDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("CostPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("ProductCode")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("VirtualStockImportId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("WasSuccessful")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("VirtualStockImportId");
+
+                    b.ToTable("VirtualStockImportDetail", (string)null);
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Warehouse", b =>
                 {
                     b.Property<int>("Id")
@@ -4671,6 +5011,9 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Property<bool>("IsGeneralWarehouse")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsVirtual")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ModificatedBy")
                         .HasColumnType("varchar(50)");
 
@@ -4685,6 +5028,9 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("WarehouseTypeId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BranchOfficeId");
@@ -4693,7 +5039,35 @@ namespace SMART.ERP.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
+                    b.HasIndex("WarehouseTypeId");
+
                     b.ToTable("Warehouse", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.WarehouseType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVirtual")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WarehouseType", (string)null);
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.WinReason", b =>
@@ -4945,6 +5319,41 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("Cart");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.ChatMessage", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.ChatSession", "ChatSession")
+                        .WithMany("Messages")
+                        .HasForeignKey("ChatSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.User", "SenderAdminUser")
+                        .WithMany()
+                        .HasForeignKey("SenderAdminUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ChatSession");
+
+                    b.Navigation("SenderAdminUser");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.ChatSession", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.User", "AssignedAdminUser")
+                        .WithMany()
+                        .HasForeignKey("AssignedAdminUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.EcommerceUser", "EcommerceUser")
+                        .WithMany()
+                        .HasForeignKey("EcommerceUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AssignedAdminUser");
+
+                    b.Navigation("EcommerceUser");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.City", b =>
@@ -5790,6 +6199,11 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SMART.ERP.Domain.Entities.Warehouse", "SourceWarehouse")
+                        .WithMany()
+                        .HasForeignKey("SourceWarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("SMART.ERP.Domain.Entities.Tax", "Tax")
                         .WithMany()
                         .HasForeignKey("TaxId")
@@ -5799,6 +6213,8 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("Quotation");
+
+                    b.Navigation("SourceWarehouse");
 
                     b.Navigation("Tax");
                 });
@@ -6036,6 +6452,25 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("TypeProvider");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.ProviderWarehouse", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.Provider", "Provider")
+                        .WithMany("ProviderWarehouses")
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Warehouse", "Warehouse")
+                        .WithMany("ProviderWarehouses")
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Provider");
+
+                    b.Navigation("Warehouse");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.PurchaseBill", b =>
@@ -6338,6 +6773,51 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("SaleOrder");
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.ShippingCostConfiguration", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.City", "DestinationCity")
+                        .WithMany()
+                        .HasForeignKey("DestinationCityId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Department", "DestinationDepartment")
+                        .WithMany()
+                        .HasForeignKey("DestinationDepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.City", "SourceCity")
+                        .WithMany()
+                        .HasForeignKey("SourceCityId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Provider", "SourceProvider")
+                        .WithMany("ShippingCosts")
+                        .HasForeignKey("SourceProviderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Warehouse", "SourceWarehouse")
+                        .WithMany("ShippingCosts")
+                        .HasForeignKey("SourceWarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("DestinationCity");
+
+                    b.Navigation("DestinationDepartment");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("SourceCity");
+
+                    b.Navigation("SourceProvider");
+
+                    b.Navigation("SourceWarehouse");
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Status", b =>
                 {
                     b.HasOne("SMART.ERP.Domain.Entities.TypeStatus", "TypeStatus")
@@ -6386,6 +6866,43 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.VirtualStockImport", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.Provider", "Provider")
+                        .WithMany()
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Provider");
+
+                    b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.VirtualStockImportDetail", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.VirtualStockImport", "VirtualStockImport")
+                        .WithMany("ImportDetails")
+                        .HasForeignKey("VirtualStockImportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("VirtualStockImport");
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Warehouse", b =>
                 {
                     b.HasOne("SMART.ERP.Domain.Entities.BranchOffices", "BranchOffice")
@@ -6403,11 +6920,18 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("SMART.ERP.Domain.Entities.WarehouseType", "WarehouseType")
+                        .WithMany()
+                        .HasForeignKey("WarehouseTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("BranchOffice");
 
                     b.Navigation("City");
 
                     b.Navigation("User");
+
+                    b.Navigation("WarehouseType");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.WishList", b =>
@@ -6476,6 +7000,11 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("HeroSliders");
 
                     b.Navigation("Subcategories");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.ChatSession", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Company", b =>
@@ -6601,7 +7130,11 @@ namespace SMART.ERP.Infrastructure.Migrations
                 {
                     b.Navigation("NonBillableExpenses");
 
+                    b.Navigation("ProviderWarehouses");
+
                     b.Navigation("PurchaseBills");
+
+                    b.Navigation("ShippingCosts");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.PurchaseBill", b =>
@@ -6639,9 +7172,18 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("Departments");
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.VirtualStockImport", b =>
+                {
+                    b.Navigation("ImportDetails");
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Warehouse", b =>
                 {
                     b.Navigation("InventoryDistributions");
+
+                    b.Navigation("ProviderWarehouses");
+
+                    b.Navigation("ShippingCosts");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.WishList", b =>

@@ -24,5 +24,14 @@ namespace SMART.ERP.Domain.Entities
         public decimal Taxes { get; set; }
         [Precision(18, 2)]
         public decimal TotalLine { get; set; }
+
+        // Dropshipping support
+        public int? SourceWarehouseId { get; set; }
+        public virtual Warehouse? SourceWarehouse { get; set; }
+        [Precision(18, 2)]
+        public decimal ShippingCost { get; set; }
+        [Precision(18, 2)]
+        public decimal SubTotalWithoutShipping { get; set; }
+        public bool IsFromVirtualStock { get; set; }
     }
 }

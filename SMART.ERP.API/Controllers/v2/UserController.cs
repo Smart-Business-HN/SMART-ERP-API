@@ -11,6 +11,11 @@ using SMART.ERP.Application.Features.EcommerceUserFeature.Queries.GetEcommerceUs
 
 namespace SMART.ERP.API.Controllers.v2
 {
+    public class UpdateProfilePhotoRequest
+    {
+        public IFormFile File { get; set; } = null!;
+    }
+
     [ApiVersion("2.0")]
     public class UserController : BaseApiController
     {
@@ -33,10 +38,11 @@ namespace SMART.ERP.API.Controllers.v2
             return Ok(await Mediator.Send(new GetEcommerceUserByIdQuery { Id = id }));
         }
         [HttpPut("UpdateProfilePhoto/{id}")]
+        [Consumes("multipart/form-data")]
         [Authorize]
-        public async Task<IActionResult> UpdateProfilePhoto(Guid id, [FromForm] IFormFile file)
+        public async Task<IActionResult> UpdateProfilePhoto(Guid id, [FromForm] UpdateProfilePhotoRequest request)
         {
-            return Ok(await Mediator.Send(new UpdateEcommerceUserProfilePhotoCommand { Id = id, File = file }));
+            return Ok(await Mediator.Send(new UpdateEcommerceUserProfilePhotoCommand { Id = id, File = request.File }));
         }
         [HttpPut("Update/{id}")]
         [Authorize]

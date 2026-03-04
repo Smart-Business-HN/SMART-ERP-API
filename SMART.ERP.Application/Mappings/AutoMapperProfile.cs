@@ -9,6 +9,7 @@ using SMART.ERP.Application.DTOs.BillPayment;
 using SMART.ERP.Application.DTOs.Cai;
 using SMART.ERP.Application.DTOs.Cart;
 using SMART.ERP.Application.DTOs.CartItem;
+using SMART.ERP.Application.DTOs.Chat;
 using SMART.ERP.Application.DTOs.Company;
 using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Application.DTOs.DailyClose;
@@ -45,12 +46,14 @@ using SMART.ERP.Application.DTOs.ProductToPurchase;
 using SMART.ERP.Application.DTOs.Prospect;
 using SMART.ERP.Application.DTOs.ProspectQuoteProduct;
 using SMART.ERP.Application.DTOs.Provider;
+using SMART.ERP.Application.DTOs.ProviderWarehouse;
 using SMART.ERP.Application.DTOs.PurchaseBill;
 using SMART.ERP.Application.DTOs.PurchaseBillPayment;
 using SMART.ERP.Application.DTOs.PurchaseOrder;
 using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.DTOs.ResumePayment;
 using SMART.ERP.Application.DTOs.SaleOrder;
+using SMART.ERP.Application.DTOs.ShippingCost;
 using SMART.ERP.Application.DTOs.Status;
 using SMART.ERP.Application.DTOs.TypeOfPaymentMethod;
 using SMART.ERP.Application.DTOs.TypeProvider;
@@ -277,6 +280,9 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CartItem, CartItemDto>().ReverseMap();
             CreateMap<ProjectAttachmentCategory, ProjectAttachmentCategoryDto>();
             CreateMap<ProjectAttachment, ProjectAttachmentDto>();
+            CreateMap<ChatSession, ChatSessionDto>()
+                .ForMember(dest => dest.AssignedAdminName, opt => opt.MapFrom(src => src.AssignedAdminUser != null ? src.AssignedAdminUser.FullName : null));
+            CreateMap<ChatMessage, ChatMessageDto>();
             #endregion
 
             #region Commands
@@ -361,6 +367,20 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreatePaymentMethodCommand, PaymentMethod>()
                 .ForMember(dest => dest.EncryptedCardNumber, opt => opt.Ignore())
                 .ForMember(dest => dest.Last4Digits, opt => opt.Ignore());
+
+            // Dropshipping mappings
+            CreateMap<ShippingCostConfiguration, ShippingCostDto>()
+                .ForMember(dest => dest.SourceWarehouseName, opt => opt.MapFrom(src => src.SourceWarehouse != null ? src.SourceWarehouse.Name : null))
+                .ForMember(dest => dest.SourceProviderName, opt => opt.MapFrom(src => src.SourceProvider != null ? src.SourceProvider.Name : null))
+                .ForMember(dest => dest.SourceCityName, opt => opt.MapFrom(src => src.SourceCity != null ? src.SourceCity.Name : null))
+                .ForMember(dest => dest.DestinationCityName, opt => opt.MapFrom(src => src.DestinationCity != null ? src.DestinationCity.Name : null))
+                .ForMember(dest => dest.DestinationDepartmentName, opt => opt.MapFrom(src => src.DestinationDepartment != null ? src.DestinationDepartment.Name : null))
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product != null ? src.Product.Name : null));
+
+            CreateMap<ProviderWarehouse, ProviderWarehouseDto>()
+                .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.Provider != null ? src.Provider.Name : string.Empty))
+                .ForMember(dest => dest.WarehouseName, opt => opt.MapFrom(src => src.Warehouse != null ? src.Warehouse.Name : string.Empty));
+
             #endregion
         }
     }

@@ -4,8 +4,11 @@ using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.JwtService;
+using SMART.ERP.Application.Services.ShippingCostCalculator;
+using SMART.ERP.Application.Services.WarehouseSelection;
 using SMART.ERP.Application.Specifications.ClientSpecification;
 using SMART.ERP.Application.Specifications.ProductOfferedSpecification;
+using SMART.ERP.Application.Specifications.ProviderWarehouseSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
@@ -39,7 +42,10 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
         private readonly IRepositoryAsync<ProductOffered> _productOfferedRepositoryAsync;
         private readonly IJwtService _jwtService;
         private readonly IRepositoryAsync<Notification> _notificationRepositoryAsync;
-        public CreateQuotationCommandHandler(IRepositoryAsync<Quotation> repositoryAsync, IRepositoryAsync<Notification> notificationRepositoryAsync, IJwtService jwtService, IRepositoryAsync<ProductOffered> productOfferedRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IMapper mapper, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync)
+        private readonly IWarehouseSelectionService _warehouseSelectionService;
+        private readonly IShippingCostCalculatorService _shippingCalculator;
+        private readonly IRepositoryAsync<ProviderWarehouse> _providerWarehouseRepository;
+        public CreateQuotationCommandHandler(IRepositoryAsync<Quotation> repositoryAsync, IRepositoryAsync<Notification> notificationRepositoryAsync, IJwtService jwtService, IRepositoryAsync<ProductOffered> productOfferedRepositoryAsync, IRepositoryAsync<Customer> customerRepositoryAsync, IMapper mapper, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync, IWarehouseSelectionService warehouseSelectionService, IShippingCostCalculatorService shippingCalculator, IRepositoryAsync<ProviderWarehouse> providerWarehouseRepository)
         {
             _repositoryAsync = repositoryAsync;
             _mapper = mapper;
@@ -53,6 +59,9 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             _productOfferedRepositoryAsync = productOfferedRepositoryAsync;
             _notificationRepositoryAsync = notificationRepositoryAsync;
             _jwtService = jwtService;
+            _warehouseSelectionService = warehouseSelectionService;
+            _shippingCalculator = shippingCalculator;
+            _providerWarehouseRepository = providerWarehouseRepository;
         }
         public async Task<Response<QuotationDto>> Handle(CreateQuotationCommand request, CancellationToken cancellationToken)
         {
@@ -110,26 +119,96 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
             await _repositoryAsync.SaveChangesAsync();
             if (request.ProductsToOffered != null && request.ProductsToOffered.Count > 0)
             {
+                // Step 1: Select warehouses and group by provider for consolidation
+                var productWarehouseMap = new Dictionary<int, (ProductToOfferdDto product, int warehouseId, bool isVirtual, int? providerId)>();
+                var productsByProvider = new Dictionary<int, decimal>(); // ProviderId -> Shipping cost (consolidated)
+
                 foreach (var item in request.ProductsToOffered)
                 {
+                    // Select optimal warehouse for this product
+                    var warehouseSelection = await _warehouseSelectionService.SelectOptimalWarehouseAsync(
+                        item.ProductId!.Value,
+                        item.Quantity,
+                        null, // TODO: Get customer city from delivery address if available
+                        preferPhysical: true);
+
+                    int? providerId = null;
+                    if (warehouseSelection.IsVirtual && warehouseSelection.ProviderId.HasValue)
+                    {
+                        providerId = warehouseSelection.ProviderId.Value;
+                    }
+
+                    productWarehouseMap[item.ProductId!.Value] = (item, warehouseSelection.WarehouseId, warehouseSelection.IsVirtual, providerId);
+                }
+
+                // Step 2: Calculate consolidated shipping per provider
+                foreach (var kvp in productWarehouseMap.Values)
+                {
+                    if (kvp.isVirtual && kvp.providerId.HasValue && !productsByProvider.ContainsKey(kvp.providerId.Value))
+                    {
+                        var shippingResult = await _shippingCalculator.CalculateShippingCostAsync(
+                            kvp.product.ProductId!.Value,
+                            kvp.warehouseId,
+                            null, // TODO: Get customer city from delivery address if available
+                            kvp.product.Quantity);
+
+                        productsByProvider[kvp.providerId.Value] = shippingResult.DefaultCost;
+                    }
+                }
+
+                // Step 3: Create ProductOffered entities with shipping costs
+                var totalShippingCost = 0m;
+                var subTotalWithoutShipping = 0m;
+                var providerShippingAssigned = new HashSet<int>(); // Track which providers have had shipping assigned
+
+                foreach (var item in request.ProductsToOffered)
+                {
+                    var (product, warehouseId, isVirtual, providerId) = productWarehouseMap[item.ProductId!.Value];
+
                     var newProductOffered = _mapper.Map<ProductOffered>(item);
                     newProductOffered.QuotationId = quoteResponse.Id;
                     newProductOffered.UnitPrice = item.RecomendedSalePrice;
                     newProductOffered.Taxes = TaxCalculator(item, taxesRates);
-                    newProductOffered.TotalLine = newProductOffered.Taxes + (item.Quantity * item.RecomendedSalePrice);
+                    newProductOffered.SourceWarehouseId = warehouseId;
+                    newProductOffered.IsFromVirtualStock = isVirtual;
+
+                    // Calculate subtotal without shipping
+                    decimal lineSubTotal = item.Quantity * item.RecomendedSalePrice;
+                    newProductOffered.SubTotalWithoutShipping = lineSubTotal;
+                    subTotalWithoutShipping += lineSubTotal;
+
+                    // Assign shipping cost (only once per provider)
+                    decimal lineShippingCost = 0m;
+                    if (isVirtual && providerId.HasValue && !providerShippingAssigned.Contains(providerId.Value))
+                    {
+                        lineShippingCost = productsByProvider.GetValueOrDefault(providerId.Value, 0m);
+                        totalShippingCost += lineShippingCost;
+                        providerShippingAssigned.Add(providerId.Value);
+                    }
+                    newProductOffered.ShippingCost = lineShippingCost;
+
+                    // Calculate total line = subtotal + shipping + taxes
+                    newProductOffered.TotalLine = lineSubTotal + lineShippingCost + newProductOffered.Taxes;
+
                     var productOfferedResponse = await _productOfferedRepositoryAsync.AddAsync(newProductOffered);
                     await _productOfferedRepositoryAsync.SaveChangesAsync();
                     var newProductOfferedDto = _mapper.Map<ProductOfferedDto>(productOfferedResponse);
                     productsOffered.Add(newProductOfferedDto);
                 }
-                newRecord.SubTotal = CalculateSubtotal(productsOffered);
+
+                // Step 4: Update quotation totals
+                newRecord.SubTotalWithoutShipping = subTotalWithoutShipping;
+                newRecord.TotalShippingCost = totalShippingCost;
+                newRecord.SubTotal = subTotalWithoutShipping + totalShippingCost;
+
                 var taxes = CalculateTaxes(productsOffered, taxesRates);
                 decimal taxesAmount = 0;
                 foreach (var taxis in taxes)
                 {
                     taxesAmount += taxis.Amount;
                 }
-                newRecord.Total = taxesAmount + newRecord.SubTotal;
+                newRecord.Total = newRecord.SubTotal + taxesAmount;
+
                 await _repositoryAsync.UpdateAsync(newRecord);
                 await _repositoryAsync.SaveChangesAsync();
                 quoteResponse.Total = newRecord.Total;

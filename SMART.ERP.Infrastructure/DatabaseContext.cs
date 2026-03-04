@@ -74,6 +74,11 @@ namespace SMART.ERP.Infrastructure
         public DbSet<ProductOffered> ProductOffereds { get; set; } = null!;
         public DbSet<Warehouse> Warehouses { get; set; } = null!;
         public DbSet<InventoryDistribution> InventoryDistributions { get; set; } = null!;
+        public DbSet<WarehouseType> WarehouseTypes { get; set; } = null!;
+        public DbSet<ProviderWarehouse> ProviderWarehouses { get; set; } = null!;
+        public DbSet<ShippingCostConfiguration> ShippingCostConfigurations { get; set; } = null!;
+        public DbSet<VirtualStockImport> VirtualStockImports { get; set; } = null!;
+        public DbSet<VirtualStockImportDetail> VirtualStockImportDetails { get; set; } = null!;
         public DbSet<InventoryInput> InventoryInputs { get; set; } = null!;
         public DbSet<InventoryInputType> InventoryInputTypes { get; set; } = null!;
         public DbSet<ProductEntry> ProductEntries { get; set; } = null!;
@@ -104,6 +109,8 @@ namespace SMART.ERP.Infrastructure
         public DbSet<ProjectAttachmentCategory> ProjectAttachmentCategories { get; set; } = null!;
         public DbSet<ProjectAttachment> ProjectAttachments { get; set; } = null!;
         public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
+        public DbSet<ChatSession> ChatSessions { get; set; } = null!;
+        public DbSet<ChatMessage> ChatMessages { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -970,6 +977,12 @@ namespace SMART.ERP.Infrastructure
             //ProductOffered
             modelBuilder.Entity<ProductOffered>().ToTable("ProductOffered");
             modelBuilder.Entity<ProductOffered>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<ProductOffered>()
+                .HasOne(x => x.SourceWarehouse)
+                .WithMany()
+                .HasForeignKey(x => x.SourceWarehouseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             //Warehouse
             modelBuilder.Entity<Warehouse>().ToTable("Warehouse");
             modelBuilder.Entity<Warehouse>(o => o.HasKey(x => x.Id));
@@ -993,9 +1006,95 @@ namespace SMART.ERP.Infrastructure
                 .WithOne(a => a.Warehouse)
                 .HasForeignKey(x => x.WarehouseId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Warehouse>()
+                .HasOne(x => x.WarehouseType)
+                .WithMany()
+                .HasForeignKey(x => x.WarehouseTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             //Inventory Distribution
             modelBuilder.Entity<InventoryDistribution>().ToTable("InventoryDistribution");
             modelBuilder.Entity<InventoryDistribution>(o => o.HasKey(x => x.Id));
+
+            //WarehouseType
+            modelBuilder.Entity<WarehouseType>().ToTable("WarehouseType");
+            modelBuilder.Entity<WarehouseType>(o => o.HasKey(x => x.Id));
+
+            //ProviderWarehouse
+            modelBuilder.Entity<ProviderWarehouse>().ToTable("ProviderWarehouse");
+            modelBuilder.Entity<ProviderWarehouse>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<ProviderWarehouse>()
+                .HasOne(x => x.Provider)
+                .WithMany(x => x.ProviderWarehouses)
+                .HasForeignKey(x => x.ProviderId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ProviderWarehouse>()
+                .HasOne(x => x.Warehouse)
+                .WithMany(x => x.ProviderWarehouses)
+                .HasForeignKey(x => x.WarehouseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //ShippingCostConfiguration
+            modelBuilder.Entity<ShippingCostConfiguration>().ToTable("ShippingCostConfiguration");
+            modelBuilder.Entity<ShippingCostConfiguration>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<ShippingCostConfiguration>()
+                .HasOne(x => x.SourceWarehouse)
+                .WithMany(x => x.ShippingCosts)
+                .HasForeignKey(x => x.SourceWarehouseId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ShippingCostConfiguration>()
+                .HasOne(x => x.SourceProvider)
+                .WithMany(x => x.ShippingCosts)
+                .HasForeignKey(x => x.SourceProviderId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ShippingCostConfiguration>()
+                .HasOne(x => x.SourceCity)
+                .WithMany()
+                .HasForeignKey(x => x.SourceCityId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ShippingCostConfiguration>()
+                .HasOne(x => x.DestinationCity)
+                .WithMany()
+                .HasForeignKey(x => x.DestinationCityId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ShippingCostConfiguration>()
+                .HasOne(x => x.DestinationDepartment)
+                .WithMany()
+                .HasForeignKey(x => x.DestinationDepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ShippingCostConfiguration>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //VirtualStockImport
+            modelBuilder.Entity<VirtualStockImport>().ToTable("VirtualStockImport");
+            modelBuilder.Entity<VirtualStockImport>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<VirtualStockImport>()
+                .HasOne(x => x.Provider)
+                .WithMany()
+                .HasForeignKey(x => x.ProviderId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<VirtualStockImport>()
+                .HasOne(x => x.Warehouse)
+                .WithMany()
+                .HasForeignKey(x => x.WarehouseId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<VirtualStockImport>()
+                .HasMany(x => x.ImportDetails)
+                .WithOne(x => x.VirtualStockImport)
+                .HasForeignKey(x => x.VirtualStockImportId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //VirtualStockImportDetail
+            modelBuilder.Entity<VirtualStockImportDetail>().ToTable("VirtualStockImportDetail");
+            modelBuilder.Entity<VirtualStockImportDetail>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<VirtualStockImportDetail>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             //Inventory Entry
             modelBuilder.Entity<InventoryInput>().ToTable("InventoryInput");
@@ -1463,6 +1562,34 @@ namespace SMART.ERP.Infrastructure
             modelBuilder.Entity<Project>()
                 .Navigation(b => b.ProjectAttachments)
                 .UsePropertyAccessMode(PropertyAccessMode.Property);
+
+            //ChatSession
+            modelBuilder.Entity<ChatSession>().ToTable("ChatSession");
+            modelBuilder.Entity<ChatSession>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<ChatSession>()
+                .HasOne(x => x.EcommerceUser)
+                .WithMany()
+                .HasForeignKey(x => x.EcommerceUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ChatSession>()
+                .HasOne(x => x.AssignedAdminUser)
+                .WithMany()
+                .HasForeignKey(x => x.AssignedAdminUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ChatSession>()
+                .HasMany(x => x.Messages)
+                .WithOne(x => x.ChatSession)
+                .HasForeignKey(x => x.ChatSessionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //ChatMessage
+            modelBuilder.Entity<ChatMessage>().ToTable("ChatMessage");
+            modelBuilder.Entity<ChatMessage>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(x => x.SenderAdminUser)
+                .WithMany()
+                .HasForeignKey(x => x.SenderAdminUserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }

@@ -24,5 +24,12 @@ namespace SMART.ERP.Domain.Entities
         public DateTime? ModificationDate { get; set; }
         [Column(TypeName = "varchar(50)")]
         public string? ModificatedBy { get; set; }
+
+        // Dropshipping support
+        public int? WarehouseTypeId { get; set; }
+        public virtual WarehouseType? WarehouseType { get; set; }
+        public bool IsVirtual { get; set; }
+        public virtual List<ProviderWarehouse>? ProviderWarehouses { get; set; }
+        public virtual List<ShippingCostConfiguration>? ShippingCosts { get; set; }
     }
 }
