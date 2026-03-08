@@ -1,10 +1,13 @@
-﻿using AutoMapper;
+using AutoMapper;
 using MediatR;
+using Newtonsoft.Json;
 using SMART.ERP.Application.DTOs.Quotation;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.JwtService;
+using SMART.ERP.Application.Services.QuotationDiffService;
 using SMART.ERP.Application.Specifications.ProductOfferedSpecification;
+using SMART.ERP.Application.Specifications.QuotationSnapshotSpecification;
 using SMART.ERP.Application.Specifications.QuotationSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -40,8 +43,10 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
         private readonly IRepositoryAsync<Product> _productRepositoryAsync;
         private readonly IRepositoryAsync<Prefix> _prefixRepositoryAsync;
         private readonly IRepositoryAsync<ProductOffered> _productOfferedRepositoryAsync;
+        private readonly IRepositoryAsync<QuotationSnapshot> _snapshotRepositoryAsync;
         private readonly IJwtService _jwtService;
-        public UpdateQuotationCommandHandler(IRepositoryAsync<Quotation> repositoryAsync, IJwtService jwtService, IMapper mapper, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<ProductOffered> productOfferedRepositoryAsync)
+        private readonly IQuotationDiffService _diffService;
+        public UpdateQuotationCommandHandler(IRepositoryAsync<Quotation> repositoryAsync, IJwtService jwtService, IMapper mapper, IRepositoryAsync<Customer> customerRepositoryAsync, IRepositoryAsync<BranchOffices> branchOfficeRepositoryAsync, IRepositoryAsync<User> userRepositoryAsync, IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<ProductOffered> productOfferedRepositoryAsync, IRepositoryAsync<QuotationSnapshot> snapshotRepositoryAsync, IQuotationDiffService diffService)
         {
             _repositoryAsync = repositoryAsync;
             _mapper = mapper;
@@ -53,7 +58,9 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             _productRepositoryAsync = productRepositoryAsync;
             _prefixRepositoryAsync = prefixRepositoryAsync;
             _productOfferedRepositoryAsync = productOfferedRepositoryAsync;
+            _snapshotRepositoryAsync = snapshotRepositoryAsync;
             _jwtService = jwtService;
+            _diffService = diffService;
         }
         public async Task<Response<QuotationDto>> Handle(UpdateQuotationCommand request, CancellationToken cancellationToken)
         {
@@ -62,6 +69,10 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             {
                 throw new ApiException($"No existe una cotización con el Id {request.Id}");
             }
+
+            // Capture snapshot of current state BEFORE any mutation
+            var beforeSnapshot = BuildSnapshotData(quotationExist);
+
             var userExist = await _userRepositoryAsync.GetByIdAsync(request.UserId!.Value);
             if (userExist == null)
             {
@@ -137,12 +148,87 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
             quotationExist.ModificationDate = DateTime.UtcNow;
             await _repositoryAsync.UpdateAsync(quotationExist);
             await _repositoryAsync.SaveChangesAsync();
+
+            // Build after-state snapshot and save version
+            var afterSnapshot = BuildAfterSnapshotData(quotationExist, pre);
+            var changes = _diffService.ComputeDiff(beforeSnapshot, afterSnapshot);
+            var lastVersionList = await _snapshotRepositoryAsync.ListAsync(new GetMaxVersionSpecification(request.Id));
+            int nextVersion = (lastVersionList.FirstOrDefault()?.VersionNumber ?? 0) + 1;
+
+            var snapshot = new QuotationSnapshot
+            {
+                QuotationId = request.Id,
+                VersionNumber = nextVersion,
+                SnapshotData = JsonConvert.SerializeObject(beforeSnapshot),
+                ChangeSummary = JsonConvert.SerializeObject(changes),
+                CreatedBy = _jwtService.GetSubjectToken(),
+                CreatedDate = DateTime.UtcNow
+            };
+            await _snapshotRepositoryAsync.AddAsync(snapshot);
+            await _snapshotRepositoryAsync.SaveChangesAsync();
+
             quotationExist.Customer = customerExist;
             var dto = _mapper.Map<QuotationDto>(quotationExist);
             dto.ProductsOffered = pre;
             return new Response<QuotationDto>(dto, $"Cotizacion {quotationExist.QuotationCode} actualizada exitosamente.");
 
         }
+
+        private QuotationSnapshotDataDto BuildSnapshotData(Quotation quotation)
+        {
+            var snapshot = _mapper.Map<QuotationSnapshotDataDto>(quotation);
+            if (quotation.ProductsOffered != null)
+            {
+                snapshot.ProductsOffered = _mapper.Map<List<ProductOfferedSnapshotDto>>(quotation.ProductsOffered);
+            }
+            return snapshot;
+        }
+
+        private static QuotationSnapshotDataDto BuildAfterSnapshotData(Quotation quotation, List<ProductOfferedDto> products)
+        {
+            return new QuotationSnapshotDataDto
+            {
+                Id = quotation.Id,
+                CustomerId = quotation.CustomerId,
+                QuotationCode = quotation.QuotationCode,
+                BranchOfficeId = quotation.BranchOfficeId,
+                UserId = quotation.UserId,
+                CreationDate = quotation.CreationDate,
+                DueDate = quotation.DueDate,
+                Observations = quotation.Observations,
+                TermsAndConditions = quotation.TermsAndConditions,
+                SubTotal = quotation.SubTotal,
+                Total = quotation.Total,
+                StatusId = quotation.StatusId,
+                PrefixId = quotation.PrefixId,
+                Profitability = quotation.Profitability,
+                InvoiceDestinationId = quotation.InvoiceDestinationId,
+                ProjectId = quotation.ProjectId,
+                TotalShippingCost = quotation.TotalShippingCost,
+                SubTotalWithoutShipping = quotation.SubTotalWithoutShipping,
+                CreatedBy = quotation.CreatedBy,
+                InsertedDate = quotation.InsertedDate,
+                ModificatedBy = quotation.ModificatedBy,
+                ModificationDate = quotation.ModificationDate,
+                ProductsOffered = products.Select(p => new ProductOfferedSnapshotDto
+                {
+                    Id = p.Id,
+                    ProductId = p.ProductId,
+                    ProductCode = p.ProductCode,
+                    ProductDescription = p.ProductDescription,
+                    UnitPrice = p.UnitPrice,
+                    Quantity = p.Quantity,
+                    TaxId = p.TaxId,
+                    Taxes = p.Taxes,
+                    TotalLine = p.TotalLine,
+                    SourceWarehouseId = p.SourceWarehouseId,
+                    ShippingCost = p.ShippingCost,
+                    SubTotalWithoutShipping = p.SubTotalWithoutShipping,
+                    IsFromVirtualStock = p.IsFromVirtualStock
+                }).ToList()
+            };
+        }
+
         public List<KindOfTaxDto> CalculateTaxes(List<ProductOfferedDto> products, List<Tax> taxes)
         {
             List<KindOfTaxDto> Taxes = new List<KindOfTaxDto>();

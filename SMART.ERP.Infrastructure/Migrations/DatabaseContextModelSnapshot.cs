@@ -1923,6 +1923,9 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Property<int?>("QuotationOriginId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("RecurringInvoiceTemplateId")
+                        .HasColumnType("int");
+
                     b.Property<string>("SagCode")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -1970,6 +1973,8 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasIndex("ProjectId");
 
                     b.HasIndex("QuotationOriginId");
+
+                    b.HasIndex("RecurringInvoiceTemplateId");
 
                     b.HasIndex("StatusId");
 
@@ -4121,6 +4126,12 @@ namespace SMART.ERP.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<Guid?>("AccessToken")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("AccessTokenGeneratedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("BranchOfficeId")
                         .HasColumnType("int");
 
@@ -4197,6 +4208,10 @@ namespace SMART.ERP.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AccessToken")
+                        .IsUnique()
+                        .HasFilter("[AccessToken] IS NOT NULL");
+
                     b.HasIndex("BranchOfficeId");
 
                     b.HasIndex("CustomerId");
@@ -4212,6 +4227,130 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Quotation", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.QuotationComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuthorEmail")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsFromClient")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("varchar(600)");
+
+                    b.Property<string>("ModificatedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("QuotationId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuotationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("QuotationComment", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.QuotationItemObservation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Observation")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ProductOfferedId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuotationId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductOfferedId");
+
+                    b.HasIndex("QuotationId");
+
+                    b.ToTable("QuotationItemObservation", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.QuotationSnapshot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeSummary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("QuotationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SnapshotData")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuotationId", "VersionNumber");
+
+                    b.ToTable("QuotationSnapshot", (string)null);
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.QuoteProduct", b =>
@@ -4245,6 +4384,155 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("QuoteProduct", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.RecurringInvoiceLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("ExecutionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("GeneratedInvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RecurringInvoiceTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Succeeded")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GeneratedInvoiceId");
+
+                    b.HasIndex("RecurringInvoiceTemplateId");
+
+                    b.ToTable("RecurringInvoiceLog", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.RecurringInvoiceTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BranchOfficeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DayOfMonth")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InvoicePaymentTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastGeneratedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("NextGenerationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Observations")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TermsAndConditions")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchOfficeId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("InvoicePaymentTypeId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("StatusId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RecurringInvoiceTemplate", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.RecurringInvoiceTemplateItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ProductCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("ProductDescription")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("RecurringInvoiceTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaxId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("RecurringInvoiceTemplateId");
+
+                    b.HasIndex("TaxId");
+
+                    b.ToTable("RecurringInvoiceTemplateItem", (string)null);
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.RefreshToken", b =>
@@ -5726,6 +6014,11 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .HasForeignKey("QuotationOriginId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("SMART.ERP.Domain.Entities.RecurringInvoiceTemplate", "RecurringInvoiceTemplate")
+                        .WithMany()
+                        .HasForeignKey("RecurringInvoiceTemplateId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("SMART.ERP.Domain.Entities.Status", "Status")
                         .WithMany()
                         .HasForeignKey("StatusId")
@@ -5749,6 +6042,8 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("Project");
 
                     b.Navigation("QuotationOrigin");
+
+                    b.Navigation("RecurringInvoiceTemplate");
 
                     b.Navigation("Status");
 
@@ -6660,6 +6955,54 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.QuotationComment", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.Quotation", "Quotation")
+                        .WithMany("Comments")
+                        .HasForeignKey("QuotationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Quotation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.QuotationItemObservation", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.ProductOffered", "ProductOffered")
+                        .WithMany()
+                        .HasForeignKey("ProductOfferedId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Quotation", "Quotation")
+                        .WithMany("ItemObservations")
+                        .HasForeignKey("QuotationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductOffered");
+
+                    b.Navigation("Quotation");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.QuotationSnapshot", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.Quotation", "Quotation")
+                        .WithMany()
+                        .HasForeignKey("QuotationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Quotation");
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.QuoteProduct", b =>
                 {
                     b.HasOne("SMART.ERP.Domain.Entities.Opportunity", "Opportunity")
@@ -6677,6 +7020,100 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("Opportunity");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.RecurringInvoiceLog", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.Invoice", "GeneratedInvoice")
+                        .WithMany()
+                        .HasForeignKey("GeneratedInvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.RecurringInvoiceTemplate", "RecurringInvoiceTemplate")
+                        .WithMany()
+                        .HasForeignKey("RecurringInvoiceTemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("GeneratedInvoice");
+
+                    b.Navigation("RecurringInvoiceTemplate");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.RecurringInvoiceTemplate", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.BranchOffices", "BranchOffice")
+                        .WithMany()
+                        .HasForeignKey("BranchOfficeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.InvoicePaymentType", "InvoicePaymentType")
+                        .WithMany()
+                        .HasForeignKey("InvoicePaymentTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BranchOffice");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("InvoicePaymentType");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("Status");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.RecurringInvoiceTemplateItem", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.RecurringInvoiceTemplate", "RecurringInvoiceTemplate")
+                        .WithMany("Items")
+                        .HasForeignKey("RecurringInvoiceTemplateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Tax", "Tax")
+                        .WithMany()
+                        .HasForeignKey("TaxId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("RecurringInvoiceTemplate");
+
+                    b.Navigation("Tax");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.RefreshToken", b =>
@@ -7149,7 +7586,16 @@ namespace SMART.ERP.Infrastructure.Migrations
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Quotation", b =>
                 {
+                    b.Navigation("Comments");
+
+                    b.Navigation("ItemObservations");
+
                     b.Navigation("ProductsOffered");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.RecurringInvoiceTemplate", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Region", b =>

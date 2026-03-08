@@ -111,6 +111,12 @@ namespace SMART.ERP.Infrastructure
         public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
         public DbSet<ChatSession> ChatSessions { get; set; } = null!;
         public DbSet<ChatMessage> ChatMessages { get; set; } = null!;
+        public DbSet<RecurringInvoiceTemplate> RecurringInvoiceTemplates { get; set; } = null!;
+        public DbSet<RecurringInvoiceTemplateItem> RecurringInvoiceTemplateItems { get; set; } = null!;
+        public DbSet<RecurringInvoiceLog> RecurringInvoiceLogs { get; set; } = null!;
+        public DbSet<QuotationSnapshot> QuotationSnapshots { get; set; } = null!;
+        public DbSet<QuotationComment> QuotationComments { get; set; } = null!;
+        public DbSet<QuotationItemObservation> QuotationItemObservations { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -1190,6 +1196,11 @@ namespace SMART.ERP.Infrastructure
               .WithOne(x => x.Invoice)
               .HasForeignKey(x => x.InvoiceId)
               .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Invoice>()
+              .HasOne(x => x.RecurringInvoiceTemplate)
+              .WithMany()
+              .HasForeignKey(x => x.RecurringInvoiceTemplateId)
+              .OnDelete(DeleteBehavior.Restrict);
             //Product Sold
             modelBuilder.Entity<ProductSold>().ToTable("ProductSold");
             modelBuilder.Entity<ProductSold>(o => o.HasKey(x => x.Id));
@@ -1589,6 +1600,118 @@ namespace SMART.ERP.Infrastructure
                 .HasOne(x => x.SenderAdminUser)
                 .WithMany()
                 .HasForeignKey(x => x.SenderAdminUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //RecurringInvoiceTemplate
+            modelBuilder.Entity<RecurringInvoiceTemplate>().ToTable("RecurringInvoiceTemplate");
+            modelBuilder.Entity<RecurringInvoiceTemplate>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<RecurringInvoiceTemplate>()
+                .HasOne(x => x.Customer)
+                .WithMany()
+                .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<RecurringInvoiceTemplate>()
+                .HasOne(x => x.BranchOffice)
+                .WithMany()
+                .HasForeignKey(x => x.BranchOfficeId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<RecurringInvoiceTemplate>()
+                .HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<RecurringInvoiceTemplate>()
+                .HasOne(x => x.InvoicePaymentType)
+                .WithMany()
+                .HasForeignKey(x => x.InvoicePaymentTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<RecurringInvoiceTemplate>()
+                .HasOne(x => x.Status)
+                .WithMany()
+                .HasForeignKey(x => x.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<RecurringInvoiceTemplate>()
+                .HasOne(x => x.Project)
+                .WithMany()
+                .HasForeignKey(x => x.ProjectId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<RecurringInvoiceTemplate>()
+                .HasMany(x => x.Items)
+                .WithOne(x => x.RecurringInvoiceTemplate)
+                .HasForeignKey(x => x.RecurringInvoiceTemplateId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //RecurringInvoiceTemplateItem
+            modelBuilder.Entity<RecurringInvoiceTemplateItem>().ToTable("RecurringInvoiceTemplateItem");
+            modelBuilder.Entity<RecurringInvoiceTemplateItem>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<RecurringInvoiceTemplateItem>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<RecurringInvoiceTemplateItem>()
+                .HasOne(x => x.Tax)
+                .WithMany()
+                .HasForeignKey(x => x.TaxId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //RecurringInvoiceLog
+            modelBuilder.Entity<RecurringInvoiceLog>().ToTable("RecurringInvoiceLog");
+            modelBuilder.Entity<RecurringInvoiceLog>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<RecurringInvoiceLog>()
+                .HasOne(x => x.RecurringInvoiceTemplate)
+                .WithMany()
+                .HasForeignKey(x => x.RecurringInvoiceTemplateId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<RecurringInvoiceLog>()
+                .HasOne(x => x.GeneratedInvoice)
+                .WithMany()
+                .HasForeignKey(x => x.GeneratedInvoiceId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //QuotationSnapshot
+            modelBuilder.Entity<QuotationSnapshot>().ToTable("QuotationSnapshot");
+            modelBuilder.Entity<QuotationSnapshot>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<QuotationSnapshot>()
+                .HasOne(x => x.Quotation)
+                .WithMany()
+                .HasForeignKey(x => x.QuotationId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<QuotationSnapshot>()
+                .HasIndex(x => new { x.QuotationId, x.VersionNumber });
+
+            //Quotation AccessToken unique filtered index
+            modelBuilder.Entity<Quotation>()
+                .HasIndex(x => x.AccessToken)
+                .IsUnique()
+                .HasFilter("[AccessToken] IS NOT NULL");
+
+            //QuotationComment
+            modelBuilder.Entity<QuotationComment>().ToTable("QuotationComment");
+            modelBuilder.Entity<QuotationComment>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<QuotationComment>()
+                .HasOne(x => x.Quotation)
+                .WithMany(x => x.Comments)
+                .HasForeignKey(x => x.QuotationId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<QuotationComment>()
+                .HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //QuotationItemObservation
+            modelBuilder.Entity<QuotationItemObservation>().ToTable("QuotationItemObservation");
+            modelBuilder.Entity<QuotationItemObservation>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<QuotationItemObservation>()
+                .HasOne(x => x.Quotation)
+                .WithMany(x => x.ItemObservations)
+                .HasForeignKey(x => x.QuotationId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<QuotationItemObservation>()
+                .HasOne(x => x.ProductOffered)
+                .WithMany()
+                .HasForeignKey(x => x.ProductOfferedId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);

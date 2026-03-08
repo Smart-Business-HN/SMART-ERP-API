@@ -47,5 +47,13 @@ namespace SMART.ERP.Domain.Entities
         public decimal TotalShippingCost { get; set; }
         [Precision(18, 2)]
         public decimal SubTotalWithoutShipping { get; set; }
+
+        // Public preview access
+        public Guid? AccessToken { get; set; }
+        public DateTime? AccessTokenGeneratedDate { get; set; }
+
+        // Navigation properties for preview feature
+        public List<QuotationComment>? Comments { get; set; }
+        public List<QuotationItemObservation>? ItemObservations { get; set; }
     }
 }

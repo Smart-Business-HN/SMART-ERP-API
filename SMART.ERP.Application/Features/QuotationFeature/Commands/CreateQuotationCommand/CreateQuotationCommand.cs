@@ -125,20 +125,28 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
 
                 foreach (var item in request.ProductsToOffered)
                 {
-                    // Select optimal warehouse for this product
-                    var warehouseSelection = await _warehouseSelectionService.SelectOptimalWarehouseAsync(
+                    // Select optimal warehouse for this product (returns null if no stock available)
+                    var warehouseSelection = await _warehouseSelectionService.TrySelectOptimalWarehouseAsync(
                         item.ProductId!.Value,
                         item.Quantity,
                         null, // TODO: Get customer city from delivery address if available
                         preferPhysical: true);
 
-                    int? providerId = null;
-                    if (warehouseSelection.IsVirtual && warehouseSelection.ProviderId.HasValue)
+                    if (warehouseSelection != null)
                     {
-                        providerId = warehouseSelection.ProviderId.Value;
-                    }
+                        int? providerId = null;
+                        if (warehouseSelection.IsVirtual && warehouseSelection.ProviderId.HasValue)
+                        {
+                            providerId = warehouseSelection.ProviderId.Value;
+                        }
 
-                    productWarehouseMap[item.ProductId!.Value] = (item, warehouseSelection.WarehouseId, warehouseSelection.IsVirtual, providerId);
+                        productWarehouseMap[item.ProductId!.Value] = (item, warehouseSelection.WarehouseId, warehouseSelection.IsVirtual, providerId);
+                    }
+                    else
+                    {
+                        // Product has no stock — still allow quoting without warehouse assignment
+                        productWarehouseMap[item.ProductId!.Value] = (item, 0, false, null);
+                    }
                 }
 
                 // Step 2: Calculate consolidated shipping per provider
@@ -169,7 +177,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                     newProductOffered.QuotationId = quoteResponse.Id;
                     newProductOffered.UnitPrice = item.RecomendedSalePrice;
                     newProductOffered.Taxes = TaxCalculator(item, taxesRates);
-                    newProductOffered.SourceWarehouseId = warehouseId;
+                    newProductOffered.SourceWarehouseId = warehouseId == 0 ? null : warehouseId;
                     newProductOffered.IsFromVirtualStock = isVirtual;
 
                     // Calculate subtotal without shipping

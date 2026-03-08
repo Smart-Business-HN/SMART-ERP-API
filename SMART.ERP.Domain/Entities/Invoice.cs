@@ -60,6 +60,8 @@ namespace SMART.ERP.Domain.Entities
         public DateTime? ModificationDate { get; set; }
         public int? ProjectId { get; set; }
         public virtual Project? Project { get; set; }
+        public int? RecurringInvoiceTemplateId { get; set; }
+        public virtual RecurringInvoiceTemplate? RecurringInvoiceTemplate { get; set; }
         public List<ProductSold>? ProductsSold { get; set; }
         public List<BillPayment>? BillPayments { get; set; }
     }

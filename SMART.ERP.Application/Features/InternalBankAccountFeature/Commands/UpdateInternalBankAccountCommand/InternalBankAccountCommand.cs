@@ -54,7 +54,7 @@ namespace SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.Upd
 
             await _repositoryAsync.UpdateAsync(checkInternalBankAccount);
             await _repositoryAsync.SaveChangesAsync();
-            await _outputCacheStored.EvictByTagAsync("cache_interBankAccounts", cancellationToken);
+            await _outputCacheStored.EvictByTagAsync("cache_internalBankAccounts", cancellationToken);
             var dto = _mapper.Map<InternalBankAccountDto>(checkInternalBankAccount);
             return new Response<InternalBankAccountDto>(dto, $"{request.Name} actualizado correctamente");
         }
