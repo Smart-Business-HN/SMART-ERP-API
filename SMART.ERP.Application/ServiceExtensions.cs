@@ -11,6 +11,8 @@ using SMART.ERP.Application.Behaviours;
 using SMART.ERP.Application.Jobs.AdvisorGoalJob;
 using SMART.ERP.Application.Jobs.LogSessionJob;
 using SMART.ERP.Application.Jobs.LongLivedOpportunitiesJob;
+using SMART.ERP.Application.Jobs.RecurringInvoiceJob;
+using SMART.ERP.Application.Services.InvoiceGenerationService;
 using SMART.ERP.Application.Services;
 using SMART.ERP.Application.Services.AssignUserToOpportunityService;
 using SMART.ERP.Application.Services.AssignUserToProspectService;
@@ -26,6 +28,7 @@ using SMART.ERP.Application.Services.RegisterClientService;
 using SMART.ERP.Application.Services.ShippingCostCalculator;
 using SMART.ERP.Application.Services.WarehouseSelection;
 using SMART.ERP.Application.Services.VirtualStock;
+using SMART.ERP.Application.Services.QuotationDiffService;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Settings;
 using System.Reflection;
@@ -45,6 +48,7 @@ namespace SMART.ERP.Application
                 x.AddJob<AdvisorGoalJob>(opts => opts.WithIdentity(AdvisorGoalJob.Key));
                 x.AddJob<LongLivedOpportunitiesJob>(opts => opts.WithIdentity(LongLivedOpportunitiesJob.Key));
                 x.AddJob<LogSessionJob>(opts => opts.WithIdentity(LogSessionJob.LogJobKey));
+                x.AddJob<RecurringInvoiceJob>(opts => opts.WithIdentity(RecurringInvoiceJob.Key));
 
                 x.AddTrigger(opts => opts
                 .ForJob(AdvisorGoalJob.Key)
@@ -60,6 +64,11 @@ namespace SMART.ERP.Application
                 .ForJob(LogSessionJob.LogJobKey)
                 .WithIdentity("log-session-job-trigger")
                 .WithCronSchedule("0 59 16 1/1 * ? *"));
+
+                x.AddTrigger(opts => opts
+                .ForJob(RecurringInvoiceJob.Key)
+                .WithIdentity("recurring-invoice-job-trigger")
+                .WithCronSchedule("0 0 6 * * ?"));
 
             });
             services.AddQuartzHostedService(x => x.WaitForJobsToComplete = true);
@@ -95,6 +104,8 @@ namespace SMART.ERP.Application
             services.AddTransient<IShippingCostCalculatorService, ShippingCostCalculatorService>();
             services.AddTransient<IWarehouseSelectionService, WarehouseSelectionService>();
             services.AddTransient<IVirtualStockService, VirtualStockService>();
+            services.AddTransient<IInvoiceGenerationService, InvoiceGenerationService>();
+            services.AddTransient<IQuotationDiffService, Services.QuotationDiffService.QuotationDiffService>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

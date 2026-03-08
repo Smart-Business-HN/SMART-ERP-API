@@ -8,6 +8,7 @@ using SMART.ERP.API.Extensions;
 using SMART.ERP.Application;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.SignalRHub;
+using SMART.ERP.Application.Services.QuotationPdfService;
 using SMART.ERP.Infrastructure;
 using SMART.ERP.Infrastructure.Repository;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -119,6 +120,7 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 
 
 builder.Services.AddTransient(typeof(IRepositoryAsync<>), typeof(CustomRepositoryAsync<>));
+builder.Services.AddTransient<IQuotationPdfService, SMART.ERP.Infrastructure.Services.QuotationPdfService.QuotationPdfService>();
 
 builder.WebHost.UseSentry(opts =>
 {
@@ -252,6 +254,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<DatabaseContext>();
+        await SMART.ERP.Infrastructure.Seeders.DiscountSeed.SeedAsync(context);
         await SMART.ERP.Infrastructure.Seeders.DropshippingSeed.SeedAsync(context);
     }
     catch (Exception ex)

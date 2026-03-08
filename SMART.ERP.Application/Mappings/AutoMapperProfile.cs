@@ -27,6 +27,7 @@ using SMART.ERP.Application.DTOs.InventoryInput;
 using SMART.ERP.Application.DTOs.InventoryInputType;
 using SMART.ERP.Application.DTOs.Invoice;
 using SMART.ERP.Application.DTOs.InvoicePaymentType;
+using SMART.ERP.Application.DTOs.RecurringInvoiceTemplate;
 using SMART.ERP.Application.DTOs.MajorExpenseAccount;
 using SMART.ERP.Application.DTOs.MajorIncomeAccount;
 using SMART.ERP.Application.DTOs.Meta.MetAdCampaign;
@@ -223,6 +224,18 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Quotation, QuotationDto>();
             CreateMap<ProductOffered, ProductOfferedDto>().ReverseMap();
             CreateMap<ProductToOfferdDto, ProductOffered>();
+            CreateMap<QuotationSnapshot, QuotationSnapshotDto>();
+
+            // Quotation Preview mappings
+            CreateMap<QuotationComment, QuotationCommentDto>()
+                .ForMember(dest => dest.UserFullName, opt => opt.MapFrom(src => src.User != null ? src.User.FullName : null));
+            CreateMap<QuotationItemObservation, QuotationItemObservationDto>();
+            CreateMap<ProductOffered, ProductOfferedPreviewDto>()
+                .ForMember(dest => dest.TaxRate, opt => opt.MapFrom(src => src.Tax != null ? src.Tax.Rate : 0));
+            CreateMap<QuotationSnapshot, QuotationSnapshotDetailDto>()
+                .ForMember(dest => dest.SnapshotData, opt => opt.Ignore());
+            CreateMap<Quotation, QuotationSnapshotDataDto>();
+            CreateMap<ProductOffered, ProductOfferedSnapshotDto>();
             CreateMap<InternalDocument, InternalDocumentDto>();
             CreateMap<Warehouse, WarehouseDto>();
             CreateMap<InventoryDistribution, InventoryDistributionDto>();
@@ -381,6 +394,12 @@ namespace SMART.ERP.Application.Mappings
                 .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.Provider != null ? src.Provider.Name : string.Empty))
                 .ForMember(dest => dest.WarehouseName, opt => opt.MapFrom(src => src.Warehouse != null ? src.Warehouse.Name : string.Empty));
 
+            #endregion
+
+            #region RecurringInvoiceTemplate
+            CreateMap<RecurringInvoiceTemplate, RecurringInvoiceTemplateDto>().ReverseMap();
+            CreateMap<RecurringInvoiceTemplateItem, RecurringInvoiceTemplateItemDto>().ReverseMap();
+            CreateMap<RecurringInvoiceLog, RecurringInvoiceLogDto>().ReverseMap();
             #endregion
         }
     }
