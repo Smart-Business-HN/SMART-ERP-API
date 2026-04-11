@@ -1201,6 +1201,12 @@ namespace SMART.ERP.Infrastructure
               .WithMany()
               .HasForeignKey(x => x.RecurringInvoiceTemplateId)
               .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Invoice>()
+              .Property(x => x.ExpectedPaymentDate)
+              .HasConversion(
+                  d => d.HasValue ? d.Value.ToDateTime(TimeOnly.MinValue) : (DateTime?)null,
+                  d => d.HasValue ? DateOnly.FromDateTime(d.Value) : (DateOnly?)null
+              );
             //Product Sold
             modelBuilder.Entity<ProductSold>().ToTable("ProductSold");
             modelBuilder.Entity<ProductSold>(o => o.HasKey(x => x.Id));
