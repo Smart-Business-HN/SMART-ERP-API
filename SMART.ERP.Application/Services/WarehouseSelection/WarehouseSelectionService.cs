@@ -88,11 +88,18 @@ namespace SMART.ERP.Application.Services.WarehouseSelection
             int? destinationCityId = null,
             bool preferPhysical = true)
         {
-            var availableWarehouses = await GetAvailableWarehousesAsync(productId, quantity);
-            if (!availableWarehouses.Any())
-                return null;
+            try
+            {
+                var availableWarehouses = await GetAvailableWarehousesAsync(productId, quantity);
+                if (!availableWarehouses.Any())
+                    return null;
 
-            return await SelectOptimalWarehouseAsync(productId, quantity, destinationCityId, preferPhysical);
+                return await SelectOptimalWarehouseAsync(productId, quantity, destinationCityId, preferPhysical);
+            }
+            catch (ApiException)
+            {
+                return null;
+            }
         }
 
         public async Task<List<WarehouseSelectionResult>> GetAvailableWarehousesAsync(

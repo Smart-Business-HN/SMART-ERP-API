@@ -9,8 +9,8 @@ namespace SMART.ERP.Application.Specifications.ProviderSpecification
         {
             Query.Where(x => x.Id == providerId);
             Query.Include(x => x.PurchaseBills!.Where(y => y.Outstanding > 0)).ThenInclude(z=>z.ExpenseAccount);
-            Query.Include(x => x.NonBillableExpenses!.Where(y => y.Outstanding > 0));
-            Query.Where(x => x.PurchaseBills!.Any(y => y.Outstanding > 0) || x.NonBillableExpenses!.Any(y => y.Outstanding > 0));
+            Query.Include(x => x.NonBillableExpenses!.Where(y => y.Outstanding > 0 && y.LegacyMigratedToInternalBankAccountId == null));
+            Query.Where(x => x.PurchaseBills!.Any(y => y.Outstanding > 0) || x.NonBillableExpenses!.Any(y => y.Outstanding > 0 && y.LegacyMigratedToInternalBankAccountId == null));
         }
     }
 }

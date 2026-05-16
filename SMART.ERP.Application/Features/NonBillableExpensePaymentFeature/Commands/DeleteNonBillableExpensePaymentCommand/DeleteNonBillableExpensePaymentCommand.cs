@@ -3,6 +3,7 @@ using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Commands.DeleteNonBillableExpensePaymentCommand
 {
@@ -15,11 +16,13 @@ namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Comman
     {
         private readonly IRepositoryAsync<NonBillableExpensePayment> _repositoryAsync;
         private readonly IRepositoryAsync<NonBillableExpense> _nonBillableExpenseRepositoryAsync;
+        private readonly IRepositoryAsync<InternalBankAccount> _internalBankAccountRepositoryAsync;
 
-        public DeleteNonBillableExpensePaymentCommandHandler(IRepositoryAsync<NonBillableExpensePayment> repositoryAsync, IRepositoryAsync<NonBillableExpense> nonBillableExpenseRepositoryAsync)
+        public DeleteNonBillableExpensePaymentCommandHandler(IRepositoryAsync<NonBillableExpensePayment> repositoryAsync, IRepositoryAsync<NonBillableExpense> nonBillableExpenseRepositoryAsync, IRepositoryAsync<InternalBankAccount> internalBankAccountRepositoryAsync)
         {
             _repositoryAsync = repositoryAsync;
             _nonBillableExpenseRepositoryAsync = nonBillableExpenseRepositoryAsync;
+            _internalBankAccountRepositoryAsync = internalBankAccountRepositoryAsync;
         }
 
         public async Task<Response<string>> Handle(DeleteNonBillableExpensePaymentCommand request, CancellationToken cancellationToken)
@@ -32,6 +35,13 @@ namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Comman
             var invoice = await _nonBillableExpenseRepositoryAsync.GetByIdAsync(checkNonBillableExpensePayment.NonBillableExpenseId);
             invoice!.Outstanding = invoice.Outstanding + checkNonBillableExpensePayment.Amount;
 
+            InternalBankAccount? account = null;
+            if (checkNonBillableExpensePayment.InternalBankAccountId != null)
+            {
+                account = await _internalBankAccountRepositoryAsync.GetByIdAsync((int)checkNonBillableExpensePayment.InternalBankAccountId);
+            }
+            decimal amountToReverse = checkNonBillableExpensePayment.Amount;
+
             try
             {
 
@@ -39,6 +49,13 @@ namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Comman
                 await _repositoryAsync.SaveChangesAsync();
                 await _nonBillableExpenseRepositoryAsync.UpdateAsync(invoice);
                 await _nonBillableExpenseRepositoryAsync.SaveChangesAsync();
+
+                if (account != null && account.AccountType == InternalBankAccountType.CreditCard)
+                {
+                    account.CurrentAmount -= amountToReverse;
+                    await _internalBankAccountRepositoryAsync.UpdateAsync(account);
+                    await _internalBankAccountRepositoryAsync.SaveChangesAsync();
+                }
 
                 return new Response<string>("Eliminado correctamente");
             }

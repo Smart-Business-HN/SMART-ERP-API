@@ -5,6 +5,7 @@ using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Commands.UpdateNonBillableExpensePaymentCommand
 {
@@ -57,10 +58,11 @@ namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Comman
             {
                 throw new KeyNotFoundException($"No se encontro una forma de pago con id {request.TypeOfPaymentMethodId}");
             }
+            InternalBankAccount? newAccount = null;
             if (request.InternalBankAccountId != null)
             {
-                var checkInternalBankAccount = await _internalBankAccountRepositoryAsync.GetByIdAsync((int)request.InternalBankAccountId);
-                if (checkInternalBankAccount == null)
+                newAccount = await _internalBankAccountRepositoryAsync.GetByIdAsync((int)request.InternalBankAccountId);
+                if (newAccount == null)
                 {
                     throw new KeyNotFoundException($"No se encontro una la cuenta bancaria con id {request.InternalBankAccountId}");
                 }
@@ -75,6 +77,10 @@ namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Comman
             {
                 checkNonBillableExpense.StatusId = 30;
             }
+
+            decimal previousAmount = checkBillPaymen.Amount;
+            int? previousAccountId = checkBillPaymen.InternalBankAccountId;
+
             checkBillPaymen.Amount = request.Amount;
             checkBillPaymen.NonBillableExpenseId = request.NonBillableExpenseId;
             checkBillPaymen.TypeOfPaymentMethodId = request.TypeOfPaymentMethodId;
@@ -86,6 +92,23 @@ namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Comman
             await _repositoryAsync.SaveChangesAsync();
             await _nonBillableExpenseRepositoryAsync.UpdateAsync(checkNonBillableExpense);
             await _nonBillableExpenseRepositoryAsync.SaveChangesAsync();
+
+            if (previousAccountId != null)
+            {
+                var oldAccount = await _internalBankAccountRepositoryAsync.GetByIdAsync((int)previousAccountId);
+                if (oldAccount != null && oldAccount.AccountType == InternalBankAccountType.CreditCard)
+                {
+                    oldAccount.CurrentAmount -= previousAmount;
+                    await _internalBankAccountRepositoryAsync.UpdateAsync(oldAccount);
+                    await _internalBankAccountRepositoryAsync.SaveChangesAsync();
+                }
+            }
+            if (newAccount != null && newAccount.AccountType == InternalBankAccountType.CreditCard)
+            {
+                newAccount.CurrentAmount += request.Amount;
+                await _internalBankAccountRepositoryAsync.UpdateAsync(newAccount);
+                await _internalBankAccountRepositoryAsync.SaveChangesAsync();
+            }
 
             var dto = _mapper.Map<NonBillableExpensePaymentDto>(checkBillPaymen);
             return new Response<NonBillableExpensePaymentDto>(dto, $"Pago actualizado correctamente");

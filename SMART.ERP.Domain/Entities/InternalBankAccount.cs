@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SMART.ERP.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace SMART.ERP.Domain.Entities
@@ -14,5 +15,8 @@ namespace SMART.ERP.Domain.Entities
         public string? AccountNumber { get; set; }
         [Precision(18, 2)]
         public decimal CurrentAmount { get; set; }
+        public InternalBankAccountType AccountType { get; set; } = InternalBankAccountType.Checking;
+        [MaxLength(4)]
+        public string? CardLastFour { get; set; }
     }
 }

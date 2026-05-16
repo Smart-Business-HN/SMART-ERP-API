@@ -8,7 +8,7 @@ namespace SMART.ERP.Application.Specifications.NonBillableExpenseSpecification
         public FilterNonBillableExpenseByPendingWithProviderSpecification()
         {
             Query.Include(x => x.Provider)
-                .Where(x => x.Outstanding > 0)
+                .Where(x => x.Outstanding > 0 && x.LegacyMigratedToInternalBankAccountId == null)
                 .AsNoTracking();
         }
     }

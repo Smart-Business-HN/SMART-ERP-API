@@ -9,6 +9,6 @@ public sealed class FilterNonBillableExpenseByYearSpecification : Specification<
     {
         Query.Include(x => x.Provider);
         Query.Include(x => x.ExpenseAccount);
-        Query.Where(x => x.Date.Year == date.Year && !x.Provider!.Name.Contains("Banco"));
+        Query.Where(x => x.Date.Year == date.Year && x.LegacyMigratedToInternalBankAccountId == null);
     }
 }

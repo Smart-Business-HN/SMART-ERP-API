@@ -8,7 +8,7 @@ namespace SMART.ERP.Application.Specifications.NonBillableExpenseSpecification
         public FilterAndPaginationNonBillableExpenseSpecification(string? parameter, int pageNumber, int pageSize,
             string? order, string? column)
         {
-            Query.Include(x => x.Provider).Include(x => x.Status).Skip((pageNumber) * pageSize).OrderByDescending(x => x.Id).Take(pageSize).AsNoTracking();
+            Query.Include(x => x.Provider).Include(x => x.Status).Where(x => x.LegacyMigratedToInternalBankAccountId == null).Skip((pageNumber) * pageSize).OrderByDescending(x => x.Id).Take(pageSize).AsNoTracking();
 
             if (!string.IsNullOrEmpty(parameter))
             {

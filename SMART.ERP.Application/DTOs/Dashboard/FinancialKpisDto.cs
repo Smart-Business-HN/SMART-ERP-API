@@ -12,5 +12,6 @@ namespace SMART.ERP.Application.DTOs.Dashboard
         public decimal GrossProfitMargin { get; set; }
         public decimal Receivable { get; set; }
         public decimal Payable { get; set; }
+        public decimal CreditCardPayable { get; set; }
     }
 }

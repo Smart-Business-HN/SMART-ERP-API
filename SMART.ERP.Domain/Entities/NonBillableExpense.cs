@@ -26,5 +26,7 @@ namespace SMART.ERP.Domain.Entities
         public int? ProjectId { get; set; }
         public virtual Project? Project { get; set; }
         public virtual List<NonBillableExpensePayment>? NonBillableExpensePayments { get; set; }
+        public int? LegacyMigratedToInternalBankAccountId { get; set; }
+        public virtual InternalBankAccount? LegacyMigratedToInternalBankAccount { get; set; }
     }
 }

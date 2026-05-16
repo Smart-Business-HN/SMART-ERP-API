@@ -7,6 +7,6 @@ public sealed class FilterNonBillableExpenseByPendingValuesSpecification : Speci
 {
     public FilterNonBillableExpenseByPendingValuesSpecification()
     {
-        Query.Where(x => x.Outstanding > 0);
+        Query.Where(x => x.Outstanding > 0 && x.LegacyMigratedToInternalBankAccountId == null);
     }
 }

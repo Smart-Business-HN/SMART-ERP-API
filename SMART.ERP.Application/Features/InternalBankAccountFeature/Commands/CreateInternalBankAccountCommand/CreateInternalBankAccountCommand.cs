@@ -7,6 +7,7 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.InternalBankAccountSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.CreateInternalBankAccountCommand
 {
@@ -15,7 +16,9 @@ namespace SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.Cre
         public string Name { get; set; } = null!;
         public int BankId { get; set; }
         public bool IsActive { get; set; }
-        public string AccountNumber { get; set; } = null!;
+        public string? AccountNumber { get; set; }
+        public InternalBankAccountType AccountType { get; set; } = InternalBankAccountType.Checking;
+        public string? CardLastFour { get; set; }
     }
 
     public class CreateInternalBankAccountCommandHandler : IRequestHandler<CreateInternalBankAccountCommand, Response<InternalBankAccountDto>>

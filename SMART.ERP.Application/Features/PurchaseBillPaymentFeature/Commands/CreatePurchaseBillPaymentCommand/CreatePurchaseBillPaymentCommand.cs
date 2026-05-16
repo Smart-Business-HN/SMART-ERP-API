@@ -6,6 +6,7 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.Features.PurchaseBillPaymentFeature.Commands.CreatePurchaseBillPaymentCommand
 {
@@ -55,9 +56,10 @@ namespace SMART.ERP.Application.Features.PurchaseBillPaymentFeature.Commands.Cre
             {
                 throw new KeyNotFoundException($"No se encontro una forma de pago con id {request.TypeOfPaymentMethodId}");
             }
+            InternalBankAccount? checkInternalBankAccount = null;
             if (request.InternalBankAccountId != null)
             {
-                var checkInternalBankAccount = await _internalBankAccountRepositoryAsync.GetByIdAsync((int)request.InternalBankAccountId);
+                checkInternalBankAccount = await _internalBankAccountRepositoryAsync.GetByIdAsync((int)request.InternalBankAccountId);
                 if (checkInternalBankAccount == null)
                 {
                     throw new KeyNotFoundException($"No se encontro una la cuenta bancaria con id {request.InternalBankAccountId}");
@@ -75,6 +77,13 @@ namespace SMART.ERP.Application.Features.PurchaseBillPaymentFeature.Commands.Cre
             await _repositoryAsync.SaveChangesAsync();
             await _purchaseBillRepositoryAsync.UpdateAsync(checkPurchaseBill);
             await _purchaseBillRepositoryAsync.SaveChangesAsync();
+
+            if (checkInternalBankAccount != null && checkInternalBankAccount.AccountType == InternalBankAccountType.CreditCard)
+            {
+                checkInternalBankAccount.CurrentAmount += request.Amount;
+                await _internalBankAccountRepositoryAsync.UpdateAsync(checkInternalBankAccount);
+                await _internalBankAccountRepositoryAsync.SaveChangesAsync();
+            }
 
             var dto = _mapper.Map<PurchaseBillPaymentDto>(response);
             return new Response<PurchaseBillPaymentDto>(dto, $"Pago realizado exitosamente");

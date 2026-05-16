@@ -2,9 +2,11 @@
 using MediatR;
 using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.InternalBankAccount;
+using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.UpdateInternalBankAccountCommand
 {
@@ -13,8 +15,10 @@ namespace SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.Upd
         public int Id { get; set; }
         public string Name { get; set; } = null!;
         public int BankId { get; set; }
-        public string AccountNumber { get; set; } = null!;
+        public string? AccountNumber { get; set; }
         public decimal CurrentAmount { get; set; }
+        public InternalBankAccountType AccountType { get; set; }
+        public string? CardLastFour { get; set; }
     }
 
     public class UpdateInternalBankAccountCommandHandler : IRequestHandler<UpdateInternalBankAccountCommand, Response<InternalBankAccountDto>>
@@ -47,10 +51,16 @@ namespace SMART.ERP.Application.Features.InternalBankAccountFeature.Commands.Upd
                 throw new KeyNotFoundException($"No se encontro el banco con id {request.BankId}");
             }
 
+            if (request.AccountType != checkInternalBankAccount.AccountType)
+            {
+                throw new ApiException("No se puede cambiar el tipo de cuenta. Cree una cuenta nueva si necesita cambiar entre cuentas corrientes/ahorro y tarjetas de crédito.");
+            }
+
             checkInternalBankAccount.Name = request.Name;
             checkInternalBankAccount.BankId = request.BankId;
             checkInternalBankAccount.AccountNumber = request.AccountNumber;
             checkInternalBankAccount.CurrentAmount = request.CurrentAmount;
+            checkInternalBankAccount.CardLastFour = request.CardLastFour;
 
             await _repositoryAsync.UpdateAsync(checkInternalBankAccount);
             await _repositoryAsync.SaveChangesAsync();

@@ -6,6 +6,7 @@ using SMART.ERP.Application.Specifications.NonBillableExpenseSpecification;
 using SMART.ERP.Application.Specifications.PurchaseBillSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
 {
@@ -47,28 +48,31 @@ namespace SMART.ERP.Application.Features.DashboardFeature.Queries.AdminDashboard
 
             decimal accountsReceivable = pendingInvoices.Sum(i => i.Outstanding);
             decimal accountsPayable = pendingBills.Sum(b => b.Outstanding) + pendingNonBillable.Sum(n => n.Outstanding);
-            decimal cashBalance = bankAccounts.Sum(b => b.CurrentAmount);
+            decimal cashBalance = bankAccounts.Where(b => b.AccountType != InternalBankAccountType.CreditCard).Sum(b => b.CurrentAmount);
+            decimal creditCardPayable = bankAccounts.Where(b => b.AccountType == InternalBankAccountType.CreditCard).Sum(b => b.CurrentAmount);
             decimal annualSales = yearInvoices.Sum(i => i.Total);
             decimal annualCOGS = yearBills.Sum(b => b.Total) + yearNonBillable.Sum(n => n.Amount);
 
             decimal currentAssets = cashBalance + accountsReceivable;
-            decimal currentLiabilities = accountsPayable > 0 ? accountsPayable : 1;
+            decimal totalLiabilities = accountsPayable + creditCardPayable;
+            decimal currentLiabilities = totalLiabilities > 0 ? totalLiabilities : 1;
 
             decimal dso = annualSales > 0 ? (accountsReceivable / annualSales) * 365 : 0;
-            decimal dpo = annualCOGS > 0 ? (accountsPayable / annualCOGS) * 365 : 0;
+            decimal dpo = annualCOGS > 0 ? (totalLiabilities / annualCOGS) * 365 : 0;
 
             var result = new FinancialKpisDto
             {
                 AcidTest = (cashBalance + accountsReceivable) / currentLiabilities,
                 CurrentRatio = currentAssets / currentLiabilities,
-                WorkingCapital = currentAssets - accountsPayable,
+                WorkingCapital = currentAssets - totalLiabilities,
                 CashBalance = cashBalance,
                 DaysSalesOutstanding = Math.Round(dso, 1),
                 DaysPayableOutstanding = Math.Round(dpo, 1),
                 CashConversionCycle = Math.Round(dso - dpo, 1),
                 GrossProfitMargin = annualSales > 0 ? Math.Round(((annualSales - annualCOGS) / annualSales) * 100, 2) : 0,
                 Receivable = accountsReceivable,
-                Payable = accountsPayable
+                Payable = accountsPayable,
+                CreditCardPayable = creditCardPayable
             };
 
             return new Response<FinancialKpisDto>(result);
