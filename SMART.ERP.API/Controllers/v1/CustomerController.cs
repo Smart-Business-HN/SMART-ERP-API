@@ -6,6 +6,7 @@ using SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomerComm
 using SMART.ERP.Application.Features.CustomerFeature.Commands.ImportCustomerCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.LoginCustomerCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomerCommand;
+using SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomerCreditCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
@@ -94,6 +95,17 @@ namespace SMART.ERP.API.Controllers.v1
         [HttpPut("Update/{id}")]
         [Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCustomerCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("Ocurrio un error con el id de este registro");
+            }
+            return Ok(await Mediator.Send(command));
+        }
+
+        [HttpPut("UpdateCredit/{id}")]
+        [Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
+        public async Task<IActionResult> UpdateCredit(Guid id, [FromBody] UpdateCustomerCreditCommand command)
         {
             if (id != command.Id)
             {
