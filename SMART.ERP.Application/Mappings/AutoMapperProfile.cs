@@ -184,6 +184,10 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Customer, CustomerDto>();
             CreateMap<Customer, BasicInfoCustomerDto>();
             CreateMap<Customer, ClientWalletDto>();
+            CreateMap<Invoice, CustomerInvoiceLineDto>()
+                .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status != null ? src.Status.Name : null));
+            CreateMap<Quotation, CustomerQuotationLineDto>()
+                .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status != null ? src.Status.Name : null));
             CreateMap<OpportunityStep, OpportunityStepDto>();
             CreateMap<Opportunity, OpportunityDto>();
             CreateMap<Opportunity, OpportunityWalletDto>();

@@ -28,6 +28,32 @@ namespace SMART.ERP.API.Controllers.v1
             return Ok(await Mediator.Send(new GetCustomerSummaryQuery { Id = id }));
         }
 
+        [HttpGet("GetInvoices/{id}")]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin, CommunityManager, SalesAdvisor")]
+        public async Task<IActionResult> GetInvoices(Guid id, [FromQuery] RequestParameter filter)
+        {
+            return Ok(await Mediator.Send(new GetCustomerInvoicesQuery
+            {
+                CustomerId = id,
+                Parameter = filter.Parameter,
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize
+            }));
+        }
+
+        [HttpGet("GetQuotations/{id}")]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin, CommunityManager, SalesAdvisor")]
+        public async Task<IActionResult> GetQuotations(Guid id, [FromQuery] RequestParameter filter)
+        {
+            return Ok(await Mediator.Send(new GetCustomerQuotationsQuery
+            {
+                CustomerId = id,
+                Parameter = filter.Parameter,
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize
+            }));
+        }
+
         [HttpGet("GetAll")]
         [OutputCache(PolicyName = "cache_customers")]
         [AllowAnonymous]
