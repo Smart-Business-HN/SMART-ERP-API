@@ -41,5 +41,6 @@ namespace SMART.ERP.Application.DTOs.Customer
         public string? ContactPersonEmail { get; set; }
         public List<DeliveryDirectionDto>? DeliveryDirections { get; set; }
         public bool IsActive { get; set; }
+        public DateTime RegistrationDate { get; set; }
     }
 }
