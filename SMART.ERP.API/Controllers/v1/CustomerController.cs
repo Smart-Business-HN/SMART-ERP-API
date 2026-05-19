@@ -21,6 +21,13 @@ namespace SMART.ERP.API.Controllers.v1
             return Ok(await Mediator.Send(new GetCustomerByIdQuery { Id = id }));
         }
 
+        [HttpGet("GetSummary/{id}")]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin, CommunityManager, SalesAdvisor")]
+        public async Task<IActionResult> GetSummary(Guid id)
+        {
+            return Ok(await Mediator.Send(new GetCustomerSummaryQuery { Id = id }));
+        }
+
         [HttpGet("GetAll")]
         [OutputCache(PolicyName = "cache_customers")]
         [AllowAnonymous]
