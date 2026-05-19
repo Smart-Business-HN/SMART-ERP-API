@@ -45,5 +45,8 @@ namespace SMART.ERP.Domain.Entities
         public int? DefaultShippingDays { get; set; }
         public virtual List<ProviderWarehouse>? ProviderWarehouses { get; set; }
         public virtual List<ShippingCostConfiguration>? ShippingCosts { get; set; }
+        public bool CreditEnabled { get; set; }
+        [Precision(18, 2)]
+        public decimal CreditLimit { get; set; }
     }
 }
