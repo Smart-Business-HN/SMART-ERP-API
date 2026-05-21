@@ -44,7 +44,8 @@ namespace SMART.ERP.Application.Features.ProductDropshippingFeature.Queries
                     request.IsUserSignedIn,
                     request.CustomerTypeId,
                     null, // Let the service select the optimal warehouse
-                    request.DestinationCityId);
+                    request.DestinationCityId,
+                    ct: cancellationToken);
 
                 return new Response<ProductPriceWithShippingDto>(priceWithShipping);
             }

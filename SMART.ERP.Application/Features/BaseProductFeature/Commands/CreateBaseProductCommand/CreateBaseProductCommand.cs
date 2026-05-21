@@ -5,6 +5,7 @@ using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.JwtService;
+using SMART.ERP.Application.Services.PriceListResolver;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -47,6 +48,8 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
         private readonly IRepositoryAsync<Brand> _brandRepositoryAsync;
         private readonly IRepositoryAsync<Tax> _taxRepositoryAsync;
         private readonly IRepositoryAsync<UnitOfMeasurement> _measurementRepositoryAsync;
+        private readonly IRepositoryAsync<PriceListItem> _priceListItemRepository;
+        private readonly IPriceListService _priceListService;
         private readonly IOutputCacheStore _outputCacheStored;
 
         public CreateBaseProductCommandHandler(IMapper mapper, IRepositoryAsync<Product> repositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync,
@@ -54,6 +57,8 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
             IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Provider> providerRepositoryAsync,
             IRepositoryAsync<Brand> brandRepositoryAsync,
             IRepositoryAsync<UnitOfMeasurement> measurementRepositoryAsync,
+            IRepositoryAsync<PriceListItem> priceListItemRepository,
+            IPriceListService priceListService,
             IOutputCacheStore outputCacheStored
             )
         {
@@ -66,6 +71,8 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
             _brandRepositoryAsync = brandRepositoryAsync;
             _measurementRepositoryAsync = measurementRepositoryAsync;
             _taxRepositoryAsync = taxRepositoryAsync;
+            _priceListItemRepository = priceListItemRepository;
+            _priceListService = priceListService;
             _outputCacheStored = outputCacheStored;
         }
 
@@ -113,6 +120,25 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
             newRecord.CreationDate = DateTime.Now;
             var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
+
+            // Auto-poblar precio en lista default usando CostPrice × 1.30 × (1 + Tax)
+            var defaultPriceListId = await _priceListService.GetDefaultPriceListIdAsync(cancellationToken);
+            if (defaultPriceListId.HasValue && data.CostPrice > 0)
+            {
+                var taxRate = checkTax.Rate;
+                var defaultPrice = Math.Ceiling((data.CostPrice * 1.30m) * (1m + (taxRate / 100m)));
+                await _priceListItemRepository.AddAsync(new PriceListItem
+                {
+                    PriceListId = defaultPriceListId.Value,
+                    ProductId = data.Id,
+                    Price = defaultPrice,
+                    CreationDate = DateTime.UtcNow,
+                    CreatedBy = _jwtService.GetSubjectToken()
+                }, cancellationToken);
+                await _priceListItemRepository.SaveChangesAsync(cancellationToken);
+                await _outputCacheStored.EvictByTagAsync("cache_pricelists", cancellationToken);
+            }
+
             await _outputCacheStored.EvictByTagAsync("cache_products", cancellationToken);
             await _outputCacheStored.EvictByTagAsync("cache_productsEcommerce", cancellationToken);
             var dto = _mapper.Map<ProductDto>(data);

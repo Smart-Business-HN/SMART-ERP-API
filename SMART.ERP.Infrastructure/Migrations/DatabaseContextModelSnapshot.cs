@@ -854,6 +854,9 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int?>("PriceListId")
+                        .HasColumnType("int");
+
                     b.Property<string>("RTN")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -889,6 +892,8 @@ namespace SMART.ERP.Infrastructure.Migrations
 
                     b.HasIndex("HeadingId");
 
+                    b.HasIndex("PriceListId");
+
                     b.HasIndex("SocialReasonId");
 
                     b.HasIndex("UserId");
@@ -912,7 +917,12 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int?>("PriceListId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PriceListId");
 
                     b.ToTable("CustomerType", (string)null);
                 });
@@ -2981,6 +2991,99 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasIndex("InternalDocumentId");
 
                     b.ToTable("Prefix", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.PriceList", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModificatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDefault")
+                        .IsUnique()
+                        .HasFilter("[IsDefault] = 1");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("PriceList", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.PriceListItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModificatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("PriceListId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("PriceListId", "ProductId")
+                        .IsUnique();
+
+                    b.ToTable("PriceListItem", (string)null);
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Product", b =>
@@ -5724,6 +5827,11 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SMART.ERP.Domain.Entities.PriceList", "PriceList")
+                        .WithMany()
+                        .HasForeignKey("PriceListId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("SMART.ERP.Domain.Entities.SocialReason", "SocialReason")
                         .WithMany()
                         .HasForeignKey("SocialReasonId")
@@ -5746,9 +5854,21 @@ namespace SMART.ERP.Infrastructure.Migrations
 
                     b.Navigation("Heading");
 
+                    b.Navigation("PriceList");
+
                     b.Navigation("SocialReason");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.CustomerType", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.PriceList", "PriceList")
+                        .WithMany()
+                        .HasForeignKey("PriceListId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("PriceList");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.DailyClose", b =>
@@ -6401,6 +6521,25 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("InternalDocument");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.PriceListItem", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.PriceList", "PriceList")
+                        .WithMany("Items")
+                        .HasForeignKey("PriceListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PriceList");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Product", b =>
@@ -7562,6 +7701,11 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("OpportunityDocuments");
 
                     b.Navigation("QuoteProducts");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.PriceList", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Product", b =>

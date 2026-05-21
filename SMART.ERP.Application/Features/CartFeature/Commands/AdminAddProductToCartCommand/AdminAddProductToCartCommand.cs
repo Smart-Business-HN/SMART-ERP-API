@@ -107,7 +107,8 @@ public class AdminAddProductToCartCommandHandler : IRequestHandler<AdminAddProdu
             }
         }
 
-        var unitPrice = request.UnitPrice ?? _productPricingService.CalculateRecommendedSalePrice(product, true, user.CustomerTypeId);
+        var unitPrice = request.UnitPrice ?? await _productPricingService.CalculateRecommendedSalePriceAsync(
+            product, true, user.CustomerTypeId, ct: cancellationToken);
 
         var cartItem = new CartItem
         {

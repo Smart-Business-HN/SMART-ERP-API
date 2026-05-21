@@ -1,43 +1,67 @@
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.PriceListResolver;
 using SMART.ERP.Application.Services.ShippingCostCalculator;
 using SMART.ERP.Application.Services.WarehouseSelection;
 using SMART.ERP.Domain.Entities;
-using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.Services
 {
     public class ProductPricingService : IProductPricingService
     {
+        private readonly IPriceListService _priceListService;
         private readonly IRepositoryAsync<Warehouse>? _warehouseRepository;
         private readonly IShippingCostCalculatorService? _shippingCalculator;
         private readonly IWarehouseSelectionService? _warehouseSelectionService;
 
-        public ProductPricingService()
+        public ProductPricingService(IPriceListService priceListService)
         {
+            _priceListService = priceListService;
         }
 
         public ProductPricingService(
+            IPriceListService priceListService,
             IRepositoryAsync<Warehouse> warehouseRepository,
             IShippingCostCalculatorService shippingCalculator,
             IWarehouseSelectionService warehouseSelectionService)
         {
+            _priceListService = priceListService;
             _warehouseRepository = warehouseRepository;
             _shippingCalculator = shippingCalculator;
             _warehouseSelectionService = warehouseSelectionService;
         }
 
-        public decimal CalculateRecommendedSalePrice(Product product, bool isUserSignedIn, int? customerTypeId = null)
+        public async Task<decimal> CalculateRecommendedSalePriceAsync(
+            Product product,
+            bool isUserSignedIn,
+            int? customerTypeId = null,
+            Guid? customerId = null,
+            CancellationToken ct = default)
         {
-            if (!isUserSignedIn)
-            {
-                // Usuario no autenticado: margen del 30%
-                return Math.Ceiling((product.CostPrice * (decimal)1.3) * (1 + (product.Tax!.Rate / 100)));
-            }
+            var listId = await _priceListService.ResolvePriceListIdAsync(
+                customerId: customerId,
+                customerTypeId: customerTypeId,
+                isAnonymous: !isUserSignedIn,
+                ct: ct);
 
-            // Usuario autenticado: calcular según tipo de cliente
-            decimal marginMultiplier = GetMarginMultiplierByCustomerType(customerTypeId);
-            return Math.Ceiling((product.CostPrice * marginMultiplier) * (1 + (product.Tax!.Rate / 100)));
+            var price = await _priceListService.GetPriceAsync(product.Id, listId, ct);
+            return price ?? 0m;
+        }
+
+        public async Task<IReadOnlyDictionary<int, decimal>> CalculateRecommendedSalePricesAsync(
+            IEnumerable<int> productIds,
+            bool isUserSignedIn,
+            int? customerTypeId = null,
+            Guid? customerId = null,
+            CancellationToken ct = default)
+        {
+            var listId = await _priceListService.ResolvePriceListIdAsync(
+                customerId: customerId,
+                customerTypeId: customerTypeId,
+                isAnonymous: !isUserSignedIn,
+                ct: ct);
+
+            return await _priceListService.GetPricesAsync(productIds, listId, ct);
         }
 
         public async Task<ProductPriceWithShippingDto> CalculateRecommendedSalePriceWithShippingAsync(
@@ -45,14 +69,16 @@ namespace SMART.ERP.Application.Services
             bool isUserSignedIn,
             int? customerTypeId = null,
             int? sourceWarehouseId = null,
-            int? destinationCityId = null)
+            int? destinationCityId = null,
+            Guid? customerId = null,
+            CancellationToken ct = default)
         {
             if (_warehouseRepository == null || _shippingCalculator == null || _warehouseSelectionService == null)
             {
                 throw new InvalidOperationException("Este método requiere inyección de dependencias completa");
             }
 
-            var basePrice = CalculateRecommendedSalePrice(product, isUserSignedIn, customerTypeId);
+            var basePrice = await CalculateRecommendedSalePriceAsync(product, isUserSignedIn, customerTypeId, customerId, ct);
 
             if (!sourceWarehouseId.HasValue)
             {
@@ -80,26 +106,6 @@ namespace SMART.ERP.Application.Services
                 SourceWarehouseId = sourceWarehouseId,
                 SourceWarehouseName = warehouse?.Name,
                 ProviderName = warehouse?.ProviderWarehouses?.FirstOrDefault()?.Provider?.Name
-            };
-        }
-
-        private decimal GetMarginMultiplierByCustomerType(int? customerTypeId)
-        {
-            if (!customerTypeId.HasValue)
-            {
-                // Si no se especifica tipo de cliente, usar margen por defecto del 30%
-                return (decimal)1.3;
-            }
-
-            return customerTypeId switch
-            {
-                (int)CustomerTypeEnum.Basico => (decimal)1.25,      // 25% de margen
-                (int)CustomerTypeEnum.Recurrente => (decimal)1.18,  // 18% de margen
-                (int)CustomerTypeEnum.Mayorista => (decimal)1.08,   // 8% de margen
-                (int)CustomerTypeEnum.Integrador => (decimal)1.1,   // 10% de margen
-                (int)CustomerTypeEnum.Corporativo => (decimal)1.1,  // 10% de margen
-                (int)CustomerTypeEnum.Empleado => (decimal)1.05,    // 5% de margen (descuento especial)
-                _ => (decimal)1.2  // Margen por defecto del 20% para tipos no reconocidos
             };
         }
     }

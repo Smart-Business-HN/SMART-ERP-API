@@ -24,6 +24,8 @@ namespace SMART.ERP.Application.DTOs.Customer
         public string? CivilStatus { get; set; }
         public int CustomerTypeId { get; set; }
         public CustomerTypeDto? CustomerType { get; set; }
+        public int? PriceListId { get; set; }
+        public string? PriceListName { get; set; }
         public int GenderId { get; set; }
         public GenderDto? Gender { get; set; }
         public int SocialReasonId { get; set; }

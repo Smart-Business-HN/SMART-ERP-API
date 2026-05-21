@@ -25,6 +25,7 @@ using SMART.ERP.Application.Services.MetaPostService;
 using SMART.ERP.Application.Services.CardEncryptionService;
 using SMART.ERP.Application.Services.NewEncryptionService;
 using SMART.ERP.Application.Services.RegisterClientService;
+using SMART.ERP.Application.Services.PriceListResolver;
 using SMART.ERP.Application.Services.ShippingCostCalculator;
 using SMART.ERP.Application.Services.WarehouseSelection;
 using SMART.ERP.Application.Services.VirtualStock;
@@ -119,6 +120,7 @@ namespace SMART.ERP.Application
             services.AddTransient<IAssignUserToProspectService, AssignUserToProspectService>();
             services.AddTransient<IMetaPostService, MetaPostService>();
             services.AddTransient<IGoogleCalendarService, GoogleCalendarService>();
+            services.AddTransient<IPriceListService, PriceListService>();
             services.AddTransient<IProductPricingService, ProductPricingService>();
             services.AddTransient<IShippingCostCalculatorService, ShippingCostCalculatorService>();
             services.AddTransient<IWarehouseSelectionService, WarehouseSelectionService>();

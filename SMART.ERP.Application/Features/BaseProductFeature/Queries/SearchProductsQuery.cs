@@ -64,14 +64,16 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
 
             // Obtener productos
             var products = await _repositoryAsync.ListAsync(spec);
-            
-            // Calcular precios usando el servicio
+
+            // Calcular precios en batch usando el servicio (evita N+1)
+            var prices = await _productPricingService.CalculateRecommendedSalePricesAsync(
+                products.Select(p => p.Id),
+                searchParams.IsUserSignIn,
+                searchParams.CustomerTypeId,
+                ct: cancellationToken);
             foreach (var product in products)
             {
-                product.RecomendedSalePrice = _productPricingService.CalculateRecommendedSalePrice(
-                    product, 
-                    searchParams.IsUserSignIn, 
-                    searchParams.CustomerTypeId);
+                product.RecomendedSalePrice = prices.GetValueOrDefault(product.Id, 0);
                 product.CostPrice = 0;
                 product.Tax = null;
             }

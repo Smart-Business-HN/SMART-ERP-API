@@ -14,6 +14,7 @@ namespace SMART.ERP.Application.Specifications.ClientSpecification
                     .Include(x => x.SocialReason)
                     .Include(x => x.Heading)
                     .Include(x => x.CustomerType)
+                    .Include(x => x.PriceList)
                     .Include(x => x.DeliveryDirections!).ThenInclude(x => x.City)
                     .Where(a => a.Id == id).AsNoTracking();
             }
@@ -24,6 +25,7 @@ namespace SMART.ERP.Application.Specifications.ClientSpecification
                     .Include(x => x.Department)
                     .Include(x => x.SocialReason)
                     .Include(x => x.CustomerType)
+                    .Include(x => x.PriceList)
                     .Include(x => x.Heading)
                     .Include(x => x.DeliveryDirections!).ThenInclude(x => x.City).AsNoTracking();
             }

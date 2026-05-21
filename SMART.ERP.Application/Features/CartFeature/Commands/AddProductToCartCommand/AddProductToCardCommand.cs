@@ -80,14 +80,16 @@ namespace SMART.ERP.Application.Features.CartFeature.Commands.AddProductToCartCo
                     await _cartRepositoryAsync.AddAsync(cartActive, cancellationToken);
                 }
             }
+            var unitPrice = await _productPricingService.CalculateRecommendedSalePriceAsync(
+                product, true, user.CustomerTypeId, ct: cancellationToken);
             var cartItem = new CartItem
             {
                 CartId = cartActive.Id,
                 ProductId = request.ProductId,
                 Quantity = request.Quantity,
                 Discount = 0,
-                UnitPrice = _productPricingService.CalculateRecommendedSalePrice(product,true,user.CustomerTypeId),
-                TotalPrice = (request.Quantity * _productPricingService.CalculateRecommendedSalePrice(product,true,user.CustomerTypeId)),
+                UnitPrice = unitPrice,
+                TotalPrice = request.Quantity * unitPrice,
                 CreationDate = DateTime.UtcNow
             };
             var addedCartItem = await _cartItemRepositoryAsync.AddAsync(cartItem, cancellationToken);

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Ardalis.Specification;
+using AutoMapper;
 using MediatR;
 using SMART.ERP.Application.DTOs.Customer;
 using SMART.ERP.Application.Repository;
@@ -22,9 +23,17 @@ namespace SMART.ERP.Application.Features.ClientTypeFeature.Queries
 
             public async Task<Response<List<CustomerTypeDto>>> Handle(GetAllClientTypeQuery request, CancellationToken cancellationToken)
             {
-                var clientTypeList = await _repositoryAsync.ListAsync();
+                var clientTypeList = await _repositoryAsync.ListAsync(new CustomerTypesWithPriceListSpec(), cancellationToken);
                 var dto = _mapper.Map<List<CustomerTypeDto>>(clientTypeList);
                 return new Response<List<CustomerTypeDto>>(dto);
+            }
+
+            private sealed class CustomerTypesWithPriceListSpec : Specification<CustomerType>
+            {
+                public CustomerTypesWithPriceListSpec()
+                {
+                    Query.Include(x => x.PriceList).AsNoTracking();
+                }
             }
         }
     }

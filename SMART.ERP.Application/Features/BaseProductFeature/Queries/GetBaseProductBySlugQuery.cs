@@ -36,11 +36,12 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                 throw new KeyNotFoundException($"Registro no encontrado con el slug {request.Slug}");
             }
             
-            // Calcular precio usando el servicio
-            product.RecomendedSalePrice = _productPricingService.CalculateRecommendedSalePrice(
-                product, 
-                request.IsLogged ?? false, 
-                request.CustomerTypeId);
+            // Calcular precio usando el servicio (resuelto vía lista de precios)
+            product.RecomendedSalePrice = await _productPricingService.CalculateRecommendedSalePriceAsync(
+                product,
+                request.IsLogged ?? false,
+                request.CustomerTypeId,
+                ct: cancellationToken);
             product.Tax = null;
             product.CostPrice = 0;
 

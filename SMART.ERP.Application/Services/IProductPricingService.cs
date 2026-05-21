@@ -6,28 +6,35 @@ namespace SMART.ERP.Application.Services
     public interface IProductPricingService
     {
         /// <summary>
-        /// Calcula el precio recomendado de venta para un producto basado en el tipo de cliente
+        /// Resuelve el precio de venta para un producto usando la lista de precios aplicable al cliente.
         /// </summary>
-        /// <param name="product">El producto para calcular el precio</param>
-        /// <param name="isUserSignedIn">Indica si el usuario está autenticado</param>
-        /// <param name="customerTypeId">ID del tipo de cliente (opcional)</param>
-        /// <returns>El precio recomendado de venta calculado</returns>
-        decimal CalculateRecommendedSalePrice(Product product, bool isUserSignedIn, int? customerTypeId = null);
+        Task<decimal> CalculateRecommendedSalePriceAsync(
+            Product product,
+            bool isUserSignedIn,
+            int? customerTypeId = null,
+            Guid? customerId = null,
+            CancellationToken ct = default);
 
         /// <summary>
-        /// Calcula el precio recomendado de venta incluyendo costos de envío para dropshipping
+        /// Resuelve precios para un conjunto de productos en batch (evita N+1).
         /// </summary>
-        /// <param name="product">El producto para calcular el precio</param>
-        /// <param name="isUserSignedIn">Indica si el usuario está autenticado</param>
-        /// <param name="customerTypeId">ID del tipo de cliente (opcional)</param>
-        /// <param name="sourceWarehouseId">ID del almacén de origen (opcional, se selecciona automáticamente si no se especifica)</param>
-        /// <param name="destinationCityId">ID de la ciudad de destino (opcional)</param>
-        /// <returns>Precio con desglose de shipping y total</returns>
+        Task<IReadOnlyDictionary<int, decimal>> CalculateRecommendedSalePricesAsync(
+            IEnumerable<int> productIds,
+            bool isUserSignedIn,
+            int? customerTypeId = null,
+            Guid? customerId = null,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Resuelve el precio de venta incluyendo costos de envío para dropshipping.
+        /// </summary>
         Task<ProductPriceWithShippingDto> CalculateRecommendedSalePriceWithShippingAsync(
             Product product,
             bool isUserSignedIn,
             int? customerTypeId = null,
             int? sourceWarehouseId = null,
-            int? destinationCityId = null);
+            int? destinationCityId = null,
+            Guid? customerId = null,
+            CancellationToken ct = default);
     }
 }

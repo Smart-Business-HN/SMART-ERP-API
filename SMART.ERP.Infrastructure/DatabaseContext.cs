@@ -70,6 +70,8 @@ namespace SMART.ERP.Infrastructure
         public DbSet<InternalDocument> InternalDocuments { get; set; } = null!;
         public DbSet<Prefix> Prefixes { get; set; } = null!;
         public DbSet<CustomerType> CustomerTypes { get; set; } = null!;
+        public DbSet<PriceList> PriceLists { get; set; } = null!;
+        public DbSet<PriceListItem> PriceListItems { get; set; } = null!;
         public DbSet<Quotation> Quotations { get; set; } = null!;
         public DbSet<ProductOffered> ProductOffereds { get; set; } = null!;
         public DbSet<Warehouse> Warehouses { get; set; } = null!;
@@ -366,6 +368,11 @@ namespace SMART.ERP.Infrastructure
                 .WithOne(x => x.Customer)
                 .HasForeignKey(x => x.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Customer>()
+                .HasOne(x => x.PriceList)
+                .WithMany()
+                .HasForeignKey(x => x.PriceListId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             //DataSheet
             modelBuilder.Entity<DataSheet>().ToTable("DataSheet");
@@ -935,6 +942,39 @@ namespace SMART.ERP.Infrastructure
             //Taxes
             modelBuilder.Entity<CustomerType>().ToTable("CustomerType");
             modelBuilder.Entity<CustomerType>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<CustomerType>()
+                .HasOne(x => x.PriceList)
+                .WithMany()
+                .HasForeignKey(x => x.PriceListId)
+                .OnDelete(DeleteBehavior.SetNull);
+            //PriceList
+            modelBuilder.Entity<PriceList>().ToTable("PriceList");
+            modelBuilder.Entity<PriceList>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<PriceList>()
+                .HasIndex(x => x.Name)
+                .IsUnique();
+            modelBuilder.Entity<PriceList>()
+                .HasIndex(x => x.IsDefault)
+                .HasFilter("[IsDefault] = 1")
+                .IsUnique();
+            //PriceListItem
+            modelBuilder.Entity<PriceListItem>().ToTable("PriceListItem");
+            modelBuilder.Entity<PriceListItem>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<PriceListItem>()
+                .HasOne(x => x.PriceList)
+                .WithMany(x => x.Items)
+                .HasForeignKey(x => x.PriceListId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<PriceListItem>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<PriceListItem>()
+                .HasIndex(x => new { x.PriceListId, x.ProductId })
+                .IsUnique();
+            modelBuilder.Entity<PriceListItem>()
+                .HasIndex(x => x.ProductId);
             //Quotation
             modelBuilder.Entity<Quotation>().ToTable("Quotation");
             modelBuilder.Entity<Quotation>(o => o.HasKey(x => x.Id));

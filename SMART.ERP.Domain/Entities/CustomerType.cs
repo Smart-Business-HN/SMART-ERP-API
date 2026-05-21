@@ -8,6 +8,7 @@ namespace SMART.ERP.Domain.Entities
         [MaxLength(50)]
         public string Name { get; set; } = null!;
         public bool IsActive { get; set; }
-
+        public int? PriceListId { get; set; }
+        public virtual PriceList? PriceList { get; set; }
     }
 }

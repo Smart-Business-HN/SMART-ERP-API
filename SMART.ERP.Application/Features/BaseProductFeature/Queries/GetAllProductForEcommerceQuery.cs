@@ -44,13 +44,15 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                 var categories = await _categoryRepositoryAsync.ListAsync();
                 var products = await _repositoryAsync.ListAsync(new FilterAndPaginationProductForEcommerceSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
                 
-                // Calcular precios usando el servicio
+                // Calcular precios en batch usando el servicio (evita N+1)
+                var prices = await _productPricingService.CalculateRecommendedSalePricesAsync(
+                    products.Select(p => p.Id),
+                    request.IsUserSignIn ?? false,
+                    request.CustomerTypeId,
+                    ct: cancellationToken);
                 foreach (var item in products)
                 {
-                    item.RecomendedSalePrice = _productPricingService.CalculateRecommendedSalePrice(
-                        item, 
-                        request.IsUserSignIn ?? false, 
-                        request.CustomerTypeId);
+                    item.RecomendedSalePrice = prices.GetValueOrDefault(item.Id, 0);
                     item.CostPrice = 0;
                     item.Tax = null;
                 }

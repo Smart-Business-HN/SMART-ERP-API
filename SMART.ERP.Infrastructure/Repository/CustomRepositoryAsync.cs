@@ -3,7 +3,7 @@ using SMART.ERP.Application.Repository;
 
 namespace SMART.ERP.Infrastructure.Repository
 {
-    public class CustomRepositoryAsync<T> : RepositoryBase<T>, IRepositoryAsync<T> where T : class
+    public class CustomRepositoryAsync<T> : RepositoryBase<T>, IRepositoryAsync<T>, IReadRepositoryAsync<T> where T : class
     {
         private readonly DatabaseContext db;
 

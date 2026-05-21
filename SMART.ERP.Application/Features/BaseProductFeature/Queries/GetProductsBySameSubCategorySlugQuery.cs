@@ -38,12 +38,14 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                 throw new KeyNotFoundException($"No se encontraron productos en la subcategoría con slug {request.SubCategorySlug}");
             }
 
+            var prices = await _productPricingService.CalculateRecommendedSalePricesAsync(
+                products.Select(p => p.Id),
+                request.IsLogged,
+                request.CustomerTypeId,
+                ct: cancellationToken);
             foreach (var item in products)
             {
-                item.RecomendedSalePrice = _productPricingService.CalculateRecommendedSalePrice(
-                    item,
-                    request.IsLogged,
-                    request.CustomerTypeId);
+                item.RecomendedSalePrice = prices.GetValueOrDefault(item.Id, 0);
                 item.CostPrice = 0;
                 item.Tax = null;
             }

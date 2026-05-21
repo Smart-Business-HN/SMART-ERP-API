@@ -38,6 +38,8 @@ namespace SMART.ERP.Domain.Entities
         public byte[]? PasswordSalt { get; set; } = null!;
         public int CustomerTypeId { get; set; }
         public virtual CustomerType? CustomerType { get; set; }
+        public int? PriceListId { get; set; }
+        public virtual PriceList? PriceList { get; set; }
         public int? GenderId { get; set; }
         public virtual Gender? Gender { get; set; }
         public int? CurrencyId { get; set; }

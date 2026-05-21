@@ -120,6 +120,7 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 
 
 builder.Services.AddTransient(typeof(IRepositoryAsync<>), typeof(CustomRepositoryAsync<>));
+builder.Services.AddTransient(typeof(IReadRepositoryAsync<>), typeof(CustomRepositoryAsync<>));
 builder.Services.AddTransient<IQuotationPdfService, SMART.ERP.Infrastructure.Services.QuotationPdfService.QuotationPdfService>();
 
 builder.WebHost.UseSentry(opts =>
@@ -146,6 +147,7 @@ builder.Services.AddOutputCache(opt =>
         opt.AddPolicy("cache_branchOffices", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_branchOffices").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
         opt.AddPolicy("cache_cais", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_cais").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
         opt.AddPolicy("cache_products", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_products").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_pricelists", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_pricelists").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
         opt.AddPolicy("cache_banks", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_banks").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
         opt.AddPolicy("cache_customer", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_customer").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
         opt.AddPolicy("cache_genders", builder => builder.Expire(TimeSpan.FromDays(10)));

@@ -37,6 +37,7 @@ using SMART.ERP.Application.DTOs.NonBillableExpensePayment;
 using SMART.ERP.Application.DTOs.NonBilllableExpense;
 using SMART.ERP.Application.DTOs.Notification;
 using SMART.ERP.Application.DTOs.Opportunity;
+using SMART.ERP.Application.DTOs.PriceList;
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.DTOs.Project;
 using SMART.ERP.Application.DTOs.ProjectAttachment;
@@ -146,6 +147,15 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<AdvisorGoal, AdvisorGoalDto>();
             CreateMap<AdvisorDepartment, AdvisorDepartmentDto>();
             CreateMap<Brand, BrandDto>();
+            CreateMap<PriceList, PriceListDto>()
+                .ForMember(d => d.ItemsCount, opt => opt.Ignore());
+            CreateMap<Features.PriceListFeature.Commands.CreatePriceListCommand.CreatePriceListCommand, PriceList>()
+                .ForMember(d => d.Id, opt => opt.Ignore())
+                .ForMember(d => d.CreationDate, opt => opt.Ignore())
+                .ForMember(d => d.CreatedBy, opt => opt.Ignore())
+                .ForMember(d => d.ModificationDate, opt => opt.Ignore())
+                .ForMember(d => d.ModificatedBy, opt => opt.Ignore())
+                .ForMember(d => d.Items, opt => opt.Ignore());
             CreateMap<Category, CategoryDto>();
             CreateMap<DataSheet, DataSheetDto>();
             CreateMap<Status, StatusDto>();
@@ -181,11 +191,13 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<MetaAdCampaign, MetaAdCampaignDto>();
             CreateMap<Heading, HeadingDto>();
             CreateMap<SocialReason, SocialReasonDto>();
-            CreateMap<CustomerType, CustomerTypeDto>();
+            CreateMap<CustomerType, CustomerTypeDto>()
+                .ForMember(d => d.PriceListName, opt => opt.MapFrom(s => s.PriceList != null ? s.PriceList.Name : null));
             CreateMap<Gender, GenderDto>();
             CreateMap<City, CityDto>();
             CreateMap<Department, ClientDepartmentDto>();
-            CreateMap<Customer, CustomerDto>();
+            CreateMap<Customer, CustomerDto>()
+                .ForMember(d => d.PriceListName, opt => opt.MapFrom(s => s.PriceList != null ? s.PriceList.Name : null));
             CreateMap<Customer, BasicInfoCustomerDto>();
             CreateMap<Customer, ClientWalletDto>();
             CreateMap<Invoice, CustomerInvoiceLineDto>()
