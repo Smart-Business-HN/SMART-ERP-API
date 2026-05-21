@@ -6,6 +6,7 @@ using SMART.ERP.Application.Features.CustomerFeature.Commands.CreateCustomerComm
 using SMART.ERP.Application.Features.CustomerFeature.Commands.ImportCustomerCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.LoginCustomerCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomerCommand;
+using SMART.ERP.Application.Features.CustomerFeature.Commands.UpdateCustomerCreditCommand;
 using SMART.ERP.Application.Features.CustomerFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
@@ -19,6 +20,39 @@ namespace SMART.ERP.API.Controllers.v1
         public async Task<IActionResult> GetById(Guid id)
         {
             return Ok(await Mediator.Send(new GetCustomerByIdQuery { Id = id }));
+        }
+
+        [HttpGet("GetSummary/{id}")]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin, CommunityManager, SalesAdvisor")]
+        public async Task<IActionResult> GetSummary(Guid id)
+        {
+            return Ok(await Mediator.Send(new GetCustomerSummaryQuery { Id = id }));
+        }
+
+        [HttpGet("GetInvoices/{id}")]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin, CommunityManager, SalesAdvisor")]
+        public async Task<IActionResult> GetInvoices(Guid id, [FromQuery] RequestParameter filter)
+        {
+            return Ok(await Mediator.Send(new GetCustomerInvoicesQuery
+            {
+                CustomerId = id,
+                Parameter = filter.Parameter,
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize
+            }));
+        }
+
+        [HttpGet("GetQuotations/{id}")]
+        [Authorize(Roles = "SuperAdmin, Manager, Admin, CommunityManager, SalesAdvisor")]
+        public async Task<IActionResult> GetQuotations(Guid id, [FromQuery] RequestParameter filter)
+        {
+            return Ok(await Mediator.Send(new GetCustomerQuotationsQuery
+            {
+                CustomerId = id,
+                Parameter = filter.Parameter,
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize
+            }));
         }
 
         [HttpGet("GetAll")]
@@ -61,6 +95,17 @@ namespace SMART.ERP.API.Controllers.v1
         [HttpPut("Update/{id}")]
         [Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCustomerCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("Ocurrio un error con el id de este registro");
+            }
+            return Ok(await Mediator.Send(command));
+        }
+
+        [HttpPut("UpdateCredit/{id}")]
+        [Authorize(Roles = "SuperAdmin, Admin, Manager, CommunityManager, SalesAdvisor")]
+        public async Task<IActionResult> UpdateCredit(Guid id, [FromBody] UpdateCustomerCreditCommand command)
         {
             if (id != command.Id)
             {

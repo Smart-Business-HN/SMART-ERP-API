@@ -17,5 +17,7 @@ namespace SMART.ERP.Application.DTOs.Provider
         public bool IsActive { get; set; }
         public int TypeProviderId { get; set; }
         public TypeProviderDto TypeProvider { get; set; } = null!;
+        public bool CreditEnabled { get; set; }
+        public decimal CreditLimit { get; set; }
     }
 }

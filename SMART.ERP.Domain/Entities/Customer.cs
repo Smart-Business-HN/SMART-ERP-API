@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace SMART.ERP.Domain.Entities
 {
@@ -63,6 +64,9 @@ namespace SMART.ERP.Domain.Entities
         public bool HasChangedPassword { get; set; }
         public bool HasEcommercePorfile { get; set; }
         public DateTime RegistrationDate { get; set; }
+        public bool CreditEnabled { get; set; }
+        [Precision(18, 2)]
+        public decimal CreditLimit { get; set; }
         public List<Invoice>? PendingInvoices { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Features.ProviderFeature.Commands.CreateProviderCommand;
 using SMART.ERP.Application.Features.ProviderFeature.Commands.DeleteProviderCommand;
 using SMART.ERP.Application.Features.ProviderFeature.Commands.UpdateProviderCommand;
+using SMART.ERP.Application.Features.ProviderFeature.Commands.UpdateProviderCreditCommand;
 using SMART.ERP.Application.Features.ProviderFeature.Queries;
 using SMART.ERP.Application.Parameters;
 
@@ -18,6 +19,50 @@ namespace SMART.ERP.API.Controllers.v1
         public async Task<IActionResult> GetById(int id)
         {
             return Ok(await Mediator.Send(new GetProviderByIdQuery { Id = id }));
+        }
+
+        [HttpGet("GetSummary/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetSummary(int id)
+        {
+            return Ok(await Mediator.Send(new GetProviderSummaryQuery { Id = id }));
+        }
+
+        [HttpGet("GetPurchaseBills/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetPurchaseBills(int id, [FromQuery] RequestParameter filter)
+        {
+            return Ok(await Mediator.Send(new GetProviderPurchaseBillsQuery
+            {
+                ProviderId = id,
+                Parameter = filter.Parameter,
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize
+            }));
+        }
+
+        [HttpGet("GetPurchaseOrders/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetPurchaseOrders(int id, [FromQuery] RequestParameter filter)
+        {
+            return Ok(await Mediator.Send(new GetProviderPurchaseOrdersQuery
+            {
+                ProviderId = id,
+                Parameter = filter.Parameter,
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize
+            }));
+        }
+
+        [HttpPut("UpdateCredit/{id}")]
+        [Authorize(Roles = "SuperAdmin, Manager")]
+        public async Task<IActionResult> UpdateCredit(int id, [FromBody] UpdateProviderCreditCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest(new { message = "Ocurrio un problema con el id de este registro" });
+            }
+            return Ok(await Mediator.Send(command));
         }
 
         [HttpGet("GetAll")]

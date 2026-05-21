@@ -151,6 +151,10 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Status, StatusDto>();
             CreateMap<Product, ProductDto>();
             CreateMap<Provider, ProviderDto>();
+            CreateMap<PurchaseBill, ProviderPurchaseBillLineDto>()
+                .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status != null ? src.Status.Name : null));
+            CreateMap<PurchaseOrder, ProviderPurchaseOrderLineDto>()
+                .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status != null ? src.Status.Name : null));
             CreateMap<TypeEntity, TypeEntityDto>();
             CreateMap<TypeStatus, TypeStatusDto>();
             CreateMap<UnitOfMeasurement, UnitOfMeasurementDto>();
@@ -184,6 +188,10 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Customer, CustomerDto>();
             CreateMap<Customer, BasicInfoCustomerDto>();
             CreateMap<Customer, ClientWalletDto>();
+            CreateMap<Invoice, CustomerInvoiceLineDto>()
+                .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status != null ? src.Status.Name : null));
+            CreateMap<Quotation, CustomerQuotationLineDto>()
+                .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status != null ? src.Status.Name : null));
             CreateMap<OpportunityStep, OpportunityStepDto>();
             CreateMap<Opportunity, OpportunityDto>();
             CreateMap<Opportunity, OpportunityWalletDto>();
