@@ -1,5 +1,5 @@
 # SMART ERP-API
-Desarrollo Backend del CRM **SMART BUSINESS** desarrollado en **C#** con **.Net Core 7**. Sirva la siguiente documentación para conocer la arquitectura general del sistema, las dependencias necesarias y las funciones que cumplen los servicios descritos a continuación.
+Desarrollo Backend del CRM **SMART BUSINESS** desarrollado en **C#** con **.NET 10**. Sirva la siguiente documentación para conocer la arquitectura general del sistema, las dependencias necesarias y las funciones que cumplen los servicios descritos a continuación.
 
 ## Arquitectura
 El sistema fue desarrollado bajo una combinación de patrón de diseño DDD (*Domain Driven Design*), CQRS (*Command and Query Responsibility Segregation*) y arquitectura Onion. La aplicación cuenta con cuatro carpetas principales (API, Application, Domain, Infrastructure). 
