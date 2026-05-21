@@ -74,9 +74,28 @@ namespace SMART.ERP.Application
             services.AddQuartzHostedService(x => x.WaitForJobsToComplete = true);
             // ---------------- End -----------------
             services.AddHttpContextAccessor();
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddAutoMapper(cfg =>
+            {
+                // AutoMapper 15+ es de licencia comercial. Configurar la clave en
+                // appsettings ("AutoMapper:LicenseKey") cuando esté disponible.
+                var autoMapperLicense = configuration["AutoMapper:LicenseKey"];
+                if (!string.IsNullOrWhiteSpace(autoMapperLicense))
+                {
+                    cfg.LicenseKey = autoMapperLicense;
+                }
+            }, Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            services.AddMediatR(cf => cf.RegisterServicesFromAssembly(typeof(ServiceExtensions).Assembly));
+            services.AddMediatR(cf =>
+            {
+                cf.RegisterServicesFromAssembly(typeof(ServiceExtensions).Assembly);
+                // MediatR 13+ es de licencia comercial. Configurar la clave en
+                // appsettings ("MediatR:LicenseKey") cuando esté disponible.
+                var mediatRLicense = configuration["MediatR:LicenseKey"];
+                if (!string.IsNullOrWhiteSpace(mediatRLicense))
+                {
+                    cf.LicenseKey = mediatRLicense;
+                }
+            });
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             services.Configure<JWTSettings>(configuration.GetSection("JWTSettings"));
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
