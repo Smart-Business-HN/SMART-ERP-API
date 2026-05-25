@@ -23,7 +23,7 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Queries
         }
         public async Task<Response<QuotationDto>> Handle(GetQuotationByIdQuery request, CancellationToken cancellationToken)
         {
-            var getQuotation = await _repositoryAsync.FirstOrDefaultAsync(new FilterQuotationByIdSpecification(request.Id));
+            var getQuotation = await _repositoryAsync.FirstOrDefaultAsync(new GetQuotationDetailWithComboComponentsSpecification(request.Id));
             if (getQuotation == null)
             {
                 throw new KeyNotFoundException($"Registro no encontrado con el id {request.Id}");

@@ -280,10 +280,21 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.UpdateInvoiceCo
             }
 
             // Añadir nuevos productos a la factura
+            var missingDescIds = productsToProcess!
+                .Where(p => p.ProductId.HasValue && string.IsNullOrWhiteSpace(p.ProductDescription))
+                .Select(p => p.ProductId!.Value).Distinct().ToList();
+            var nameById = missingDescIds.Count == 0
+                ? new Dictionary<int, string>()
+                : (await _productRepositoryAsync.ListAsync(new SMART.ERP.Application.Specifications.ProductSpecification.ProductsByIdsSpecification(missingDescIds)))
+                    .ToDictionary(p => p.Id, p => !string.IsNullOrWhiteSpace(p.Description) ? p.Description : p.Name);
+
             foreach (var newProductToSell in productsToProcess!)
             {
                 var newProductOffered = _mapper.Map<ProductSold>(newProductToSell);
                 newProductOffered.InvoiceId = invoiceId;
+                if (string.IsNullOrWhiteSpace(newProductOffered.ProductDescription) && newProductToSell.ProductId.HasValue
+                    && nameById.TryGetValue(newProductToSell.ProductId.Value, out var pname))
+                    newProductOffered.ProductDescription = pname;
                 newProductOffered.UnitPrice = newProductToSell.RecomendedSalePrice;
                 newProductOffered.Taxes = TaxCalculator(newProductToSell, taxesRates);
                 newProductOffered.TotalLine = newProductToSell.Quantity * newProductToSell.RecomendedSalePrice;

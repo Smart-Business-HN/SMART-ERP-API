@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SMART.ERP.Domain.Entities
 {
@@ -17,6 +18,8 @@ namespace SMART.ERP.Domain.Entities
         public string FatherProductCode { get; set; } = null!;
         [Column(TypeName = "varchar(50)")]
         public string FatherProductName { get; set; } = null!;
+        [Precision(18, 4)]
+        public decimal Quantity { get; set; }
         public DateTime CreationDate { get; set; }
         [Column(TypeName = "varchar(50)")]
         public string CreatedBy { get; set; } = null!;

@@ -25,6 +25,13 @@ using SMART.ERP.Application.DTOs.InternalBankAccount;
 using SMART.ERP.Application.DTOs.InventoryDistribution;
 using SMART.ERP.Application.DTOs.InventoryInput;
 using SMART.ERP.Application.DTOs.InventoryInputType;
+using SMART.ERP.Application.DTOs.InventoryEntry;
+using SMART.ERP.Application.DTOs.InventoryExit;
+using SMART.ERP.Application.DTOs.WarehouseTransfer;
+using SMART.ERP.Application.DTOs.LedgerAccount;
+using SMART.ERP.Application.DTOs.JournalEntry;
+using SMART.ERP.Application.DTOs.FiscalPeriod;
+using SMART.ERP.Application.DTOs.Kardex;
 using SMART.ERP.Application.DTOs.Invoice;
 using SMART.ERP.Application.DTOs.InvoicePaymentType;
 using SMART.ERP.Application.DTOs.RecurringInvoiceTemplate;
@@ -159,7 +166,12 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Category, CategoryDto>();
             CreateMap<DataSheet, DataSheetDto>();
             CreateMap<Status, StatusDto>();
-            CreateMap<Product, ProductDto>();
+            CreateMap<Product, ProductDto>()
+                .ForMember(d => d.Components, o => o.MapFrom(s => s.Components))
+                .ForMember(d => d.CalculatedStock, o => o.Ignore());
+            CreateMap<ProductPart, ProductPartDto>()
+                .ForMember(d => d.ComponentCurrentStock, o => o.MapFrom(s => s.Product != null ? s.Product.CurrentStock : 0))
+                .ForMember(d => d.ComponentCostPrice, o => o.MapFrom(s => s.Product != null ? s.Product.CostPrice : 0m));
             CreateMap<Provider, ProviderDto>();
             CreateMap<PurchaseBill, ProviderPurchaseBillLineDto>()
                 .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status != null ? src.Status.Name : null));
@@ -268,6 +280,22 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateProductEntryDto, ProductEntryDto>();
             CreateMap<ProductEntryDto, CreateProductEntryDto>();
             CreateMap<CreateProductEntryDto, ProductEntry>();
+            // Inventory module (Ventix-style)
+            CreateMap<InventoryEntry, InventoryEntryDto>()
+                .ForMember(d => d.ProviderName, o => o.MapFrom(s => s.Provider != null ? s.Provider.Name : null));
+            CreateMap<InventoryEntryItem, InventoryEntryItemDto>()
+                .ForMember(d => d.ProductName, o => o.MapFrom(s => s.Product != null ? s.Product.Name : null))
+                .ForMember(d => d.ProductCode, o => o.MapFrom(s => s.Product != null ? s.Product.Code : null));
+            CreateMap<InventoryExit, InventoryExitDto>();
+            CreateMap<InventoryExitItem, InventoryExitItemDto>()
+                .ForMember(d => d.ProductName, o => o.MapFrom(s => s.Product != null ? s.Product.Name : null))
+                .ForMember(d => d.ProductCode, o => o.MapFrom(s => s.Product != null ? s.Product.Code : null));
+            CreateMap<WarehouseTransfer, WarehouseTransferDto>();
+            CreateMap<WarehouseTransferItem, WarehouseTransferItemDto>()
+                .ForMember(d => d.ProductName, o => o.MapFrom(s => s.Product != null ? s.Product.Name : null))
+                .ForMember(d => d.ProductCode, o => o.MapFrom(s => s.Product != null ? s.Product.Code : null));
+            CreateMap<InventoryMovement, KardexMovementDto>()
+                .ForMember(d => d.MovementTypeName, o => o.MapFrom(s => s.MovementType.ToString()));
             CreateMap<Invoice, InvoiceDto>();
             CreateMap<InvoiceDto, Invoice>();
             CreateMap<ProductSold, ProductSoldDto>().ReverseMap();
@@ -291,6 +319,26 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Project, ProjectDto>().ReverseMap();
             CreateMap<NonBillableExpense, NonBillableExpenseDto>().ReverseMap();
             CreateMap<NonBillableExpensePayment, NonBillableExpensePaymentDto>().ReverseMap();
+
+            //=================== MÓDULO CONTABLE ===================
+            CreateMap<LedgerAccount, LedgerAccountDto>()
+                .ForMember(d => d.AccountTypeName, o => o.MapFrom(s => s.AccountType.ToString()))
+                .ForMember(d => d.ParentCode, o => o.MapFrom(s => s.Parent != null ? s.Parent.Code : null));
+            CreateMap<LedgerAccount, LedgerAccountTreeDto>()
+                .ForMember(d => d.AccountTypeName, o => o.MapFrom(s => s.AccountType.ToString()))
+                .ForMember(d => d.Children, o => o.Ignore());
+            CreateMap<JournalEntry, JournalEntryDto>()
+                .ForMember(d => d.FiscalPeriodName, o => o.MapFrom(s => s.FiscalPeriod != null ? s.FiscalPeriod.Name : null))
+                .ForMember(d => d.StatusName, o => o.MapFrom(s => s.Status.ToString()))
+                .ForMember(d => d.SourceName, o => o.MapFrom(s => s.Source.ToString()));
+            CreateMap<JournalEntryLine, JournalEntryLineDto>()
+                .ForMember(d => d.LedgerAccountCode, o => o.MapFrom(s => s.LedgerAccount != null ? s.LedgerAccount.Code : null))
+                .ForMember(d => d.LedgerAccountName, o => o.MapFrom(s => s.LedgerAccount != null ? s.LedgerAccount.Name : null))
+                .ForMember(d => d.ProjectName, o => o.MapFrom(s => s.Project != null ? s.Project.Name : null))
+                .ForMember(d => d.CustomerName, o => o.MapFrom(s => s.Customer != null ? s.Customer.FullName : null))
+                .ForMember(d => d.ProviderName, o => o.MapFrom(s => s.Provider != null ? s.Provider.Name : null));
+            CreateMap<FiscalYear, FiscalYearDto>();
+            CreateMap<FiscalPeriod, FiscalPeriodDto>();
             CreateMap<ProductToBuyDto, ProductEntry>();
             CreateMap<DailyClose, DailyCloseDto>().ReverseMap();
             CreateMap<ResumePayment, ResumePaymentDto>().ReverseMap();
@@ -325,7 +373,8 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateCustomerCommand, Customer>();
             CreateMap<CreateProviderCommand, Provider>();
             CreateMap<CreateDataSheetCommand, DataSheet>();
-            CreateMap<CreateBaseProductCommand, Product>();
+            CreateMap<CreateBaseProductCommand, Product>()
+                .ForMember(d => d.Components, o => o.Ignore());
             CreateMap<CreateProductFtrCommand, ProductFeature>();
             CreateMap<CreateProductDataSheetCommand, ProductDataSheet>();
             CreateMap<CreateProductImageCommand, ProductImage>();

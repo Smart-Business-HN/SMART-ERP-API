@@ -197,7 +197,11 @@ namespace SMART.ERP.Infrastructure.Services.QuotationPdfService
                             var lineTotal = product.Quantity * product.UnitPrice;
 
                             table.Cell().BorderBottom(0.5f).BorderColor("#DDDDDD").Padding(3)
-                                .Text(description).FontSize(9).FontColor("#555555");
+                                .Column(col =>
+                                {
+                                    col.Item().Text(description).FontSize(9).FontColor("#555555");
+                                    RenderComboComponentsBlock(col, product);
+                                });
                             table.Cell().BorderBottom(0.5f).BorderColor("#DDDDDD").Padding(3)
                                 .AlignCenter().Text(product.Quantity.ToString("0")).FontSize(9).FontColor("#555555");
                             table.Cell().BorderBottom(0.5f).BorderColor("#DDDDDD").Padding(3)
@@ -285,6 +289,25 @@ namespace SMART.ERP.Infrastructure.Services.QuotationPdfService
         private static string FormatCurrency(decimal amount)
         {
             return $"L. {amount:N2}";
+        }
+
+        /// <summary>
+        /// Renderiza el bloque "Contiene:" debajo de un item de tipo Combo, listando los
+        /// componentes que conforman cada unidad del combo. Las cantidades se muestran por
+        /// unidad de combo (no multiplicadas por la cantidad cotizada) para evitar confusión.
+        /// </summary>
+        private static void RenderComboComponentsBlock(ColumnDescriptor col, ProductOfferedPreviewDto product)
+        {
+            if (!product.IsCombo) return;
+            if (product.Components == null || product.Components.Count == 0) return;
+
+            col.Item().PaddingTop(2).Text("Contiene:").FontSize(7.5f).FontColor("#666666").Bold();
+            foreach (var c in product.Components)
+            {
+                var qty = c.Quantity % 1 == 0 ? c.Quantity.ToString("N0") : c.Quantity.ToString("N2");
+                var qtyText = string.IsNullOrWhiteSpace(c.UnitOfMeasurement) ? qty : $"{qty} {c.UnitOfMeasurement}";
+                col.Item().PaddingLeft(8).Text($"• {qtyText} × {c.Name}").FontSize(7.5f).FontColor("#666666");
+            }
         }
     }
 }

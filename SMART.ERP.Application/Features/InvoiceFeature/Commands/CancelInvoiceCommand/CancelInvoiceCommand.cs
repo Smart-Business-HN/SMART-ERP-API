@@ -1,13 +1,15 @@
-﻿using AutoMapper;
+using AutoMapper;
 using MediatR;
-using Newtonsoft.Json;
 using SMART.ERP.Application.DTOs.Invoice;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.AccountingPostingService;
+using SMART.ERP.Application.Services.InventoryMovementService;
 using SMART.ERP.Application.Services.JwtService;
-using SMART.ERP.Application.Specifications.WarehouseSpecification;
+using SMART.ERP.Application.Services.ProductCacheInvalidator;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CancelInvoiceCommand
 {
@@ -32,95 +34,54 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Commands.CancelInvoiceCo
         private readonly IRepositoryAsync<Invoice> _invoiceRepository;
         private readonly IMapper _mapper;
         private readonly IJwtService _jwtService;
-        private readonly IRepositoryAsync<InventoryDistribution> _inventoryDistributionRepositoryAsync;
-        private readonly IRepositoryAsync<Warehouse> _warehouseRepositoryAsync;
-        private readonly IRepositoryAsync<Product> _productRepositoryAsync;
-        public CancelInvoiceCommandHandler(IRepositoryAsync<Invoice> invoiceRepository, IMapper mapper, IJwtService jwtService, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync)
+        private readonly IInventoryMovementService _movementService;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IProductCacheInvalidator _cacheInvalidator;
+        private readonly IAccountingPostingService _accountingPostingService;
+        public CancelInvoiceCommandHandler(IRepositoryAsync<Invoice> invoiceRepository, IMapper mapper, IJwtService jwtService, IInventoryMovementService movementService, IUnitOfWork unitOfWork, IProductCacheInvalidator cacheInvalidator, IAccountingPostingService accountingPostingService)
         {
             _invoiceRepository = invoiceRepository;
             _mapper = mapper;
             _jwtService = jwtService;
-            _inventoryDistributionRepositoryAsync = inventoryDistributionRepositoryAsync;
-            _productRepositoryAsync = productRepositoryAsync;
-            _warehouseRepositoryAsync = warehouseRepositoryAsync;
+            _movementService = movementService;
+            _unitOfWork = unitOfWork;
+            _cacheInvalidator = cacheInvalidator;
+            _accountingPostingService = accountingPostingService;
         }
         public async Task<Response<InvoiceDto>> Handle(CancelInvoiceCommand request, CancellationToken cancellationToken)
         {
             var invoiceExist = await _invoiceRepository.GetByIdAsync(request.Id);
             if (invoiceExist == null)
             {
-                throw new ApiException($"No existe una factura con el Id {request.CustomerId}");
+                throw new ApiException($"No existe una factura con el Id {request.Id}");
             }
-            invoiceExist.StatusId = 17;
-            invoiceExist.ModificationDate = DateTime.UtcNow;
-            invoiceExist.ModificatedBy = _jwtService.GetSubjectToken();
 
-            string localProductSoldJson = JsonConvert.SerializeObject(request.ProductsSold);
-            var productsPreExistencea = JsonConvert.DeserializeObject<List<ProductSoldDto>>(localProductSoldJson);
+            var userId = _jwtService.GetUidToken();
+            var userName = _jwtService.GetSubjectToken();
 
-            string localProductSoldJson1 = JsonConvert.SerializeObject(request.ProductsSold);
-            var productsPreExistencea1 = JsonConvert.DeserializeObject<List<ProductSoldDto>>(localProductSoldJson);
-
-            foreach (var item in productsPreExistencea!)
+            await _unitOfWork.ExecuteInTransactionAsync(async ct =>
             {
-                item.Product = null;
-            }
-            await _invoiceRepository.UpdateAsync(invoiceExist);
-            await _invoiceRepository.SaveChangesAsync();
-            await UpdateStock(productsPreExistencea, invoiceExist.BranchOfficeId);
-            await UpdateMainStock(productsPreExistencea1!);
+                invoiceExist.StatusId = 17;
+                invoiceExist.ModificationDate = DateTime.UtcNow;
+                invoiceExist.ModificatedBy = userName;
+                await _invoiceRepository.UpdateAsync(invoiceExist);
+                await _invoiceRepository.SaveChangesAsync();
+
+                // Revierte en el Kardex los movimientos de venta de esta factura (devuelve el stock).
+                // Solo afecta a facturas creadas tras la integración con el Kardex; las antiguas no
+                // tienen movimientos que revertir.
+                await _movementService.RecordCancellationForDocumentAsync(
+                    "Invoice", invoiceExist.Id, DateTime.UtcNow,
+                    KardexMovementType.InvoiceCancellation, userId, userName, ct);
+
+                await _accountingPostingService.ReverseDocumentPostingAsync("Invoice", invoiceExist.Id, ct);
+            }, cancellationToken);
+
+            await _cacheInvalidator.InvalidateAsync(cancellationToken);
+
             request.StatusId = 17;
             var invoiceDto = _mapper.Map<InvoiceDto>(request);
             return new Response<InvoiceDto>(invoiceDto, "Factura Cancelada Existosamente");
-        }
-        public async Task UpdateMainStock(List<ProductSoldDto> productsSold)
-        {
-            var products = await _productRepositoryAsync.ListAsync();
-            var productsPreExistence = new List<ProductSoldDto>(productsSold);
-
-            //Devolver Stock de productos eliminados de la factura
-            foreach (var productPreExistence in productsPreExistence)
-            {
-                var currentStock = products.FirstOrDefault(p => p.Id == productPreExistence.ProductId);
-                if (currentStock == null)
-                {
-                    continue;
-                }
-                else
-                {
-                    currentStock.CurrentStock += (int)productPreExistence.Quantity;
-                    await _productRepositoryAsync.UpdateAsync(currentStock);
-                }
-            }
-            await _productRepositoryAsync.SaveChangesAsync();
-        }
-
-
-        public async Task UpdateStock(List<ProductSoldDto> productsSold, int branchOfficeId)
-        {
-            var warehouse = await _warehouseRepositoryAsync.FirstOrDefaultAsync(new FilterWarehouseByBranchOfficeIdSpecification(branchOfficeId));
-            if (warehouse == null) { return; }
-            var productsPreExistence = new List<ProductSoldDto>(productsSold);
-            //Devolver Stock de productos eliminados de la factura
-            foreach (var productPreExistence in productsPreExistence)
-            {
-                var currentStock = warehouse!.InventoryDistributions!.FirstOrDefault(p => p.ProductId == productPreExistence.ProductId);
-                if (currentStock == null)
-                {
-                    var newInventoryDistribution = new InventoryDistribution();
-                    newInventoryDistribution.WarehouseId = warehouse.Id;
-                    newInventoryDistribution.ProductId = productPreExistence.ProductId!.Value;
-                    newInventoryDistribution.Quantity = productPreExistence.Quantity;
-                    await _inventoryDistributionRepositoryAsync.AddAsync(newInventoryDistribution);
-                }
-                else
-                {
-                    currentStock.Quantity += productPreExistence.Quantity;
-                    await _inventoryDistributionRepositoryAsync.UpdateAsync(currentStock);
-                }
-               
-            }
-            await _inventoryDistributionRepositoryAsync.SaveChangesAsync();
         }
     }
 }

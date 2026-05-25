@@ -32,6 +32,8 @@ namespace SMART.ERP.Domain.Entities
         public virtual PurchaseBill? PurchaseBillDestination { get; set; }
         public int? InventoryInputDestinationId { get; set; }
         public virtual InventoryInput? InventoryInputDestination { get; set; }
+        public int? InventoryEntryDestinationId { get; set; }
+        public virtual InventoryEntry? InventoryEntryDestination { get; set; }
         public List<ProductToPurchase>? ProductsToPurchase { get; set; }
     }
 }

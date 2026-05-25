@@ -2,9 +2,11 @@
 using MediatR;
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.ProductCompositionService;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
 {
@@ -21,13 +23,16 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
             private readonly IMapper _mapper;
             private readonly IRepositoryAsync<Product> _repositoryAsync;
             private readonly IRepositoryAsync<Category> _categoryRepositoryAsync;
+            private readonly IProductCompositionService _compositionService;
 
             public GetAllBaseProductsQueryHandler(IMapper mapper, IRepositoryAsync<Product> repositoryAsync,
-                IRepositoryAsync<Category> categoryRepositoryAsync)
+                IRepositoryAsync<Category> categoryRepositoryAsync,
+                IProductCompositionService compositionService)
             {
                 _mapper = mapper;
                 _repositoryAsync = repositoryAsync;
                 _categoryRepositoryAsync = categoryRepositoryAsync;
+                _compositionService = compositionService;
             }
             public async Task<PagedResponse<List<ProductDto>>> Handle(GetAllBaseProductsQuery request, CancellationToken cancellationToken)
             {
@@ -42,6 +47,16 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                 foreach (var product in dto)
                 {
                     product.SubCategory!.Category = _mapper.Map<CategoryDto>(categories.Find(y => y.Id == product.SubCategory.CategoryId));
+                }
+                var comboIds = dto.Where(d => d.ProductType == ProductType.Combo).Select(d => d.Id).ToList();
+                if (comboIds.Count > 0)
+                {
+                    var stockMap = await _compositionService.GetCalculatedStockMapAsync(comboIds, cancellationToken);
+                    foreach (var d in dto)
+                    {
+                        if (d.ProductType == ProductType.Combo && stockMap.TryGetValue(d.Id, out var stock))
+                            d.CalculatedStock = stock;
+                    }
                 }
                 return new PagedResponse<List<ProductDto>>(dto, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync());
             }

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.AccountingPostingService;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
@@ -15,11 +16,13 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.DeleteBillP
     {
         private readonly IRepositoryAsync<BillPayment> _repositoryAsync;
         private readonly IRepositoryAsync<Invoice> _invoiceRepositoryAsync;
+        private readonly IAccountingPostingService _accountingPostingService;
 
-        public DeleteBillPaymentCommandHandler(IRepositoryAsync<BillPayment> repositoryAsync, IRepositoryAsync<Invoice> invoiceRepositoryAsync)
+        public DeleteBillPaymentCommandHandler(IRepositoryAsync<BillPayment> repositoryAsync, IRepositoryAsync<Invoice> invoiceRepositoryAsync, IAccountingPostingService accountingPostingService)
         {
             _repositoryAsync = repositoryAsync;
             _invoiceRepositoryAsync = invoiceRepositoryAsync;
+            _accountingPostingService = accountingPostingService;
         }
 
         public async Task<Response<string>> Handle(DeleteBillPaymentCommand request, CancellationToken cancellationToken)
@@ -39,6 +42,8 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.DeleteBillP
                 await _repositoryAsync.SaveChangesAsync();
                 await _invoiceRepositoryAsync.UpdateAsync(invoice);
                 await _invoiceRepositoryAsync.SaveChangesAsync();
+
+                await _accountingPostingService.ReverseDocumentPostingAsync("BillPayment", request.Id, cancellationToken);
 
                 return new Response<string>("Eliminado correctamente");
             }

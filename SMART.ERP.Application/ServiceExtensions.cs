@@ -12,6 +12,7 @@ using SMART.ERP.Application.Jobs.AdvisorGoalJob;
 using SMART.ERP.Application.Jobs.LogSessionJob;
 using SMART.ERP.Application.Jobs.LongLivedOpportunitiesJob;
 using SMART.ERP.Application.Jobs.RecurringInvoiceJob;
+using SMART.ERP.Application.Jobs.RevenueRecognitionJob;
 using SMART.ERP.Application.Services.InvoiceGenerationService;
 using SMART.ERP.Application.Services;
 using SMART.ERP.Application.Services.AssignUserToOpportunityService;
@@ -50,6 +51,7 @@ namespace SMART.ERP.Application
                 x.AddJob<LongLivedOpportunitiesJob>(opts => opts.WithIdentity(LongLivedOpportunitiesJob.Key));
                 x.AddJob<LogSessionJob>(opts => opts.WithIdentity(LogSessionJob.LogJobKey));
                 x.AddJob<RecurringInvoiceJob>(opts => opts.WithIdentity(RecurringInvoiceJob.Key));
+                x.AddJob<RevenueRecognitionJob>(opts => opts.WithIdentity(RevenueRecognitionJob.Key));
 
                 x.AddTrigger(opts => opts
                 .ForJob(AdvisorGoalJob.Key)
@@ -70,6 +72,12 @@ namespace SMART.ERP.Application
                 .ForJob(RecurringInvoiceJob.Key)
                 .WithIdentity("recurring-invoice-job-trigger")
                 .WithCronSchedule("0 0 6 * * ?"));
+
+                // Devengo SaaS — corre a las 6:15am todos los días (15 min después del job recurrente).
+                x.AddTrigger(opts => opts
+                .ForJob(RevenueRecognitionJob.Key)
+                .WithIdentity("revenue-recognition-job-trigger")
+                .WithCronSchedule("0 15 6 * * ?"));
 
             });
             services.AddQuartzHostedService(x => x.WaitForJobsToComplete = true);

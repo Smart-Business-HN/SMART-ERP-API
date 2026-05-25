@@ -16,6 +16,7 @@ namespace SMART.ERP.Application.Features.WarehouseFeature.Queries
         public string? Order { get; set; }
         public string? Column { get; set; }
         public bool All { get; set; }
+        public int? BranchOfficeId { get; set; }
         public class GetAllWarehouseQueryHandler : IRequestHandler<GetAllWarehouseQuery, PagedResponse<List<WarehouseDto>>>
         {
             private readonly IMapper _mapper;
@@ -35,9 +36,17 @@ namespace SMART.ERP.Application.Features.WarehouseFeature.Queries
                 }
 
                 var warehouses = await _repositoryAsync.ListAsync(
-                    new FilterAndPaginationWarehouseSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
+                    new FilterAndPaginationWarehouseSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column, request.BranchOfficeId));
                 var dto = _mapper.Map<List<WarehouseDto>>(warehouses);
-                return new PagedResponse<List<WarehouseDto>>(dto, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync());
+
+                var totalItems = request.All
+                    ? request.PageSize
+                    : (string.IsNullOrEmpty(request.Parameter) && !request.BranchOfficeId.HasValue
+                        ? await _repositoryAsync.CountAsync()
+                        : await _repositoryAsync.CountAsync(
+                            new FilterAndPaginationWarehouseSpecification(request.Parameter, 0, 0, request.Order, request.Column, request.BranchOfficeId)));
+
+                return new PagedResponse<List<WarehouseDto>>(dto, request.PageNumber, request.PageSize, totalItems);
             }
         }
     }

@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.WarehouseFeature.Commands.CreateWarehouseCommand;
+using SMART.ERP.Application.Features.WarehouseFeature.Commands.DeleteWarehouseCommand;
 using SMART.ERP.Application.Features.WarehouseFeature.Commands.UpdateWarehouseCommand;
 using SMART.ERP.Application.Features.WarehouseFeature.Queries;
-using SMART.ERP.Application.Features.WinReasonFeature.Commands.DeleteWinReasonCommand;
 using SMART.ERP.Application.Parameters;
 
 namespace SMART.ERP.API.Controllers.v1
@@ -20,7 +20,7 @@ namespace SMART.ERP.API.Controllers.v1
         }
         [HttpGet("GetAll")]
         [Authorize]
-        public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter)
+        public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter, [FromQuery] int? branchOfficeId)
         {
             return Ok(await Mediator.Send(new GetAllWarehouseQuery()
             {
@@ -29,7 +29,8 @@ namespace SMART.ERP.API.Controllers.v1
                 PageSize = filter.PageSize,
                 Order = filter.Order,
                 Column = filter.Column,
-                All = filter.All
+                All = filter.All,
+                BranchOfficeId = branchOfficeId
             }));
         }
 
@@ -52,7 +53,7 @@ namespace SMART.ERP.API.Controllers.v1
         [Authorize(Roles = "SuperAdmin, Manager")]
         public async Task<IActionResult> Delete(int id)
         {
-            return Ok(await Mediator.Send(new DeleteWinReasonCommand { Id = id }));
+            return Ok(await Mediator.Send(new DeleteWarehouseCommand { Id = id }));
         }
        
 

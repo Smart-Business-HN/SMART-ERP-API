@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Domain.Entities
 {
@@ -28,5 +29,12 @@ namespace SMART.ERP.Domain.Entities
         public virtual List<NonBillableExpensePayment>? NonBillableExpensePayments { get; set; }
         public int? LegacyMigratedToInternalBankAccountId { get; set; }
         public virtual InternalBankAccount? LegacyMigratedToInternalBankAccount { get; set; }
+
+        // Retenciones aplicadas por el comprador al pagar al proveedor. Outstanding = Amount - WithholdingAmount.
+        public WithholdingType WithholdingType { get; set; } = WithholdingType.None;
+        [Precision(18, 2)]
+        public decimal WithholdingBase { get; set; }
+        [Precision(18, 2)]
+        public decimal WithholdingAmount { get; set; }
     }
 }

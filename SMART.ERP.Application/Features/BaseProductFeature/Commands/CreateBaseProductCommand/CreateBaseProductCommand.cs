@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Product;
@@ -9,6 +9,7 @@ using SMART.ERP.Application.Services.PriceListResolver;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 using System.Text.RegularExpressions;
 
 namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseProductCommand
@@ -17,6 +18,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
     {
         public string Code { get; set; } = null!;
         public string Name { get; set; } = null!;
+        public ProductType ProductType { get; set; } = ProductType.Tangible;
         public string? Description { get; set; }
         public string? Brochure { get; set; }
         public string? VirtualTour { get; set; }
@@ -35,6 +37,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
         public bool IsActive { get; set; }
         public bool ShowInEcommerce { get; set; }
         public string? EcommerceDescription { get; set; }
+        public List<ProductPartInput>? Components { get; set; }
     }
 
     public class CreateBaseProductCommandHandler : IRequestHandler<CreateBaseProductCommand, Response<ProductDto>>
@@ -49,6 +52,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
         private readonly IRepositoryAsync<Tax> _taxRepositoryAsync;
         private readonly IRepositoryAsync<UnitOfMeasurement> _measurementRepositoryAsync;
         private readonly IRepositoryAsync<PriceListItem> _priceListItemRepository;
+        private readonly IRepositoryAsync<ProductPart> _productPartRepository;
         private readonly IPriceListService _priceListService;
         private readonly IOutputCacheStore _outputCacheStored;
 
@@ -58,6 +62,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
             IRepositoryAsync<Brand> brandRepositoryAsync,
             IRepositoryAsync<UnitOfMeasurement> measurementRepositoryAsync,
             IRepositoryAsync<PriceListItem> priceListItemRepository,
+            IRepositoryAsync<ProductPart> productPartRepository,
             IPriceListService priceListService,
             IOutputCacheStore outputCacheStored
             )
@@ -72,6 +77,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
             _measurementRepositoryAsync = measurementRepositoryAsync;
             _taxRepositoryAsync = taxRepositoryAsync;
             _priceListItemRepository = priceListItemRepository;
+            _productPartRepository = productPartRepository;
             _priceListService = priceListService;
             _outputCacheStored = outputCacheStored;
         }
@@ -113,13 +119,79 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
             {
                 throw new KeyNotFoundException($"No se encontro la unidad de medida con id {request.UnitOfMeasurementId}");
             }
+
+            // Validar componentes si es Combo y cargar entidades para snapshot
+            List<Product> componentEntities = new();
+            if (request.ProductType == ProductType.Combo)
+            {
+                if (request.Components == null || request.Components.Count == 0)
+                    throw new ApiException("Un combo requiere al menos un componente.");
+                if (request.Components.Any(c => c.Quantity <= 0))
+                    throw new ApiException("La cantidad de cada componente debe ser mayor a cero.");
+
+                var ids = request.Components.Select(c => c.ProductId).Distinct().ToList();
+                if (ids.Count != request.Components.Count)
+                    throw new ApiException("No se permiten componentes duplicados.");
+
+                componentEntities = (await _repositoryAsync.ListAsync(new ProductsByIdsSpecification(ids))).ToList();
+                if (componentEntities.Count != ids.Count)
+                    throw new ApiException("Uno o más componentes no existen.");
+                foreach (var c in componentEntities)
+                {
+                    if (!c.IsActive)
+                        throw new ApiException($"El componente {c.Name} no está activo.");
+                    if (c.ProductType != ProductType.Tangible)
+                        throw new ApiException($"El componente {c.Name} debe ser un producto tangible.");
+                }
+            }
+
             var slug = Regex.Replace(Regex.Replace(request.Name, @"[^a-zA-Z0-9\s]", "").Trim().ToLower(), @"\s+", "-");
             var newRecord = _mapper.Map<Product>(request);
             newRecord.Slug = slug;
             newRecord.CreatedBy = _jwtService.GetSubjectToken();
             newRecord.CreationDate = DateTime.Now;
+
+            // Servicios y combos no manejan stock propio
+            if (request.ProductType == ProductType.Service)
+            {
+                newRecord.CurrentStock = 0;
+                newRecord.MinStock = 0;
+                newRecord.IsFatherProduct = false;
+            }
+            else if (request.ProductType == ProductType.Combo)
+            {
+                newRecord.CurrentStock = 0;
+                newRecord.MinStock = 0;
+                newRecord.IsFatherProduct = true;
+            }
+
             var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
+
+            // Insertar componentes si es combo
+            if (request.ProductType == ProductType.Combo)
+            {
+                var createdBy = _jwtService.GetSubjectToken();
+                var now = DateTime.Now;
+                foreach (var input in request.Components!)
+                {
+                    var component = componentEntities.First(c => c.Id == input.ProductId);
+                    await _productPartRepository.AddAsync(new ProductPart
+                    {
+                        FatherProductId = data.Id,
+                        FatherProductCode = data.Code,
+                        FatherProductName = data.Name,
+                        ProductId = component.Id,
+                        ProductCode = component.Code,
+                        ProductName = component.Name,
+                        Quantity = input.Quantity,
+                        IsActive = true,
+                        CreatedBy = createdBy,
+                        CreationDate = now
+                    }, cancellationToken);
+                }
+                await _productPartRepository.SaveChangesAsync(cancellationToken);
+            }
 
             // Auto-poblar precio en lista default usando CostPrice × 1.30 × (1 + Tax)
             var defaultPriceListId = await _priceListService.GetDefaultPriceListIdAsync(cancellationToken);

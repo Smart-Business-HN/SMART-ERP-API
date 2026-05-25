@@ -169,12 +169,23 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.CreateQuotati
                 var subTotalWithoutShipping = 0m;
                 var providerShippingAssigned = new HashSet<int>(); // Track which providers have had shipping assigned
 
+                var missingDescIds = request.ProductsToOffered
+                    .Where(p => p.ProductId.HasValue && string.IsNullOrWhiteSpace(p.ProductDescription))
+                    .Select(p => p.ProductId!.Value).Distinct().ToList();
+                var nameById = missingDescIds.Count == 0
+                    ? new Dictionary<int, string>()
+                    : (await _productRepositoryAsync.ListAsync(new SMART.ERP.Application.Specifications.ProductSpecification.ProductsByIdsSpecification(missingDescIds)))
+                        .ToDictionary(p => p.Id, p => !string.IsNullOrWhiteSpace(p.Description) ? p.Description : p.Name);
+
                 foreach (var item in request.ProductsToOffered)
                 {
                     var (product, warehouseId, isVirtual, providerId) = productWarehouseMap[item.ProductId!.Value];
 
                     var newProductOffered = _mapper.Map<ProductOffered>(item);
                     newProductOffered.QuotationId = quoteResponse.Id;
+                    if (string.IsNullOrWhiteSpace(newProductOffered.ProductDescription) && item.ProductId.HasValue
+                        && nameById.TryGetValue(item.ProductId.Value, out var pname))
+                        newProductOffered.ProductDescription = pname;
                     newProductOffered.UnitPrice = item.RecomendedSalePrice;
                     newProductOffered.Taxes = TaxCalculator(item, taxesRates);
                     newProductOffered.SourceWarehouseId = warehouseId == 0 ? null : warehouseId;

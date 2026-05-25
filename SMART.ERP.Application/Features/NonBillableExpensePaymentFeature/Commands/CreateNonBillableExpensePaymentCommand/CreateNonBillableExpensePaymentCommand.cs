@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.NonBillableExpensePayment;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.AccountingPostingService;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -30,7 +31,8 @@ namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Comman
         private readonly IJwtService _jwtService;
         private readonly IMapper _mapper;
         private readonly IOutputCacheStore _outputCacheStored;
-        public CreateNonBillableExpensePaymentCommandHandler(IRepositoryAsync<NonBillableExpensePayment> repositoryAsync, IJwtService jwtService, IRepositoryAsync<NonBillableExpense> nonBillableExpenseRepositoryAsync, IRepositoryAsync<InternalBankAccount> internalBankAccountRepositoryAsync, IRepositoryAsync<TypeOfPaymentMethod> typeOfPaymentMethodRepositoryAsync, IMapper mapper, IOutputCacheStore outputCacheStored)
+        private readonly IAccountingPostingService _accountingPostingService;
+        public CreateNonBillableExpensePaymentCommandHandler(IRepositoryAsync<NonBillableExpensePayment> repositoryAsync, IJwtService jwtService, IRepositoryAsync<NonBillableExpense> nonBillableExpenseRepositoryAsync, IRepositoryAsync<InternalBankAccount> internalBankAccountRepositoryAsync, IRepositoryAsync<TypeOfPaymentMethod> typeOfPaymentMethodRepositoryAsync, IMapper mapper, IOutputCacheStore outputCacheStored, IAccountingPostingService accountingPostingService)
         {
             _repositoryAsync = repositoryAsync;
             _nonBillableExpenseRepositoryAsync = nonBillableExpenseRepositoryAsync;
@@ -39,6 +41,7 @@ namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Comman
             _mapper = mapper;
             _outputCacheStored = outputCacheStored;
             _jwtService = jwtService;
+            _accountingPostingService = accountingPostingService;
         }
 
         public async Task<Response<NonBillableExpensePaymentDto>> Handle(CreateNonBillableExpensePaymentCommand request, CancellationToken cancellationToken)
@@ -92,6 +95,7 @@ namespace SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Comman
             }
 
             var dto = _mapper.Map<NonBillableExpensePaymentDto>(response);
+            await _accountingPostingService.PostNonBillableExpensePaymentAsync(response.Id, cancellationToken);
             await _outputCacheStored.EvictByTagAsync("cache_nonBillableExpense", cancellationToken);
             return new Response<NonBillableExpensePaymentDto>(dto, $"Pago recibido exitosamente");
         }

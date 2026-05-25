@@ -3,6 +3,7 @@ using MediatR;
 using SMART.ERP.Application.DTOs.BillPayment;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.AccountingPostingService;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -27,7 +28,8 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.CreateBillP
         private readonly IRepositoryAsync<TypeOfPaymentMethod> _typeOfPaymentMethodRepositoryAsync;
         private readonly IJwtService _jwtService;
         private readonly IMapper _mapper;
-        public CreateBillPaymentCommandHandler(IRepositoryAsync<BillPayment> repositoryAsync, IJwtService jwtService, IRepositoryAsync<Invoice> invoiceRepositoryAsync, IRepositoryAsync<InternalBankAccount> internalBankAccountRepositoryAsync, IRepositoryAsync<TypeOfPaymentMethod> typeOfPaymentMethodRepositoryAsync, IMapper mapper)
+        private readonly IAccountingPostingService _accountingPostingService;
+        public CreateBillPaymentCommandHandler(IRepositoryAsync<BillPayment> repositoryAsync, IJwtService jwtService, IRepositoryAsync<Invoice> invoiceRepositoryAsync, IRepositoryAsync<InternalBankAccount> internalBankAccountRepositoryAsync, IRepositoryAsync<TypeOfPaymentMethod> typeOfPaymentMethodRepositoryAsync, IMapper mapper, IAccountingPostingService accountingPostingService)
         {
             _repositoryAsync = repositoryAsync;
             _invoiceRepositoryAsync = invoiceRepositoryAsync;
@@ -35,6 +37,7 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.CreateBillP
             _typeOfPaymentMethodRepositoryAsync = typeOfPaymentMethodRepositoryAsync;
             _mapper = mapper;
             _jwtService = jwtService;
+            _accountingPostingService = accountingPostingService;
         }
 
         public async Task<Response<BillPaymentDto>> Handle(CreateBillPaymentCommand request, CancellationToken cancellationToken)
@@ -78,6 +81,8 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.CreateBillP
             await _repositoryAsync.SaveChangesAsync();
             await _invoiceRepositoryAsync.UpdateAsync(checkInvoice);
             await _invoiceRepositoryAsync.SaveChangesAsync();
+
+            await _accountingPostingService.PostBillPaymentAsync(response.Id, cancellationToken);
 
             var dto = _mapper.Map<BillPaymentDto>(response);
             return new Response<BillPaymentDto>(dto, $"Pago recibido exitosamente");

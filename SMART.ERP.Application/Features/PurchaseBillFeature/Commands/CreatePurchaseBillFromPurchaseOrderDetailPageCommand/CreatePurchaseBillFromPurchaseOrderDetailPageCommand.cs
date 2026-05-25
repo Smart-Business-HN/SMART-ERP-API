@@ -3,6 +3,7 @@ using MediatR;
 using SMART.ERP.Application.DTOs.PurchaseBill;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.AccountingPostingService;
 using SMART.ERP.Application.Specifications.PurchaseOrderSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -31,8 +32,9 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
         private readonly IRepositoryAsync<ProductPurchasePriceLog> _productPurchasePriceLogRepositoryAsync;
         private readonly IRepositoryAsync<Product> _productRepositoryAsync;
         private readonly IMapper _mapper;
+        private readonly IAccountingPostingService _accountingPostingService;
 
-        public CreatePurchaseBillFromPurchaseOrderDetailPageCommandHandler(IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductPurchasePriceLog> productPurchasePriceLogRepositoryAsync, IRepositoryAsync<PurchaseBill> repositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IMapper mapper)
+        public CreatePurchaseBillFromPurchaseOrderDetailPageCommandHandler(IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<ProductPurchasePriceLog> productPurchasePriceLogRepositoryAsync, IRepositoryAsync<PurchaseBill> repositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IMapper mapper, IAccountingPostingService accountingPostingService)
         {
             _repositoryAsync = repositoryAsync;
             _purchaseOrderRepositoryAsync = purchaseOrderRepositoryAsync;
@@ -40,6 +42,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             _prefixRepositoryAsync = prefixRepositoryAsync;
             _productPurchasePriceLogRepositoryAsync = productPurchasePriceLogRepositoryAsync;
             _productRepositoryAsync = productRepositoryAsync;
+            _accountingPostingService = accountingPostingService;
         }
         public async Task<Response<PurchaseBillDto>> Handle(CreatePurchaseBillFromPurchaseOrderDetailPageCommand request, CancellationToken cancellationToken)
         {
@@ -70,6 +73,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             newRecord.CreationDate = DateTime.UtcNow;
             var purchaseBillResponse = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
+            await _accountingPostingService.PostPurchaseBillAsync(purchaseBillResponse.Id, cancellationToken);
             await SaveProductPurchasePriceLogs(purchaseOrderExist.ProductsToPurchase!, purchaseBillResponse);
             purchaseOrderExist.PurchaseBillDestinationId = purchaseBillResponse.Id;
             purchaseOrderExist.Prefix = null;

@@ -3,6 +3,7 @@ using MediatR;
 using SMART.ERP.Application.DTOs.PurchaseBillPayment;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.AccountingPostingService;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -27,7 +28,8 @@ namespace SMART.ERP.Application.Features.PurchaseBillPaymentFeature.Commands.Cre
         private readonly IRepositoryAsync<TypeOfPaymentMethod> _typeOfPaymentMethodRepositoryAsync;
         private readonly IJwtService _jwtService;
         private readonly IMapper _mapper;
-        public CreatePurchaseBillPaymentCommandHandler(IRepositoryAsync<PurchaseBillPayment> repositoryAsync, IRepositoryAsync<PurchaseBill> purchaseBillRepositoryAsync, IRepositoryAsync<InternalBankAccount> internalBankAccountRepositoryAsync, IRepositoryAsync<TypeOfPaymentMethod> typeOfPaymentMethodRepositoryAsync, IJwtService jwtService, IMapper mapper)
+        private readonly IAccountingPostingService _accountingPostingService;
+        public CreatePurchaseBillPaymentCommandHandler(IRepositoryAsync<PurchaseBillPayment> repositoryAsync, IRepositoryAsync<PurchaseBill> purchaseBillRepositoryAsync, IRepositoryAsync<InternalBankAccount> internalBankAccountRepositoryAsync, IRepositoryAsync<TypeOfPaymentMethod> typeOfPaymentMethodRepositoryAsync, IJwtService jwtService, IMapper mapper, IAccountingPostingService accountingPostingService)
         {
             _repositoryAsync = repositoryAsync;
             _purchaseBillRepositoryAsync = purchaseBillRepositoryAsync;
@@ -35,6 +37,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillPaymentFeature.Commands.Cre
             _typeOfPaymentMethodRepositoryAsync = typeOfPaymentMethodRepositoryAsync;
             _jwtService = jwtService;
             _mapper = mapper;
+            _accountingPostingService = accountingPostingService;
         }
         public async Task<Response<PurchaseBillPaymentDto>> Handle(CreatePurchaseBillPaymentCommand request, CancellationToken cancellationToken)
         {
@@ -84,6 +87,8 @@ namespace SMART.ERP.Application.Features.PurchaseBillPaymentFeature.Commands.Cre
                 await _internalBankAccountRepositoryAsync.UpdateAsync(checkInternalBankAccount);
                 await _internalBankAccountRepositoryAsync.SaveChangesAsync();
             }
+
+            await _accountingPostingService.PostPurchaseBillPaymentAsync(response.Id, cancellationToken);
 
             var dto = _mapper.Map<PurchaseBillPaymentDto>(response);
             return new Response<PurchaseBillPaymentDto>(dto, $"Pago realizado exitosamente");

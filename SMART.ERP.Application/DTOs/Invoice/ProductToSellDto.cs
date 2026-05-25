@@ -6,7 +6,7 @@ namespace SMART.ERP.Application.DTOs.Invoice
     {
         public int? ProductId { get; set; }
         public string? ProductCode { get; set; }
-        public string ProductDescription { get; set; } = null!;
+        public string? ProductDescription { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal Quantity { get; set; }
         public decimal RecomendedSalePrice { get; set; }

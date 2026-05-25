@@ -83,6 +83,7 @@ namespace SMART.ERP.Application.Features.ProviderFeature.Commands.CreateProvider
             var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
             await _outputCacheStored.EvictByTagAsync("cache_providers", cancellationToken);
+
             var dto = _mapper.Map<ProviderDto>(data);
 
             return new Response<ProviderDto>(dto, message: $"{request.Name} creado exitosamente");

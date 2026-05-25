@@ -3,6 +3,7 @@ using SMART.ERP.Application.DTOs.InventoryDistribution;
 using SMART.ERP.Application.DTOs.ProductPurchasePriceLog;
 using SMART.ERP.Application.DTOs.Provider;
 using SMART.ERP.Application.DTOs.Status;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.DTOs.Product
 {
@@ -12,6 +13,7 @@ namespace SMART.ERP.Application.DTOs.Product
         public string Code { get; set; } = null!;
         public string Slug { get; set; } = null!;
         public string Name { get; set; } = null!;
+        public ProductType ProductType { get; set; }
         public string? Description { get; set; }
         public string? Brochure { get; set; }
         public string? VirtualTour { get; set; }
@@ -40,6 +42,8 @@ namespace SMART.ERP.Application.DTOs.Product
         public List<ProductImageDto>? ProductImages { get; set; }
         public List<ProductPurchasePriceLogDto>? ProductPurchasePriceLogs { get; set; }
         public List<InventoryDistributionDto>? InventoryDistributions { get; set; }
+        public List<ProductPartDto>? Components { get; set; }
+        public decimal? CalculatedStock { get; set; }
         public string? EcommerceDescription { get; set; }
     }
 }

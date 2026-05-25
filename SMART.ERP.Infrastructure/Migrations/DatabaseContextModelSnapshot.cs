@@ -17,10 +17,62 @@ namespace SMART.ERP.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.AccountingMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Key")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LedgerAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.HasIndex("LedgerAccountId");
+
+                    b.ToTable("AccountingMapping", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.AccountingSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AutoPostingEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AccountingSettings", (string)null);
+                });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.AdvisorDepartment", b =>
                 {
@@ -692,6 +744,52 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasIndex("CaiId");
 
                     b.ToTable("Company", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.CostCenter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("CostCenter", (string)null);
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Country", b =>
@@ -1574,6 +1672,121 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.ToTable("FinancingPlan", (string)null);
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.FiscalPeriod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClosedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("ClosedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FiscalYearId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<int>("PeriodNumber")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FiscalYearId", "PeriodNumber")
+                        .IsUnique();
+
+                    b.ToTable("FiscalPeriod", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.FiscalYear", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClosedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("ClosedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ClosingJournalEntryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClosingJournalEntryId");
+
+                    b.HasIndex("Year")
+                        .IsUnique();
+
+                    b.ToTable("FiscalYear", (string)null);
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Gender", b =>
                 {
                     b.Property<int>("Id")
@@ -1718,6 +1931,9 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int?>("LedgerAccountId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1726,6 +1942,8 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BankId");
+
+                    b.HasIndex("LedgerAccountId");
 
                     b.ToTable("InternalBankAccount", (string)null);
                 });
@@ -1759,6 +1977,26 @@ namespace SMART.ERP.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("MaxStock")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("MinStock")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("varchar(50)");
+
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
@@ -1776,6 +2014,240 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasIndex("WarehouseId");
 
                     b.ToTable("InventoryDistribution", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
+                    b.Property<string>("ConfirmedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("ConfirmedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<DateTime>("EntryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EntryType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("PrefixId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProviderId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PurchaseOrderOriginId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SupplierReference")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PrefixId");
+
+                    b.HasIndex("ProviderId");
+
+                    b.HasIndex("PurchaseOrderOriginId");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("InventoryEntry", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryEntryItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("InventoryEntryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal?>("PreviousCostPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("PreviousStock")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Total")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("UnitCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InventoryEntryId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("InventoryEntryItem", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryExit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BeneficiaryName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
+                    b.Property<string>("ConfirmedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("ConfirmedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomReason")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("ExitDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ExitReason")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("PrefixId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PrefixId");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("InventoryExit", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryExitItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("InventoryExitId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal?>("PreviousStock")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("UnitCost")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InventoryExitId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("InventoryExitItem", (string)null);
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryInput", b =>
@@ -1867,6 +2339,99 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.ToTable("InventoryInputType", (string)null);
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryMovement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CancelledMovementId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DocumentCode")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("DocumentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DocumentType")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<bool>("IsCancellation")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("MovementDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MovementType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("QuantityIn")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<decimal>("QuantityOut")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<decimal>("RunningAverageCost")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<decimal>("RunningQuantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<decimal>("RunningTotalValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ThirdPartyName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<decimal?>("TotalCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("UnitCost")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.HasIndex("DocumentType", "DocumentId");
+
+                    b.HasIndex("ProductId", "WarehouseId", "MovementDate");
+
+                    b.ToTable("InventoryMovement", (string)null);
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Invoice", b =>
                 {
                     b.Property<int>("Id")
@@ -1922,11 +2487,20 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Property<int>("InvoicePaymentTypeId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsDeferredRevenue")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ModificatedBy")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MonthsRecognized")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("NextRecognitionDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Observations")
@@ -1946,6 +2520,12 @@ namespace SMART.ERP.Infrastructure.Migrations
 
                     b.Property<int?>("QuotationOriginId")
                         .HasColumnType("int");
+
+                    b.Property<int?>("RecognitionMonths")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("RecognitionStartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("RecurringInvoiceTemplateId")
                         .HasColumnType("int");
@@ -2023,6 +2603,242 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("InvoicePaymentType", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.JournalEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTime>("EntryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EntryNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("FiscalPeriodId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("PostedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("PostedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reference")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("ReversedByJournalEntryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReversesJournalEntryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Source")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SourceDocumentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SourceDocumentType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalCredit")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalDebit")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntryDate");
+
+                    b.HasIndex("EntryNumber")
+                        .IsUnique()
+                        .HasFilter("[EntryNumber] IS NOT NULL");
+
+                    b.HasIndex("FiscalPeriodId");
+
+                    b.HasIndex("ReversedByJournalEntryId");
+
+                    b.HasIndex("ReversesJournalEntryId");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("JournalEntry", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.JournalEntryLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CostCenterId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Credit")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Debit")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("JournalEntryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LedgerAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LineNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProviderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CostCenterId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("JournalEntryId");
+
+                    b.HasIndex("LedgerAccountId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProviderId");
+
+                    b.ToTable("JournalEntryLine", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.LedgerAccount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccountType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int?>("ExpenseAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FinancialStatement")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("IncomeAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPostable")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("NormalBalanceSide")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("RequiresCostCenter")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("RequiresTercero")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("ExpenseAccountId");
+
+                    b.HasIndex("IncomeAccountId");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("LedgerAccount", (string)null);
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.LogEcommerceUser", b =>
@@ -2468,6 +3284,17 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("StatusId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("WithholdingAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("WithholdingBase")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("WithholdingType")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -3144,6 +3971,11 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
+                    b.Property<int>("ProductType")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<int>("ProviderId")
                         .HasColumnType("int");
 
@@ -3455,11 +4287,15 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("FatherProductId");
-
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("FatherProductId", "IsActive");
 
                     b.ToTable("ProductParts", (string)null);
                 });
@@ -4109,6 +4945,17 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal>("WithholdingAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("WithholdingBase")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("WithholdingType")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ExpenseAccountId");
@@ -4189,6 +5036,9 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("InventoryEntryDestinationId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("InventoryInputDestinationId")
                         .HasColumnType("int");
 
@@ -4231,6 +5081,8 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BranchOfficeId");
+
+                    b.HasIndex("InventoryEntryDestinationId");
 
                     b.HasIndex("InventoryInputDestinationId");
 
@@ -5461,6 +6313,108 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.ToTable("Warehouse", (string)null);
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.WarehouseTransfer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DestinationWarehouseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("OriginWarehouseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PrefixId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReceivedBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("ReceivedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SentBy")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("SentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("TransferDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DestinationWarehouseId");
+
+                    b.HasIndex("OriginWarehouseId");
+
+                    b.HasIndex("PrefixId");
+
+                    b.ToTable("WarehouseTransfer", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.WarehouseTransferItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("UnitCost")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<int>("WarehouseTransferId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("WarehouseTransferId");
+
+                    b.ToTable("WarehouseTransferItem", (string)null);
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.WarehouseType", b =>
                 {
                     b.Property<int>("Id")
@@ -5594,6 +6548,16 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasIndex("WishListId");
 
                     b.ToTable("WishListProduct", (string)null);
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.AccountingMapping", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.LedgerAccount", "LedgerAccount")
+                        .WithMany()
+                        .HasForeignKey("LedgerAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("LedgerAccount");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.AdvisorDepartment", b =>
@@ -6023,6 +6987,27 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("Provider");
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.FiscalPeriod", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.FiscalYear", "FiscalYear")
+                        .WithMany("Periods")
+                        .HasForeignKey("FiscalYearId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FiscalYear");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.FiscalYear", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.JournalEntry", "ClosingJournalEntry")
+                        .WithMany()
+                        .HasForeignKey("ClosingJournalEntryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ClosingJournalEntry");
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.HeroSlider", b =>
                 {
                     b.HasOne("SMART.ERP.Domain.Entities.Category", "Category")
@@ -6061,7 +7046,14 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SMART.ERP.Domain.Entities.LedgerAccount", "LedgerAccount")
+                        .WithMany()
+                        .HasForeignKey("LedgerAccountId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Bank");
+
+                    b.Navigation("LedgerAccount");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryDistribution", b =>
@@ -6081,6 +7073,96 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryEntry", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.Prefix", "Prefix")
+                        .WithMany()
+                        .HasForeignKey("PrefixId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Provider", "Provider")
+                        .WithMany()
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.PurchaseOrder", "PurchaseOrderOrigin")
+                        .WithMany()
+                        .HasForeignKey("PurchaseOrderOriginId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Prefix");
+
+                    b.Navigation("Provider");
+
+                    b.Navigation("PurchaseOrderOrigin");
+
+                    b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryEntryItem", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.InventoryEntry", "InventoryEntry")
+                        .WithMany("Items")
+                        .HasForeignKey("InventoryEntryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("InventoryEntry");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryExit", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.Prefix", "Prefix")
+                        .WithMany()
+                        .HasForeignKey("PrefixId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Prefix");
+
+                    b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryExitItem", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.InventoryExit", "InventoryExit")
+                        .WithMany("Items")
+                        .HasForeignKey("InventoryExitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("InventoryExit");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryInput", b =>
@@ -6121,6 +7203,25 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("PurchaseOrderOrigin");
 
                     b.Navigation("Status");
+
+                    b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryMovement", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Product");
 
                     b.Navigation("Warehouse");
                 });
@@ -6194,6 +7295,102 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("Status");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.JournalEntry", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.FiscalPeriod", "FiscalPeriod")
+                        .WithMany()
+                        .HasForeignKey("FiscalPeriodId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.JournalEntry", "ReversedByJournalEntry")
+                        .WithMany()
+                        .HasForeignKey("ReversedByJournalEntryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.JournalEntry", "ReversesJournalEntry")
+                        .WithMany()
+                        .HasForeignKey("ReversesJournalEntryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("FiscalPeriod");
+
+                    b.Navigation("ReversedByJournalEntry");
+
+                    b.Navigation("ReversesJournalEntry");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.JournalEntryLine", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.CostCenter", "CostCenter")
+                        .WithMany()
+                        .HasForeignKey("CostCenterId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.JournalEntry", "JournalEntry")
+                        .WithMany("Lines")
+                        .HasForeignKey("JournalEntryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.LedgerAccount", "LedgerAccount")
+                        .WithMany()
+                        .HasForeignKey("LedgerAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Provider", "Provider")
+                        .WithMany()
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CostCenter");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("JournalEntry");
+
+                    b.Navigation("LedgerAccount");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("Provider");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.LedgerAccount", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.ExpenseAccount", "ExpenseAccount")
+                        .WithMany()
+                        .HasForeignKey("ExpenseAccountId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.IncomeAccount", "IncomeAccount")
+                        .WithMany()
+                        .HasForeignKey("IncomeAccountId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SMART.ERP.Domain.Entities.LedgerAccount", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ExpenseAccount");
+
+                    b.Navigation("IncomeAccount");
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.LogEcommerceUser", b =>
@@ -6688,7 +7885,7 @@ namespace SMART.ERP.Infrastructure.Migrations
             modelBuilder.Entity("SMART.ERP.Domain.Entities.ProductPart", b =>
                 {
                     b.HasOne("SMART.ERP.Domain.Entities.Product", "FatherProduct")
-                        .WithMany()
+                        .WithMany("Components")
                         .HasForeignKey("FatherProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -7021,6 +8218,11 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SMART.ERP.Domain.Entities.InventoryEntry", "InventoryEntryDestination")
+                        .WithMany()
+                        .HasForeignKey("InventoryEntryDestinationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("SMART.ERP.Domain.Entities.InventoryInput", "InventoryInputDestination")
                         .WithMany()
                         .HasForeignKey("InventoryInputDestinationId")
@@ -7056,6 +8258,8 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("BranchOffice");
+
+                    b.Navigation("InventoryEntryDestination");
 
                     b.Navigation("InventoryInputDestination");
 
@@ -7542,6 +8746,52 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("WarehouseType");
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.WarehouseTransfer", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.Warehouse", "DestinationWarehouse")
+                        .WithMany()
+                        .HasForeignKey("DestinationWarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Warehouse", "OriginWarehouse")
+                        .WithMany()
+                        .HasForeignKey("OriginWarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.Prefix", "Prefix")
+                        .WithMany()
+                        .HasForeignKey("PrefixId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DestinationWarehouse");
+
+                    b.Navigation("OriginWarehouse");
+
+                    b.Navigation("Prefix");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.WarehouseTransferItem", b =>
+                {
+                    b.HasOne("SMART.ERP.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMART.ERP.Domain.Entities.WarehouseTransfer", "WarehouseTransfer")
+                        .WithMany("Items")
+                        .HasForeignKey("WarehouseTransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("WarehouseTransfer");
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.WishList", b =>
                 {
                     b.HasOne("SMART.ERP.Domain.Entities.Customer", "Customer")
@@ -7655,6 +8905,21 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("Carts");
                 });
 
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.FiscalYear", b =>
+                {
+                    b.Navigation("Periods");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryEntry", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryExit", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("SMART.ERP.Domain.Entities.InventoryInput", b =>
                 {
                     b.Navigation("ProductEntries");
@@ -7665,6 +8930,16 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("BillPayments");
 
                     b.Navigation("ProductsSold");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.JournalEntry", b =>
+                {
+                    b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.LedgerAccount", b =>
+                {
+                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.MajorExpenseAccount", b =>
@@ -7710,6 +8985,8 @@ namespace SMART.ERP.Infrastructure.Migrations
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Product", b =>
                 {
+                    b.Navigation("Components");
+
                     b.Navigation("InventoryDistributions");
 
                     b.Navigation("ProductDataSheets");
@@ -7806,6 +9083,11 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Navigation("ProviderWarehouses");
 
                     b.Navigation("ShippingCosts");
+                });
+
+            modelBuilder.Entity("SMART.ERP.Domain.Entities.WarehouseTransfer", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.WishList", b =>

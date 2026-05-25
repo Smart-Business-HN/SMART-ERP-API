@@ -12,7 +12,10 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
                 var _cutOffDate = DateTime.Now.AddMonths(-12);
                 Query.Include(x => x.Brand).Include(x => x.Status).Include(x => x.SubCategory)
                     .Include(x => x.Provider).Include(x => x.ProductDataSheets!).ThenInclude(x => x.DataSheet).Include(x => x.ProductFeatures)
-                    .Include(x => x.ProductImages).Include(x => x.UnitOfMeasurement).Include(x => x.ProductPurchasePriceLogs!.Where(a => a.PurchaseDate >= _cutOffDate)).Where(x => x.Id == id).AsNoTracking();
+                    .Include(x => x.ProductImages).Include(x => x.UnitOfMeasurement)
+                    .Include(x => x.ProductPurchasePriceLogs!.Where(a => a.PurchaseDate >= _cutOffDate))
+                    .Include(x => x.Components!.Where(c => c.IsActive)).ThenInclude(c => c.Product)
+                    .Where(x => x.Id == id).AsNoTracking();
             }
             else if (id == null && slug != null)
             {

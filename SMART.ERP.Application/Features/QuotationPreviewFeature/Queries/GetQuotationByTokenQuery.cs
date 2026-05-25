@@ -6,6 +6,7 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.QuotationSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.Features.QuotationPreviewFeature.Queries
 {
@@ -63,21 +64,42 @@ namespace SMART.ERP.Application.Features.QuotationPreviewFeature.Queries
             }
 
             // Map products
-            dto.ProductsOffered = quotation.ProductsOffered?.Select(p => new ProductOfferedPreviewDto
+            dto.ProductsOffered = quotation.ProductsOffered?.Select(p =>
             {
-                Id = p.Id,
-                ProductCode = p.ProductCode,
-                ProductDescription = p.ProductDescription,
-                Quantity = p.Quantity,
-                UnitPrice = p.UnitPrice,
-                TaxId = p.TaxId,
-                TaxRate = p.Tax?.Rate ?? 0,
-                Taxes = p.Taxes,
-                TotalLine = p.TotalLine,
-                Observations = quotation.ItemObservations?
-                    .Where(o => o.ProductOfferedId == p.Id)
-                    .Select(o => _mapper.Map<QuotationItemObservationDto>(o))
-                    .ToList()
+                var isCombo = p.Product?.ProductType == ProductType.Combo;
+                List<ComboComponentPreviewDto>? components = null;
+                if (isCombo && p.Product?.Components != null)
+                {
+                    components = p.Product.Components
+                        .Where(c => c.IsActive)
+                        .Select(c => new ComboComponentPreviewDto
+                        {
+                            Name = c.Product?.Name ?? c.ProductName,
+                            Quantity = c.Quantity,
+                            UnitOfMeasurement = c.Product?.UnitOfMeasurement?.Abreviation,
+                            DisplayOrder = c.Id
+                        })
+                        .OrderBy(c => c.DisplayOrder)
+                        .ToList();
+                }
+                return new ProductOfferedPreviewDto
+                {
+                    Id = p.Id,
+                    ProductCode = p.ProductCode,
+                    ProductDescription = p.ProductDescription,
+                    Quantity = p.Quantity,
+                    UnitPrice = p.UnitPrice,
+                    TaxId = p.TaxId,
+                    TaxRate = p.Tax?.Rate ?? 0,
+                    Taxes = p.Taxes,
+                    TotalLine = p.TotalLine,
+                    Observations = quotation.ItemObservations?
+                        .Where(o => o.ProductOfferedId == p.Id)
+                        .Select(o => _mapper.Map<QuotationItemObservationDto>(o))
+                        .ToList(),
+                    IsCombo = isCombo,
+                    Components = components
+                };
             }).ToList();
 
             // Map comments

@@ -75,6 +75,10 @@ namespace SMART.ERP.Application.Features.WarehouseFeature.Commands.UpdateWarehou
             }
 
             warehouse.BranchOfficeId = request.BranchOfficeId;
+            if (request.IsGeneralWarehouse.HasValue)
+            {
+                warehouse.IsGeneralWarehouse = request.IsGeneralWarehouse.Value;
+            }
             warehouse.ModificatedBy = _jwtService.GetSubjectToken();
             warehouse.ModificationDate = DateTime.Now;
             await _repositoryAsync.UpdateAsync(warehouse);

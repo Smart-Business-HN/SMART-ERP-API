@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SMART.ERP.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,6 +8,7 @@ namespace SMART.ERP.Domain.Entities
     public class Product
     {
         public int Id { get; init; }
+        public ProductType ProductType { get; set; } = ProductType.Tangible;
         [Column(TypeName = "varchar(20)")]
         public string Code { get; set; } = null!;
         [MaxLength(1500)]
@@ -53,6 +55,7 @@ namespace SMART.ERP.Domain.Entities
         public List<ProductImage>? ProductImages { get; set; }
         public List<InventoryDistribution>? InventoryDistributions { get; set; }
         public List<ProductPurchasePriceLog>? ProductPurchasePriceLogs { get; set; }
+        public List<ProductPart>? Components { get; set; }
         public string? EcommerceDescription { get; set; }
     }
 }

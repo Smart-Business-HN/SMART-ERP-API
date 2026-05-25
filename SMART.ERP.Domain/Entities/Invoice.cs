@@ -64,5 +64,16 @@ namespace SMART.ERP.Domain.Entities
         public virtual RecurringInvoiceTemplate? RecurringInvoiceTemplate { get; set; }
         public List<ProductSold>? ProductsSold { get; set; }
         public List<BillPayment>? BillPayments { get; set; }
+
+        // Ingresos diferidos SaaS (suscripción prepagada): el cobro va a 2108001 y se devenga 1/N mensual.
+        public bool IsDeferredRevenue { get; set; }
+        /// <summary>Cantidad de meses sobre los que se devenga el ingreso (típico 12 para suscripción anual).</summary>
+        public int? RecognitionMonths { get; set; }
+        /// <summary>Fecha base del devengo (se preserva el día para correr mensualmente en la misma fecha).</summary>
+        public DateTime? RecognitionStartDate { get; set; }
+        /// <summary>Meses ya devengados (asientos de reconocimiento ya generados).</summary>
+        public int MonthsRecognized { get; set; }
+        /// <summary>Próxima fecha en la que toca devengar; null cuando ya se completó RecognitionMonths.</summary>
+        public DateTime? NextRecognitionDate { get; set; }
     }
 }

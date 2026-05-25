@@ -298,10 +298,21 @@ namespace SMART.ERP.Application.Features.QuotationFeature.Commands.UpdateQuotati
                 }
             }
             //ADD NEW PRODUCTS TO THE QUOTATION
+            var missingDescIds = productsToProcess
+                .Where(p => p.ProductId.HasValue && string.IsNullOrWhiteSpace(p.ProductDescription))
+                .Select(p => p.ProductId!.Value).Distinct().ToList();
+            var nameById = missingDescIds.Count == 0
+                ? new Dictionary<int, string>()
+                : (await _productRepositoryAsync.ListAsync(new SMART.ERP.Application.Specifications.ProductSpecification.ProductsByIdsSpecification(missingDescIds)))
+                    .ToDictionary(p => p.Id, p => !string.IsNullOrWhiteSpace(p.Description) ? p.Description : p.Name);
+
             foreach (var newProductToQuote in productsToProcess)
             {
                 var newProductOffered = _mapper.Map<ProductOffered>(newProductToQuote);
                 newProductOffered.QuotationId = quotationId;
+                if (string.IsNullOrWhiteSpace(newProductOffered.ProductDescription) && newProductToQuote.ProductId.HasValue
+                    && nameById.TryGetValue(newProductToQuote.ProductId.Value, out var pname))
+                    newProductOffered.ProductDescription = pname;
                 newProductOffered.UnitPrice = newProductToQuote.RecomendedSalePrice;
                 newProductOffered.Taxes = TaxCalculator(newProductToQuote, taxesRates);
                 newProductOffered.TotalLine = newProductToQuote.Quantity * newProductToQuote.RecomendedSalePrice;

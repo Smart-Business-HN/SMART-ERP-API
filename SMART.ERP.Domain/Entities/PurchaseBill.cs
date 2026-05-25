@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Domain.Entities
 {
@@ -44,5 +45,15 @@ namespace SMART.ERP.Domain.Entities
         public virtual List<PurchaseBillPayment>? PurchaseBillPayments { get; set; }
         public int ExpenseAccountId { get; set; }
         public virtual ExpenseAccount? ExpenseAccount { get; set; }
+
+        // Retenciones aplicadas por el comprador al pagar al proveedor (NIIF / leyes fiscales Honduras).
+        // Outstanding = Total - WithholdingAmount.
+        public WithholdingType WithholdingType { get; set; } = WithholdingType.None;
+        /// <summary>Base sobre la que se aplica la retención (normalmente el neto sin ISV).</summary>
+        [Precision(18, 2)]
+        public decimal WithholdingBase { get; set; }
+        /// <summary>Monto retenido al proveedor (acreedor del fisco). Disminuye lo neto a pagar.</summary>
+        [Precision(18, 2)]
+        public decimal WithholdingAmount { get; set; }
     }
 }

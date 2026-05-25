@@ -12,5 +12,7 @@ namespace SMART.ERP.Application.DTOs.Quotation
         public decimal Taxes { get; set; }
         public decimal TotalLine { get; set; }
         public List<QuotationItemObservationDto>? Observations { get; set; }
+        public bool IsCombo { get; set; }
+        public List<ComboComponentPreviewDto>? Components { get; set; }
     }
 }

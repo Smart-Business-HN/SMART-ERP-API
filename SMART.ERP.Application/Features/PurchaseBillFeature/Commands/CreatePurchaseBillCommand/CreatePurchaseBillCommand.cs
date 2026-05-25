@@ -3,11 +3,13 @@ using MediatR;
 using SMART.ERP.Application.DTOs.PurchaseBill;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.AccountingPostingService;
 using SMART.ERP.Application.Specifications.ProviderSpecification;
 using SMART.ERP.Application.Specifications.PurchaseBillSpecification;
 using SMART.ERP.Application.Specifications.PurchaseOrderSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurchaseBillCommand
 {
@@ -27,6 +29,8 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
         public int PrefixId { get; set; }
         public int ExpenseAccountId { get; set; }
         public int? ProjectId { get; set; }
+        /// <summary>Tipo de retención que el comprador aplica al proveedor (None = no aplica).</summary>
+        public WithholdingType WithholdingType { get; set; } = WithholdingType.None;
     }
     public class CreatePurchaseBillCommandHandler : IRequestHandler<CreatePurchaseBillCommand,Response<PurchaseBillDto>>
     {
@@ -36,7 +40,8 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
         private readonly IRepositoryAsync<Prefix> _prefixRepositoryAsync;
         private readonly IRepositoryAsync<ExpenseAccount> _expenseAccountRepositoryAsync;
         private readonly IMapper _mapper;
-        public CreatePurchaseBillCommandHandler(IRepositoryAsync<PurchaseBill> repositoryAsync, IRepositoryAsync<ExpenseAccount> expenseAccountRepositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IRepositoryAsync<Provider> providerRepositoryAsync, IMapper mapper)
+        private readonly IAccountingPostingService _accountingPostingService;
+        public CreatePurchaseBillCommandHandler(IRepositoryAsync<PurchaseBill> repositoryAsync, IRepositoryAsync<ExpenseAccount> expenseAccountRepositoryAsync, IRepositoryAsync<Prefix> prefixRepositoryAsync, IRepositoryAsync<PurchaseOrder> purchaseOrderRepositoryAsync, IRepositoryAsync<Provider> providerRepositoryAsync, IMapper mapper, IAccountingPostingService accountingPostingService)
         {
             _repositoryAsync = repositoryAsync;
             _purchaseOrderRepositoryAsync = purchaseOrderRepositoryAsync;
@@ -44,6 +49,7 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             _mapper = mapper;
             _prefixRepositoryAsync = prefixRepositoryAsync;
             _expenseAccountRepositoryAsync = expenseAccountRepositoryAsync;
+            _accountingPostingService = accountingPostingService;
         }
         public async Task<Response<PurchaseBillDto>> Handle(CreatePurchaseBillCommand request, CancellationToken cancellationToken)
         {
@@ -83,14 +89,45 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             newRecord.ExpenseAccountId = request.ExpenseAccountId;
             newRecord.StatusId = 27;
             newRecord.Total = (decimal)(request.Exempt + request.Exonerated + request.Taxes15Percent + request.Taxes18Percent + request.TaxedAt15Percent + request.TaxedAt18Percent)!;
-            newRecord.Outstanding = newRecord.Total;
+
+            // Retenciones: base = neto sin ISV, monto = base × tasa. El neto a pagar al proveedor disminuye.
+            newRecord.WithholdingType = request.WithholdingType;
+            var (whBase, whAmount) = CalculateWithholding(request.WithholdingType, newRecord);
+            newRecord.WithholdingBase = whBase;
+            newRecord.WithholdingAmount = whAmount;
+            newRecord.Outstanding = newRecord.Total - whAmount;
             newRecord.CreationDate = DateTime.Now;
             var purchaseBillResponse = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
+            await _accountingPostingService.PostPurchaseBillAsync(purchaseBillResponse.Id, cancellationToken);
             purchaseBillResponse.Provider = providerExist;
             var dto = _mapper.Map<PurchaseBillDto>(purchaseBillResponse);
             return new Response<PurchaseBillDto>(dto, $"Factura de compra creada exitosamente.");
         }
+        /// <summary>
+        /// Calcula (base, monto) de retención según tipo. Base = neto sin ISV (TaxedAt15 + TaxedAt18 + Exempt + Exonerated).
+        /// Las tasas: ISR 12.5% honorarios, ISR 1% bienes/servicios, ISV 15% Art.13 sobre el ISV pagado.
+        /// </summary>
+        public static (decimal Base, decimal Amount) CalculateWithholding(WithholdingType type, PurchaseBill bill)
+        {
+            if (type == WithholdingType.None) return (0m, 0m);
+            var netBase = bill.TaxedAt15Percent + bill.TaxedAt18Percent + bill.Exempt + bill.Exonerated;
+            decimal rate = type switch
+            {
+                WithholdingType.ISR12_5 => 0.125m,
+                WithholdingType.ISR1 => 0.01m,
+                WithholdingType.ISV15 => 0m, // se calcula sobre el ISV recibido, no sobre el neto
+                _ => 0m
+            };
+            if (type == WithholdingType.ISV15)
+            {
+                // Honduras Art. 13: el comprador retiene el ISV 15% que aparece como crédito fiscal en la factura.
+                var amount = Math.Round(bill.Taxes15Percent, 2, MidpointRounding.AwayFromZero);
+                return (bill.Taxes15Percent, amount);
+            }
+            return (netBase, Math.Round(netBase * rate, 2, MidpointRounding.AwayFromZero));
+        }
+
         public static string CreatePurchaseBillCode(Prefix prefix, PurchaseBill lastPurchaseBill)
         {
             var numberOfCharacters = prefix.Format.ToCharArray().Length;

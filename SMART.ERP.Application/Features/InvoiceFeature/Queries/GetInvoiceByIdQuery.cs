@@ -23,7 +23,7 @@ namespace SMART.ERP.Application.Features.InvoiceFeature.Queries
         }
         public async Task<Response<InvoiceDto>> Handle(GetInvoiceByIdQuery request, CancellationToken cancellationToken)
         {
-            var getQuotation = await _repositoryAsync.FirstOrDefaultAsync(new FilterInvoiceByIdSpecification(request.Id));
+            var getQuotation = await _repositoryAsync.FirstOrDefaultAsync(new GetInvoiceDetailWithComboComponentsSpecification(request.Id));
             if (getQuotation == null)
             {
                 throw new KeyNotFoundException($"Registro no encontrado con el id {request.Id}");

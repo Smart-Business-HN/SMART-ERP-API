@@ -18,5 +18,8 @@ namespace SMART.ERP.Domain.Entities
         public InternalBankAccountType AccountType { get; set; } = InternalBankAccountType.Checking;
         [MaxLength(4)]
         public string? CardLastFour { get; set; }
+        // Mapeo contable 1:1 hacia la cuenta del catálogo (para posteo automático).
+        public int? LedgerAccountId { get; set; }
+        public virtual LedgerAccount? LedgerAccount { get; set; }
     }
 }

@@ -123,6 +123,17 @@ builder.Services.AddTransient(typeof(IRepositoryAsync<>), typeof(CustomRepositor
 builder.Services.AddTransient(typeof(IReadRepositoryAsync<>), typeof(CustomRepositoryAsync<>));
 builder.Services.AddTransient<IQuotationPdfService, SMART.ERP.Infrastructure.Services.QuotationPdfService.QuotationPdfService>();
 
+// Inventory module (Ventix-style)
+builder.Services.AddScoped<SMART.ERP.Application.Repository.IUnitOfWork, SMART.ERP.Infrastructure.Repository.UnitOfWork>();
+builder.Services.AddScoped<SMART.ERP.Application.Services.InventoryMovementService.IInventoryMovementService, SMART.ERP.Infrastructure.Services.InventoryMovementService.InventoryMovementService>();
+builder.Services.AddScoped<SMART.ERP.Application.Services.ProductCompositionService.IProductCompositionService, SMART.ERP.Infrastructure.Services.ProductCompositionService.ProductCompositionService>();
+builder.Services.AddScoped<SMART.ERP.Application.Services.ProductCacheInvalidator.IProductCacheInvalidator, SMART.ERP.Application.Services.ProductCacheInvalidator.ProductCacheInvalidator>();
+
+// Módulo contable: contabilización automática (Fase 2).
+builder.Services.AddScoped<SMART.ERP.Application.Services.AccountingPostingService.IAccountingPostingService, SMART.ERP.Infrastructure.Services.AccountingPostingService.AccountingPostingService>();
+builder.Services.AddTransient<SMART.ERP.Application.Services.KardexReportService.IKardexPdfService, SMART.ERP.Infrastructure.Services.KardexReportService.KardexPdfService>();
+builder.Services.AddTransient<SMART.ERP.Application.Services.KardexReportService.IKardexExcelService, SMART.ERP.Infrastructure.Services.KardexReportService.KardexExcelService>();
+
 builder.WebHost.UseSentry(opts =>
 {
     opts.SetBeforeSend((@event, hint) =>
@@ -167,6 +178,10 @@ builder.Services.AddOutputCache(opt =>
         opt.AddPolicy("cache_dailyClose", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_dailyClose").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
         opt.AddPolicy("cache_monthlyPurchaseDeclaration", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_monthlyPurchaseDeclaration").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
         opt.AddPolicy("cache_monthlySaleDeclaration", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_monthlySaleDeclaration").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        //MÓDULO CONTABLE
+        opt.AddPolicy("cache_ledger_accounts", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_ledger_accounts").SetVaryByQuery(["PageNumber", "PageSize", "Parameter", "Order", "Column", "All"]));
+        opt.AddPolicy("cache_fiscal_periods", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_fiscal_periods"));
+        opt.AddPolicy("cache_accounting_reports", builder => builder.Expire(TimeSpan.FromMinutes(30)).Tag("cache_accounting_reports").SetVaryByQuery(["*"]));
         //ECOMMERCE CACHE
         opt.AddPolicy("cache_getAllNavCategories", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_getAllNavCategories"));
         opt.AddPolicy("cache_productsEcommerce", builder => builder.Expire(TimeSpan.FromDays(10)).Tag("cache_productsEcommerce"));

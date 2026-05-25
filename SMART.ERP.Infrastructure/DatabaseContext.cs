@@ -119,6 +119,21 @@ namespace SMART.ERP.Infrastructure
         public DbSet<QuotationSnapshot> QuotationSnapshots { get; set; } = null!;
         public DbSet<QuotationComment> QuotationComments { get; set; } = null!;
         public DbSet<QuotationItemObservation> QuotationItemObservations { get; set; } = null!;
+        public DbSet<InventoryEntry> InventoryEntries { get; set; } = null!;
+        public DbSet<InventoryEntryItem> InventoryEntryItems { get; set; } = null!;
+        public DbSet<InventoryMovement> InventoryMovements { get; set; } = null!;
+        public DbSet<InventoryExit> InventoryExits { get; set; } = null!;
+        public DbSet<InventoryExitItem> InventoryExitItems { get; set; } = null!;
+        public DbSet<WarehouseTransfer> WarehouseTransfers { get; set; } = null!;
+        public DbSet<WarehouseTransferItem> WarehouseTransferItems { get; set; } = null!;
+        public DbSet<LedgerAccount> LedgerAccounts { get; set; } = null!;
+        public DbSet<FiscalYear> FiscalYears { get; set; } = null!;
+        public DbSet<FiscalPeriod> FiscalPeriods { get; set; } = null!;
+        public DbSet<JournalEntry> JournalEntries { get; set; } = null!;
+        public DbSet<JournalEntryLine> JournalEntryLines { get; set; } = null!;
+        public DbSet<AccountingSettings> AccountingSettings { get; set; } = null!;
+        public DbSet<AccountingMapping> AccountingMappings { get; set; } = null!;
+        public DbSet<CostCenter> CostCenters { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -441,6 +456,11 @@ namespace SMART.ERP.Infrastructure
             //Product
             modelBuilder.Entity<Product>().ToTable("Product");
             modelBuilder.Entity<Product>(o => o.HasKey(x => x.Id));
+
+            modelBuilder.Entity<Product>()
+                .Property(p => p.ProductType)
+                .HasConversion<int>()
+                .HasDefaultValue(ProductType.Tangible);
 
             modelBuilder.Entity<Product>()
                 .HasMany(p => p.ProductFeatures)
@@ -1195,6 +1215,124 @@ namespace SMART.ERP.Infrastructure
               .WithMany()
               .HasForeignKey(x => x.ProductId)
               .OnDelete(DeleteBehavior.Restrict);
+
+            //InventoryEntry (Ventix-style)
+            modelBuilder.Entity<InventoryEntry>().ToTable("InventoryEntry");
+            modelBuilder.Entity<InventoryEntry>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<InventoryEntry>()
+                .HasOne(x => x.Warehouse)
+                .WithMany()
+                .HasForeignKey(x => x.WarehouseId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<InventoryEntry>()
+                .HasOne(x => x.Prefix)
+                .WithMany()
+                .HasForeignKey(x => x.PrefixId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<InventoryEntry>()
+                .HasOne(x => x.Provider)
+                .WithMany()
+                .HasForeignKey(x => x.ProviderId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<InventoryEntry>()
+                .HasOne(x => x.PurchaseOrderOrigin)
+                .WithMany()
+                .HasForeignKey(x => x.PurchaseOrderOriginId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<InventoryEntry>()
+                .HasMany(x => x.Items)
+                .WithOne(x => x.InventoryEntry)
+                .HasForeignKey(x => x.InventoryEntryId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //InventoryEntryItem
+            modelBuilder.Entity<InventoryEntryItem>().ToTable("InventoryEntryItem");
+            modelBuilder.Entity<InventoryEntryItem>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<InventoryEntryItem>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //InventoryMovement (Kardex)
+            modelBuilder.Entity<InventoryMovement>().ToTable("InventoryMovement");
+            modelBuilder.Entity<InventoryMovement>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<InventoryMovement>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<InventoryMovement>()
+                .HasOne(x => x.Warehouse)
+                .WithMany()
+                .HasForeignKey(x => x.WarehouseId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<InventoryMovement>()
+                .HasIndex(x => new { x.ProductId, x.WarehouseId, x.MovementDate });
+            modelBuilder.Entity<InventoryMovement>()
+                .HasIndex(x => new { x.DocumentType, x.DocumentId });
+
+            //InventoryExit
+            modelBuilder.Entity<InventoryExit>().ToTable("InventoryExit");
+            modelBuilder.Entity<InventoryExit>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<InventoryExit>()
+                .HasOne(x => x.Warehouse)
+                .WithMany()
+                .HasForeignKey(x => x.WarehouseId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<InventoryExit>()
+                .HasOne(x => x.Prefix)
+                .WithMany()
+                .HasForeignKey(x => x.PrefixId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<InventoryExit>()
+                .HasMany(x => x.Items)
+                .WithOne(x => x.InventoryExit)
+                .HasForeignKey(x => x.InventoryExitId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //InventoryExitItem
+            modelBuilder.Entity<InventoryExitItem>().ToTable("InventoryExitItem");
+            modelBuilder.Entity<InventoryExitItem>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<InventoryExitItem>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //WarehouseTransfer
+            modelBuilder.Entity<WarehouseTransfer>().ToTable("WarehouseTransfer");
+            modelBuilder.Entity<WarehouseTransfer>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<WarehouseTransfer>()
+                .HasOne(x => x.OriginWarehouse)
+                .WithMany()
+                .HasForeignKey(x => x.OriginWarehouseId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<WarehouseTransfer>()
+                .HasOne(x => x.DestinationWarehouse)
+                .WithMany()
+                .HasForeignKey(x => x.DestinationWarehouseId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<WarehouseTransfer>()
+                .HasOne(x => x.Prefix)
+                .WithMany()
+                .HasForeignKey(x => x.PrefixId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<WarehouseTransfer>()
+                .HasMany(x => x.Items)
+                .WithOne(x => x.WarehouseTransfer)
+                .HasForeignKey(x => x.WarehouseTransferId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //WarehouseTransferItem
+            modelBuilder.Entity<WarehouseTransferItem>().ToTable("WarehouseTransferItem");
+            modelBuilder.Entity<WarehouseTransferItem>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<WarehouseTransferItem>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             //Invoice
             modelBuilder.Entity<Invoice>().ToTable("Invoice");
             modelBuilder.Entity<Invoice>(o => o.HasKey(x => x.Id));
@@ -1317,6 +1455,12 @@ namespace SMART.ERP.Infrastructure
                 .HasOne(x => x.InventoryInputDestination)
                 .WithMany()
                 .HasForeignKey(x => x.InventoryInputDestinationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PurchaseOrder>()
+                .HasOne(x => x.InventoryEntryDestination)
+                .WithMany()
+                .HasForeignKey(x => x.InventoryEntryDestinationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<PurchaseOrder>()
@@ -1586,9 +1730,11 @@ namespace SMART.ERP.Infrastructure
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ProductPart>()
                 .HasOne(x => x.FatherProduct)
-                .WithMany()
+                .WithMany(p => p.Components)
                 .HasForeignKey(x => x.FatherProductId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ProductPart>()
+                .HasIndex(x => new { x.FatherProductId, x.IsActive });
 
             //ProjectAttachmentCategory
             modelBuilder.Entity<ProjectAttachmentCategory>().ToTable("ProjectAttachmentCategory");
@@ -1758,6 +1904,145 @@ namespace SMART.ERP.Infrastructure
                 .HasOne(x => x.ProductOffered)
                 .WithMany()
                 .HasForeignKey(x => x.ProductOfferedId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //=================== MÓDULO CONTABLE (Partida Doble) ===================
+
+            //LedgerAccount (Catálogo de Cuentas)
+            modelBuilder.Entity<LedgerAccount>().ToTable("LedgerAccount");
+            modelBuilder.Entity<LedgerAccount>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<LedgerAccount>()
+                .HasIndex(x => x.Code)
+                .IsUnique();
+            modelBuilder.Entity<LedgerAccount>()
+                .HasOne(x => x.Parent)
+                .WithMany(x => x.Children)
+                .HasForeignKey(x => x.ParentId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<LedgerAccount>()
+                .HasOne(x => x.ExpenseAccount)
+                .WithMany()
+                .HasForeignKey(x => x.ExpenseAccountId)
+                .OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<LedgerAccount>()
+                .HasOne(x => x.IncomeAccount)
+                .WithMany()
+                .HasForeignKey(x => x.IncomeAccountId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            //FiscalYear
+            modelBuilder.Entity<FiscalYear>().ToTable("FiscalYear");
+            modelBuilder.Entity<FiscalYear>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<FiscalYear>()
+                .HasIndex(x => x.Year)
+                .IsUnique();
+            modelBuilder.Entity<FiscalYear>()
+                .HasMany(x => x.Periods)
+                .WithOne(x => x.FiscalYear)
+                .HasForeignKey(x => x.FiscalYearId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<FiscalYear>()
+                .HasOne(x => x.ClosingJournalEntry)
+                .WithMany()
+                .HasForeignKey(x => x.ClosingJournalEntryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //FiscalPeriod
+            modelBuilder.Entity<FiscalPeriod>().ToTable("FiscalPeriod");
+            modelBuilder.Entity<FiscalPeriod>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<FiscalPeriod>()
+                .HasIndex(x => new { x.FiscalYearId, x.PeriodNumber })
+                .IsUnique();
+
+            //JournalEntry (Asiento)
+            modelBuilder.Entity<JournalEntry>().ToTable("JournalEntry");
+            modelBuilder.Entity<JournalEntry>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<JournalEntry>()
+                .HasIndex(x => x.EntryNumber)
+                .IsUnique()
+                .HasFilter("[EntryNumber] IS NOT NULL");
+            modelBuilder.Entity<JournalEntry>()
+                .HasIndex(x => x.EntryDate);
+            modelBuilder.Entity<JournalEntry>()
+                .HasIndex(x => x.Status);
+            modelBuilder.Entity<JournalEntry>()
+                .HasOne(x => x.FiscalPeriod)
+                .WithMany()
+                .HasForeignKey(x => x.FiscalPeriodId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<JournalEntry>()
+                .HasOne(x => x.ReversesJournalEntry)
+                .WithMany()
+                .HasForeignKey(x => x.ReversesJournalEntryId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<JournalEntry>()
+                .HasOne(x => x.ReversedByJournalEntry)
+                .WithMany()
+                .HasForeignKey(x => x.ReversedByJournalEntryId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<JournalEntry>()
+                .HasMany(x => x.Lines)
+                .WithOne(x => x.JournalEntry)
+                .HasForeignKey(x => x.JournalEntryId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //JournalEntryLine (Partida)
+            modelBuilder.Entity<JournalEntryLine>().ToTable("JournalEntryLine");
+            modelBuilder.Entity<JournalEntryLine>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<JournalEntryLine>()
+                .HasIndex(x => x.LedgerAccountId);
+            modelBuilder.Entity<JournalEntryLine>()
+                .HasOne(x => x.LedgerAccount)
+                .WithMany()
+                .HasForeignKey(x => x.LedgerAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<JournalEntryLine>()
+                .HasOne(x => x.Project)
+                .WithMany()
+                .HasForeignKey(x => x.ProjectId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //AccountingSettings (fila única)
+            modelBuilder.Entity<AccountingSettings>().ToTable("AccountingSettings");
+            modelBuilder.Entity<AccountingSettings>(o => o.HasKey(x => x.Id));
+
+            //AccountingMapping
+            modelBuilder.Entity<AccountingMapping>().ToTable("AccountingMapping");
+            modelBuilder.Entity<AccountingMapping>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<AccountingMapping>().HasIndex(x => x.Key).IsUnique();
+            modelBuilder.Entity<AccountingMapping>()
+                .HasOne(x => x.LedgerAccount)
+                .WithMany()
+                .HasForeignKey(x => x.LedgerAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //InternalBankAccount -> LedgerAccount (mapeo contable)
+            modelBuilder.Entity<InternalBankAccount>()
+                .HasOne(x => x.LedgerAccount)
+                .WithMany()
+                .HasForeignKey(x => x.LedgerAccountId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            //CostCenter (dimensión: línea de negocio / centro de costo)
+            modelBuilder.Entity<CostCenter>().ToTable("CostCenter");
+            modelBuilder.Entity<CostCenter>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<CostCenter>().HasIndex(x => x.Code).IsUnique();
+
+            //JournalEntryLine — dimensiones añadidas: CostCenter + Tercero (Customer/Provider)
+            modelBuilder.Entity<JournalEntryLine>()
+                .HasOne(x => x.CostCenter)
+                .WithMany()
+                .HasForeignKey(x => x.CostCenterId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<JournalEntryLine>()
+                .HasOne(x => x.Customer)
+                .WithMany()
+                .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<JournalEntryLine>()
+                .HasOne(x => x.Provider)
+                .WithMany()
+                .HasForeignKey(x => x.ProviderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
