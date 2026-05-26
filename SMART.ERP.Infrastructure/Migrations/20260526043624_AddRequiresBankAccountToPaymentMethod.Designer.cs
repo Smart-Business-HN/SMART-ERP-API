@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SMART.ERP.Infrastructure;
 
@@ -11,9 +12,11 @@ using SMART.ERP.Infrastructure;
 namespace SMART.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260526043624_AddRequiresBankAccountToPaymentMethod")]
+    partial class AddRequiresBankAccountToPaymentMethod
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -818,67 +821,6 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Country", (string)null);
-                });
-
-            modelBuilder.Entity("SMART.ERP.Domain.Entities.CreditCardPayment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CreditCardInternalBankAccountId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ModificationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Reference")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("SourceInternalBankAccountId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.HasIndex("CreditCardInternalBankAccountId");
-
-                    b.HasIndex("Date");
-
-                    b.HasIndex("SourceInternalBankAccountId");
-
-                    b.ToTable("CreditCardPayment", (string)null);
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Currency", b =>
@@ -6819,25 +6761,6 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .HasForeignKey("CaiId");
 
                     b.Navigation("Cai");
-                });
-
-            modelBuilder.Entity("SMART.ERP.Domain.Entities.CreditCardPayment", b =>
-                {
-                    b.HasOne("SMART.ERP.Domain.Entities.InternalBankAccount", "CreditCardInternalBankAccount")
-                        .WithMany()
-                        .HasForeignKey("CreditCardInternalBankAccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SMART.ERP.Domain.Entities.InternalBankAccount", "SourceInternalBankAccount")
-                        .WithMany()
-                        .HasForeignKey("SourceInternalBankAccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CreditCardInternalBankAccount");
-
-                    b.Navigation("SourceInternalBankAccount");
                 });
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Customer", b =>

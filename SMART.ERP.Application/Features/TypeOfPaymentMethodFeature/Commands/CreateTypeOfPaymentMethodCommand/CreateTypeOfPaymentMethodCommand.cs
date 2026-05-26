@@ -13,6 +13,7 @@ namespace SMART.ERP.Application.Features.TypeOfPaymentMethodFeature.Commands.Cre
     {
         public string Name { get; set; } = null!;
         public bool IsActive { get; set; }
+        public bool RequiresBankAccount { get; set; }
     }
 
 public class CreateTypeOfPaymentMethodCommandHandler : IRequestHandler<CreateTypeOfPaymentMethodCommand, Response<TypeOfPaymentMethodDto>>
@@ -35,7 +36,12 @@ public class CreateTypeOfPaymentMethodCommandHandler : IRequestHandler<CreateTyp
             throw new ApiException($"Ya existe un banco con el nombre {request.Name}");
         }
 
-        var newRecord = _mapper.Map<TypeOfPaymentMethod>(request);
+        var newRecord = new TypeOfPaymentMethod
+        {
+            Name = request.Name,
+            IsActive = request.IsActive,
+            RequiresBankAccount = request.RequiresBankAccount
+        };
         var response = await _repositoryAsync.AddAsync(newRecord);
         await _repositoryAsync.SaveChangesAsync();
         var dto = _mapper.Map<TypeOfPaymentMethodDto>(response);

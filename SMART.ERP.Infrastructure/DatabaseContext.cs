@@ -96,6 +96,7 @@ namespace SMART.ERP.Infrastructure
         public DbSet<Project> Projects { get; set; } = null!;
         public DbSet<NonBillableExpense> NonBillableExpenses { get; set; } = null!;
         public DbSet<NonBillableExpensePayment> NonBillableExpensePayments { get; set; } = null!;
+        public DbSet<CreditCardPayment> CreditCardPayments { get; set; } = null!;
         public DbSet<DailyClose> DailyCloses { get; set; } = null!;
         public DbSet<ResumePayment> ResumePayments { get; set; } = null!;
         public DbSet<MonthlyPurchaseDeclaration> MonthlyPurchaseDeclarations { get; set; } = null!;
@@ -1589,6 +1590,23 @@ namespace SMART.ERP.Infrastructure
             .WithMany()
             .HasForeignKey(x => x.InternalBankAccountId)
             .OnDelete(DeleteBehavior.Restrict);
+            //Credit Card Payment — pago de TC desde una cuenta bancaria (ambas son InternalBankAccount).
+            modelBuilder.Entity<CreditCardPayment>().ToTable("CreditCardPayment");
+            modelBuilder.Entity<CreditCardPayment>(o => o.HasKey(x => x.Id));
+            modelBuilder.Entity<CreditCardPayment>()
+             .HasIndex(x => x.Code).IsUnique();
+            modelBuilder.Entity<CreditCardPayment>()
+             .HasIndex(x => x.Date);
+            modelBuilder.Entity<CreditCardPayment>()
+             .HasOne(x => x.CreditCardInternalBankAccount)
+             .WithMany()
+             .HasForeignKey(x => x.CreditCardInternalBankAccountId)
+             .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<CreditCardPayment>()
+             .HasOne(x => x.SourceInternalBankAccount)
+             .WithMany()
+             .HasForeignKey(x => x.SourceInternalBankAccountId)
+             .OnDelete(DeleteBehavior.Restrict);
             //Daily Close
             modelBuilder.Entity<DailyClose>().ToTable("DailyClose");
             modelBuilder.Entity<DailyClose>(o => o.HasKey(x => x.Id));

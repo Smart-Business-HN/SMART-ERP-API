@@ -14,6 +14,7 @@ namespace SMART.ERP.Domain.Enums
         NonBillableExpense = 6,
         Kardex = 7,
         YearEndClosing = 8,
-        OpeningBalance = 9
+        OpeningBalance = 9,
+        CreditCardPayment = 10
     }
 }

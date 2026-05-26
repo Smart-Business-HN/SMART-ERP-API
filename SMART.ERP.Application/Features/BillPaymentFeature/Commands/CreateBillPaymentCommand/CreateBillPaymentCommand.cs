@@ -60,6 +60,10 @@ namespace SMART.ERP.Application.Features.BillPaymentFeature.Commands.CreateBillP
             {
                 throw new KeyNotFoundException($"No se encontro una forma de pago con id {request.TypeOfPaymentMethodId}");
             }
+            if (checkTypeOfPaymentMethod.RequiresBankAccount && request.InternalBankAccountId == null)
+            {
+                throw new ApiException($"La forma de pago '{checkTypeOfPaymentMethod.Name}' requiere especificar la cuenta bancaria que recibió el pago.");
+            }
             if (request.InternalBankAccountId != null)
             {
                 var checkInternalBankAccount = await _internalBankAccountRepositoryAsync.GetByIdAsync((int)request.InternalBankAccountId);

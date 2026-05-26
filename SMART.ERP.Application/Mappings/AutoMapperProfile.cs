@@ -109,6 +109,8 @@ using SMART.ERP.Application.Features.MajorIncomeAccountFeature.Commands.CreateMa
 using SMART.ERP.Application.Features.MessageFeature.Commands.CreateMessageCommand;
 using SMART.ERP.Application.Features.NonBillableExpenseFeature.Commands.CreateNonBillableExpenseCommand;
 using SMART.ERP.Application.Features.NonBillableExpensePaymentFeature.Commands.CreateNonBillableExpensePaymentCommand;
+using SMART.ERP.Application.Features.CreditCardPaymentFeature.Commands.CreateCreditCardPaymentCommand;
+using SMART.ERP.Application.DTOs.CreditCardPayment;
 using SMART.ERP.Application.Features.OpinionFeature.Commands.CreateOpinionCommand;
 using SMART.ERP.Application.Features.OpportunityActivityFeature.Commands.CreateOpportunityActivityCommand;
 using SMART.ERP.Application.Features.OpportunityCommentFeature.Commands.CreateOpportunityCommentCommand;
@@ -331,6 +333,11 @@ namespace SMART.ERP.Application.Mappings
                 .ForMember(d => d.FiscalPeriodName, o => o.MapFrom(s => s.FiscalPeriod != null ? s.FiscalPeriod.Name : null))
                 .ForMember(d => d.StatusName, o => o.MapFrom(s => s.Status.ToString()))
                 .ForMember(d => d.SourceName, o => o.MapFrom(s => s.Source.ToString()));
+            CreateMap<CreditCardPayment, CreditCardPaymentDto>()
+                .ForMember(d => d.CreditCardName, o => o.MapFrom(s => s.CreditCardInternalBankAccount != null ? s.CreditCardInternalBankAccount.Name : null))
+                .ForMember(d => d.CreditCardLast4, o => o.MapFrom(s => s.CreditCardInternalBankAccount != null ? s.CreditCardInternalBankAccount.CardLastFour : null))
+                .ForMember(d => d.SourceBankName, o => o.MapFrom(s => s.SourceInternalBankAccount != null ? s.SourceInternalBankAccount.Name : null));
+            CreateMap<CreateCreditCardPaymentCommand, CreditCardPayment>();
             CreateMap<JournalEntryLine, JournalEntryLineDto>()
                 .ForMember(d => d.LedgerAccountCode, o => o.MapFrom(s => s.LedgerAccount != null ? s.LedgerAccount.Code : null))
                 .ForMember(d => d.LedgerAccountName, o => o.MapFrom(s => s.LedgerAccount != null ? s.LedgerAccount.Name : null))

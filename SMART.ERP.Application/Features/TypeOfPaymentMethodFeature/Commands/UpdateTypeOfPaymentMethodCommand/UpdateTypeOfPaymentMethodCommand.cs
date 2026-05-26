@@ -12,8 +12,8 @@ namespace SMART.ERP.Application.Features.TypeOfPaymentMethodFeature.Commands.Upd
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-        public bool ItIsNationBank { get; set; }
         public bool IsActive { get; set; }
+        public bool RequiresBankAccount { get; set; }
     }
 
     public class UpdateTypeOfPaymentMethodCommandHandler : IRequestHandler<UpdateTypeOfPaymentMethodCommand, Response<TypeOfPaymentMethodDto>>
@@ -38,6 +38,7 @@ namespace SMART.ERP.Application.Features.TypeOfPaymentMethodFeature.Commands.Upd
 
             checkTypeOfPaymentMethod.Name = request.Name;
             checkTypeOfPaymentMethod.IsActive = request.IsActive;
+            checkTypeOfPaymentMethod.RequiresBankAccount = request.RequiresBankAccount;
 
             await _repositoryAsync.UpdateAsync(checkTypeOfPaymentMethod);
             await _repositoryAsync.SaveChangesAsync();

@@ -59,6 +59,10 @@ namespace SMART.ERP.Application.Features.PurchaseBillPaymentFeature.Commands.Cre
             {
                 throw new KeyNotFoundException($"No se encontro una forma de pago con id {request.TypeOfPaymentMethodId}");
             }
+            if (checkTypeOfPaymentMethod.RequiresBankAccount && request.InternalBankAccountId == null)
+            {
+                throw new ApiException($"La forma de pago '{checkTypeOfPaymentMethod.Name}' requiere especificar la cuenta bancaria desde donde se realizó el pago.");
+            }
             InternalBankAccount? checkInternalBankAccount = null;
             if (request.InternalBankAccountId != null)
             {

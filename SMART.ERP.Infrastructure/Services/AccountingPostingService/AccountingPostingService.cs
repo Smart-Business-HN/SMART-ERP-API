@@ -273,6 +273,26 @@ namespace SMART.ERP.Infrastructure.Services.AccountingPostingService
             await PostEntryAsync(payment.Date, $"Pago gasto #{payment.NonBillableExpenseId}", JournalEntrySource.NonBillableExpense, "NonBillableExpensePayment", payment.Id, lines, ct);
         }
 
+        // ============================ TARJETAS DE CRÉDITO ============================
+
+        /// <summary>
+        /// Pago de TC: Dr LedgerAccount de la TC (baja la deuda) / Cr LedgerAccount del banco origen.
+        /// Ambas cuentas son InternalBankAccount diferenciadas por AccountType.
+        /// </summary>
+        public async Task PostCreditCardPaymentAsync(int creditCardPaymentId, CancellationToken ct)
+        {
+            if (!await IsEnabledAsync(ct)) return;
+            var payment = await _context.Set<CreditCardPayment>().AsNoTracking().FirstOrDefaultAsync(x => x.Id == creditCardPaymentId, ct);
+            if (payment == null) return;
+
+            var lines = new List<Line>
+            {
+                new() { LedgerAccountId = await BankAccountAsync(payment.CreditCardInternalBankAccountId, ct), Debit = Round(payment.Amount), Description = $"Pago TC {payment.Code}" },
+                new() { LedgerAccountId = await BankAccountAsync(payment.SourceInternalBankAccountId, ct), Credit = Round(payment.Amount), Description = $"Pago TC {payment.Code}" },
+            };
+            await PostEntryAsync(payment.Date, $"Pago TC {payment.Code}", JournalEntrySource.CreditCardPayment, "CreditCardPayment", payment.Id, lines, ct);
+        }
+
         // ============================ INVENTARIO ============================
 
         public async Task PostInventoryEntryAsync(int inventoryEntryId, CancellationToken ct)

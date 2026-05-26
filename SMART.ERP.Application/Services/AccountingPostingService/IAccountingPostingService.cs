@@ -22,6 +22,7 @@ namespace SMART.ERP.Application.Services.AccountingPostingService
         Task PostPurchaseBillPaymentAsync(int purchaseBillPaymentId, CancellationToken cancellationToken);
         Task PostNonBillableExpenseAsync(int nonBillableExpenseId, CancellationToken cancellationToken);
         Task PostNonBillableExpensePaymentAsync(int nonBillableExpensePaymentId, CancellationToken cancellationToken);
+        Task PostCreditCardPaymentAsync(int creditCardPaymentId, CancellationToken cancellationToken);
         Task PostInventoryEntryAsync(int inventoryEntryId, CancellationToken cancellationToken);
         Task PostInventoryExitAsync(int inventoryExitId, CancellationToken cancellationToken);
 
