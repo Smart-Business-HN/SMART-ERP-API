@@ -54,8 +54,11 @@ namespace SMART.ERP.Application.Features.InventoryExitFeature.Commands.UpdateInv
                 if (request.Items == null || request.Items.Count == 0)
                     throw new ApiException("La salida de inventario debe tener al menos un producto.");
 
-                _ = await _warehouseRepository.GetByIdAsync(request.WarehouseId, cancellationToken)
+                var warehouse = await _warehouseRepository.GetByIdAsync(request.WarehouseId, cancellationToken)
                     ?? throw new ApiException($"No existe un almacén con el Id {request.WarehouseId}");
+
+                if (warehouse.IsVirtual)
+                    throw new ApiException("No se permite registrar salidas de inventario en almacenes virtuales (consignados).");
 
                 foreach (var item in request.Items)
                 {

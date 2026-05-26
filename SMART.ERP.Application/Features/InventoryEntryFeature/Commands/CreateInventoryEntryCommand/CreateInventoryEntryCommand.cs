@@ -56,6 +56,9 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.CreateIn
                 var warehouse = await _warehouseRepository.GetByIdAsync(request.WarehouseId, cancellationToken)
                     ?? throw new ApiException($"No existe un almacén con el Id {request.WarehouseId}");
 
+                if (warehouse.IsVirtual)
+                    throw new ApiException("No se permite registrar entradas de inventario en almacenes virtuales (consignados). Use la importación de stock virtual.");
+
                 var prefix = request.PrefixId.HasValue
                     ? await _prefixRepository.GetByIdAsync(request.PrefixId.Value, cancellationToken)
                     : await _prefixRepository.FirstOrDefaultAsync(new PrefixByFormatSpecification(InventoryPrefixes.Entry), cancellationToken);

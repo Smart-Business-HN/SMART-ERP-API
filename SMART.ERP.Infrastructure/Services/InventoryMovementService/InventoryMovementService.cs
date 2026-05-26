@@ -106,6 +106,7 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
             // Local-first: reusar instancias ya rastreadas para evitar conflictos cuando el mismo
             // producto aparece en varias líneas de un mismo documento dentro de la transacción.
             var distributions = await _context.InventoryDistributions
+                .Include(x => x.Warehouse)
                 .Where(x => x.ProductId == input.ProductId)
                 .ToListAsync(cancellationToken);
 
@@ -121,10 +122,12 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
 
             if (distribution == null)
             {
+                var warehouse = await _context.Warehouses.FirstOrDefaultAsync(w => w.Id == input.WarehouseId, cancellationToken);
                 distribution = new InventoryDistribution
                 {
                     ProductId = input.ProductId,
                     WarehouseId = input.WarehouseId,
+                    Warehouse = warehouse,
                     Quantity = delta,
                     CreationDate = DateTime.Now,
                     CreatedBy = input.UserName
@@ -149,7 +152,11 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
             }
             if (product != null)
             {
-                product.CurrentStock = (int)distributions.Sum(x => x.Quantity);
+                // Solo el stock propio cuenta como CurrentStock; los almacenes virtuales (consignados)
+                // se excluyen para no inflar el inventario propio ni afectar reportes/contabilidad.
+                product.CurrentStock = (int)distributions
+                    .Where(x => x.Warehouse == null || !x.Warehouse.IsVirtual)
+                    .Sum(x => x.Quantity);
                 if (input.UpdateProductCost && !input.IsCancellation && input.QuantityIn > 0 && input.UnitCost.HasValue && input.UnitCost.Value > 0)
                 {
                     product.CostPrice = newAvg;
@@ -194,6 +201,7 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
         public async Task SyncProductStockAsync(int productId, CancellationToken cancellationToken = default)
         {
             var distributions = await _context.InventoryDistributions
+                .Include(x => x.Warehouse)
                 .Where(x => x.ProductId == productId)
                 .ToListAsync(cancellationToken);
 
@@ -203,7 +211,10 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
                 if (tracked != null) distributions[i] = tracked;
             }
 
-            var total = distributions.Sum(x => x.Quantity);
+            // Excluir almacenes virtuales: el stock consignado no forma parte del inventario propio.
+            var total = distributions
+                .Where(x => x.Warehouse == null || !x.Warehouse.IsVirtual)
+                .Sum(x => x.Quantity);
 
             var product = _context.Products.Local.FirstOrDefault(p => p.Id == productId);
             if (product == null)

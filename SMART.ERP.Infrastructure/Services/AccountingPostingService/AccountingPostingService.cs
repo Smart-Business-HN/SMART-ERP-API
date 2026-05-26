@@ -281,6 +281,13 @@ namespace SMART.ERP.Infrastructure.Services.AccountingPostingService
             var entry = await _context.InventoryEntries.AsNoTracking().FirstOrDefaultAsync(x => x.Id == inventoryEntryId, ct);
             if (entry == null || entry.EntryType == InventoryEntryType.Purchase) return; // la compra ya postea
 
+            // Defensa en profundidad: los almacenes virtuales (consignados) no afectan contabilidad.
+            var isVirtualWarehouse = await _context.Warehouses.AsNoTracking()
+                .Where(w => w.Id == entry.WarehouseId)
+                .Select(w => w.IsVirtual)
+                .FirstOrDefaultAsync(ct);
+            if (isVirtualWarehouse) return;
+
             var movements = await _context.InventoryMovements.AsNoTracking()
                 .Where(m => m.DocumentType == "InventoryEntry" && m.DocumentId == inventoryEntryId)
                 .Select(m => new { m.QuantityIn, m.QuantityOut, m.UnitCost, m.TotalCost })
@@ -322,6 +329,13 @@ namespace SMART.ERP.Infrastructure.Services.AccountingPostingService
             if (!await IsEnabledAsync(ct)) return;
             var exit = await _context.InventoryExits.AsNoTracking().FirstOrDefaultAsync(x => x.Id == inventoryExitId, ct);
             if (exit == null) return;
+
+            // Defensa en profundidad: los almacenes virtuales (consignados) no afectan contabilidad.
+            var isVirtualWarehouse = await _context.Warehouses.AsNoTracking()
+                .Where(w => w.Id == exit.WarehouseId)
+                .Select(w => w.IsVirtual)
+                .FirstOrDefaultAsync(ct);
+            if (isVirtualWarehouse) return;
 
             var cost = await _context.InventoryMovements.AsNoTracking()
                 .Where(m => m.DocumentType == "InventoryExit" && m.DocumentId == inventoryExitId)

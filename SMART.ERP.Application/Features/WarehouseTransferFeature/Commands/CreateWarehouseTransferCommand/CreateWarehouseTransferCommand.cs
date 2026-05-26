@@ -51,10 +51,13 @@ namespace SMART.ERP.Application.Features.WarehouseTransferFeature.Commands.Creat
                 if (request.OriginWarehouseId == request.DestinationWarehouseId)
                     throw new ApiException("El almacén de origen y destino no pueden ser el mismo.");
 
-                _ = await _warehouseRepository.GetByIdAsync(request.OriginWarehouseId, cancellationToken)
+                var originWarehouse = await _warehouseRepository.GetByIdAsync(request.OriginWarehouseId, cancellationToken)
                     ?? throw new ApiException($"No existe un almacén de origen con el Id {request.OriginWarehouseId}");
-                _ = await _warehouseRepository.GetByIdAsync(request.DestinationWarehouseId, cancellationToken)
+                var destinationWarehouse = await _warehouseRepository.GetByIdAsync(request.DestinationWarehouseId, cancellationToken)
                     ?? throw new ApiException($"No existe un almacén de destino con el Id {request.DestinationWarehouseId}");
+
+                if (originWarehouse.IsVirtual || destinationWarehouse.IsVirtual)
+                    throw new ApiException("No se permite transferir inventario hacia o desde almacenes virtuales (consignados).");
                 var prefix = request.PrefixId.HasValue
                     ? await _prefixRepository.GetByIdAsync(request.PrefixId.Value, cancellationToken)
                     : await _prefixRepository.FirstOrDefaultAsync(new PrefixByFormatSpecification(InventoryPrefixes.Transfer), cancellationToken);
