@@ -9,27 +9,27 @@ using SMART.ERP.Domain.Enums;
 namespace SMART.ERP.Application.Features.AccountingReportFeature.Queries
 {
     /// <summary>Estado de Resultados (Estado de Resultado Integral) para un rango de fechas.</summary>
-    public class EstadoResultadosQuery : IRequest<Response<EstadoResultadosDto>>
+    public class IncomeStatementQuery : IRequest<Response<IncomeStatementDto>>
     {
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
 
-        public class EstadoResultadosQueryHandler : IRequestHandler<EstadoResultadosQuery, Response<EstadoResultadosDto>>
+        public class IncomeStatementQueryHandler : IRequestHandler<IncomeStatementQuery, Response<IncomeStatementDto>>
         {
             private readonly IReadRepositoryAsync<JournalEntryLine> _lineRepository;
 
-            public EstadoResultadosQueryHandler(IReadRepositoryAsync<JournalEntryLine> lineRepository)
+            public IncomeStatementQueryHandler(IReadRepositoryAsync<JournalEntryLine> lineRepository)
             {
                 _lineRepository = lineRepository;
             }
 
-            public async Task<Response<EstadoResultadosDto>> Handle(EstadoResultadosQuery request, CancellationToken cancellationToken)
+            public async Task<Response<IncomeStatementDto>> Handle(IncomeStatementQuery request, CancellationToken cancellationToken)
             {
                 var from = request.FromDate.Date;
                 var to = request.ToDate.Date;
                 var lines = await _lineRepository.ListAsync(new FilterPostedLinesByDateRangeSpecification(from, to), cancellationToken);
 
-                var dto = new EstadoResultadosDto { FromDate = from, ToDate = to };
+                var dto = new IncomeStatementDto { FromDate = from, ToDate = to };
 
                 var grouped = lines
                     .Where(l => l.LedgerAccount != null)
@@ -65,7 +65,7 @@ namespace SMART.ERP.Application.Features.AccountingReportFeature.Queries
                 dto.UtilidadBruta = dto.TotalIngresos - dto.TotalCostos;
                 dto.UtilidadNeta = dto.TotalIngresos - dto.TotalCostos - dto.TotalGastos;
 
-                return new Response<EstadoResultadosDto>(dto);
+                return new Response<IncomeStatementDto>(dto);
             }
 
             private static FinancialStatementLineDto Line(LedgerAccount account, decimal amount) => new()

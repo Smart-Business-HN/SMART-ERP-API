@@ -9,25 +9,25 @@ using SMART.ERP.Domain.Entities;
 namespace SMART.ERP.Application.Features.AccountingReportFeature.Queries
 {
     /// <summary>Libro Mayor: movimientos y saldo de una cuenta imputable en un rango de fechas.</summary>
-    public class LibroMayorQuery : IRequest<Response<LibroMayorDto>>
+    public class GeneralLedgerQuery : IRequest<Response<GeneralLedgerDto>>
     {
         public int LedgerAccountId { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
 
-        public class LibroMayorQueryHandler : IRequestHandler<LibroMayorQuery, Response<LibroMayorDto>>
+        public class GeneralLedgerQueryHandler : IRequestHandler<GeneralLedgerQuery, Response<GeneralLedgerDto>>
         {
             private static readonly DateTime Epoch = new(1900, 1, 1);
             private readonly IReadRepositoryAsync<JournalEntryLine> _lineRepository;
             private readonly IReadRepositoryAsync<LedgerAccount> _accountRepository;
 
-            public LibroMayorQueryHandler(IReadRepositoryAsync<JournalEntryLine> lineRepository, IReadRepositoryAsync<LedgerAccount> accountRepository)
+            public GeneralLedgerQueryHandler(IReadRepositoryAsync<JournalEntryLine> lineRepository, IReadRepositoryAsync<LedgerAccount> accountRepository)
             {
                 _lineRepository = lineRepository;
                 _accountRepository = accountRepository;
             }
 
-            public async Task<Response<LibroMayorDto>> Handle(LibroMayorQuery request, CancellationToken cancellationToken)
+            public async Task<Response<GeneralLedgerDto>> Handle(GeneralLedgerQuery request, CancellationToken cancellationToken)
             {
                 var account = await _accountRepository.GetByIdAsync(request.LedgerAccountId, cancellationToken)
                     ?? throw new ApiException($"No existe una cuenta contable con el Id {request.LedgerAccountId}.");
@@ -40,7 +40,7 @@ namespace SMART.ERP.Application.Features.AccountingReportFeature.Queries
                 var lines = await _lineRepository.ListAsync(
                     new FilterPostedLinesByDateRangeSpecification(request.FromDate, request.ToDate, request.LedgerAccountId), cancellationToken);
 
-                var dto = new LibroMayorDto
+                var dto = new GeneralLedgerDto
                 {
                     LedgerAccountId = account.Id,
                     AccountCode = account.Code,
@@ -54,7 +54,7 @@ namespace SMART.ERP.Application.Features.AccountingReportFeature.Queries
                 foreach (var line in lines)
                 {
                     running += line.Debit - line.Credit;
-                    dto.Movements.Add(new LibroMayorLineDto
+                    dto.Movements.Add(new GeneralLedgerLineDto
                     {
                         EntryDate = line.JournalEntry!.EntryDate,
                         EntryNumber = line.JournalEntry.EntryNumber,
@@ -70,7 +70,7 @@ namespace SMART.ERP.Application.Features.AccountingReportFeature.Queries
                 dto.TotalCredit = lines.Sum(l => l.Credit);
                 dto.ClosingBalance = running;
 
-                return new Response<LibroMayorDto>(dto);
+                return new Response<GeneralLedgerDto>(dto);
             }
         }
     }

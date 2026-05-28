@@ -1,7 +1,7 @@
 namespace SMART.ERP.Application.DTOs.AccountingReport
 {
     /// <summary>Libro Mayor / Mayor general de una cuenta para un rango de fechas.</summary>
-    public class LibroMayorDto
+    public class GeneralLedgerDto
     {
         public int LedgerAccountId { get; set; }
         public string AccountCode { get; set; } = null!;
@@ -12,10 +12,10 @@ namespace SMART.ERP.Application.DTOs.AccountingReport
         public decimal TotalDebit { get; set; }
         public decimal TotalCredit { get; set; }
         public decimal ClosingBalance { get; set; }
-        public List<LibroMayorLineDto> Movements { get; set; } = new();
+        public List<GeneralLedgerLineDto> Movements { get; set; } = new();
     }
 
-    public class LibroMayorLineDto
+    public class GeneralLedgerLineDto
     {
         public DateTime EntryDate { get; set; }
         public string? EntryNumber { get; set; }

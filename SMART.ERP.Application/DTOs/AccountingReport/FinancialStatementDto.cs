@@ -10,7 +10,7 @@ namespace SMART.ERP.Application.DTOs.AccountingReport
     }
 
     /// <summary>Estado de Situación Financiera (Balance General) a una fecha de corte.</summary>
-    public class EstadoSituacionFinancieraDto
+    public class BalanceSheetDto
     {
         public DateTime CutoffDate { get; set; }
         public List<FinancialStatementLineDto> Activos { get; set; } = new();
@@ -25,7 +25,7 @@ namespace SMART.ERP.Application.DTOs.AccountingReport
     }
 
     /// <summary>Estado de Resultados (Estado de Resultado Integral) para un rango de fechas.</summary>
-    public class EstadoResultadosDto
+    public class IncomeStatementDto
     {
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }

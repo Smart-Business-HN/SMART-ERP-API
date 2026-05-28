@@ -11,22 +11,22 @@ namespace SMART.ERP.Application.Features.AccountingReportFeature.Queries
     /// Balance de Comprobación: movimientos del período (Debe/Haber) y saldos acumulados
     /// (Deudor/Acreedor) por cuenta imputable. Los totales deben cuadrar.
     /// </summary>
-    public class BalanceComprobacionQuery : IRequest<Response<BalanceComprobacionDto>>
+    public class TrialBalanceQuery : IRequest<Response<TrialBalanceDto>>
     {
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
 
-        public class BalanceComprobacionQueryHandler : IRequestHandler<BalanceComprobacionQuery, Response<BalanceComprobacionDto>>
+        public class TrialBalanceQueryHandler : IRequestHandler<TrialBalanceQuery, Response<TrialBalanceDto>>
         {
             private static readonly DateTime Epoch = new(1900, 1, 1);
             private readonly IReadRepositoryAsync<JournalEntryLine> _lineRepository;
 
-            public BalanceComprobacionQueryHandler(IReadRepositoryAsync<JournalEntryLine> lineRepository)
+            public TrialBalanceQueryHandler(IReadRepositoryAsync<JournalEntryLine> lineRepository)
             {
                 _lineRepository = lineRepository;
             }
 
-            public async Task<Response<BalanceComprobacionDto>> Handle(BalanceComprobacionQuery request, CancellationToken cancellationToken)
+            public async Task<Response<TrialBalanceDto>> Handle(TrialBalanceQuery request, CancellationToken cancellationToken)
             {
                 var from = request.FromDate.Date;
                 var to = request.ToDate.Date;
@@ -34,7 +34,7 @@ namespace SMART.ERP.Application.Features.AccountingReportFeature.Queries
                 // Todas las partidas hasta la fecha de corte para acumular saldos.
                 var allLines = await _lineRepository.ListAsync(new FilterPostedLinesByDateRangeSpecification(Epoch, to), cancellationToken);
 
-                var dto = new BalanceComprobacionDto { FromDate = from, ToDate = to };
+                var dto = new TrialBalanceDto { FromDate = from, ToDate = to };
 
                 var grouped = allLines
                     .Where(l => l.LedgerAccount != null)
@@ -51,7 +51,7 @@ namespace SMART.ERP.Application.Features.AccountingReportFeature.Queries
                     if (periodDebe == 0 && periodHaber == 0 && saldoNet == 0)
                         continue;
 
-                    dto.Lines.Add(new BalanceComprobacionLineDto
+                    dto.Lines.Add(new TrialBalanceLineDto
                     {
                         LedgerAccountId = account.Id,
                         AccountCode = account.Code,
@@ -70,7 +70,7 @@ namespace SMART.ERP.Application.Features.AccountingReportFeature.Queries
                 dto.IsBalanced = Math.Abs(dto.TotalDebe - dto.TotalHaber) < 0.01m
                               && Math.Abs(dto.TotalSaldoDeudor - dto.TotalSaldoAcreedor) < 0.01m;
 
-                return new Response<BalanceComprobacionDto>(dto);
+                return new Response<TrialBalanceDto>(dto);
             }
         }
     }

@@ -11,41 +11,41 @@ namespace SMART.ERP.API.Controllers.v1
     [ApiVersion("1.0")]
     public class AccountingReportController : BaseApiController
     {
-        [HttpGet("LibroMayor")]
+        [HttpGet("GeneralLedger")]
         [Authorize(Roles = "SuperAdmin, Manager, Admin, Accountant")]
         [OutputCache(PolicyName = "cache_accounting_reports")]
-        public async Task<IActionResult> LibroMayor([FromQuery] int ledgerAccountId, [FromQuery] DateTime fromDate, [FromQuery] DateTime toDate)
+        public async Task<IActionResult> GeneralLedger([FromQuery] int ledgerAccountId, [FromQuery] DateTime fromDate, [FromQuery] DateTime toDate)
         {
-            return Ok(await Mediator.Send(new LibroMayorQuery { LedgerAccountId = ledgerAccountId, FromDate = fromDate, ToDate = toDate }));
+            return Ok(await Mediator.Send(new GeneralLedgerQuery { LedgerAccountId = ledgerAccountId, FromDate = fromDate, ToDate = toDate }));
         }
 
-        [HttpGet("BalanceComprobacion")]
+        [HttpGet("TrialBalance")]
         [Authorize(Roles = "SuperAdmin, Manager, Admin, Accountant")]
         [OutputCache(PolicyName = "cache_accounting_reports")]
-        public async Task<IActionResult> BalanceComprobacion([FromQuery] DateTime fromDate, [FromQuery] DateTime toDate)
+        public async Task<IActionResult> TrialBalance([FromQuery] DateTime fromDate, [FromQuery] DateTime toDate)
         {
-            return Ok(await Mediator.Send(new BalanceComprobacionQuery { FromDate = fromDate, ToDate = toDate }));
+            return Ok(await Mediator.Send(new TrialBalanceQuery { FromDate = fromDate, ToDate = toDate }));
         }
 
-        [HttpGet("EstadoSituacionFinanciera")]
+        [HttpGet("BalanceSheet")]
         [Authorize(Roles = "SuperAdmin, Manager, Admin, Accountant")]
         [OutputCache(PolicyName = "cache_accounting_reports")]
-        public async Task<IActionResult> EstadoSituacionFinanciera([FromQuery] DateTime cutoffDate)
+        public async Task<IActionResult> BalanceSheet([FromQuery] DateTime cutoffDate)
         {
-            return Ok(await Mediator.Send(new EstadoSituacionFinancieraQuery { CutoffDate = cutoffDate }));
+            return Ok(await Mediator.Send(new BalanceSheetQuery { CutoffDate = cutoffDate }));
         }
 
-        [HttpGet("EstadoResultados")]
+        [HttpGet("IncomeStatement")]
         [Authorize(Roles = "SuperAdmin, Manager, Admin, Accountant")]
         [OutputCache(PolicyName = "cache_accounting_reports")]
-        public async Task<IActionResult> EstadoResultados([FromQuery] DateTime fromDate, [FromQuery] DateTime toDate)
+        public async Task<IActionResult> IncomeStatement([FromQuery] DateTime fromDate, [FromQuery] DateTime toDate)
         {
-            return Ok(await Mediator.Send(new EstadoResultadosQuery { FromDate = fromDate, ToDate = toDate }));
+            return Ok(await Mediator.Send(new IncomeStatementQuery { FromDate = fromDate, ToDate = toDate }));
         }
 
-        [HttpGet("LibroDiario")]
+        [HttpGet("Journal")]
         [Authorize(Roles = "SuperAdmin, Manager, Admin, Accountant")]
-        public async Task<IActionResult> LibroDiario([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
+        public async Task<IActionResult> Journal([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
             [FromQuery] int pageNumber = 0, [FromQuery] int pageSize = 25, [FromQuery] bool all = false)
         {
             return Ok(await Mediator.Send(new GetAllJournalEntriesQuery

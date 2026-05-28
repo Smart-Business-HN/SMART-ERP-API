@@ -1,11 +1,11 @@
 namespace SMART.ERP.Application.DTOs.AccountingReport
 {
     /// <summary>Balance de Comprobación (Trial Balance) para un rango de fechas.</summary>
-    public class BalanceComprobacionDto
+    public class TrialBalanceDto
     {
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
-        public List<BalanceComprobacionLineDto> Lines { get; set; } = new();
+        public List<TrialBalanceLineDto> Lines { get; set; } = new();
         public decimal TotalDebe { get; set; }
         public decimal TotalHaber { get; set; }
         public decimal TotalSaldoDeudor { get; set; }
@@ -13,7 +13,7 @@ namespace SMART.ERP.Application.DTOs.AccountingReport
         public bool IsBalanced { get; set; }
     }
 
-    public class BalanceComprobacionLineDto
+    public class TrialBalanceLineDto
     {
         public int LedgerAccountId { get; set; }
         public string AccountCode { get; set; } = null!;
