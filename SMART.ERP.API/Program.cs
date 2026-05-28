@@ -265,20 +265,24 @@ app.UseEndpoints(endpoints =>
     endpoints.MapHub<ChatHub>("hub/chat");
 });
 
-// Seed dropshipping data
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    var context = services.GetRequiredService<DatabaseContext>();
+
+    logger.LogInformation("Applying pending EF Core migrations...");
+    await context.Database.MigrateAsync();
+    logger.LogInformation("Migrations applied successfully.");
+
     try
     {
-        var context = services.GetRequiredService<DatabaseContext>();
         await SMART.ERP.Infrastructure.Seeders.DiscountSeed.SeedAsync(context);
         await SMART.ERP.Infrastructure.Seeders.DropshippingSeed.SeedAsync(context);
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding dropshipping data");
+        logger.LogError(ex, "An error occurred while seeding data");
     }
 }
 
