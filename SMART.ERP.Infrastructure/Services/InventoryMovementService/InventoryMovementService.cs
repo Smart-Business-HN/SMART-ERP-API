@@ -119,15 +119,22 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
 
             var distribution = distributions.FirstOrDefault(x => x.WarehouseId == input.WarehouseId);
             var delta = input.QuantityIn - input.QuantityOut;
+            bool newDistributionIsVirtualWarehouse = false;
 
             if (distribution == null)
             {
-                var warehouse = await _context.Warehouses.FirstOrDefaultAsync(w => w.Id == input.WarehouseId, cancellationToken);
+                // Proyectar solo IsVirtual: cargar la entidad Warehouse y asignarla al navigation
+                // property haría que EF la trate como Added (Detached + Id != 0 por NoTracking global)
+                // e intente INSERT INTO [Warehouse] ([Id], ...) con IDENTITY_INSERT OFF.
+                newDistributionIsVirtualWarehouse = await _context.Warehouses
+                    .Where(w => w.Id == input.WarehouseId)
+                    .Select(w => w.IsVirtual)
+                    .FirstOrDefaultAsync(cancellationToken);
+
                 distribution = new InventoryDistribution
                 {
                     ProductId = input.ProductId,
                     WarehouseId = input.WarehouseId,
-                    Warehouse = warehouse,
                     Quantity = delta,
                     CreationDate = DateTime.Now,
                     CreatedBy = input.UserName
@@ -154,8 +161,12 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
             {
                 // Solo el stock propio cuenta como CurrentStock; los almacenes virtuales (consignados)
                 // se excluyen para no inflar el inventario propio ni afectar reportes/contabilidad.
+                // Las distribuciones existentes traen Warehouse via .Include; la recién creada
+                // tiene Warehouse == null y usamos newDistributionIsVirtualWarehouse para su flag.
                 product.CurrentStock = (int)distributions
-                    .Where(x => x.Warehouse == null || !x.Warehouse.IsVirtual)
+                    .Where(x =>
+                        (x.Warehouse != null && !x.Warehouse.IsVirtual)
+                        || (x.Warehouse == null && !newDistributionIsVirtualWarehouse))
                     .Sum(x => x.Quantity);
                 if (input.UpdateProductCost && !input.IsCancellation && input.QuantityIn > 0 && input.UnitCost.HasValue && input.UnitCost.Value > 0)
                 {
