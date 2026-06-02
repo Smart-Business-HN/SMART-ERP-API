@@ -25,6 +25,7 @@ namespace SMART.ERP.Application.Features.UserFeature.Commands.CreateUserCommand
         public int RoleId { get; set; }
         public int GenderId { get; set; }
         public int? BranchOfficeId { get; set; }
+        public decimal? CommissionPercentage { get; set; }
     }
 
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Response<UserDto>>

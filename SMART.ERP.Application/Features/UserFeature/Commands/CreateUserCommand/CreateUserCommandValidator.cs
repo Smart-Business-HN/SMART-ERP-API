@@ -41,6 +41,10 @@ namespace SMART.ERP.Application.Features.UserFeature.Commands.CreateUserCommand
             RuleFor(p => p.GenderId)
                 .NotNull().WithMessage("{PropertyName} no puede ser nulo")
                 .NotEqual(0).WithMessage("{PropertyName} no puede ser igual a cero");
+
+            RuleFor(p => p.CommissionPercentage)
+                .InclusiveBetween(0, 100).WithMessage("El porcentaje de comision debe estar entre 0 y 100")
+                .When(p => p.CommissionPercentage.HasValue);
         }
     }
 }

@@ -37,6 +37,10 @@ namespace SMART.ERP.Application.Features.UserFeature.Commands.UpdateUserCommand
 
             RuleFor(x => x.BranchOfficeId)
                 .NotEqual(0).WithMessage("{PropertyName} no debe ser cero");
+
+            RuleFor(p => p.CommissionPercentage)
+                .InclusiveBetween(0, 100).WithMessage("El porcentaje de comision debe estar entre 0 y 100")
+                .When(p => p.CommissionPercentage.HasValue);
         }
     }
 }

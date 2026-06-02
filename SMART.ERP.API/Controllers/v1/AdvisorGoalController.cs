@@ -32,5 +32,11 @@ namespace SMART.ERP.API.Controllers.v1
         {
             return Ok(await Mediator.Send(new CheckAdvisorGoalQuery { UserId = userId }));
         }
+
+        [HttpGet("Commission/{userId}")]
+        public async Task<IActionResult> GetCommission(Guid userId, [FromQuery] int year, [FromQuery] int month)
+        {
+            return Ok(await Mediator.Send(new GetAdvisorCommissionQuery { UserId = userId, Year = year, Month = month }));
+        }
     }
 }

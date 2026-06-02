@@ -44,9 +44,6 @@ namespace SMART.ERP.API.Middlewares
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
                         responseModel.Errors = e.Errors;
                         break;
-                    case InvalidOperationException:
-                        response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        break;
                     case KeyNotFoundException e:
                         // Not found error
                         response.StatusCode = (int)HttpStatusCode.NotFound;

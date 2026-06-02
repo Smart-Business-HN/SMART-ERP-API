@@ -23,6 +23,7 @@ namespace SMART.ERP.Application.Features.UserFeature.Commands.UpdateUserCommand
         public int RoleId { get; set; }
         public int GenderId { get; set; }
         public int? BranchOfficeId { get; set; }
+        public decimal? CommissionPercentage { get; set; }
     }
 
     public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Response<UserDto>>
@@ -101,6 +102,7 @@ namespace SMART.ERP.Application.Features.UserFeature.Commands.UpdateUserCommand
             user.ConfirmedEmail = request.ConfirmedEmail;
             user.ConfirmedPhoneNumber = request.ConfirmedPhoneNumber;
             user.UserName = CreateUserName(request.FirstName, request.LastName);
+            user.CommissionPercentage = request.CommissionPercentage;
             user.ModificationDate = DateTime.Now;
             await _repositoryAsync.UpdateAsync(user);
             await _repositoryAsync.SaveChangesAsync();

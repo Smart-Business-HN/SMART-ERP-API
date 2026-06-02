@@ -70,7 +70,11 @@ namespace SMART.ERP.Application.Features.JournalEntryFeature.Commands.PostJourna
                     entry.ModificationDate = DateTime.Now;
                     entry.ModifiedBy = userName;
 
-                    await _repositoryAsync.UpdateAsync(entry, ct);
+                    // El asiento ya viene rastreado (asTracking:true) con sus navegaciones
+                    // (LedgerAccount/Customer/Provider). Persistimos con SaveChanges para guardar
+                    // solo los cambios del asiento; NO usar UpdateAsync, que haría Update sobre todo
+                    // el grafo y marcaría como Modified las cuentas/cliente/proveedor maestros.
+                    await _repositoryAsync.SaveChangesAsync(ct);
                 }, cancellationToken);
 
                 await _outputCacheStored.EvictByTagAsync("cache_journal_entries", cancellationToken);

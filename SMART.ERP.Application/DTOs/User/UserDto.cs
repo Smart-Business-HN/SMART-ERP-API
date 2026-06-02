@@ -25,5 +25,6 @@ namespace SMART.ERP.Application.DTOs.User
         public int? BranchOfficeId { get; set; }
         public BranchOfficeDto? BranchOffice { get; set; }
         public decimal? SalesGoal { get; set; }
+        public decimal? CommissionPercentage { get; set; }
     }
 }

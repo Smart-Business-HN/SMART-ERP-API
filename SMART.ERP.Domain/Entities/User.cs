@@ -34,6 +34,8 @@ namespace SMART.ERP.Domain.Entities
         public int? BranchOfficeId { get; set; }
         [Precision(18, 2)]
         public decimal? SalesGoal { get; set; }
+        [Precision(5, 2)]
+        public decimal? CommissionPercentage { get; set; }
         public virtual BranchOffices? BranchOffice { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime? ModificationDate { get; set; }
