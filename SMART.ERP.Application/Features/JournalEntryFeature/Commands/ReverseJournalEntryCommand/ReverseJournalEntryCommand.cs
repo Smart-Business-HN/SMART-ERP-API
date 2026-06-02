@@ -98,9 +98,11 @@ namespace SMART.ERP.Application.Features.JournalEntryFeature.Commands.ReverseJou
                     original.ReversedByJournalEntryId = saved.Id;
                     original.ModificationDate = DateTime.Now;
                     original.ModifiedBy = userName;
-                    // 'original' ya viene rastreado con sus navegaciones; guardamos solo sus cambios.
-                    // No usar UpdateAsync (haría Update sobre el grafo y tocaría cuentas/cliente/proveedor).
-                    await _repositoryAsync.SaveChangesAsync(ct);
+                    // NoTracking global: desligamos el grafo (evita InvalidOperationException por
+                    // terceros duplicados) y actualizamos solo la cabecera del asiento original.
+                    original.Lines = null;
+                    original.FiscalPeriod = null;
+                    await _repositoryAsync.UpdateAsync(original, ct);
                 }, cancellationToken);
 
                 await _outputCacheStored.EvictByTagAsync("cache_journal_entries", cancellationToken);

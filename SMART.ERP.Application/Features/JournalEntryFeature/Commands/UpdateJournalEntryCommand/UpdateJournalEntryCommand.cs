@@ -93,9 +93,10 @@ namespace SMART.ERP.Application.Features.JournalEntryFeature.Commands.UpdateJour
                         ProviderId = l.ProviderId
                     }).ToList();
 
-                    // 'entry' ya viene rastreado; SaveChanges detecta los cambios del asiento y las
-                    // líneas nuevas. No usar UpdateAsync (haría Update sobre todo el grafo cargado).
-                    await _repositoryAsync.SaveChangesAsync(ct);
+                    // NoTracking global: desligamos FiscalPeriod para no arrastrarla en el Update.
+                    // Las líneas nuevas (sin Id, en entry.Lines) se insertan vía el Update de la cabecera.
+                    entry.FiscalPeriod = null;
+                    await _repositoryAsync.UpdateAsync(entry, ct);
                 }, cancellationToken);
 
                 await _outputCacheStored.EvictByTagAsync("cache_journal_entries", cancellationToken);

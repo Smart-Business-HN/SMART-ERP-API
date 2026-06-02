@@ -70,11 +70,14 @@ namespace SMART.ERP.Application.Features.JournalEntryFeature.Commands.PostJourna
                     entry.ModificationDate = DateTime.Now;
                     entry.ModifiedBy = userName;
 
-                    // El asiento ya viene rastreado (asTracking:true) con sus navegaciones
-                    // (LedgerAccount/Customer/Provider). Persistimos con SaveChanges para guardar
-                    // solo los cambios del asiento; NO usar UpdateAsync, que haría Update sobre todo
-                    // el grafo y marcaría como Modified las cuentas/cliente/proveedor maestros.
-                    await _repositoryAsync.SaveChangesAsync(ct);
+                    // El DbContext es NoTracking global: el asiento viene DESrastreado con su grafo
+                    // (Lines -> LedgerAccount/Customer/Provider) cargado. Hacer Update sobre ese grafo
+                    // intenta adjuntar dos instancias del mismo tercero (líneas con el mismo Customer)
+                    // -> InvalidOperationException. Desligamos las navegaciones y actualizamos SOLO la
+                    // cabecera del asiento (patrón estándar de actualización del repositorio).
+                    entry.Lines = null;
+                    entry.FiscalPeriod = null;
+                    await _repositoryAsync.UpdateAsync(entry, ct);
                 }, cancellationToken);
 
                 await _outputCacheStored.EvictByTagAsync("cache_journal_entries", cancellationToken);
