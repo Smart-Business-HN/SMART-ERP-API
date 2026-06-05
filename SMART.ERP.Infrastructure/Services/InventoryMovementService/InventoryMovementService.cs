@@ -105,8 +105,11 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
         {
             // Local-first: reusar instancias ya rastreadas para evitar conflictos cuando el mismo
             // producto aparece en varias líneas de un mismo documento dentro de la transacción.
+            // NO se hace .Include(x => x.Warehouse): adjuntar la distribución vía .Update() arrastraría
+            // la entidad Warehouse al ChangeTracker y, al procesar varios items del mismo almacén en una
+            // sola transacción, EF intentaría rastrear dos instancias de Warehouse con el mismo Id
+            // ("another instance with the same key value is already being tracked").
             var distributions = await _context.InventoryDistributions
-                .Include(x => x.Warehouse)
                 .Where(x => x.ProductId == input.ProductId)
                 .ToListAsync(cancellationToken);
 
@@ -119,18 +122,9 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
 
             var distribution = distributions.FirstOrDefault(x => x.WarehouseId == input.WarehouseId);
             var delta = input.QuantityIn - input.QuantityOut;
-            bool newDistributionIsVirtualWarehouse = false;
 
             if (distribution == null)
             {
-                // Proyectar solo IsVirtual: cargar la entidad Warehouse y asignarla al navigation
-                // property haría que EF la trate como Added (Detached + Id != 0 por NoTracking global)
-                // e intente INSERT INTO [Warehouse] ([Id], ...) con IDENTITY_INSERT OFF.
-                newDistributionIsVirtualWarehouse = await _context.Warehouses
-                    .Where(w => w.Id == input.WarehouseId)
-                    .Select(w => w.IsVirtual)
-                    .FirstOrDefaultAsync(cancellationToken);
-
                 distribution = new InventoryDistribution
                 {
                     ProductId = input.ProductId,
@@ -151,6 +145,15 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
                     _context.InventoryDistributions.Update(distribution);
             }
 
+            // Solo el stock propio cuenta como CurrentStock; los almacenes virtuales (consignados) se
+            // excluyen para no inflar el inventario propio ni afectar reportes/contabilidad. Se resuelve
+            // qué almacenes son virtuales con una proyección de Ids (sin materializar Warehouse).
+            var warehouseIds = distributions.Select(x => x.WarehouseId).Distinct().ToList();
+            var virtualWarehouseIds = (await _context.Warehouses
+                .Where(w => warehouseIds.Contains(w.Id) && w.IsVirtual)
+                .Select(w => w.Id)
+                .ToListAsync(cancellationToken)).ToHashSet();
+
             var product = _context.Products.Local.FirstOrDefault(p => p.Id == input.ProductId);
             if (product == null)
             {
@@ -159,14 +162,8 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
             }
             if (product != null)
             {
-                // Solo el stock propio cuenta como CurrentStock; los almacenes virtuales (consignados)
-                // se excluyen para no inflar el inventario propio ni afectar reportes/contabilidad.
-                // Las distribuciones existentes traen Warehouse via .Include; la recién creada
-                // tiene Warehouse == null y usamos newDistributionIsVirtualWarehouse para su flag.
                 product.CurrentStock = (int)distributions
-                    .Where(x =>
-                        (x.Warehouse != null && !x.Warehouse.IsVirtual)
-                        || (x.Warehouse == null && !newDistributionIsVirtualWarehouse))
+                    .Where(x => !virtualWarehouseIds.Contains(x.WarehouseId))
                     .Sum(x => x.Quantity);
                 if (input.UpdateProductCost && !input.IsCancellation && input.QuantityIn > 0 && input.UnitCost.HasValue && input.UnitCost.Value > 0)
                 {
@@ -211,8 +208,8 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
 
         public async Task SyncProductStockAsync(int productId, CancellationToken cancellationToken = default)
         {
+            // Sin .Include(x => x.Warehouse): evita rastrear la entidad Warehouse (ver nota en SyncStockAsync).
             var distributions = await _context.InventoryDistributions
-                .Include(x => x.Warehouse)
                 .Where(x => x.ProductId == productId)
                 .ToListAsync(cancellationToken);
 
@@ -223,8 +220,15 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
             }
 
             // Excluir almacenes virtuales: el stock consignado no forma parte del inventario propio.
+            // Se resuelve con una proyección de Ids (sin materializar la entidad Warehouse).
+            var warehouseIds = distributions.Select(x => x.WarehouseId).Distinct().ToList();
+            var virtualWarehouseIds = (await _context.Warehouses
+                .Where(w => warehouseIds.Contains(w.Id) && w.IsVirtual)
+                .Select(w => w.Id)
+                .ToListAsync(cancellationToken)).ToHashSet();
+
             var total = distributions
-                .Where(x => x.Warehouse == null || !x.Warehouse.IsVirtual)
+                .Where(x => !virtualWarehouseIds.Contains(x.WarehouseId))
                 .Sum(x => x.Quantity);
 
             var product = _context.Products.Local.FirstOrDefault(p => p.Id == productId);
