@@ -32,6 +32,11 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
             decimal prevQty = last?.RunningQuantity ?? 0m;
             decimal prevAvg = last?.RunningAverageCost ?? 0m;
 
+            // Inserción retro-fechada (p.ej. un inventario inicial con fecha anterior a ventas ya
+            // registradas): los saldos corridos quedarían fuera de orden, así que al final se recalcula
+            // toda la cadena en orden cronológico. Solo ocurre en este caso atípico.
+            var isBackdated = last != null && input.MovementDate < last.MovementDate;
+
             decimal newQty;
             decimal newAvg;
 
@@ -98,7 +103,78 @@ namespace SMART.ERP.Infrastructure.Services.InventoryMovementService
             }
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            // Si el movimiento entró con fecha anterior a otros ya registrados, recalcular la cadena
+            // completa en orden cronológico para que el kardex (saldo, costo promedio y valor) cuadre.
+            if (isBackdated)
+                await RecalculateRunningBalancesAsync(input.ProductId, input.WarehouseId, input.SyncStock, cancellationToken);
+
             return movement;
+        }
+
+        /// <summary>
+        /// Recalcula los saldos corridos (RunningQuantity / RunningAverageCost / RunningTotalValue) de
+        /// todos los movimientos de un producto en un almacén, en orden cronológico (fecha, luego Id).
+        /// Necesario cuando se inserta un movimiento retro-fechado (p.ej. un inventario inicial) y la
+        /// cadena quedó fuera de orden. NO altera QuantityIn/Out/UnitCost/TotalCost: el costo registrado
+        /// de cada transacción se conserva; solo se corrigen los saldos derivados. Replica el mismo
+        /// algoritmo de costo promedio que <see cref="RecordMovementAsync"/>.
+        /// </summary>
+        private async Task RecalculateRunningBalancesAsync(int productId, int warehouseId, bool updateProductCost, CancellationToken cancellationToken)
+        {
+            var movements = await _context.InventoryMovements
+                .Where(x => x.ProductId == productId && x.WarehouseId == warehouseId)
+                .OrderBy(x => x.MovementDate)
+                .ThenBy(x => x.Id)
+                .ToListAsync(cancellationToken);
+            if (movements.Count == 0) return;
+
+            // Reusar instancias ya rastreadas (Local) para no chocar con el ChangeTracker.
+            for (int i = 0; i < movements.Count; i++)
+            {
+                var tracked = _context.InventoryMovements.Local.FirstOrDefault(m => m.Id == movements[i].Id);
+                if (tracked != null) movements[i] = tracked;
+            }
+
+            decimal runQty = 0m, runAvg = 0m;
+            foreach (var m in movements)
+            {
+                if (m.QuantityIn > 0)
+                {
+                    if (!m.IsCancellation && m.UnitCost.HasValue && m.UnitCost.Value > 0)
+                    {
+                        if (runQty <= 0)
+                            runAvg = m.UnitCost.Value;
+                        else
+                            runAvg = Math.Round((runQty * runAvg + m.QuantityIn * m.UnitCost.Value) / (runQty + m.QuantityIn), 4);
+                    }
+                    runQty += m.QuantityIn;
+                }
+                else
+                {
+                    runQty -= m.QuantityOut;
+                }
+
+                m.RunningQuantity = runQty;
+                m.RunningAverageCost = runAvg;
+                m.RunningTotalValue = Math.Round(runQty * runAvg, 2);
+                if (_context.Entry(m).State == EntityState.Detached)
+                    _context.InventoryMovements.Update(m);
+            }
+
+            // El costo del producto refleja el promedio del último movimiento cronológico.
+            if (updateProductCost && runAvg > 0)
+            {
+                var product = _context.Products.Local.FirstOrDefault(p => p.Id == productId);
+                if (product == null)
+                {
+                    product = await _context.Products.FirstOrDefaultAsync(x => x.Id == productId, cancellationToken);
+                    if (product != null) _context.Products.Attach(product);
+                }
+                if (product != null) product.CostPrice = runAvg;
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         private async Task SyncStockAsync(RecordMovementInput input, decimal newAvg, CancellationToken cancellationToken)

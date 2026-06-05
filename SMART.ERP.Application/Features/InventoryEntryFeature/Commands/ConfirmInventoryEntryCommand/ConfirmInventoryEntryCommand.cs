@@ -80,7 +80,11 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.ConfirmI
                         ? (await _providerRepository.GetByIdAsync(entry.ProviderId.Value, ct))?.Name
                         : null;
 
-                    var isAbsolute = entry.EntryType is InventoryEntryType.Adjustment or InventoryEntryType.OpeningStock;
+                    // Solo el Ajuste de conteo físico es absoluto (fija el saldo a la cantidad contada).
+                    // El Inventario inicial (OpeningStock) es ADITIVO: suma lo declarado. Tratarlo como
+                    // absoluto inflaba la cantidad cuando ya existía stock (p.ej. ventas registradas antes
+                    // de cargar una apertura retro-fechada), p.ej. ingresar 2 y postear 5 = 2 - (-3).
+                    var isAbsolute = entry.EntryType is InventoryEntryType.Adjustment;
                     var movementType = entry.EntryType switch
                     {
                         InventoryEntryType.Purchase => KardexMovementType.Purchase,
