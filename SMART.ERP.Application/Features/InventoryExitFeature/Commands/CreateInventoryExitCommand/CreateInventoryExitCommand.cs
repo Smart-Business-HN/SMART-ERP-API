@@ -20,6 +20,7 @@ namespace SMART.ERP.Application.Features.InventoryExitFeature.Commands.CreateInv
         public string? CustomReason { get; set; }
         public int WarehouseId { get; set; }
         public int? PrefixId { get; set; }
+        public int? ProjectId { get; set; }
         public string? Notes { get; set; }
         public string? BeneficiaryName { get; set; }
         public List<CreateInventoryExitItemDto> Items { get; set; } = [];
@@ -32,10 +33,12 @@ namespace SMART.ERP.Application.Features.InventoryExitFeature.Commands.CreateInv
             private readonly IReadRepositoryAsync<Warehouse> _warehouseRepository;
             private readonly IReadRepositoryAsync<Prefix> _prefixRepository;
             private readonly IReadRepositoryAsync<Product> _productRepository;
+            private readonly IReadRepositoryAsync<Project> _projectRepository;
 
             public CreateInventoryExitCommandHandler(IMapper mapper, IJwtService jwtService,
                 IRepositoryAsync<InventoryExit> repositoryAsync, IReadRepositoryAsync<Warehouse> warehouseRepository,
-                IReadRepositoryAsync<Prefix> prefixRepository, IReadRepositoryAsync<Product> productRepository)
+                IReadRepositoryAsync<Prefix> prefixRepository, IReadRepositoryAsync<Product> productRepository,
+                IReadRepositoryAsync<Project> projectRepository)
             {
                 _mapper = mapper;
                 _jwtService = jwtService;
@@ -43,6 +46,7 @@ namespace SMART.ERP.Application.Features.InventoryExitFeature.Commands.CreateInv
                 _warehouseRepository = warehouseRepository;
                 _prefixRepository = prefixRepository;
                 _productRepository = productRepository;
+                _projectRepository = projectRepository;
             }
 
             public async Task<Response<InventoryExitDto>> Handle(CreateInventoryExitCommand request, CancellationToken cancellationToken)
@@ -70,6 +74,12 @@ namespace SMART.ERP.Application.Features.InventoryExitFeature.Commands.CreateInv
                         throw new ApiException("La cantidad de cada producto debe ser mayor a 0.");
                 }
 
+                if (request.ProjectId.HasValue)
+                {
+                    _ = await _projectRepository.GetByIdAsync(request.ProjectId.Value, cancellationToken)
+                        ?? throw new ApiException($"No existe un proyecto con el Id {request.ProjectId.Value}");
+                }
+
                 var exit = new InventoryExit
                 {
                     Status = InventoryExitStatus.Draft,
@@ -78,6 +88,7 @@ namespace SMART.ERP.Application.Features.InventoryExitFeature.Commands.CreateInv
                     CustomReason = request.CustomReason,
                     WarehouseId = request.WarehouseId,
                     PrefixId = prefix.Id,
+                    ProjectId = request.ProjectId,
                     Notes = request.Notes,
                     BeneficiaryName = request.BeneficiaryName,
                     CreationDate = DateTime.Now,

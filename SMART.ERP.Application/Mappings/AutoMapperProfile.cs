@@ -288,7 +288,8 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<InventoryEntryItem, InventoryEntryItemDto>()
                 .ForMember(d => d.ProductName, o => o.MapFrom(s => s.Product != null ? s.Product.Name : null))
                 .ForMember(d => d.ProductCode, o => o.MapFrom(s => s.Product != null ? s.Product.Code : null));
-            CreateMap<InventoryExit, InventoryExitDto>();
+            CreateMap<InventoryExit, InventoryExitDto>()
+                .ForMember(d => d.ProjectName, o => o.MapFrom(s => s.Project != null ? s.Project.Name : null));
             CreateMap<InventoryExitItem, InventoryExitItemDto>()
                 .ForMember(d => d.ProductName, o => o.MapFrom(s => s.Product != null ? s.Product.Name : null))
                 .ForMember(d => d.ProductCode, o => o.MapFrom(s => s.Product != null ? s.Product.Code : null));

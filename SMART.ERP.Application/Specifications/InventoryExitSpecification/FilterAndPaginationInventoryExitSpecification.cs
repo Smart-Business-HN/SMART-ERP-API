@@ -7,9 +7,10 @@ namespace SMART.ERP.Application.Specifications.InventoryExitSpecification
     public class FilterAndPaginationInventoryExitSpecification : Specification<InventoryExit>
     {
         public FilterAndPaginationInventoryExitSpecification(string? parameter, int pageNumber, int pageSize,
-            InventoryExitReason? reason, InventoryExitStatus? status, int? warehouseId)
+            InventoryExitReason? reason, InventoryExitStatus? status, int? warehouseId, int? projectId)
         {
             Query.Include(x => x.Warehouse)
+                 .Include(x => x.Project)
                  .OrderByDescending(x => x.Id)
                  .Skip(pageNumber * pageSize)
                  .Take(pageSize)
@@ -31,6 +32,10 @@ namespace SMART.ERP.Application.Specifications.InventoryExitSpecification
             if (warehouseId.HasValue)
             {
                 Query.Where(x => x.WarehouseId == warehouseId.Value);
+            }
+            if (projectId.HasValue)
+            {
+                Query.Where(x => x.ProjectId == projectId.Value);
             }
         }
     }

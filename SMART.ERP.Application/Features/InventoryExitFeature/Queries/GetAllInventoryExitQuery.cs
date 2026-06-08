@@ -18,6 +18,7 @@ namespace SMART.ERP.Application.Features.InventoryExitFeature.Queries
         public InventoryExitReason? Reason { get; set; }
         public InventoryExitStatus? Status { get; set; }
         public int? WarehouseId { get; set; }
+        public int? ProjectId { get; set; }
 
         public class GetAllInventoryExitQueryHandler : IRequestHandler<GetAllInventoryExitQuery, PagedResponse<List<InventoryExitDto>>>
         {
@@ -40,7 +41,7 @@ namespace SMART.ERP.Application.Features.InventoryExitFeature.Queries
 
                 var exits = await _repositoryAsync.ListAsync(
                     new FilterAndPaginationInventoryExitSpecification(request.Parameter, request.PageNumber, request.PageSize,
-                        request.Reason, request.Status, request.WarehouseId), cancellationToken);
+                        request.Reason, request.Status, request.WarehouseId, request.ProjectId), cancellationToken);
                 var dto = _mapper.Map<List<InventoryExitDto>>(exits);
                 return new PagedResponse<List<InventoryExitDto>>(dto, request.PageNumber, request.PageSize,
                     request.All ? request.PageSize : await _repositoryAsync.CountAsync(cancellationToken));

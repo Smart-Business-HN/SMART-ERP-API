@@ -13,6 +13,7 @@ namespace SMART.ERP.Application.Features.ProjectFeature.Commands.AssignProjectCo
         public List<int>? PurchaseBillIds { get; set; }
         public List<int>? NonBillableExpenseIds { get; set; }
         public List<int>? QuotationIds { get; set; }
+        public List<int>? InventoryExitIds { get; set; }
     }
 
     public class AssignProjectCommandHandler : IRequestHandler<AssignProjectCommand, Response<string>>
@@ -22,19 +23,22 @@ namespace SMART.ERP.Application.Features.ProjectFeature.Commands.AssignProjectCo
         private readonly IRepositoryAsync<PurchaseBill> _purchaseBillRepositoryAsync;
         private readonly IRepositoryAsync<NonBillableExpense> _nonBillableExpenseRepositoryAsync;
         private readonly IRepositoryAsync<Quotation> _quotationRepositoryAsync;
+        private readonly IRepositoryAsync<InventoryExit> _inventoryExitRepositoryAsync;
 
         public AssignProjectCommandHandler(
             IRepositoryAsync<Project> projectRepositoryAsync,
             IRepositoryAsync<Invoice> invoiceRepositoryAsync,
             IRepositoryAsync<PurchaseBill> purchaseBillRepositoryAsync,
             IRepositoryAsync<NonBillableExpense> nonBillableExpenseRepositoryAsync,
-            IRepositoryAsync<Quotation> quotationRepositoryAsync)
+            IRepositoryAsync<Quotation> quotationRepositoryAsync,
+            IRepositoryAsync<InventoryExit> inventoryExitRepositoryAsync)
         {
             _projectRepositoryAsync = projectRepositoryAsync;
             _invoiceRepositoryAsync = invoiceRepositoryAsync;
             _purchaseBillRepositoryAsync = purchaseBillRepositoryAsync;
             _nonBillableExpenseRepositoryAsync = nonBillableExpenseRepositoryAsync;
             _quotationRepositoryAsync = quotationRepositoryAsync;
+            _inventoryExitRepositoryAsync = inventoryExitRepositoryAsync;
         }
 
         public async Task<Response<string>> Handle(AssignProjectCommand request, CancellationToken cancellationToken)
@@ -105,6 +109,21 @@ namespace SMART.ERP.Application.Features.ProjectFeature.Commands.AssignProjectCo
                     }
                 }
                 await _quotationRepositoryAsync.SaveChangesAsync();
+            }
+
+            if (request.InventoryExitIds != null && request.InventoryExitIds.Count > 0)
+            {
+                foreach (var inventoryExitId in request.InventoryExitIds)
+                {
+                    var inventoryExit = await _inventoryExitRepositoryAsync.GetByIdAsync(inventoryExitId);
+                    if (inventoryExit != null)
+                    {
+                        inventoryExit.ProjectId = request.ProjectId;
+                        await _inventoryExitRepositoryAsync.UpdateAsync(inventoryExit);
+                        assignedCount++;
+                    }
+                }
+                await _inventoryExitRepositoryAsync.SaveChangesAsync();
             }
 
             return new Response<string>($"{assignedCount} registros asociados al proyecto exitosamente.");

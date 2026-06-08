@@ -18,6 +18,7 @@ namespace SMART.ERP.Application.Features.InventoryExitFeature.Commands.UpdateInv
         public InventoryExitReason ExitReason { get; set; }
         public string? CustomReason { get; set; }
         public int WarehouseId { get; set; }
+        public int? ProjectId { get; set; }
         public string? Notes { get; set; }
         public string? BeneficiaryName { get; set; }
         public List<CreateInventoryExitItemDto> Items { get; set; } = [];
@@ -30,10 +31,12 @@ namespace SMART.ERP.Application.Features.InventoryExitFeature.Commands.UpdateInv
             private readonly IRepositoryAsync<InventoryExitItem> _itemRepository;
             private readonly IReadRepositoryAsync<Warehouse> _warehouseRepository;
             private readonly IReadRepositoryAsync<Product> _productRepository;
+            private readonly IReadRepositoryAsync<Project> _projectRepository;
 
             public UpdateInventoryExitCommandHandler(IMapper mapper, IJwtService jwtService,
                 IRepositoryAsync<InventoryExit> exitRepository, IRepositoryAsync<InventoryExitItem> itemRepository,
-                IReadRepositoryAsync<Warehouse> warehouseRepository, IReadRepositoryAsync<Product> productRepository)
+                IReadRepositoryAsync<Warehouse> warehouseRepository, IReadRepositoryAsync<Product> productRepository,
+                IReadRepositoryAsync<Project> projectRepository)
             {
                 _mapper = mapper;
                 _jwtService = jwtService;
@@ -41,6 +44,7 @@ namespace SMART.ERP.Application.Features.InventoryExitFeature.Commands.UpdateInv
                 _itemRepository = itemRepository;
                 _warehouseRepository = warehouseRepository;
                 _productRepository = productRepository;
+                _projectRepository = projectRepository;
             }
 
             public async Task<Response<InventoryExitDto>> Handle(UpdateInventoryExitCommand request, CancellationToken cancellationToken)
@@ -66,6 +70,12 @@ namespace SMART.ERP.Application.Features.InventoryExitFeature.Commands.UpdateInv
                         ?? throw new ApiException($"No existe un producto con el Id {item.ProductId}");
                 }
 
+                if (request.ProjectId.HasValue)
+                {
+                    _ = await _projectRepository.GetByIdAsync(request.ProjectId.Value, cancellationToken)
+                        ?? throw new ApiException($"No existe un proyecto con el Id {request.ProjectId.Value}");
+                }
+
                 var existingItems = await _itemRepository.ListAsync(new InventoryExitItemsByExitSpecification(exit.Id), cancellationToken);
                 if (existingItems.Count > 0)
                 {
@@ -76,6 +86,7 @@ namespace SMART.ERP.Application.Features.InventoryExitFeature.Commands.UpdateInv
                 exit.ExitReason = request.ExitReason;
                 exit.CustomReason = request.CustomReason;
                 exit.WarehouseId = request.WarehouseId;
+                exit.ProjectId = request.ProjectId;
                 exit.Notes = request.Notes;
                 exit.BeneficiaryName = request.BeneficiaryName;
                 exit.ModificationDate = DateTime.Now;

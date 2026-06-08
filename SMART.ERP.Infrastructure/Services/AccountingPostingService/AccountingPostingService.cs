@@ -38,6 +38,7 @@ namespace SMART.ERP.Infrastructure.Services.AccountingPostingService
             public int? CostCenterId { get; init; }
             public Guid? CustomerId { get; init; }
             public int? ProviderId { get; init; }
+            public int? ProjectId { get; init; }
         }
 
         // ============================ VENTAS ============================
@@ -365,9 +366,11 @@ namespace SMART.ERP.Infrastructure.Services.AccountingPostingService
             if (cost <= 0) return;
 
             var costCenter = await DefaultCostCenterIdAsync(ct);
+            // Si la salida está ligada a un proyecto, se etiqueta la línea de gasto con esa dimensión
+            // (la cuenta de inventario es de balance y no lleva dimensión de resultado).
             var lines = new List<Line>
             {
-                new() { LedgerAccountId = await SystemAccountAsync(AccountMappingKey.DefaultExpense, ct), Debit = cost, Description = "Salida de inventario (merma/uso)", CostCenterId = costCenter },
+                new() { LedgerAccountId = await SystemAccountAsync(AccountMappingKey.DefaultExpense, ct), Debit = cost, Description = "Salida de inventario (merma/uso)", CostCenterId = costCenter, ProjectId = exit.ProjectId },
                 new() { LedgerAccountId = await SystemAccountAsync(AccountMappingKey.Inventory, ct), Credit = cost, Description = "Inventario" },
             };
             await PostEntryAsync(exit.ExitDate, $"Salida de inventario {exit.Code}", JournalEntrySource.Kardex, "InventoryExit", exit.Id, lines, ct);
@@ -540,7 +543,8 @@ namespace SMART.ERP.Infrastructure.Services.AccountingPostingService
                     Description = l.Description,
                     CostCenterId = l.CostCenterId,
                     CustomerId = l.CustomerId,
-                    ProviderId = l.ProviderId
+                    ProviderId = l.ProviderId,
+                    ProjectId = l.ProjectId
                 }).ToList()
             };
             _context.JournalEntries.Add(entry);

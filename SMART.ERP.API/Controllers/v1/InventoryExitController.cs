@@ -32,7 +32,8 @@ namespace SMART.ERP.API.Controllers.v1
         [HttpGet("GetAll")]
         [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] RequestParameter filter,
-            [FromQuery] InventoryExitReason? reason, [FromQuery] InventoryExitStatus? status, [FromQuery] int? warehouseId)
+            [FromQuery] InventoryExitReason? reason, [FromQuery] InventoryExitStatus? status, [FromQuery] int? warehouseId,
+            [FromQuery] int? projectId)
         {
             return Ok(await Mediator.Send(new GetAllInventoryExitQuery
             {
@@ -42,7 +43,8 @@ namespace SMART.ERP.API.Controllers.v1
                 All = filter.All,
                 Reason = reason,
                 Status = status,
-                WarehouseId = warehouseId
+                WarehouseId = warehouseId,
+                ProjectId = projectId
             }));
         }
 

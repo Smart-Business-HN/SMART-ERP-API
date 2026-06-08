@@ -1,5 +1,6 @@
 using Ardalis.Specification;
 using SMART.ERP.Domain.Entities;
+using SMART.ERP.Domain.Enums;
 
 namespace SMART.ERP.Application.Specifications.ProjectSpecification
 {
@@ -139,6 +140,41 @@ namespace SMART.ERP.Application.Specifications.ProjectSpecification
             {
                 Query.Where(x => (x.QuotationCode != null && x.QuotationCode.Contains(parameter)) ||
                                  (x.Customer != null && x.Customer.FullName.Contains(parameter)));
+            }
+        }
+    }
+
+    // InventoryExit - Paginated (solo confirmadas sin proyecto, pues solo estas imputan gasto)
+    public class FilterUnassignedInventoryExitsSpecification : Specification<InventoryExit>
+    {
+        public FilterUnassignedInventoryExitsSpecification(string? parameter, int pageNumber, int pageSize)
+        {
+            Query.Where(x => x.ProjectId == null && x.Status == InventoryExitStatus.Confirmed)
+                 .Include(x => x.Items!)
+                 .Skip(pageNumber * pageSize)
+                 .Take(pageSize)
+                 .OrderByDescending(x => x.Id)
+                 .AsNoTracking();
+
+            if (!string.IsNullOrEmpty(parameter))
+            {
+                Query.Where(x => (x.Code != null && x.Code.Contains(parameter)) ||
+                                 (x.BeneficiaryName != null && x.BeneficiaryName.Contains(parameter)));
+            }
+        }
+    }
+
+    // InventoryExit - Count
+    public class CountUnassignedInventoryExitsSpecification : Specification<InventoryExit>
+    {
+        public CountUnassignedInventoryExitsSpecification(string? parameter)
+        {
+            Query.Where(x => x.ProjectId == null && x.Status == InventoryExitStatus.Confirmed);
+
+            if (!string.IsNullOrEmpty(parameter))
+            {
+                Query.Where(x => (x.Code != null && x.Code.Contains(parameter)) ||
+                                 (x.BeneficiaryName != null && x.BeneficiaryName.Contains(parameter)));
             }
         }
     }

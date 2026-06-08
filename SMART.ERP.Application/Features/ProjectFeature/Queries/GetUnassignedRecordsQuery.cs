@@ -19,17 +19,20 @@ namespace SMART.ERP.Application.Features.ProjectFeature.Queries
             private readonly IRepositoryAsync<PurchaseBill> _purchaseBillRepositoryAsync;
             private readonly IRepositoryAsync<NonBillableExpense> _nonBillableExpenseRepositoryAsync;
             private readonly IRepositoryAsync<Quotation> _quotationRepositoryAsync;
+            private readonly IRepositoryAsync<InventoryExit> _inventoryExitRepositoryAsync;
 
             public GetUnassignedRecordsQueryHandler(
                 IRepositoryAsync<Invoice> invoiceRepositoryAsync,
                 IRepositoryAsync<PurchaseBill> purchaseBillRepositoryAsync,
                 IRepositoryAsync<NonBillableExpense> nonBillableExpenseRepositoryAsync,
-                IRepositoryAsync<Quotation> quotationRepositoryAsync)
+                IRepositoryAsync<Quotation> quotationRepositoryAsync,
+                IRepositoryAsync<InventoryExit> inventoryExitRepositoryAsync)
             {
                 _invoiceRepositoryAsync = invoiceRepositoryAsync;
                 _purchaseBillRepositoryAsync = purchaseBillRepositoryAsync;
                 _nonBillableExpenseRepositoryAsync = nonBillableExpenseRepositoryAsync;
                 _quotationRepositoryAsync = quotationRepositoryAsync;
+                _inventoryExitRepositoryAsync = inventoryExitRepositoryAsync;
             }
 
             public async Task<PagedResponse<UnassignedRecordsResponseDto>> Handle(GetUnassignedRecordsQuery request, CancellationToken cancellationToken)
@@ -92,6 +95,20 @@ namespace SMART.ERP.Application.Features.ProjectFeature.Queries
                         }).ToList();
                         response.TotalCount = await _quotationRepositoryAsync.CountAsync(
                             new Specifications.ProjectSpecification.CountUnassignedQuotationsSpecification(request.Parameter));
+                        break;
+
+                    case "inventoryexit":
+                        var inventoryExits = await _inventoryExitRepositoryAsync.ListAsync(
+                            new Specifications.ProjectSpecification.FilterUnassignedInventoryExitsSpecification(request.Parameter, request.PageNumber, request.PageSize));
+                        response.Records = inventoryExits.Select(x => new UnassignedRecordDto
+                        {
+                            Id = x.Id,
+                            Code = x.Code ?? "",
+                            Description = x.BeneficiaryName,
+                            Total = x.Items != null ? x.Items.Sum(i => i.Quantity * (i.UnitCost ?? 0m)) : 0m
+                        }).ToList();
+                        response.TotalCount = await _inventoryExitRepositoryAsync.CountAsync(
+                            new Specifications.ProjectSpecification.CountUnassignedInventoryExitsSpecification(request.Parameter));
                         break;
                 }
 

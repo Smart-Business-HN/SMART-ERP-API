@@ -1291,6 +1291,11 @@ namespace SMART.ERP.Infrastructure
                 .WithOne(x => x.InventoryExit)
                 .HasForeignKey(x => x.InventoryExitId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<InventoryExit>()
+                .HasOne(x => x.Project)
+                .WithMany(p => p.InventoryExits)
+                .HasForeignKey(x => x.ProjectId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             //InventoryExitItem
             modelBuilder.Entity<InventoryExitItem>().ToTable("InventoryExitItem");

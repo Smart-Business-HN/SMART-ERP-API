@@ -23,6 +23,8 @@ namespace SMART.ERP.Application.DTOs.InventoryExit
         public string CreatedBy { get; set; } = null!;
         public DateTime? ModificationDate { get; set; }
         public string? ModifiedBy { get; set; }
+        public int? ProjectId { get; set; }
+        public string? ProjectName { get; set; }
         public List<InventoryExitItemDto>? Items { get; set; }
     }
 }

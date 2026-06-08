@@ -33,6 +33,9 @@ namespace SMART.ERP.Domain.Entities
         public DateTime? ModificationDate { get; set; }
         [Column(TypeName = "varchar(50)")]
         public string? ModifiedBy { get; set; }
+        // Proyecto al que se imputa el gasto de esta salida (opcional).
+        public int? ProjectId { get; set; }
+        public virtual Project? Project { get; set; }
         public List<InventoryExitItem>? Items { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SMART.ERP.Application.DTOs.Invoice;
+using SMART.ERP.Application.DTOs.InventoryExit;
 using SMART.ERP.Application.DTOs.NonBilllableExpense;
 using SMART.ERP.Application.DTOs.PurchaseBill;
 using SMART.ERP.Application.DTOs.Quotation;
@@ -13,6 +14,7 @@ namespace SMART.ERP.Application.DTOs.Project
         public decimal ExecutionBudget { get; set; }
         public decimal TotalPurchaseBills { get; set; }
         public decimal TotalNonBillableExpenses { get; set; }
+        public decimal TotalInventoryExits { get; set; }
         public decimal TotalInvested { get; set; }
         public decimal TotalRevenue { get; set; }
         public decimal Profit { get; set; }
@@ -21,9 +23,11 @@ namespace SMART.ERP.Application.DTOs.Project
         public int NonBillableExpenseCount { get; set; }
         public int InvoiceCount { get; set; }
         public int QuotationCount { get; set; }
+        public int InventoryExitCount { get; set; }
         public List<PurchaseBillDto>? PurchaseBills { get; set; }
         public List<NonBillableExpenseDto>? NonBillableExpenses { get; set; }
         public List<InvoiceDto>? Invoices { get; set; }
         public List<QuotationDto>? Quotations { get; set; }
+        public List<InventoryExitDto>? InventoryExits { get; set; }
     }
 }

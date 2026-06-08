@@ -15,6 +15,7 @@ namespace SMART.ERP.Application.Specifications.ProjectSpecification
                 .Include(x => x.NonBillableExpenses)!.ThenInclude(x => x.Provider)
                 .Include(x => x.Invoices)!.ThenInclude(x => x.Customer)
                 .Include(x => x.Quotations)!.ThenInclude(x => x.Customer)
+                .Include(x => x.InventoryExits)!.ThenInclude(x => x.Items)
                 .Where(x => x.Id == id);
         }
     }
