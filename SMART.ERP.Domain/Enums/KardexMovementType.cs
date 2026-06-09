@@ -23,6 +23,7 @@ namespace SMART.ERP.Domain.Enums
         OtherExit = 19,
         InventoryExitCancellation = 20,
         EntryCancellation = 21,
-        TransferCancellation = 22
+        TransferCancellation = 22,
+        ProjectSurplus = 23
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using SMART.ERP.Application.DTOs.InventoryEntry;
 using SMART.ERP.Application.DTOs.InventoryExit;
 using SMART.ERP.Application.DTOs.Invoice;
 using SMART.ERP.Application.DTOs.NonBilllableExpense;
@@ -44,11 +45,19 @@ namespace SMART.ERP.Application.Features.ProjectFeature.Queries
                 .Where(e => e.Status == InventoryExitStatus.Confirmed)
                 .ToList() ?? new List<InventoryExit>();
 
+            // Sobrantes de proyecto CONFIRMADOS: material que regresa al inventario y reduce el costo
+            // del proyecto (revierte el consumo). Se filtran por tipo y estado.
+            var confirmedSurplus = project.InventoryEntries?
+                .Where(e => e.EntryType == InventoryEntryType.ProjectSurplus && e.Status == InventoryEntryStatus.Confirmed)
+                .ToList() ?? new List<InventoryEntry>();
+
             var totalPurchaseBills = project.PurchaseBills?.Sum(x => x.Total) ?? 0;
             var totalNonBillableExpenses = project.NonBillableExpenses?.Sum(x => x.Amount) ?? 0;
             var totalInventoryExits = confirmedExits
                 .Sum(e => e.Items?.Sum(i => i.Quantity * (i.UnitCost ?? 0)) ?? 0);
-            var totalInvested = totalPurchaseBills + totalNonBillableExpenses + totalInventoryExits;
+            var totalProjectSurplus = confirmedSurplus
+                .Sum(e => e.Items?.Sum(i => i.Quantity * (i.UnitCost ?? 0)) ?? 0);
+            var totalInvested = totalPurchaseBills + totalNonBillableExpenses + totalInventoryExits - totalProjectSurplus;
             var totalRevenue = project.Invoices?.Sum(x => x.Total) ?? 0;
             var profit = totalRevenue - totalInvested;
             var budgetRemaining = project.ExecutionBudget - totalInvested;
@@ -62,6 +71,7 @@ namespace SMART.ERP.Application.Features.ProjectFeature.Queries
                 TotalPurchaseBills = totalPurchaseBills,
                 TotalNonBillableExpenses = totalNonBillableExpenses,
                 TotalInventoryExits = totalInventoryExits,
+                TotalProjectSurplus = totalProjectSurplus,
                 TotalInvested = totalInvested,
                 TotalRevenue = totalRevenue,
                 Profit = profit,
@@ -71,11 +81,13 @@ namespace SMART.ERP.Application.Features.ProjectFeature.Queries
                 InvoiceCount = project.Invoices?.Count ?? 0,
                 QuotationCount = project.Quotations?.Count ?? 0,
                 InventoryExitCount = confirmedExits.Count,
+                ProjectSurplusCount = confirmedSurplus.Count,
                 PurchaseBills = _mapper.Map<List<PurchaseBillDto>>(project.PurchaseBills),
                 NonBillableExpenses = _mapper.Map<List<NonBillableExpenseDto>>(project.NonBillableExpenses),
                 Invoices = _mapper.Map<List<InvoiceDto>>(project.Invoices),
                 Quotations = _mapper.Map<List<QuotationDto>>(project.Quotations),
-                InventoryExits = _mapper.Map<List<InventoryExitDto>>(confirmedExits)
+                InventoryExits = _mapper.Map<List<InventoryExitDto>>(confirmedExits),
+                ProjectSurplusEntries = _mapper.Map<List<InventoryEntryDto>>(confirmedSurplus)
             };
 
             return new Response<ProjectFinancialSummaryDto>(summary);

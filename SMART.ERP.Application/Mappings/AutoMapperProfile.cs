@@ -284,7 +284,8 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<CreateProductEntryDto, ProductEntry>();
             // Inventory module (Ventix-style)
             CreateMap<InventoryEntry, InventoryEntryDto>()
-                .ForMember(d => d.ProviderName, o => o.MapFrom(s => s.Provider != null ? s.Provider.Name : null));
+                .ForMember(d => d.ProviderName, o => o.MapFrom(s => s.Provider != null ? s.Provider.Name : null))
+                .ForMember(d => d.ProjectName, o => o.MapFrom(s => s.Project != null ? s.Project.Name : null));
             CreateMap<InventoryEntryItem, InventoryEntryItemDto>()
                 .ForMember(d => d.ProductName, o => o.MapFrom(s => s.Product != null ? s.Product.Name : null))
                 .ForMember(d => d.ProductCode, o => o.MapFrom(s => s.Product != null ? s.Product.Code : null));

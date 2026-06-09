@@ -35,6 +35,9 @@ namespace SMART.ERP.Domain.Entities
         public DateTime? ModificationDate { get; set; }
         [Column(TypeName = "varchar(50)")]
         public string? ModifiedBy { get; set; }
+        // Proyecto del que proviene el material (obligatorio para EntryType.ProjectSurplus).
+        public int? ProjectId { get; set; }
+        public virtual Project? Project { get; set; }
         public List<InventoryEntryItem>? Items { get; set; }
     }
 }

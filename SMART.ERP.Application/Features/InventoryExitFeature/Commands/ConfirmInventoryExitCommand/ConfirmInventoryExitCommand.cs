@@ -120,9 +120,13 @@ namespace SMART.ERP.Application.Features.InventoryExitFeature.Commands.ConfirmIn
                     exit.ModificationDate = DateTime.Now;
                     exit.ModifiedBy = userName;
                     await _exitRepository.UpdateAsync(exit, ct);
+
+                    // Posteo contable dentro de la misma transacción: si el asiento falla (cuenta mal
+                    // configurada, período cerrado, etc.) se revierte también la rebaja de stock y la
+                    // salida queda en Borrador, evitando kardex sin asiento. Usa el mismo DbContext.
+                    await _accountingPostingService.PostInventoryExitAsync(exit.Id, ct);
                 }, cancellationToken);
 
-                await _accountingPostingService.PostInventoryExitAsync(request.Id, cancellationToken);
                 await _cacheInvalidator.InvalidateAsync(cancellationToken);
 
                 var full = await _exitRepository.FirstOrDefaultAsync(new GetInventoryExitByIdSpecification(request.Id), cancellationToken);

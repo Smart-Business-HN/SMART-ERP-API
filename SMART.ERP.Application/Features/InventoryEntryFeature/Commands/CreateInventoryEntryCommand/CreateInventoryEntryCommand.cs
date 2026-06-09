@@ -20,6 +20,7 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.CreateIn
         public int WarehouseId { get; set; }
         public int? PrefixId { get; set; }
         public int? ProviderId { get; set; }
+        public int? ProjectId { get; set; }
         public string? SupplierReference { get; set; }
         public string? Description { get; set; }
         public List<CreateInventoryEntryItemDto> Items { get; set; } = [];
@@ -33,11 +34,12 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.CreateIn
             private readonly IReadRepositoryAsync<Prefix> _prefixRepository;
             private readonly IReadRepositoryAsync<Provider> _providerRepository;
             private readonly IReadRepositoryAsync<Product> _productRepository;
+            private readonly IReadRepositoryAsync<Project> _projectRepository;
 
             public CreateInventoryEntryCommandHandler(IMapper mapper, IJwtService jwtService,
                 IRepositoryAsync<InventoryEntry> repositoryAsync, IReadRepositoryAsync<Warehouse> warehouseRepository,
                 IReadRepositoryAsync<Prefix> prefixRepository, IReadRepositoryAsync<Provider> providerRepository,
-                IReadRepositoryAsync<Product> productRepository)
+                IReadRepositoryAsync<Product> productRepository, IReadRepositoryAsync<Project> projectRepository)
             {
                 _mapper = mapper;
                 _jwtService = jwtService;
@@ -46,6 +48,7 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.CreateIn
                 _prefixRepository = prefixRepository;
                 _providerRepository = providerRepository;
                 _productRepository = productRepository;
+                _projectRepository = projectRepository;
             }
 
             public async Task<Response<InventoryEntryDto>> Handle(CreateInventoryEntryCommand request, CancellationToken cancellationToken)
@@ -71,6 +74,14 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.CreateIn
                         ?? throw new ApiException($"No existe un proveedor con el Id {request.ProviderId.Value}");
                 }
 
+                if (request.EntryType == InventoryEntryType.ProjectSurplus)
+                {
+                    if (!request.ProjectId.HasValue)
+                        throw new ApiException("Un sobrante de proyecto requiere un proyecto.");
+                    _ = await _projectRepository.GetByIdAsync(request.ProjectId.Value, cancellationToken)
+                        ?? throw new ApiException($"No existe un proyecto con el Id {request.ProjectId.Value}");
+                }
+
                 foreach (var item in request.Items)
                 {
                     _ = await _productRepository.GetByIdAsync(item.ProductId, cancellationToken)
@@ -79,6 +90,8 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.CreateIn
                         throw new ApiException("La cantidad de cada producto debe ser mayor a 0.");
                     if (item.Quantity < 0)
                         throw new ApiException("La cantidad de cada producto no puede ser negativa.");
+                    if (request.EntryType == InventoryEntryType.ProjectSurplus && (!item.UnitCost.HasValue || item.UnitCost.Value <= 0))
+                        throw new ApiException("Cada producto del sobrante de proyecto debe tener un costo unitario mayor a 0.");
                 }
 
                 var entry = new InventoryEntry
@@ -89,6 +102,7 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.CreateIn
                     WarehouseId = request.WarehouseId,
                     PrefixId = prefix.Id,
                     ProviderId = request.ProviderId,
+                    ProjectId = request.ProjectId,
                     SupplierReference = request.SupplierReference,
                     Description = request.Description,
                     CreationDate = DateTime.Now,

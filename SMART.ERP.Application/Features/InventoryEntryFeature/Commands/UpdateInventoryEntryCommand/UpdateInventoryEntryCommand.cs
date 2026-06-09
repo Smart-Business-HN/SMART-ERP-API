@@ -18,6 +18,7 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.UpdateIn
         public DateTime EntryDate { get; set; }
         public int WarehouseId { get; set; }
         public int? ProviderId { get; set; }
+        public int? ProjectId { get; set; }
         public string? SupplierReference { get; set; }
         public string? Description { get; set; }
         public List<CreateInventoryEntryItemDto> Items { get; set; } = [];
@@ -30,10 +31,12 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.UpdateIn
             private readonly IRepositoryAsync<InventoryEntryItem> _itemRepository;
             private readonly IReadRepositoryAsync<Warehouse> _warehouseRepository;
             private readonly IReadRepositoryAsync<Product> _productRepository;
+            private readonly IReadRepositoryAsync<Project> _projectRepository;
 
             public UpdateInventoryEntryCommandHandler(IMapper mapper, IJwtService jwtService,
                 IRepositoryAsync<InventoryEntry> entryRepository, IRepositoryAsync<InventoryEntryItem> itemRepository,
-                IReadRepositoryAsync<Warehouse> warehouseRepository, IReadRepositoryAsync<Product> productRepository)
+                IReadRepositoryAsync<Warehouse> warehouseRepository, IReadRepositoryAsync<Product> productRepository,
+                IReadRepositoryAsync<Project> projectRepository)
             {
                 _mapper = mapper;
                 _jwtService = jwtService;
@@ -41,6 +44,7 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.UpdateIn
                 _itemRepository = itemRepository;
                 _warehouseRepository = warehouseRepository;
                 _productRepository = productRepository;
+                _projectRepository = projectRepository;
             }
 
             public async Task<Response<InventoryEntryDto>> Handle(UpdateInventoryEntryCommand request, CancellationToken cancellationToken)
@@ -60,10 +64,20 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.UpdateIn
                 if (warehouse.IsVirtual)
                     throw new ApiException("No se permite registrar entradas de inventario en almacenes virtuales (consignados). Use la importación de stock virtual.");
 
+                if (request.EntryType == InventoryEntryType.ProjectSurplus)
+                {
+                    if (!request.ProjectId.HasValue)
+                        throw new ApiException("Un sobrante de proyecto requiere un proyecto.");
+                    _ = await _projectRepository.GetByIdAsync(request.ProjectId.Value, cancellationToken)
+                        ?? throw new ApiException($"No existe un proyecto con el Id {request.ProjectId.Value}");
+                }
+
                 foreach (var item in request.Items)
                 {
                     _ = await _productRepository.GetByIdAsync(item.ProductId, cancellationToken)
                         ?? throw new ApiException($"No existe un producto con el Id {item.ProductId}");
+                    if (request.EntryType == InventoryEntryType.ProjectSurplus && (!item.UnitCost.HasValue || item.UnitCost.Value <= 0))
+                        throw new ApiException("Cada producto del sobrante de proyecto debe tener un costo unitario mayor a 0.");
                 }
 
                 // Reemplazar líneas existentes.
@@ -77,6 +91,7 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.UpdateIn
                 entry.EntryDate = request.EntryDate;
                 entry.WarehouseId = request.WarehouseId;
                 entry.ProviderId = request.ProviderId;
+                entry.ProjectId = request.ProjectId;
                 entry.SupplierReference = request.SupplierReference;
                 entry.Description = request.Description;
                 entry.ModificationDate = DateTime.Now;

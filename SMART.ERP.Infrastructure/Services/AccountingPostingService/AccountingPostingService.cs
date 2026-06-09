@@ -326,6 +326,18 @@ namespace SMART.ERP.Infrastructure.Services.AccountingPostingService
                     new() { LedgerAccountId = await SystemAccountAsync(AccountMappingKey.OpeningEquity, ct), Credit = net, Description = "Capital / inventario inicial" },
                 };
             }
+            else if (entry.EntryType == InventoryEntryType.ProjectSurplus)
+            {
+                // Sobrante de proyecto: el material vuelve al inventario. Se acredita la cuenta de baja
+                // de inventario (InventoryAdjustmentDecrease) con la dimensión de proyecto, revirtiendo
+                // el costo que la salida había cargado al proyecto. No exige tercero; sí centro de costo.
+                var costCenter = await DefaultCostCenterIdAsync(ct);
+                lines = new()
+                {
+                    new() { LedgerAccountId = inventory, Debit = net, Description = "Sobrante de proyecto (entrada)" },
+                    new() { LedgerAccountId = await SystemAccountAsync(AccountMappingKey.InventoryAdjustmentDecrease, ct), Credit = net, Description = "Sobrante de proyecto", CostCenterId = costCenter, ProjectId = entry.ProjectId },
+                };
+            }
             else // Adjustment
             {
                 var costCenter = await DefaultCostCenterIdAsync(ct);
@@ -366,11 +378,14 @@ namespace SMART.ERP.Infrastructure.Services.AccountingPostingService
             if (cost <= 0) return;
 
             var costCenter = await DefaultCostCenterIdAsync(ct);
-            // Si la salida está ligada a un proyecto, se etiqueta la línea de gasto con esa dimensión
-            // (la cuenta de inventario es de balance y no lleva dimensión de resultado).
+            // La salida es una disminución de inventario: se debita la cuenta de baja/disminución de
+            // inventario (InventoryAdjustmentDecrease), que exige centro de costo pero NO tercero — una
+            // merma/uso interno no tiene cliente ni proveedor. Si la salida está ligada a un proyecto,
+            // se etiqueta esa línea con la dimensión de proyecto (la cuenta de inventario es de balance
+            // y no lleva dimensión de resultado).
             var lines = new List<Line>
             {
-                new() { LedgerAccountId = await SystemAccountAsync(AccountMappingKey.DefaultExpense, ct), Debit = cost, Description = "Salida de inventario (merma/uso)", CostCenterId = costCenter, ProjectId = exit.ProjectId },
+                new() { LedgerAccountId = await SystemAccountAsync(AccountMappingKey.InventoryAdjustmentDecrease, ct), Debit = cost, Description = "Salida de inventario (merma/uso)", CostCenterId = costCenter, ProjectId = exit.ProjectId },
                 new() { LedgerAccountId = await SystemAccountAsync(AccountMappingKey.Inventory, ct), Credit = cost, Description = "Inventario" },
             };
             await PostEntryAsync(exit.ExitDate, $"Salida de inventario {exit.Code}", JournalEntrySource.Kardex, "InventoryExit", exit.Id, lines, ct);

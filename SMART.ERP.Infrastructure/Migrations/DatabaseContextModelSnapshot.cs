@@ -2125,6 +2125,9 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.Property<int>("PrefixId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("ProviderId")
                         .HasColumnType("int");
 
@@ -2144,6 +2147,8 @@ namespace SMART.ERP.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("PrefixId");
+
+                    b.HasIndex("ProjectId");
 
                     b.HasIndex("ProviderId");
 
@@ -7175,6 +7180,11 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SMART.ERP.Domain.Entities.Project", "Project")
+                        .WithMany("InventoryEntries")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("SMART.ERP.Domain.Entities.Provider", "Provider")
                         .WithMany()
                         .HasForeignKey("ProviderId")
@@ -7192,6 +7202,8 @@ namespace SMART.ERP.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Prefix");
+
+                    b.Navigation("Project");
 
                     b.Navigation("Provider");
 
@@ -9099,6 +9111,8 @@ namespace SMART.ERP.Infrastructure.Migrations
 
             modelBuilder.Entity("SMART.ERP.Domain.Entities.Project", b =>
                 {
+                    b.Navigation("InventoryEntries");
+
                     b.Navigation("InventoryExits");
 
                     b.Navigation("Invoices");

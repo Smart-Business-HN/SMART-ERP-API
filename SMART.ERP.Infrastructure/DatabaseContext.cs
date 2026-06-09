@@ -1245,6 +1245,11 @@ namespace SMART.ERP.Infrastructure
                 .WithOne(x => x.InventoryEntry)
                 .HasForeignKey(x => x.InventoryEntryId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<InventoryEntry>()
+                .HasOne(x => x.Project)
+                .WithMany(p => p.InventoryEntries)
+                .HasForeignKey(x => x.ProjectId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             //InventoryEntryItem
             modelBuilder.Entity<InventoryEntryItem>().ToTable("InventoryEntryItem");

@@ -89,6 +89,7 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.ConfirmI
                     {
                         InventoryEntryType.Purchase => KardexMovementType.Purchase,
                         InventoryEntryType.OpeningStock => KardexMovementType.OpeningStock,
+                        InventoryEntryType.ProjectSurplus => KardexMovementType.ProjectSurplus,
                         _ => KardexMovementType.Adjustment
                     };
 
@@ -152,9 +153,12 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.ConfirmI
                     entry.ModificationDate = DateTime.Now;
                     entry.ModifiedBy = userName;
                     await _entryRepository.UpdateAsync(entry, ct);
+
+                    // Posteo contable dentro de la misma transacción: si el asiento falla se revierte
+                    // también la entrada de stock y la entrada queda en Borrador (mismo DbContext).
+                    await _accountingPostingService.PostInventoryEntryAsync(entry.Id, ct);
                 }, cancellationToken);
 
-                await _accountingPostingService.PostInventoryEntryAsync(request.Id, cancellationToken);
                 await _cacheInvalidator.InvalidateAsync(cancellationToken);
 
                 var full = await _entryRepository.FirstOrDefaultAsync(new GetInventoryEntryByIdSpecification(request.Id), cancellationToken);

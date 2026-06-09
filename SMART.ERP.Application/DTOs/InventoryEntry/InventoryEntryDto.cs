@@ -15,6 +15,8 @@ namespace SMART.ERP.Application.DTOs.InventoryEntry
         public WarehouseDto? Warehouse { get; set; }
         public int? ProviderId { get; set; }
         public string? ProviderName { get; set; }
+        public int? ProjectId { get; set; }
+        public string? ProjectName { get; set; }
         public string? SupplierReference { get; set; }
         public string? Description { get; set; }
         public DateTime? ConfirmedDate { get; set; }

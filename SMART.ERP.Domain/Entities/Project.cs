@@ -34,5 +34,6 @@ namespace SMART.ERP.Domain.Entities
         public virtual List<Quotation>? Quotations { get; set; }
         public virtual List<ProjectAttachment>? ProjectAttachments { get; set; }
         public virtual List<InventoryExit>? InventoryExits { get; set; }
+        public virtual List<InventoryEntry>? InventoryEntries { get; set; }
     }
 }

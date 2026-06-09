@@ -4,6 +4,7 @@ namespace SMART.ERP.Domain.Enums
     {
         Purchase = 1,
         Adjustment = 2,
-        OpeningStock = 3
+        OpeningStock = 3,
+        ProjectSurplus = 4
     }
 }
