@@ -13,7 +13,9 @@ namespace SMART.ERP.Application.Specifications.QuotationSpecification
     {
         public GetQuotationDetailWithComboComponentsSpecification(int id)
         {
-            Query.Include(x => x.Status)
+            // IgnoreQueryFilters: la cotizacion debe seguir mostrando productos eliminados (historico).
+            Query.IgnoreQueryFilters()
+                 .Include(x => x.Status)
                  .Include(x => x.Customer).ThenInclude(x => x!.DeliveryDirections)!.ThenInclude(x => x.City).ThenInclude(x => x!.Department)
                  .Include(x => x.Prefix).ThenInclude(x => x!.InternalDocument)
                  .Include(x => x.User)

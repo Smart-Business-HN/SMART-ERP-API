@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseProductCommand;
 using SMART.ERP.Application.Features.BaseProductFeature.Commands.DeleteBaseProductCommand;
+using SMART.ERP.Application.Features.BaseProductFeature.Commands.RestoreBaseProductCommand;
 using SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseProductCommand;
 using SMART.ERP.Application.Features.BaseProductFeature.Queries;
 using SMART.ERP.Application.Parameters;
@@ -104,6 +105,28 @@ namespace SMART.ERP.API.Controllers.v1
         public async Task<IActionResult> Delete(int id)
         {
             return Ok(await Mediator.Send(new DeleteBaseProductCommand { Id = id }));
+        }
+
+        [HttpPut("Restore/{id}")]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> Restore(int id)
+        {
+            return Ok(await Mediator.Send(new RestoreBaseProductCommand { Id = id }));
+        }
+
+        [HttpGet("GetDeleted")]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> GetDeleted([FromQuery] RequestParameter filter)
+        {
+            return Ok(await Mediator.Send(new GetDeletedProductsQuery
+            {
+                Parameter = filter.Parameter,
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize,
+                Order = filter.Order,
+                Column = filter.Column,
+                All = filter.All
+            }));
         }
     }
 }

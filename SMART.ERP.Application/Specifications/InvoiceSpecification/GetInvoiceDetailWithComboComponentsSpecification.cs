@@ -13,7 +13,9 @@ namespace SMART.ERP.Application.Specifications.InvoiceSpecification
     {
         public GetInvoiceDetailWithComboComponentsSpecification(int id)
         {
-            Query.Include(x => x.Status)
+            // IgnoreQueryFilters: la factura debe seguir mostrando productos eliminados (historico).
+            Query.IgnoreQueryFilters()
+                 .Include(x => x.Status)
                  .Include(x => x.Customer).ThenInclude(x => x!.DeliveryDirections)!.ThenInclude(x => x.City).ThenInclude(x => x!.Department)
                  .Include(x => x.Cai)
                  .Include(x => x.User)

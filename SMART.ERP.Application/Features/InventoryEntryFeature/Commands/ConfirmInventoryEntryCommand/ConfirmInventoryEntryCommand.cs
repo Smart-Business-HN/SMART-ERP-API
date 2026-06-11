@@ -9,6 +9,7 @@ using SMART.ERP.Application.Services.InventoryMovementService;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Services.ProductCacheInvalidator;
 using SMART.ERP.Application.Specifications.InventoryDistributionSpecification;
+using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Specifications.InventoryEntrySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -98,7 +99,7 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.ConfirmI
                         var distribution = await _distributionRepository.FirstOrDefaultAsync(
                             new FilterInventoryDistributionByProductIdAndWarehouseId(item.ProductId, entry.WarehouseId), ct);
                         var previousStock = distribution?.Quantity ?? 0m;
-                        var product = await _productRepository.GetByIdAsync(item.ProductId, ct);
+                        var product = await _productRepository.FirstOrDefaultAsync(new ProductByIdIgnoreFiltersSpecification(item.ProductId), ct);
 
                         item.PreviousStock = previousStock;
                         item.PreviousCostPrice = product?.CostPrice ?? 0m;

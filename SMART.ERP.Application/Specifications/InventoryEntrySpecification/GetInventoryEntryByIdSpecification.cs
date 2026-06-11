@@ -7,6 +7,8 @@ namespace SMART.ERP.Application.Specifications.InventoryEntrySpecification
     {
         public GetInventoryEntryByIdSpecification(int id)
         {
+            // IgnoreQueryFilters: historico, debe resolver productos eliminados (soft delete).
+            Query.IgnoreQueryFilters();
             Query.Where(x => x.Id == id)
                  .Include(x => x.Warehouse)
                  .Include(x => x.Provider)

@@ -7,6 +7,8 @@ namespace SMART.ERP.Application.Specifications.OpportunitySpecification
     {
         public FilterOpportunitiesinDatesSpecification(DateTime? start, DateTime? end, int? branchId)
         {
+            // IgnoreQueryFilters: historico, debe resolver productos eliminados (soft delete).
+            Query.IgnoreQueryFilters();
             Query.Include(x => x.QuoteProducts!.Where(x => x.IsActive)).ThenInclude(x => x.Product)
                 .Include(x => x.OpportunityStep)
                 .Include(x => x.Customer).Include(x => x.TypeOrigin).Include(x => x.User).Include(x => x.InterestLevel).Include(x => x.WinReason)

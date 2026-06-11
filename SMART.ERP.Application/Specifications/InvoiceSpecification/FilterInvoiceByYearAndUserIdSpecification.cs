@@ -7,6 +7,8 @@ namespace SMART.ERP.Application.Specifications.InvoiceSpecification
     {
         public FilterInvoiceByYearAndUserIdSpecification(int year, Guid id)
         {
+            // IgnoreQueryFilters: historico, debe resolver productos eliminados (soft delete).
+            Query.IgnoreQueryFilters();
             Query.Include(x => x.ProductsSold!).ThenInclude(x => x.Product)
             .Where(x => x.CreationDate.Year == year && x.UserId == id && x.Status!.Name != "Cancelada").AsNoTracking();
         }

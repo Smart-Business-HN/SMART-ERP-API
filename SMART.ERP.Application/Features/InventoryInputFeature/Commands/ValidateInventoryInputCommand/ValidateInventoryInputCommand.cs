@@ -5,6 +5,7 @@ using SMART.ERP.Application.DTOs.ProductEntry;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.InventoryDistributionSpecification;
+using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
@@ -76,7 +77,7 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.Validate
                         Quantity = productEntry.Quantity
                     };
                     await _inventoryDistributionRepositoryAsync.AddAsync(warehouseDistribution);
-                    var product = await _productRepositoryAsync.GetByIdAsync(productEntry.ProductId);
+                    var product = await _productRepositoryAsync.FirstOrDefaultAsync(new ProductByIdIgnoreFiltersSpecification(productEntry.ProductId));
                     product!.CurrentStock += (int)productEntry.Quantity;
                     await _productRepositoryAsync.UpdateAsync(product);
                 }

@@ -8,6 +8,8 @@ namespace SMART.ERP.Application.Specifications.InvoiceSpecification
         public QueryInvoiceSpecification(string? parameter, int pageNumber,
            int pageSize, string? order, string? column)
         {
+            // IgnoreQueryFilters: historico, debe resolver productos eliminados (soft delete).
+            Query.IgnoreQueryFilters();
             Query.Include(x => x.ProductsSold!).ThenInclude(x => x.Product).ThenInclude(x => x!.Brand)
               .Include(x => x.ProductsSold!).ThenInclude(x => x.Tax)
               .Include(x => x.BranchOffice!)

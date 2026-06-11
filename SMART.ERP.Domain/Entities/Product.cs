@@ -48,6 +48,10 @@ namespace SMART.ERP.Domain.Entities
         public DateTime? ModificationDate { get; set; }
         [MaxLength(50)]
         public string? ModificatedBy { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        [MaxLength(50)]
+        public string? DeletedBy { get; set; }
         public int TaxId { get; set; }
         public virtual Tax? Tax { get; set; }
         public List<ProductDataSheet>? ProductDataSheets { get; set; }

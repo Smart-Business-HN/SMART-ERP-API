@@ -7,7 +7,8 @@ namespace SMART.ERP.Application.Specifications.ReportSpecification
     {
         public TopSoldProductSpecification(DateTime? start, DateTime? end, int? branchOfficeId)
         {
-            Query.Include(x => x.ProductsSold!).ThenInclude(x => x.Product).ThenInclude(x => x!.SubCategory).AsNoTracking();
+            // IgnoreQueryFilters: el reporte historico debe contar productos eliminados.
+            Query.IgnoreQueryFilters().Include(x => x.ProductsSold!).ThenInclude(x => x.Product).ThenInclude(x => x!.SubCategory).AsNoTracking();
             if (start != null)
             {
                 Query.Where(x => x.CreationDate >= start);

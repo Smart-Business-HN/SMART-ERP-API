@@ -8,6 +8,7 @@ using SMART.ERP.Application.Services.InventoryMovementService;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Services.ProductCacheInvalidator;
 using SMART.ERP.Application.Specifications.InventoryDistributionSpecification;
+using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Specifications.WarehouseTransferSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -78,7 +79,7 @@ namespace SMART.ERP.Application.Features.WarehouseTransferFeature.Commands.SendW
                         if (available < item.Quantity)
                             throw new ApiException($"Stock insuficiente en el almacén de origen para el producto {item.ProductId}. Disponible: {available}, requerido: {item.Quantity}.");
 
-                        var product = await _productRepository.GetByIdAsync(item.ProductId, ct);
+                        var product = await _productRepository.FirstOrDefaultAsync(new ProductByIdIgnoreFiltersSpecification(item.ProductId), ct);
                         item.UnitCost = product?.CostPrice;
                         await _itemRepository.UpdateAsync(item, ct);
 

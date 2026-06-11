@@ -7,6 +7,8 @@ namespace SMART.ERP.Application.Specifications.InvoiceSpecification
     {
         public FilterInvoiceByMonthYearAndUserIdSpecification(int month, int year, Guid userId, int? branchId)
         {
+            // IgnoreQueryFilters: historico, debe resolver productos eliminados (soft delete).
+            Query.IgnoreQueryFilters();
             Query.Include(x => x.ProductsSold!).ThenInclude(x => x.Product).Include(x => x.User)
                 .Where(x => x.CreationDate.Month == month && x.CreationDate.Year == year && x.UserId == userId).AsNoTracking();
 

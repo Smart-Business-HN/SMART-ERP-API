@@ -7,6 +7,8 @@ namespace SMART.ERP.Application.Specifications.PurchaseOrderSpecification
     {
         public FilterPurchaseOrderByIdSpecification(int id)
         {
+            // IgnoreQueryFilters: historico, debe resolver productos eliminados (soft delete).
+            Query.IgnoreQueryFilters();
             Query.Include(x => x.Status)
                  .Include(x => x.Provider)
                  .Include(x => x.Prefix).ThenInclude(x => x!.InternalDocument)

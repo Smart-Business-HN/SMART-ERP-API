@@ -7,6 +7,8 @@ namespace SMART.ERP.Application.Specifications.QuotationSpecification
     {
         public FilterQuotationByIdSpecification(int id)
         {
+           // IgnoreQueryFilters: historico, debe resolver productos eliminados (soft delete).
+           Query.IgnoreQueryFilters();
            Query.Include(x => x.Status)
                 .Include(x => x.Customer).ThenInclude(x => x!.DeliveryDirections)!.ThenInclude(x => x.City).ThenInclude(x => x!.Department)
                 .Include(x => x.Prefix).ThenInclude(x => x!.InternalDocument)

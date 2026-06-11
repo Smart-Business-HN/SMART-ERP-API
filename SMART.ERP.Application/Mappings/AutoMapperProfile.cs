@@ -171,6 +171,7 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Product, ProductDto>()
                 .ForMember(d => d.Components, o => o.MapFrom(s => s.Components))
                 .ForMember(d => d.CalculatedStock, o => o.Ignore());
+            CreateMap<Product, DeletedProductDto>();
             CreateMap<ProductPart, ProductPartDto>()
                 .ForMember(d => d.ComponentCurrentStock, o => o.MapFrom(s => s.Product != null ? s.Product.CurrentStock : 0))
                 .ForMember(d => d.ComponentCostPrice, o => o.MapFrom(s => s.Product != null ? s.Product.CostPrice : 0m));

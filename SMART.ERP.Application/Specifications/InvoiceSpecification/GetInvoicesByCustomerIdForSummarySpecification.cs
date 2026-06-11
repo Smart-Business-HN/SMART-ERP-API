@@ -7,6 +7,8 @@ namespace SMART.ERP.Application.Specifications.InvoiceSpecification
     {
         public GetInvoicesByCustomerIdForSummarySpecification(Guid customerId)
         {
+            // IgnoreQueryFilters: historico, debe resolver productos eliminados (soft delete).
+            Query.IgnoreQueryFilters();
             Query
                 .Where(x => x.CustomerId == customerId)
                 .Include(x => x.ProductsSold!).ThenInclude(p => p.Product)

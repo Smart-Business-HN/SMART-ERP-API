@@ -7,6 +7,8 @@ namespace SMART.ERP.Application.Specifications.WarehouseSpecification
     {
         public WarehoseIncludesSpecification(int? id)
         {
+            // IgnoreQueryFilters: historico, debe resolver productos eliminados (soft delete).
+            Query.IgnoreQueryFilters();
             if (id == null)
             {
                 Query.Include(a => a.InventoryDistributions!).ThenInclude(a => a.Product);

@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using SMART.ERP.Application.DTOs.Cart;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.MetaConversionsService;
 using SMART.ERP.Application.Specifications.CartSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -20,13 +21,16 @@ public class AdminUpdateCartStatusCommandHandler : IRequestHandler<AdminUpdateCa
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryAsync<Cart> _cartRepositoryAsync;
+    private readonly IMetaConversionsService _metaConversionsService;
 
     public AdminUpdateCartStatusCommandHandler(
         IMapper mapper,
-        IRepositoryAsync<Cart> cartRepositoryAsync)
+        IRepositoryAsync<Cart> cartRepositoryAsync,
+        IMetaConversionsService metaConversionsService)
     {
         _mapper = mapper;
         _cartRepositoryAsync = cartRepositoryAsync;
+        _metaConversionsService = metaConversionsService;
     }
 
     public async Task<Response<CartDto>> Handle(AdminUpdateCartStatusCommand request, CancellationToken cancellationToken)
@@ -67,6 +71,15 @@ public class AdminUpdateCartStatusCommandHandler : IRequestHandler<AdminUpdateCa
 
         var reloadedCart = await _cartRepositoryAsync.FirstOrDefaultAsync(
             new GetCartByIdSpecification(cart.Id), cancellationToken);
+
+        // Meta Conversions API: Purchase fiable cuando la compra se confirma.
+        // El reloadedCart viene con EcommerceUser y CartItems.Product. El servicio
+        // nunca lanza, así que no compromete la actualización del estado.
+        if (request.NewStatus == CartStatus.Verified && reloadedCart != null)
+        {
+            await _metaConversionsService.SendPurchaseAsync(reloadedCart, cancellationToken);
+        }
+
         var dto = _mapper.Map<CartDto>(reloadedCart);
         return new Response<CartDto>(dto, "Estado del carrito actualizado exitosamente.");
     }

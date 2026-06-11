@@ -8,6 +8,7 @@ using SMART.ERP.Application.Services.InventoryMovementService;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Services.ProductCacheInvalidator;
 using SMART.ERP.Application.Specifications.InventoryDistributionSpecification;
+using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Specifications.InventoryEntrySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -87,7 +88,7 @@ namespace SMART.ERP.Application.Features.InventoryEntryFeature.Commands.CancelIn
                         .ToDictionary(g => g.Key, g => g.First().PreviousCostPrice!.Value);
                     foreach (var kv in costByProduct)
                     {
-                        var product = await _productRepository.GetByIdAsync(kv.Key, ct);
+                        var product = await _productRepository.FirstOrDefaultAsync(new ProductByIdIgnoreFiltersSpecification(kv.Key), ct);
                         if (product != null)
                         {
                             product.CostPrice = kv.Value;

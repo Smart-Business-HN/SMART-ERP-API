@@ -8,6 +8,8 @@ namespace SMART.ERP.Application.Specifications.OpportunitySpecification
         public QueryOpportunitySpecification(string? parameter, int pageNumber,
             int pageSize, string? order, string? column)
         {
+            // IgnoreQueryFilters: historico, debe resolver productos eliminados (soft delete).
+            Query.IgnoreQueryFilters();
             Query.Include(x => x.QuoteProducts!.Where(x => x.IsActive)).ThenInclude(x => x.Product).ThenInclude(x => x!.Brand)
                 .Include(x => x.QuoteProducts!.Where(x => x.IsActive)).ThenInclude(x => x.Product)
                 .Include(x => x.QuoteProducts!.Where(x => x.IsActive)).ThenInclude(x => x.Product).ThenInclude(x => x!.SubCategory)

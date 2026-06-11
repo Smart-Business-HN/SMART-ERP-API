@@ -7,6 +7,8 @@ namespace SMART.ERP.Application.Specifications.OpportunitySpecification
     {
         public FilterClosedOpportunitiesInYearByUserSpecification(int year, Guid? id)
         {
+            // IgnoreQueryFilters: historico, debe resolver productos eliminados (soft delete).
+            Query.IgnoreQueryFilters();
             Query.Include(x => x.QuoteProducts!.Where(x => x.IsActive)).ThenInclude(x => x.Product)
                 .ThenInclude(x => x!.SubCategory).Include(x => x.OpportunityStep)
                     .Where(x => x.ClosingDate != null && x.ClosingDate.Value.Year == year).AsNoTracking();

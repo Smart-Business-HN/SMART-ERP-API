@@ -1,9 +1,7 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.Repository;
-using SMART.ERP.Application.Specifications.ProductDataSheetSpecification;
-using SMART.ERP.Application.Specifications.ProductFeatureSpecification;
-using SMART.ERP.Application.Specifications.ProductImageSpecification;
+using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
@@ -17,60 +15,39 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.DeleteBaseP
     public class DeleteBaseProductCommandHandler : IRequestHandler<DeleteBaseProductCommand, Response<string>>
     {
         private readonly IRepositoryAsync<Product> _repositoryAsync;
-        private readonly IRepositoryAsync<ProductDataSheet> _productDataSheetRepositoryAsync;
-        private readonly IRepositoryAsync<ProductFeature> _productFeatureRepositoryAsync;
-        private readonly IRepositoryAsync<ProductImage> _productImageRepositoryAsync;
+        private readonly IJwtService _jwtService;
         private readonly IOutputCacheStore _outputCacheStored;
 
         public DeleteBaseProductCommandHandler(IRepositoryAsync<Product> repositoryAsync,
-            IRepositoryAsync<ProductDataSheet> productDataSheetRepositoryAsync,
-            IRepositoryAsync<ProductFeature> productFeatureRepositoryAsync,
-            IRepositoryAsync<ProductImage> productImageRepositoryAsync,
+            IJwtService jwtService,
             IOutputCacheStore outputCacheStored)
         {
             _repositoryAsync = repositoryAsync;
-            _productDataSheetRepositoryAsync = productDataSheetRepositoryAsync;
-            _productFeatureRepositoryAsync = productFeatureRepositoryAsync;
-            _productImageRepositoryAsync = productImageRepositoryAsync;
+            _jwtService = jwtService;
             _outputCacheStored = outputCacheStored;
         }
         public async Task<Response<string>> Handle(DeleteBaseProductCommand request, CancellationToken cancellationToken)
         {
+            // GetByIdAsync respeta el filtro global, por lo que un producto ya eliminado
+            // devuelve null aqui (eliminar dos veces es un no-op/404).
             var product = await _repositoryAsync.GetByIdAsync(request.Id);
             if (product == null)
             {
                 throw new KeyNotFoundException($"No se encontro ningun registro con el id {request.Id}");
             }
-            await DeleteItems(request.Id);
-            await _repositoryAsync.DeleteAsync(product);
+
+            // Soft delete: se conservan el producto y sus hijos (datasheets/features/images)
+            // para historial y para poder restaurarlo.
+            product.IsDeleted = true;
+            product.DeletedAt = DateTime.Now;
+            product.DeletedBy = _jwtService.GetSubjectToken();
+
+            await _repositoryAsync.UpdateAsync(product);
             await _repositoryAsync.SaveChangesAsync();
-            await _outputCacheStored.EvictByTagAsync("cache_products", cancellationToken);
-            await _outputCacheStored.EvictByTagAsync("cache_productsEcommerce", cancellationToken);
+
+            await ProductCacheEviction.EvictAsync(_outputCacheStored, cancellationToken);
+
             return new Response<string>($"{product.Name} eliminado correctamente", "Eliminado correctamente");
-        }
-
-        public async Task<bool> DeleteItems(int prouctId)
-        {
-            var productDataSheets = await _productDataSheetRepositoryAsync.ListAsync(new ProductDataSheetIncludesSpecification(null, prouctId));
-            foreach (var productDataSheet in productDataSheets)
-            {
-                await _productDataSheetRepositoryAsync.DeleteAsync(productDataSheet);
-                await _productDataSheetRepositoryAsync.SaveChangesAsync();
-            }
-            var productFeatures = await _productFeatureRepositoryAsync.ListAsync(new ProductFeatureByProjectSpecification(prouctId));
-            foreach (var productFeature in productFeatures)
-            {
-                await _productFeatureRepositoryAsync.DeleteAsync(productFeature);
-                await _productFeatureRepositoryAsync.SaveChangesAsync();
-            }
-            var productImages = await _productImageRepositoryAsync.ListAsync(new ProductImageByProjectSpecification(prouctId));
-            foreach (var productImage in productImages)
-            {
-                await _productImageRepositoryAsync.DeleteAsync(productImage);
-                await _productImageRepositoryAsync.SaveChangesAsync();
-            }
-            return true;
-
         }
     }
 }

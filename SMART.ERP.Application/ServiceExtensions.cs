@@ -112,6 +112,7 @@ namespace SMART.ERP.Application
             services.Configure<MetaAdSettings>(configuration.GetSection("MetaAdSettings"));
             services.Configure<GoogleCalendarSettings>(configuration.GetSection("GoogleCalendar"));
             services.Configure<EncryptionSettings>(configuration.GetSection("EncryptionSettings"));
+            services.Configure<MetaCapiSettings>(configuration.GetSection("MetaCapiSettings"));
             // configure blob storage service
             services.AddScoped(_ =>
             {
@@ -127,6 +128,7 @@ namespace SMART.ERP.Application
             services.AddTransient<IAssignUserToOpportunityService, AssignUserToOpportunityService>();
             services.AddTransient<IAssignUserToProspectService, AssignUserToProspectService>();
             services.AddTransient<IMetaPostService, MetaPostService>();
+            services.AddTransient<Services.MetaConversionsService.IMetaConversionsService, Services.MetaConversionsService.MetaConversionsService>();
             services.AddTransient<IGoogleCalendarService, GoogleCalendarService>();
             services.AddTransient<IPriceListService, PriceListService>();
             services.AddTransient<IProductPricingService, ProductPricingService>();

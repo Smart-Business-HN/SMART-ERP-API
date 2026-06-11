@@ -458,6 +458,12 @@ namespace SMART.ERP.Infrastructure
             modelBuilder.Entity<Product>().ToTable("Product");
             modelBuilder.Entity<Product>(o => o.HasKey(x => x.Id));
 
+            // Soft delete: oculta los productos eliminados de TODA consulta automaticamente.
+            // Las lecturas historicas (facturas, cotizaciones, ordenes, Kardex, reportes) usan
+            // Query.IgnoreQueryFilters() para seguir resolviendo el producto eliminado.
+            modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
+            modelBuilder.Entity<Product>().HasIndex(p => p.IsDeleted);
+
             modelBuilder.Entity<Product>()
                 .Property(p => p.ProductType)
                 .HasConversion<int>()

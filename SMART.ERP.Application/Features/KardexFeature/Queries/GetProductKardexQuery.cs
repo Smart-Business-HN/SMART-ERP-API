@@ -5,6 +5,7 @@ using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Helpers;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.InventoryMovementSpecification;
+using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
@@ -36,7 +37,9 @@ namespace SMART.ERP.Application.Features.KardexFeature.Queries
 
             public async Task<Response<KardexReportDto>> Handle(GetProductKardexQuery request, CancellationToken cancellationToken)
             {
-                var product = await _productRepository.GetByIdAsync(request.ProductId, cancellationToken)
+                // Ignora el filtro de soft delete: un producto eliminado puede tener movimientos historicos.
+                var product = await _productRepository.FirstOrDefaultAsync(
+                        new ProductByIdIgnoreFiltersSpecification(request.ProductId), cancellationToken)
                     ?? throw new ApiException($"No existe un producto con el Id {request.ProductId}");
 
                 var report = new KardexReportDto
