@@ -30,6 +30,7 @@ namespace SMART.ERP.Application.DTOs.PurchaseOrder
         public virtual PrefixDto? Prefix { get; set; }
         public int? PurchaseBillDestinationId { get; set; }
         public PurchaseBillDto? PurchaseBillDestination { get; set; }
+        public int? InventoryEntryDestinationId { get; set; }
         public int? inventoryInputDestinationId { get; set; }
         public InventoryInputDto? InventoryInputDestination { get; set; }
         public List<ProductToPurchaseDto>? ProductsToPurchase { get; set; }
