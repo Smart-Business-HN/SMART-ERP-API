@@ -13,10 +13,12 @@ namespace SMART.ERP.Application.Specifications.AccountingReportSpecification
         public FilterPostedLinesByDateRangeSpecification(DateTime fromDate, DateTime toDate, int? ledgerAccountId = null)
         {
             var from = fromDate.Date;
-            var to = toDate.Date;
+            // Límite superior inclusivo del día completo: los asientos llevan hora (p.ej. 06:00), así que
+            // comparar contra toDate.Date (medianoche) con <= perdía los movimientos del último día.
+            var toExclusive = toDate.Date.AddDays(1);
             Query.Include(x => x.LedgerAccount)
                  .Include(x => x.JournalEntry)
-                 .Where(x => x.JournalEntry!.EntryDate >= from && x.JournalEntry.EntryDate <= to)
+                 .Where(x => x.JournalEntry!.EntryDate >= from && x.JournalEntry.EntryDate < toExclusive)
                  .Where(x => x.JournalEntry!.Status == JournalEntryStatus.Posted
                           || x.JournalEntry.Status == JournalEntryStatus.ReversalEntry)
                  .OrderBy(x => x.JournalEntry!.EntryDate).ThenBy(x => x.JournalEntry!.Id).ThenBy(x => x.LineNumber)
