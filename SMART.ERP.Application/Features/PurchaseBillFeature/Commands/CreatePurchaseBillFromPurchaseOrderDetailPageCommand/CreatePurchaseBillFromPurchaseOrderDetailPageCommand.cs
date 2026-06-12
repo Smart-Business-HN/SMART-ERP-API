@@ -79,14 +79,11 @@ namespace SMART.ERP.Application.Features.PurchaseBillFeature.Commands.CreatePurc
             purchaseOrderExist.Prefix = null;
             purchaseOrderExist.Provider = null;
             purchaseOrderExist.ProductsToPurchase = null;
-            if (purchaseOrderExist.InventoryInputDestinationId != null)
-            {
-                purchaseOrderExist.StatusId = 24;
-            }
-            else
-            {
-                purchaseOrderExist.StatusId = 22;
-            }
+            // La recepción puede venir del flujo legacy (InventoryInput) o del nuevo (InventoryEntry).
+            // Si ya está recibida por cualquiera de los dos, la orden queda Completa (24); si no, Facturada / Sin Recibir (22).
+            bool yaRecibida = purchaseOrderExist.InventoryInputDestinationId != null
+                           || purchaseOrderExist.InventoryEntryDestinationId != null;
+            purchaseOrderExist.StatusId = yaRecibida ? 24 : 22;
             purchaseOrderExist.Status = null;
             purchaseOrderExist.BranchOffice = null;
             purchaseOrderExist.User = null;
