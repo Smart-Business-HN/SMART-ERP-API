@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using SMART.ERP.Application.DTOs.Warehouse;
+using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Wrappers;
@@ -41,6 +42,12 @@ namespace SMART.ERP.Application.Features.WarehouseFeature.Commands.UpdateWarehou
             if (warehouse == null)
             {
                 throw new KeyNotFoundException($"No se encontro ningun registro con el id {request.Id}");
+            }
+            // Un almacén virtual (consignado/dropshipping) no debe pertenecer a una sucursal: tener BranchOfficeId
+            // lo volvería elegible para descontar inventario en ventas y podría inyectar costo a la contabilidad.
+            if (warehouse.IsVirtual)
+            {
+                throw new ApiException("Un almacén virtual no puede asignarse a una sucursal.");
             }
             var existBranchOffice = await _branchOfficesRepositoryAsync.GetByIdAsync(request.BranchOfficeId);
             if (existBranchOffice == null)

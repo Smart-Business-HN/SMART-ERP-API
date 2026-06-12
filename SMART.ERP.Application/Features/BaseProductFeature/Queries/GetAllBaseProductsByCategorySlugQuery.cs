@@ -3,6 +3,7 @@ using MediatR;
 using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.CategorySpecification;
+using SMART.ERP.Application.Specifications.InventoryDistributionSpecification;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -24,13 +25,15 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
             private readonly IMapper _mapper;
             private readonly IRepositoryAsync<Product> _repositoryAsync;
             private readonly IRepositoryAsync<Category> _categoryRepositoryAsync;
+            private readonly IRepositoryAsync<InventoryDistribution> _inventoryRepositoryAsync;
 
             public GetAllBaseProductsQueryHandler(IMapper mapper, IRepositoryAsync<Product> repositoryAsync,
-                IRepositoryAsync<Category> categoryRepositoryAsync)
+                IRepositoryAsync<Category> categoryRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryRepositoryAsync)
             {
                 _mapper = mapper;
                 _repositoryAsync = repositoryAsync;
                 _categoryRepositoryAsync = categoryRepositoryAsync;
+                _inventoryRepositoryAsync = inventoryRepositoryAsync;
             }
             public async Task<PagedResponse<List<ProductDto>>> Handle(GetAllBaseProductsByCategorySlugQuery request, CancellationToken cancellationToken)
             {
@@ -60,6 +63,9 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                     }
                 }
                 var dto = _mapper.Map<List<ProductDto>>(products);
+                // Disponibilidad ecommerce (físico + virtual) sin tocar CurrentStock.
+                var distributions = await _inventoryRepositoryAsync.ListAsync(new FilterInventoryByProductIdsSpec(dto.Select(d => d.Id).ToList()));
+                ProductAvailabilityHelper.ApplyEcommerceStock(dto, distributions);
                 return new PagedResponse<List<ProductDto>>(dto, request.PageNumber, request.PageSize, false ? request.PageSize : await _repositoryAsync.CountAsync(new FilterAndPaginationProductsByCategorySlugSpecification(request.CategorySlug, request.Parameter, 0, 0, request.Order, request.Column)));
             }
         }

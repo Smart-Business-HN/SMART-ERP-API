@@ -71,9 +71,12 @@ namespace SMART.ERP.Infrastructure.Services.AccountingPostingService
                 lines.Add(new() { LedgerAccountId = await SystemAccountAsync(AccountMappingKey.SalesTaxPayable18, ct), Credit = Round(invoice.Taxes18Percent), Description = "ISV 18% débito fiscal", CustomerId = invoice.CustomerId });
 
             // COGS desde el kardex real de la factura.
+            // Defensa en profundidad: se excluyen movimientos de almacenes virtuales (consignados/dropshipping)
+            // para que jamás inyecten costo de venta al ledger, incluso si por error un virtual quedara elegible.
             var cogs = await _context.InventoryMovements.AsNoTracking()
                 .Where(m => m.DocumentType == "Invoice" && m.DocumentId == invoiceId
-                            && (m.MovementType == KardexMovementType.Sale || m.MovementType == KardexMovementType.ManualSale))
+                            && (m.MovementType == KardexMovementType.Sale || m.MovementType == KardexMovementType.ManualSale)
+                            && !_context.Warehouses.Any(w => w.Id == m.WarehouseId && w.IsVirtual))
                 .Select(m => m.TotalCost ?? (m.QuantityOut * (m.UnitCost ?? 0m)))
                 .SumAsync(ct);
             cogs = Round(cogs);

@@ -7,7 +7,8 @@ namespace SMART.ERP.Application.Specifications.WarehouseSpecification
     {
         public FilterWarehouseByBranchOfficeIdSpecification(int branchOfficeId)
         {
-            Query.Include(x => x.InventoryDistributions).Where(x => x.BranchOfficeId == branchOfficeId);
+            // !IsVirtual: la venta nunca debe descontar inventario de un almacén virtual (consignado/dropshipping).
+            Query.Include(x => x.InventoryDistributions).Where(x => x.BranchOfficeId == branchOfficeId && !x.IsVirtual);
         }
     }
 }

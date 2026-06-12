@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Services.VirtualStock;
 using SMART.ERP.Application.Wrappers;
+using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.API.Controllers.v1
 {
@@ -50,16 +51,64 @@ namespace SMART.ERP.API.Controllers.v1
                 request.File.FileName,
                 userName);
 
-            return Ok(new Response<object>(new
+            return Ok(BuildImportResponse(result));
+        }
+
+        [HttpPost("import/excel")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(typeof(Response<object>), 200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> ImportExcel([FromForm] ImportCsvRequest request)
+        {
+            if (request.File == null || request.File.Length == 0)
             {
-                result.Id,
-                result.FileName,
-                result.TotalProducts,
-                result.SuccessfulImports,
-                result.FailedImports,
-                result.ImportDate,
-                ErrorLog = result.FailedImports > 0 ? result.ErrorLog : null
-            }, $"Importación completada. {result.SuccessfulImports} productos importados correctamente, {result.FailedImports} errores."));
+                return BadRequest(new Response<object>("Archivo no proporcionado o vacío"));
+            }
+
+            var fileName = request.File.FileName;
+            if (!fileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase) &&
+                !fileName.EndsWith(".xls", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest(new Response<object>("Solo se permiten archivos Excel (.xlsx/.xls)"));
+            }
+
+            var userName = User.Identity?.Name ?? "Unknown";
+
+            using var stream = request.File.OpenReadStream();
+            var result = await _virtualStockService.ImportStockFromExcelAsync(
+                request.ProviderId,
+                request.WarehouseId,
+                stream,
+                fileName,
+                userName);
+
+            return Ok(BuildImportResponse(result));
+        }
+
+        // Construye la respuesta con la forma que espera el frontend (ImportResult): succeeded, importedCount,
+        // errorCount, errors[], message. Compartida por la importación CSV y Excel.
+        private static Response<object> BuildImportResponse(VirtualStockImport result)
+        {
+            var message = $"Importación completada. {result.SuccessfulImports} productos importados correctamente, {result.FailedImports} errores.";
+            var errors = (result.ImportDetails ?? new List<VirtualStockImportDetail>())
+                .Where(d => !d.WasSuccessful)
+                .Select(d => new { row = 0, productCode = d.ProductCode, errorMessage = d.ErrorMessage })
+                .ToList();
+
+            var data = new
+            {
+                succeeded = result.SuccessfulImports > 0,
+                importedCount = result.SuccessfulImports,
+                errorCount = result.FailedImports,
+                errors,
+                message,
+                id = result.Id,
+                fileName = result.FileName,
+                totalProducts = result.TotalProducts,
+                importDate = result.ImportDate
+            };
+
+            return new Response<object>(data, message);
         }
 
         [HttpGet("import-history/{providerId}")]

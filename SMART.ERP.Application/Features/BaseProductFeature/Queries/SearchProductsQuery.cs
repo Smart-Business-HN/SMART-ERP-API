@@ -4,6 +4,7 @@ using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services;
+using SMART.ERP.Application.Specifications.InventoryDistributionSpecification;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -20,17 +21,20 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
         private readonly IMapper _mapper;
         private readonly IRepositoryAsync<Product> _repositoryAsync;
         private readonly IRepositoryAsync<Category> _categoryRepositoryAsync;
+        private readonly IRepositoryAsync<InventoryDistribution> _inventoryRepositoryAsync;
         private readonly IProductPricingService _productPricingService;
 
         public SearchProductsQueryHandler(
-            IMapper mapper, 
+            IMapper mapper,
             IRepositoryAsync<Product> repositoryAsync,
-            IRepositoryAsync<Category> categoryRepositoryAsync, 
+            IRepositoryAsync<Category> categoryRepositoryAsync,
+            IRepositoryAsync<InventoryDistribution> inventoryRepositoryAsync,
             IProductPricingService productPricingService)
         {
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
             _categoryRepositoryAsync = categoryRepositoryAsync;
+            _inventoryRepositoryAsync = inventoryRepositoryAsync;
             _productPricingService = productPricingService;
         }
 
@@ -87,6 +91,10 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                 product.SubCategory!.Category = _mapper.Map<CategoryDto>(
                     categories.Find(y => y.Id == product.SubCategory.CategoryId));
             }
+
+            // Disponibilidad ecommerce (físico + virtual) sin tocar CurrentStock.
+            var distributions = await _inventoryRepositoryAsync.ListAsync(new FilterInventoryByProductIdsSpec(dto.Select(d => d.Id).ToList()));
+            ProductAvailabilityHelper.ApplyEcommerceStock(dto, distributions);
 
             // Contar total de resultados
             var countSpec = new OptimizedProductSearchSpecification(

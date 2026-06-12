@@ -23,6 +23,9 @@ namespace SMART.ERP.Application.DTOs.Product
         public decimal RecomendedSalePrice { get; set; }
         public int MinStock { get; set; }
         public int CurrentStock { get; set; }
+        // Disponibilidad para ecommerce: físico + virtual (consignado). Se calcula en los handlers de
+        // ecommerce; NO se mapea desde la entidad. CurrentStock queda como inventario propio (solo-físico).
+        public int EcommerceStock { get; set; }
         public int BrandId { get; private set; }
         public BrandDto? Brand { get; set; }
         public int UnitOfMeasurementId { get; set; }
