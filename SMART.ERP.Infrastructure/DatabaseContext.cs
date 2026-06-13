@@ -135,6 +135,10 @@ namespace SMART.ERP.Infrastructure
         public DbSet<AccountingSettings> AccountingSettings { get; set; } = null!;
         public DbSet<AccountingMapping> AccountingMappings { get; set; } = null!;
         public DbSet<CostCenter> CostCenters { get; set; } = null!;
+        public DbSet<CompetitorSource> CompetitorSources { get; set; } = null!;
+        public DbSet<RepricingRule> RepricingRules { get; set; } = null!;
+        public DbSet<RepricingSettings> RepricingSettings { get; set; } = null!;
+        public DbSet<PriceChangeLog> PriceChangeLogs { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -2078,6 +2082,40 @@ namespace SMART.ERP.Infrastructure
                 .WithMany()
                 .HasForeignKey(x => x.ProviderId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            //Repricing — monitoreo de precios de competencia + re-fijación automática
+            modelBuilder.Entity<CompetitorSource>().ToTable("CompetitorSource");
+            modelBuilder.Entity<CompetitorSource>().HasKey(x => x.Id);
+            modelBuilder.Entity<CompetitorSource>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<CompetitorSource>()
+                .HasIndex(x => new { x.ProductId, x.CompetitorName }).IsUnique();
+
+            modelBuilder.Entity<RepricingRule>().ToTable("RepricingRule");
+            modelBuilder.Entity<RepricingRule>().HasKey(x => x.Id);
+            modelBuilder.Entity<RepricingRule>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<RepricingRule>()
+                .HasIndex(x => x.ProductId).IsUnique();
+
+            modelBuilder.Entity<RepricingSettings>().ToTable("RepricingSettings");
+            modelBuilder.Entity<RepricingSettings>().HasKey(x => x.Id);
+
+            modelBuilder.Entity<PriceChangeLog>().ToTable("PriceChangeLog");
+            modelBuilder.Entity<PriceChangeLog>().HasKey(x => x.Id);
+            modelBuilder.Entity<PriceChangeLog>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<PriceChangeLog>()
+                .HasIndex(x => new { x.ProductId, x.CreatedUtc });
 
             base.OnModelCreating(modelBuilder);
         }

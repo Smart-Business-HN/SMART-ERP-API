@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Quartz;
 using SMART.ERP.Application.Behaviours;
 using SMART.ERP.Application.Jobs.AdvisorGoalJob;
+using SMART.ERP.Application.Jobs.CompetitorPriceMonitorJob;
 using SMART.ERP.Application.Jobs.LogSessionJob;
 using SMART.ERP.Application.Jobs.LongLivedOpportunitiesJob;
 using SMART.ERP.Application.Jobs.RecurringInvoiceJob;
@@ -26,6 +27,8 @@ using SMART.ERP.Application.Services.MetaPostService;
 using SMART.ERP.Application.Services.CardEncryptionService;
 using SMART.ERP.Application.Services.NewEncryptionService;
 using SMART.ERP.Application.Services.RegisterClientService;
+using SMART.ERP.Application.Services.CompetitorScraper;
+using SMART.ERP.Application.Services.RepricingEngine;
 using SMART.ERP.Application.Services.PriceListResolver;
 using SMART.ERP.Application.Services.ShippingCostCalculator;
 using SMART.ERP.Application.Services.WarehouseSelection;
@@ -52,6 +55,7 @@ namespace SMART.ERP.Application
                 x.AddJob<LogSessionJob>(opts => opts.WithIdentity(LogSessionJob.LogJobKey));
                 x.AddJob<RecurringInvoiceJob>(opts => opts.WithIdentity(RecurringInvoiceJob.Key));
                 x.AddJob<RevenueRecognitionJob>(opts => opts.WithIdentity(RevenueRecognitionJob.Key));
+                x.AddJob<CompetitorPriceMonitorJob>(opts => opts.WithIdentity(CompetitorPriceMonitorJob.Key));
 
                 x.AddTrigger(opts => opts
                 .ForJob(AdvisorGoalJob.Key)
@@ -78,6 +82,12 @@ namespace SMART.ERP.Application
                 .ForJob(RevenueRecognitionJob.Key)
                 .WithIdentity("revenue-recognition-job-trigger")
                 .WithCronSchedule("0 15 6 * * ?"));
+
+                // Monitoreo de precios de competencia — 5:30am diario (antes del job de facturación de las 6:00).
+                x.AddTrigger(opts => opts
+                .ForJob(CompetitorPriceMonitorJob.Key)
+                .WithIdentity("competitor-price-monitor-job-trigger")
+                .WithCronSchedule("0 30 5 * * ?"));
 
             });
             services.AddQuartzHostedService(x => x.WaitForJobsToComplete = true);
@@ -113,6 +123,7 @@ namespace SMART.ERP.Application
             services.Configure<GoogleCalendarSettings>(configuration.GetSection("GoogleCalendar"));
             services.Configure<EncryptionSettings>(configuration.GetSection("EncryptionSettings"));
             services.Configure<MetaCapiSettings>(configuration.GetSection("MetaCapiSettings"));
+            services.Configure<RepricingScraperSettings>(configuration.GetSection("RepricingScraper"));
             // configure blob storage service
             services.AddScoped(_ =>
             {
@@ -132,6 +143,9 @@ namespace SMART.ERP.Application
             services.AddTransient<IGoogleCalendarService, GoogleCalendarService>();
             services.AddTransient<IPriceListService, PriceListService>();
             services.AddTransient<IProductPricingService, ProductPricingService>();
+            services.AddTransient<ICompetitorScraperService, CompetitorScraperService>();
+            services.AddTransient<IRepricingEngineService, RepricingEngineService>();
+            services.AddTransient<IEcommerceRevalidationService, EcommerceRevalidationService>();
             services.AddTransient<IShippingCostCalculatorService, ShippingCostCalculatorService>();
             services.AddTransient<IWarehouseSelectionService, WarehouseSelectionService>();
             services.AddTransient<IVirtualStockService, VirtualStockService>();

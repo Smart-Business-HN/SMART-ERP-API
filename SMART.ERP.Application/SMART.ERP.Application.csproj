@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="1.1.2" />
     <PackageReference Include="Ardalis.Specification" Version="9.3.1" />
     <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.28.0" />
@@ -29,6 +30,7 @@
     <PackageReference Include="MailKit" Version="4.16.0" />
     <PackageReference Include="MediatR" Version="14.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Playwright" Version="1.49.0" />
     <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.18.1" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.18.1" />
     <PackageReference Include="RestSharp" Version="114.0.0" />
