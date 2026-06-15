@@ -21,5 +21,8 @@ namespace SMART.ERP.Domain.Settings
 
         /// <summary>Secreto compartido para el endpoint /api/revalidate del e-commerce.</summary>
         public string? RevalidateSecret { get; set; }
+
+        /// <summary>Correo que recibe el reporte de estatus del job de re-fijación. Vacío = no se envía.</summary>
+        public string? ReportEmailTo { get; set; } = "josec@smartbusiness.site";
     }
 }

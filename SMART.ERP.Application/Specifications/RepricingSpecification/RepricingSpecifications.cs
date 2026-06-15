@@ -63,6 +63,15 @@ namespace SMART.ERP.Application.Specifications.RepricingSpecification
         }
     }
 
+    /// <summary>Productos por Ids (código/nombre). Para el reporte por correo del job.</summary>
+    public class ProductsByIdsSpecification : Specification<Product>
+    {
+        public ProductsByIdsSpecification(IReadOnlyCollection<int> productIds)
+        {
+            Query.Where(x => productIds.Contains(x.Id)).AsNoTracking();
+        }
+    }
+
     public class RepricingRuleByProductSpecification : Specification<RepricingRule>
     {
         public RepricingRuleByProductSpecification(int productId)
