@@ -9,7 +9,7 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
         {
             Query.Include(x => x.Brand).Include(x => x.Status).Include(x => x.SubCategory)
                 .Include(x => x.ProductImages).Include(x => x.ProductDataSheets!)
-                .ThenInclude(x => x.DataSheet).Where(x => x.SubCategory!.CategoryId == categoryId).AsNoTracking();
+                .ThenInclude(x => x.DataSheet).Where(x => x.ProductSubcategories!.Any(ps => ps.Subcategory!.CategoryId == categoryId)).AsNoTracking();
         }
     }
 }

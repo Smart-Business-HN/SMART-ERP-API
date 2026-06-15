@@ -46,8 +46,9 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                     request.PageSize = await _repositoryAsync.CountAsync();
                 }
                 var categories = await _categoryRepositoryAsync.ListAsync();
-                var products = await _repositoryAsync.ListAsync(new FilterAndPaginationProductForEcommerceSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
-                
+                var spec = new FilterAndPaginationProductForEcommerceSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column);
+                var products = await _repositoryAsync.ListAsync(spec);
+
                 // Calcular precios en batch usando el servicio (evita N+1)
                 var prices = await _productPricingService.CalculateRecommendedSalePricesAsync(
                     products.Select(p => p.Id),
@@ -61,7 +62,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                     item.Tax = null;
                 }
                 var dto = _mapper.Map<List<ProductDto>>(products);
-                var spec = new ProductsForEcommerceSpecification();
                 foreach (var product in dto)
                 {
                     product.SubCategory!.Category = _mapper.Map<CategoryDto>(categories.Find(y => y.Id == product.SubCategory.CategoryId));

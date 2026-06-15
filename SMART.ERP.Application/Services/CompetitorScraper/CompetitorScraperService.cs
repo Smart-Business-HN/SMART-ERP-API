@@ -119,26 +119,48 @@ namespace SMART.ERP.Application.Services.CompetitorScraper
             // Nota: requiere los navegadores de Playwright instalados en el host (`playwright install chromium`).
             // Si no están, CreateAsync/LaunchAsync lanza y lo capturamos como fallo (no rompe la corrida).
             using var playwright = await Playwright.CreateAsync();
-            await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
-            var page = await browser.NewPageAsync(new BrowserNewPageOptions { UserAgent = _settings.UserAgent });
+            await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+            {
+                Headless = true,
+                // Oculta navigator.webdriver para que verificaciones anti-bot (ej. bxVerify de Acosa) no bloqueen el headless.
+                Args = new[] { "--disable-blink-features=AutomationControlled" }
+            });
+            // Contexto con UA/locale/viewport realistas (ayuda a pasar el challenge anti-bot).
+            await using var browserContext = await browser.NewContextAsync(new BrowserNewContextOptions
+            {
+                UserAgent = _settings.UserAgent,
+                Locale = "es-HN",
+                ViewportSize = new ViewportSize { Width = 1366, Height = 768 }
+            });
+            var page = await browserContext.NewPageAsync();
 
+            // Carga inicial ligera; algunos sitios (Acosa) muestran una verificación anti-bot que redirige por JS
+            // al producto real, así que no esperamos NetworkIdle aquí sino el selector del precio.
             await page.GotoAsync(source.ProductUrl, new PageGotoOptions
             {
                 Timeout = _settings.TimeoutSeconds * 1000,
-                WaitUntil = WaitUntilState.NetworkIdle
+                WaitUntil = WaitUntilState.DOMContentLoaded
             });
 
+            // Esperamos a que aparezca el precio aunque haya splash + redirección (timeout generoso).
+            var selectorTimeout = Math.Max(_settings.TimeoutSeconds, 35) * 1000;
             try
             {
-                await page.WaitForSelectorAsync(source.PriceSelector,
-                    new PageWaitForSelectorOptions { Timeout = _settings.TimeoutSeconds * 1000 });
+                await page.WaitForSelectorAsync(source.PriceSelector, new PageWaitForSelectorOptions
+                {
+                    Timeout = selectorTimeout,
+                    State = WaitForSelectorState.Attached
+                });
             }
-            catch (TimeoutException)
+            catch (Microsoft.Playwright.PlaywrightException)
             {
-                return ScrapeResult.Fail($"El selector '{source.PriceSelector}' no apareció a tiempo.");
+                return ScrapeResult.Fail($"El selector '{source.PriceSelector}' no apareció a tiempo (¿splash/redirección?).");
             }
 
             var text = await page.InnerTextAsync(source.PriceSelector);
+            if (string.IsNullOrWhiteSpace(text))
+                text = await page.TextContentAsync(source.PriceSelector) ?? string.Empty;
+
             if (!TryParsePrice(text, out var price))
                 return ScrapeResult.Fail($"No se pudo interpretar el precio: '{text?.Trim()}'.");
 

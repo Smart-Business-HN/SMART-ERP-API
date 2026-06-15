@@ -9,6 +9,8 @@ using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Specifications.InventoryMovementSpecification;
 using SMART.ERP.Application.Specifications.ProductPartSpecification;
 using SMART.ERP.Application.Specifications.ProductSpecification;
+using SMART.ERP.Application.Specifications.ProductSubcategorySpecification;
+using SMART.ERP.Application.Specifications.SubcategorySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Domain.Enums;
@@ -31,6 +33,9 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
         public int TaxId { get; set; }
         public int UnitOfMeasurementId { get; set; }
         public int SubCategoryId { get; set; }
+        // Subcategorías ADICIONALES (sin la principal SubCategoryId). El producto pertenecerá a la
+        // unión de { SubCategoryId } ∪ SubCategoryIds.
+        public List<int>? SubCategoryIds { get; set; }
         public int StatusId { get; set; }
         public int ProviderId { get; set; }
         public bool IsActive { get; set; }
@@ -54,6 +59,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
         private readonly IRepositoryAsync<Tax> _taxRepositoryAsync;
         private readonly IRepositoryAsync<UnitOfMeasurement> _measurementRepositoryAsync;
         private readonly IRepositoryAsync<ProductPart> _productPartRepository;
+        private readonly IRepositoryAsync<ProductSubcategory> _productSubcategoryRepository;
         private readonly IReadRepositoryAsync<InventoryMovement> _inventoryMovementRepository;
         private readonly IOutputCacheStore _outputCacheStored;
 
@@ -63,6 +69,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
             IRepositoryAsync<Brand> brandRepositoryAsync,
             IRepositoryAsync<UnitOfMeasurement> measurementRepositoryAsync,
             IRepositoryAsync<ProductPart> productPartRepository,
+            IRepositoryAsync<ProductSubcategory> productSubcategoryRepository,
             IReadRepositoryAsync<InventoryMovement> inventoryMovementRepository,
             IOutputCacheStore outputCacheStored)
         {
@@ -75,6 +82,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
             _measurementRepositoryAsync = measurementRepositoryAsync;
             _taxRepositoryAsync = taxRepositoryAsync;
             _productPartRepository = productPartRepository;
+            _productSubcategoryRepository = productSubcategoryRepository;
             _inventoryMovementRepository = inventoryMovementRepository;
             _mapper = mapper;
             _outputCacheStored = outputCacheStored;
@@ -91,6 +99,22 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
             {
                 throw new KeyNotFoundException($"No se encontro la subcategoria con id {request.SubCategoryId}");
             }
+
+            // Membresías de subcategorías: la principal + las adicionales (distintas). Validar que las adicionales existen.
+            var distinctSubcategoryIds = new[] { request.SubCategoryId }
+                .Concat(request.SubCategoryIds ?? Enumerable.Empty<int>())
+                .Distinct()
+                .ToList();
+            var extraSubcategoryIds = distinctSubcategoryIds.Where(sid => sid != request.SubCategoryId).ToList();
+            if (extraSubcategoryIds.Count > 0)
+            {
+                var foundExtras = await _subcategoryRepositoryAsync.ListAsync(new SubcategoriesByIdsSpecification(extraSubcategoryIds), cancellationToken);
+                if (foundExtras.Count != extraSubcategoryIds.Count)
+                {
+                    throw new KeyNotFoundException("Una o más subcategorías adicionales no existen.");
+                }
+            }
+
             var checkTax = await _taxRepositoryAsync.GetByIdAsync(request.TaxId);
             if (checkTax == null)
             {
@@ -205,11 +229,38 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
             await _repositoryAsync.SaveChangesAsync();
 
             await ReconcileComponentsAsync(product, request, componentEntities, cancellationToken);
+            await ReconcileSubcategoriesAsync(product.Id, distinctSubcategoryIds, cancellationToken);
 
-            await _outputCacheStored.EvictByTagAsync("cache_products", cancellationToken);
-            await _outputCacheStored.EvictByTagAsync("cache_productsEcommerce", cancellationToken);
+            await ProductCacheEviction.EvictAsync(_outputCacheStored, cancellationToken);
             var dto = _mapper.Map<ProductDto>(product);
             return new Response<ProductDto>(dto, message: $"{product.Name} actualizado correctamente");
+        }
+
+        /// <summary>
+        /// Sincroniza las filas de la tabla puente del producto al set deseado (incluye la principal).
+        /// Borra las removidas y agrega las nuevas; deja intactas las que ya existían.
+        /// </summary>
+        private async Task ReconcileSubcategoriesAsync(int productId, List<int> desiredSubcategoryIds, CancellationToken cancellationToken)
+        {
+            var existing = (await _productSubcategoryRepository
+                .ListAsync(new ProductSubcategoriesByProductSpecification(productId), cancellationToken)).ToList();
+
+            var existingIds = existing.Select(e => e.SubcategoryId).ToHashSet();
+            var desiredIds = desiredSubcategoryIds.ToHashSet();
+
+            var toRemove = existing.Where(e => !desiredIds.Contains(e.SubcategoryId)).ToList();
+            if (toRemove.Count > 0)
+                await _productSubcategoryRepository.DeleteRangeAsync(toRemove, cancellationToken);
+
+            var toAdd = desiredSubcategoryIds
+                .Where(sid => !existingIds.Contains(sid))
+                .Select(sid => new ProductSubcategory { ProductId = productId, SubcategoryId = sid })
+                .ToList();
+            if (toAdd.Count > 0)
+                await _productSubcategoryRepository.AddRangeAsync(toAdd, cancellationToken);
+
+            if (toRemove.Count > 0 || toAdd.Count > 0)
+                await _productSubcategoryRepository.SaveChangesAsync(cancellationToken);
         }
 
         private async Task ReconcileComponentsAsync(Product father, UpdateBaseProductCommand request, List<Product> componentEntities, CancellationToken cancellationToken)

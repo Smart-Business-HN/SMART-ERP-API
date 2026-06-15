@@ -42,7 +42,8 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                     request.PageSize = await _repositoryAsync.CountAsync();
                 }
                 var categories = await _categoryRepositoryAsync.ListAsync();
-                var products = await _repositoryAsync.ListAsync( new FilterAndPaginationProductSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column));
+                var spec = new FilterAndPaginationProductSpecification(request.Parameter, request.PageNumber, request.PageSize, request.Order, request.Column);
+                var products = await _repositoryAsync.ListAsync(spec);
                 var dto = _mapper.Map<List<ProductDto>>(products);
                 foreach (var product in dto)
                 {
@@ -58,7 +59,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                             d.CalculatedStock = stock;
                     }
                 }
-                return new PagedResponse<List<ProductDto>>(dto, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync());
+                return new PagedResponse<List<ProductDto>>(dto, request.PageNumber, request.PageSize, request.All ? request.PageSize : await _repositoryAsync.CountAsync(spec));
             }
         }
     }

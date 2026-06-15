@@ -1,4 +1,5 @@
 using MediatR;
+using SMART.ERP.Application.DTOs.Product;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
@@ -6,13 +7,13 @@ using SMART.ERP.Domain.Entities;
 
 namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
 {
-    public class GetSearchSuggestionsQuery : IRequest<Response<List<string>>>
+    public class GetSearchSuggestionsQuery : IRequest<Response<List<ProductSuggestionDto>>>
     {
         public string SearchTerm { get; set; } = null!;
         public int Limit { get; set; } = 10;
     }
 
-    public class GetSearchSuggestionsQueryHandler : IRequestHandler<GetSearchSuggestionsQuery, Response<List<string>>>
+    public class GetSearchSuggestionsQueryHandler : IRequestHandler<GetSearchSuggestionsQuery, Response<List<ProductSuggestionDto>>>
     {
         private readonly IRepositoryAsync<Product> _repositoryAsync;
 
@@ -21,48 +22,28 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
             _repositoryAsync = repositoryAsync;
         }
 
-        public async Task<Response<List<string>>> Handle(GetSearchSuggestionsQuery request, CancellationToken cancellationToken)
+        public async Task<Response<List<ProductSuggestionDto>>> Handle(GetSearchSuggestionsQuery request, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(request.SearchTerm) || request.SearchTerm.Length < 2)
             {
-                return new Response<List<string>>(new List<string>());
+                return new Response<List<ProductSuggestionDto>>(new List<ProductSuggestionDto>());
             }
 
-            var suggestions = new List<string>();
-            var searchTermLower = request.SearchTerm.ToLower();
+            var products = await _repositoryAsync.ListAsync(
+                new ProductSearchSuggestionsSpecification(request.SearchTerm, request.Limit));
 
-            // Obtener sugerencias de nombres de productos
-            var productNames = await _repositoryAsync.ListAsync(new ProductSearchSuggestionsSpecification(
-                searchTermLower, 
-                "Name", 
-                request.Limit));
+            var suggestions = products.Select(p => new ProductSuggestionDto
+            {
+                Id = p.Id,
+                Code = p.Code,
+                Name = p.Name,
+                Slug = p.Slug,
+                Thumbnail = p.ProductImages != null && p.ProductImages.Count > 0 ? p.ProductImages[0].Url : null,
+                BrandName = p.Brand?.Name,
+                Price = p.RecomendedSalePrice
+            }).ToList();
 
-            // Obtener sugerencias de marcas
-            var brandNames = await _repositoryAsync.ListAsync(new ProductSearchSuggestionsSpecification(
-                searchTermLower, 
-                "Brand", 
-                request.Limit));
-
-            // Obtener sugerencias de categorías
-            var categoryNames = await _repositoryAsync.ListAsync(new ProductSearchSuggestionsSpecification(
-                searchTermLower, 
-                "Category", 
-                request.Limit));
-
-            // Combinar y ordenar sugerencias
-            suggestions.AddRange(productNames.Select(x=> x.Name));
-            suggestions.AddRange(brandNames.Select(x=> x.Name));
-            suggestions.AddRange(categoryNames.Select(x=> x.Name));
-
-            // Eliminar duplicados y limitar resultados
-            var uniqueSuggestions = suggestions
-                .Distinct()
-                .OrderBy(x => x)
-                .Take(request.Limit)
-                .ToList();
-
-            return new Response<List<string>>(uniqueSuggestions);
+            return new Response<List<ProductSuggestionDto>>(suggestions);
         }
     }
 }
-

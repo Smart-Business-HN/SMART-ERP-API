@@ -31,6 +31,15 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
             RuleFor(p => p.SubCategoryId)
                 .NotNull().WithMessage("{PropertyName} no puede ser nulo");
 
+            When(x => x.SubCategoryIds != null && x.SubCategoryIds.Count > 0, () =>
+            {
+                RuleForEach(x => x.SubCategoryIds!)
+                    .GreaterThan(0).WithMessage("El id de subcategoría adicional debe ser mayor a cero.");
+                RuleFor(x => x.SubCategoryIds!)
+                    .Must(ids => ids.Distinct().Count() == ids.Count)
+                    .WithMessage("No se permiten subcategorías adicionales duplicadas.");
+            });
+
             RuleFor(p => p.StatusId)
                 .NotNull().WithMessage("{PropertyName} no puede ser nulo");
 

@@ -36,6 +36,7 @@ namespace SMART.ERP.Infrastructure
         public DbSet<ProductFeature> ProductFeatures { get; set; } = null!;
         public DbSet<ProductImage> ProductImages { get; set; } = null!;
         public DbSet<ProductPart> ProductParts { get; set; } = null!;
+        public DbSet<ProductSubcategory> ProductSubcategories { get; set; } = null!;
         public DbSet<Subcategory> Subcategories { get; set; } = null!;
         public DbSet<Provider> Providers { get; set; } = null!;
         public DbSet<Prospect> Prospects { get; set; } = null!;
@@ -525,6 +526,25 @@ namespace SMART.ERP.Infrastructure
                 .HasOne(x => x.SubCategory)
                 .WithMany()
                 .HasForeignKey(x => x.SubCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //ProductSubcategory (tabla puente muchos-a-muchos Product <-> Subcategory)
+            // NOTA: la tabla se llama "ProductSubcategoryLink" (no "ProductSubcategory") para evitar la
+            // colisión de nombre de constraint con el PK heredado de la tabla Subcategory (PK_ProductSubCategory).
+            modelBuilder.Entity<ProductSubcategory>().ToTable("ProductSubcategoryLink");
+            modelBuilder.Entity<ProductSubcategory>().HasKey(x => x.Id);
+            modelBuilder.Entity<ProductSubcategory>()
+                .HasIndex(x => new { x.ProductId, x.SubcategoryId })
+                .IsUnique();
+            modelBuilder.Entity<ProductSubcategory>()
+                .HasOne(x => x.Product)
+                .WithMany(p => p.ProductSubcategories)
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ProductSubcategory>()
+                .HasOne(x => x.Subcategory)
+                .WithMany()
+                .HasForeignKey(x => x.SubcategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Product>()

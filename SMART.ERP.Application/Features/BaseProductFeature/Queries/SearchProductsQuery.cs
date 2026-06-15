@@ -63,7 +63,8 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries
                 searchParams.BrandId,
                 searchParams.CategoryId,
                 searchParams.SubCategoryId,
-                searchParams.InStock
+                searchParams.InStock,
+                searchParams.SortBy
             );
 
             // Obtener productos

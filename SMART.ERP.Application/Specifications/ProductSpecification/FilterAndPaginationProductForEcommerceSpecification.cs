@@ -15,31 +15,11 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
                 .Include(x => x.Tax)
                 .Skip((pageNumber) * pageSize).Take(pageSize).Where(x => x.ShowInEcommerce).AsNoTracking();
 
-            if (!string.IsNullOrEmpty(parameter))
-            {
-                Query.Where(x => x.Name.Like(parameter) && x.ShowInEcommerce 
-                                 || x.Code.Like(parameter) && x.ShowInEcommerce 
-                                 || x.SubCategory!.Name.Like(parameter) && x.ShowInEcommerce 
-                                 || x.Brand!.Name.Like(parameter) && x.ShowInEcommerce 
-                                 || x.Description != null && x.Description.Like(parameter) && x.ShowInEcommerce 
-                                 || x.EcommerceDescription != null && x.EcommerceDescription.Like(parameter) && x.ShowInEcommerce);
-            }
+            // Búsqueda multi-término con relevancia, insensible a mayúsculas y acentos.
+            ProductSearchPredicate.Apply(Query, parameter, useEcommerceFields: true);
 
-            if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))
-            {
-                if (order == "desc")
-                {
-                    Query.OrderByDescending(x => column == "Name" ? x.Name
-                    : column == "Code" ? x.Code : column == "SubCategory" ? x.SubCategory!.Name
-                    : column == "Brand" ? x.Brand!.Name : null).Where(x => x.ShowInEcommerce);
-                }
-                else
-                {
-                    Query.OrderBy(x => column == "Name" ? x.Name
-                    : column == "Code" ? x.Code : column == "SubCategory" ? x.SubCategory!.Name
-                    : column == "Brand" ? x.Brand!.Name : null).Where(x => x.ShowInEcommerce);
-                }
-            }
+            // Relevancia por defecto al buscar; respeta el orden por columna explícito.
+            ProductSearchPredicate.ApplyOrdering(Query, parameter, useEcommerceFields: true, legacyOrder: order, legacyColumn: column);
         }
     }
 }

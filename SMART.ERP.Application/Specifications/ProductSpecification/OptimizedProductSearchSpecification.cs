@@ -6,17 +6,18 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
     public sealed class OptimizedProductSearchSpecification : Specification<Product>
     {
         public OptimizedProductSearchSpecification(
-            string? searchTerm, 
-            int pageNumber, 
+            string? searchTerm,
+            int pageNumber,
             int pageSize,
-            string? order, 
+            string? order,
             string? column,
             decimal? minPrice = null,
             decimal? maxPrice = null,
             int? brandId = null,
             int? categoryId = null,
             int? subCategoryId = null,
-            bool? inStock = null)
+            bool? inStock = null,
+            string? sortBy = null)
         {
             // Includes optimizados - solo los necesarios para ecommerce
             Query.Include(x => x.SubCategory)
@@ -28,28 +29,8 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
                 .Where(x => x.ShowInEcommerce && x.IsActive)
                 .AsNoTracking();
 
-            // Búsqueda de texto optimizada
-            if (!string.IsNullOrEmpty(searchTerm))
-            {
-                var searchTermLower = searchTerm.ToLower();
-                
-                Query.Where(x => 
-                    // Búsqueda exacta en nombre (mayor relevancia)
-                    x.Name.ToLower().Contains(searchTermLower) ||
-                    // Búsqueda exacta en código
-                    x.Code.ToLower().Contains(searchTermLower) ||
-                    // Búsqueda en descripción del ecommerce
-                    (x.EcommerceDescription != null && x.EcommerceDescription.ToLower().Contains(searchTermLower)) ||
-                    // Búsqueda en descripción general
-                    (x.Description != null && x.Description.ToLower().Contains(searchTermLower)) ||
-                    // Búsqueda en nombre de subcategoría
-                    x.SubCategory!.Name.ToLower().Contains(searchTermLower) ||
-                    // Búsqueda en nombre de categoría
-                    x.SubCategory!.Category!.Name.ToLower().Contains(searchTermLower) ||
-                    // Búsqueda en marca
-                    x.Brand!.Name.ToLower().Contains(searchTermLower)
-                );
-            }
+            // Búsqueda multi-término con relevancia, insensible a mayúsculas y acentos.
+            ProductSearchPredicate.Apply(Query, searchTerm, useEcommerceFields: true);
 
             // Filtros adicionales
             if (minPrice.HasValue)
@@ -69,12 +50,12 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
 
             if (categoryId.HasValue)
             {
-                Query.Where(x => x.SubCategory!.CategoryId == categoryId.Value);
+                Query.Where(x => x.ProductSubcategories!.Any(ps => ps.Subcategory!.CategoryId == categoryId.Value));
             }
 
             if (subCategoryId.HasValue)
             {
-                Query.Where(x => x.SubCategoryId == subCategoryId.Value);
+                Query.Where(x => x.ProductSubcategories!.Any(ps => ps.SubcategoryId == subCategoryId.Value));
             }
 
             if (inStock.HasValue && inStock.Value)
@@ -89,42 +70,12 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
                         d.Warehouse!.IsVirtual && d.Quantity > 0));
             }
 
-            // Ordenamiento optimizado
-            if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))
-            {
-                if (order.ToLower() == "desc")
-                {
-                    Query.OrderByDescending(GetOrderExpression(column));
-                }
-                else
-                {
-                    Query.OrderBy(GetOrderExpression(column));
-                }
-            }
-            else
-            {
-                // Ordenamiento por defecto: relevancia y luego por nombre
-                Query.OrderBy(x => x.Name);
-            }
+            // Ordenamiento: relevancia por defecto cuando hay búsqueda; respeta sortBy/column explícitos.
+            ProductSearchPredicate.ApplyOrdering(
+                Query, searchTerm, sortBy, useEcommerceFields: true, legacyOrder: order, legacyColumn: column);
 
             // Paginación
             Query.Skip(pageNumber * pageSize).Take(pageSize);
-        }
-
-        private static System.Linq.Expressions.Expression<System.Func<Product, object?>> GetOrderExpression(string column)
-        {
-            return column.ToLower() switch
-            {
-                "name" => x => x.Name,
-                "code" => x => x.Code,
-                "price" => x => x.RecomendedSalePrice,
-                "brand" => x => x.Brand!.Name,
-                "category" => x => x.SubCategory!.Category!.Name,
-                "subcategory" => x => x.SubCategory!.Name,
-                "stock" => x => x.CurrentStock,
-                "createdate" => x => x.CreationDate,
-                _ => x => x.Name
-            };
         }
     }
 }

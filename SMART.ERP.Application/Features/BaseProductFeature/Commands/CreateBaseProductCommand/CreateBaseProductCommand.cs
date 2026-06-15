@@ -7,6 +7,7 @@ using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Services.PriceListResolver;
 using SMART.ERP.Application.Specifications.ProductSpecification;
+using SMART.ERP.Application.Specifications.SubcategorySpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Domain.Enums;
@@ -31,6 +32,9 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
         public int BrandId { get; set; }
         public int UnitOfMeasurementId { get; set; }
         public int SubCategoryId { get; set; }
+        // Subcategorías ADICIONALES (sin la principal SubCategoryId). El producto pertenecerá a la
+        // unión de { SubCategoryId } ∪ SubCategoryIds.
+        public List<int>? SubCategoryIds { get; set; }
         public int TaxId { get; set; }
         public int StatusId { get; set; }
         public int ProviderId { get; set; }
@@ -53,6 +57,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
         private readonly IRepositoryAsync<UnitOfMeasurement> _measurementRepositoryAsync;
         private readonly IRepositoryAsync<PriceListItem> _priceListItemRepository;
         private readonly IRepositoryAsync<ProductPart> _productPartRepository;
+        private readonly IRepositoryAsync<ProductSubcategory> _productSubcategoryRepository;
         private readonly IPriceListService _priceListService;
         private readonly IOutputCacheStore _outputCacheStored;
 
@@ -63,6 +68,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
             IRepositoryAsync<UnitOfMeasurement> measurementRepositoryAsync,
             IRepositoryAsync<PriceListItem> priceListItemRepository,
             IRepositoryAsync<ProductPart> productPartRepository,
+            IRepositoryAsync<ProductSubcategory> productSubcategoryRepository,
             IPriceListService priceListService,
             IOutputCacheStore outputCacheStored
             )
@@ -78,6 +84,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
             _taxRepositoryAsync = taxRepositoryAsync;
             _priceListItemRepository = priceListItemRepository;
             _productPartRepository = productPartRepository;
+            _productSubcategoryRepository = productSubcategoryRepository;
             _priceListService = priceListService;
             _outputCacheStored = outputCacheStored;
         }
@@ -94,6 +101,22 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
             {
                 throw new KeyNotFoundException($"No se encontro la subcategoria con id {request.SubCategoryId}");
             }
+
+            // Membresías de subcategorías: la principal + las adicionales (distintas). Validar que las adicionales existen.
+            var distinctSubcategoryIds = new[] { request.SubCategoryId }
+                .Concat(request.SubCategoryIds ?? Enumerable.Empty<int>())
+                .Distinct()
+                .ToList();
+            var extraSubcategoryIds = distinctSubcategoryIds.Where(sid => sid != request.SubCategoryId).ToList();
+            if (extraSubcategoryIds.Count > 0)
+            {
+                var foundExtras = await _subcategoryRepositoryAsync.ListAsync(new SubcategoriesByIdsSpecification(extraSubcategoryIds), cancellationToken);
+                if (foundExtras.Count != extraSubcategoryIds.Count)
+                {
+                    throw new KeyNotFoundException("Una o más subcategorías adicionales no existen.");
+                }
+            }
+
             var checkTax = await _taxRepositoryAsync.GetByIdAsync(request.TaxId);
             if (checkTax == null)
             {
@@ -168,6 +191,17 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
             var data = await _repositoryAsync.AddAsync(newRecord);
             await _repositoryAsync.SaveChangesAsync();
 
+            // Insertar membresías de subcategorías (incluye la principal)
+            foreach (var subId in distinctSubcategoryIds)
+            {
+                await _productSubcategoryRepository.AddAsync(new ProductSubcategory
+                {
+                    ProductId = data.Id,
+                    SubcategoryId = subId
+                }, cancellationToken);
+            }
+            await _productSubcategoryRepository.SaveChangesAsync(cancellationToken);
+
             // Insertar componentes si es combo
             if (request.ProductType == ProductType.Combo)
             {
@@ -211,8 +245,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
                 await _outputCacheStored.EvictByTagAsync("cache_pricelists", cancellationToken);
             }
 
-            await _outputCacheStored.EvictByTagAsync("cache_products", cancellationToken);
-            await _outputCacheStored.EvictByTagAsync("cache_productsEcommerce", cancellationToken);
+            await ProductCacheEviction.EvictAsync(_outputCacheStored, cancellationToken);
             var dto = _mapper.Map<ProductDto>(data);
             return new Response<ProductDto>(dto, message: $"{request.Name} creado exitosamente");
         }

@@ -32,6 +32,8 @@ namespace SMART.ERP.Application.DTOs.Product
         public UnitOfMeasurementDto? UnitOfMeasurement { get; set; }
         public int SubCategoryId { get; set; }
         public SubcategoryDto? SubCategory { get; set; }
+        // Todas las subcategorías a las que pertenece el producto (incluida la principal SubCategory).
+        public List<SubcategoryDto>? SubCategories { get; set; }
         public int StatusId { get; set; }
         public StatusDto? Status { get; set; }
         public int ProviderId { get; set; }

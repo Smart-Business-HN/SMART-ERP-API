@@ -36,6 +36,7 @@ namespace SMART.ERP.Domain.Entities
         public virtual UnitOfMeasurement? UnitOfMeasurement { get; set; }
         public int SubCategoryId { get; set; }
         public virtual Subcategory? SubCategory { get; set; }
+        public List<ProductSubcategory>? ProductSubcategories { get; set; }
         public int StatusId { get; set; }
         public virtual Status? Status { get; set; }
         public int ProviderId { get; set; }

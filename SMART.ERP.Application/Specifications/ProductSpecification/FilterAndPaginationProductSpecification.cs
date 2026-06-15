@@ -13,27 +13,11 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
                 .Include(x => x.InventoryDistributions)!.ThenInclude(x=>x.Warehouse)
                 .Skip((pageNumber) * pageSize).Take(pageSize).AsNoTracking();
 
-            if (!string.IsNullOrEmpty(parameter))
-            {
-                Query.Where(x => x.Name.Contains(parameter) || x.Code.Contains(parameter)
-                || x.SubCategory!.Name.Contains(parameter) || x.Brand!.Name.Contains(parameter));
-            }
+            // Búsqueda multi-término con relevancia, insensible a mayúsculas y acentos.
+            ProductSearchPredicate.Apply(Query, parameter, useEcommerceFields: false);
 
-            if (!string.IsNullOrEmpty(order) && !string.IsNullOrEmpty(column))
-            {
-                if (order == "desc")
-                {
-                    Query.OrderByDescending(x => column == "Name" ? x.Name
-                    : column == "Code" ? x.Code : column == "SubCategory" ? x.SubCategory!.Name
-                    : column == "Brand" ? x.Brand!.Name : null);
-                }
-                else
-                {
-                    Query.OrderBy(x => column == "Name" ? x.Name
-                    : column == "Code" ? x.Code : column == "SubCategory" ? x.SubCategory!.Name
-                    : column == "Brand" ? x.Brand!.Name : null);
-                }
-            }
+            // Relevancia por defecto al buscar; respeta el orden por columna (header) del admin.
+            ProductSearchPredicate.ApplyOrdering(Query, parameter, legacyOrder: order, legacyColumn: column);
         }
     }
 }

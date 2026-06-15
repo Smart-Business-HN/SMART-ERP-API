@@ -11,6 +11,7 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
             {
                 var _cutOffDate = DateTime.Now.AddMonths(-12);
                 Query.Include(x => x.Brand).Include(x => x.Status).Include(x => x.SubCategory)
+                    .Include(x => x.ProductSubcategories!).ThenInclude(ps => ps.Subcategory).ThenInclude(s => s!.Category)
                     .Include(x => x.Provider).Include(x => x.ProductDataSheets!).ThenInclude(x => x.DataSheet).Include(x => x.ProductFeatures)
                     .Include(x => x.ProductImages).Include(x => x.UnitOfMeasurement)
                     .Include(x => x.ProductPurchasePriceLogs!.Where(a => a.PurchaseDate >= _cutOffDate))
@@ -20,6 +21,7 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
             else if (id == null && slug != null)
             {
                 Query.Include(x => x.Brand).Include(x => x.Status).Include(x => x.SubCategory).ThenInclude(x => x!.Category).Include(x => x.Tax)
+                    .Include(x => x.ProductSubcategories!).ThenInclude(ps => ps.Subcategory).ThenInclude(s => s!.Category)
                     .Include(x => x.ProductDataSheets!).ThenInclude(x => x.DataSheet).Include(x => x.ProductFeatures)
                     .Include(x => x.ProductImages).Where(x => x.Slug == slug).AsNoTracking();
             }

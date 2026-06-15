@@ -7,7 +7,7 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
     {
         public FilterNavSpecification(int subCategoryId)
         {
-            Query.Include(x => x.SubCategory).Where(x => x.SubCategoryId == subCategoryId).AsNoTracking();
+            Query.Include(x => x.SubCategory).Where(x => x.ProductSubcategories!.Any(ps => ps.SubcategoryId == subCategoryId)).AsNoTracking();
         }
     }
 }

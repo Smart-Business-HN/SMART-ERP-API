@@ -170,6 +170,9 @@ namespace SMART.ERP.Application.Mappings
             CreateMap<Status, StatusDto>();
             CreateMap<Product, ProductDto>()
                 .ForMember(d => d.Components, o => o.MapFrom(s => s.Components))
+                .ForMember(d => d.SubCategories, o => o.MapFrom(s => s.ProductSubcategories != null
+                    ? s.ProductSubcategories.Select(ps => ps.Subcategory).ToList()
+                    : null))
                 .ForMember(d => d.CalculatedStock, o => o.Ignore())
                 .ForMember(d => d.EcommerceStock, o => o.Ignore());
             CreateMap<Product, DeletedProductDto>();
