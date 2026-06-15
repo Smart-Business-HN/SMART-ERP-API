@@ -30,6 +30,18 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 # Copiar archivos publicados desde la etapa de build
 COPY --from=build /app/publish .
 
+# Instalar el navegador headless de Playwright (Chromium) + dependencias del SO.
+# Necesario para el scraping de competencia con navegador (Acosa). Se hace como root,
+# ANTES de cambiar a appuser, para que apt-get (--with-deps) pueda instalar las libs.
+# Se instala a una ruta fija world-readable (/ms-playwright) para que el usuario no-root
+# pueda ejecutar el navegador. PLAYWRIGHT_BROWSERS_PATH se deja como ENV para que también
+# esté presente en runtime (el proceso debe resolver la misma ruta).
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+RUN dotnet exec --runtimeconfig SMART.ERP.API.runtimeconfig.json --depsfile SMART.ERP.API.deps.json \
+        Microsoft.Playwright.dll install --with-deps chromium \
+    && chmod -R a+rx /ms-playwright \
+    && rm -rf /var/lib/apt/lists/*
+
 # Cambiar ownership de los archivos
 RUN chown -R appuser:appuser /app
 
