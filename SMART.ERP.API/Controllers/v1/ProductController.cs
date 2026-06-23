@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using SMART.ERP.Application.Features.BaseProductFeature.Commands.BulkImportProductsCommand;
 using SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseProductCommand;
 using SMART.ERP.Application.Features.BaseProductFeature.Commands.DeleteBaseProductCommand;
 using SMART.ERP.Application.Features.BaseProductFeature.Commands.RestoreBaseProductCommand;
 using SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseProductCommand;
 using SMART.ERP.Application.Features.BaseProductFeature.Queries;
+using SMART.ERP.Application.Features.BaseProductFeature.Queries.GetProductImportTemplateQuery;
 using SMART.ERP.Application.Parameters;
 using SMART.ERP.Application.Services.HeaderService;
 
@@ -84,6 +86,26 @@ namespace SMART.ERP.API.Controllers.v1
         [HttpPost("Create")]
         [Authorize(Roles = "SuperAdmin, Manager, SalesAdvisor, Admin")]
         public async Task<IActionResult> Create([FromBody] CreateBaseProductCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
+        [HttpGet("ImportTemplate")]
+        [Authorize(Roles = "SuperAdmin, Manager, SalesAdvisor, Admin")]
+        public async Task<IActionResult> ImportTemplate()
+        {
+            var bytes = await Mediator.Send(new GetProductImportTemplateQuery());
+            return File(
+                bytes,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "Plantilla_Importacion_Productos.xlsx");
+        }
+
+        [HttpPost("BulkImport")]
+        [Authorize(Roles = "SuperAdmin, Manager, SalesAdvisor, Admin")]
+        [Consumes("multipart/form-data")]
+        [RequestSizeLimit(5 * 1024 * 1024)]
+        public async Task<IActionResult> BulkImport([FromForm] BulkImportProductsCommand command)
         {
             return Ok(await Mediator.Send(command));
         }

@@ -134,6 +134,7 @@ builder.Services.AddScoped<SMART.ERP.Application.Services.AccountingPostingServi
 builder.Services.AddTransient<SMART.ERP.Application.Services.KardexReportService.IKardexPdfService, SMART.ERP.Infrastructure.Services.KardexReportService.KardexPdfService>();
 builder.Services.AddTransient<SMART.ERP.Application.Services.KardexReportService.IKardexExcelService, SMART.ERP.Infrastructure.Services.KardexReportService.KardexExcelService>();
 builder.Services.AddTransient<SMART.ERP.Application.Services.VirtualStock.IVirtualStockExcelReader, SMART.ERP.Infrastructure.Services.VirtualStock.VirtualStockExcelReader>();
+builder.Services.AddTransient<SMART.ERP.Application.Services.ExcelImportService.IExcelImportService, SMART.ERP.Infrastructure.Services.ExcelImportService.ExcelImportService>();
 
 builder.WebHost.UseSentry(opts =>
 {
