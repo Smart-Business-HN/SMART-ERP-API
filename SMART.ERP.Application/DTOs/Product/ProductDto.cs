@@ -1,7 +1,6 @@
 ﻿using SMART.ERP.Application.DTOs.Company;
 using SMART.ERP.Application.DTOs.InventoryDistribution;
 using SMART.ERP.Application.DTOs.ProductPurchasePriceLog;
-using SMART.ERP.Application.DTOs.Provider;
 using SMART.ERP.Application.DTOs.Status;
 using SMART.ERP.Domain.Enums;
 
@@ -36,8 +35,6 @@ namespace SMART.ERP.Application.DTOs.Product
         public List<SubcategoryDto>? SubCategories { get; set; }
         public int StatusId { get; set; }
         public StatusDto? Status { get; set; }
-        public int ProviderId { get; set; }
-        public ProviderDto? Provider { get; set; }
         public bool IsActive { get; set; }
         public bool ShowInEcommerce { get; set; }
         public int TaxId { get; set; }

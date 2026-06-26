@@ -37,7 +37,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
         // unión de { SubCategoryId } ∪ SubCategoryIds.
         public List<int>? SubCategoryIds { get; set; }
         public int StatusId { get; set; }
-        public int ProviderId { get; set; }
         public bool IsActive { get; set; }
         public bool ShowInEcommerce { get; set; }
         public decimal CostPrice { get; set; }
@@ -54,7 +53,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
         private readonly IJwtService _jwtService;
         private readonly IRepositoryAsync<Subcategory> _subcategoryRepositoryAsync;
         private readonly IRepositoryAsync<Status> _statusRepositoryAsync;
-        private readonly IRepositoryAsync<Provider> _providerRepositoryAsync;
         private readonly IRepositoryAsync<Brand> _brandRepositoryAsync;
         private readonly IRepositoryAsync<Tax> _taxRepositoryAsync;
         private readonly IRepositoryAsync<UnitOfMeasurement> _measurementRepositoryAsync;
@@ -65,7 +63,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
 
         public UpdateBaseProductCommandHandler(IMapper mapper, IRepositoryAsync<Product> repositoryAsync, IRepositoryAsync<Tax> taxRepositoryAsync,
             IJwtService jwtService, IRepositoryAsync<Subcategory> subcategoryRepositoryAsync,
-            IRepositoryAsync<Status> statusRepositoryAsync, IRepositoryAsync<Provider> providerRepositoryAsync,
+            IRepositoryAsync<Status> statusRepositoryAsync,
             IRepositoryAsync<Brand> brandRepositoryAsync,
             IRepositoryAsync<UnitOfMeasurement> measurementRepositoryAsync,
             IRepositoryAsync<ProductPart> productPartRepository,
@@ -77,7 +75,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
             _jwtService = jwtService;
             _subcategoryRepositoryAsync = subcategoryRepositoryAsync;
             _statusRepositoryAsync = statusRepositoryAsync;
-            _providerRepositoryAsync = providerRepositoryAsync;
             _brandRepositoryAsync = brandRepositoryAsync;
             _measurementRepositoryAsync = measurementRepositoryAsync;
             _taxRepositoryAsync = taxRepositoryAsync;
@@ -124,11 +121,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
             if (checkStatus == null)
             {
                 throw new KeyNotFoundException($"No se encontro el estado con id {request.StatusId}");
-            }
-            var checkProvider = await _providerRepositoryAsync.GetByIdAsync(request.ProviderId);
-            if (checkProvider == null)
-            {
-                throw new KeyNotFoundException($"No se encontro el proveedor con id {request.ProviderId}");
             }
             var checkBrand = await _brandRepositoryAsync.GetByIdAsync(request.BrandId);
             if (checkBrand == null)
@@ -194,7 +186,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
             product.VirtualTour = request.VirtualTour;
             product.TaxId = request.TaxId;
             product.UrlYoutube = request.UrlYoutube;
-            product.ProviderId = request.ProviderId;
             product.StatusId = request.StatusId;
             product.ShowInEcommerce = request.ShowInEcommerce;
             product.UnitOfMeasurementId = request.UnitOfMeasurementId;

@@ -12,7 +12,6 @@ using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Services.PriceListResolver;
 using SMART.ERP.Application.Specifications.BrandSpecification;
 using SMART.ERP.Application.Specifications.ProductSpecification;
-using SMART.ERP.Application.Specifications.ProviderSpecification;
 using SMART.ERP.Application.Specifications.StatusSpecification;
 using SMART.ERP.Application.Specifications.SubcategorySpecification;
 using SMART.ERP.Application.Specifications.TaxSpecification;
@@ -45,7 +44,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.BulkImportP
         private readonly IRepositoryAsync<Brand> _brandRepository;
         private readonly IRepositoryAsync<Tax> _taxRepository;
         private readonly IRepositoryAsync<Status> _statusRepository;
-        private readonly IRepositoryAsync<Provider> _providerRepository;
         private readonly IRepositoryAsync<UnitOfMeasurement> _unitRepository;
         private readonly IRepositoryAsync<ProductSubcategory> _productSubcategoryRepository;
         private readonly IRepositoryAsync<PriceListItem> _priceListItemRepository;
@@ -61,7 +59,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.BulkImportP
             IRepositoryAsync<Brand> brandRepository,
             IRepositoryAsync<Tax> taxRepository,
             IRepositoryAsync<Status> statusRepository,
-            IRepositoryAsync<Provider> providerRepository,
             IRepositoryAsync<UnitOfMeasurement> unitRepository,
             IRepositoryAsync<ProductSubcategory> productSubcategoryRepository,
             IRepositoryAsync<PriceListItem> priceListItemRepository,
@@ -76,7 +73,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.BulkImportP
             _brandRepository = brandRepository;
             _taxRepository = taxRepository;
             _statusRepository = statusRepository;
-            _providerRepository = providerRepository;
             _unitRepository = unitRepository;
             _productSubcategoryRepository = productSubcategoryRepository;
             _priceListItemRepository = priceListItemRepository;
@@ -114,7 +110,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.BulkImportP
             var brandMap = await ResolveBrandsAsync(rows, errors, cancellationToken);
             var unitMap = await ResolveUnitsAsync(rows, errors, cancellationToken);
             var statusMap = await ResolveStatusesAsync(rows, errors, cancellationToken);
-            var providerMap = await ResolveProvidersAsync(rows, errors, cancellationToken);
             var taxMap = await ResolveTaxesAsync(rows, errors, cancellationToken);
 
             // 6. Duplicados contra la BD (nombre y codigo)
@@ -165,7 +160,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.BulkImportP
                     BrandId = brandMap[row.Values["BrandName"]!.ToLowerInvariant()],
                     UnitOfMeasurementId = unitMap[row.Values["UnitName"]!.ToLowerInvariant()],
                     StatusId = statusMap[row.Values["StatusName"]!.ToLowerInvariant()],
-                    ProviderId = providerMap[row.Values["ProviderName"]!.ToLowerInvariant()],
                     TaxId = tax.Id,
                     IsActive = true,
                     ShowInEcommerce = false,
@@ -304,7 +298,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.BulkImportP
                 RequireFk(errors, row, "BrandName", "*Marca", "La marca es requerida.");
                 RequireFk(errors, row, "UnitName", "*Unidad de Medida", "La unidad de medida es requerida.");
                 RequireFk(errors, row, "StatusName", "*Estado", "El estado es requerido.");
-                RequireFk(errors, row, "ProviderName", "*Proveedor", "El proveedor es requerido.");
                 RequireFk(errors, row, "TaxName", "*Impuesto", "El impuesto es requerido.");
             }
         }
@@ -406,17 +399,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.BulkImportP
             var existing = await _statusRepository.ListAsync(new StatusesByNamesSpecification(names), ct);
             var map = existing.GroupBy(s => s.Name.ToLowerInvariant()).ToDictionary(g => g.Key, g => g.First().Id);
             ReportMissing(rows, errors, "StatusName", "*Estado", map, n => $"No existe el estado \"{n}\". Verifique que este registrado en el sistema.");
-            return map;
-        }
-
-        private async Task<Dictionary<string, int>> ResolveProvidersAsync(
-            List<ExcelImportRow> rows, List<BulkImportRowError> errors, CancellationToken ct)
-        {
-            var names = DistinctValues(rows, "ProviderName");
-            if (names.Count == 0) return new();
-            var existing = await _providerRepository.ListAsync(new ProvidersByNamesSpecification(names), ct);
-            var map = existing.GroupBy(p => p.Name.ToLowerInvariant()).ToDictionary(g => g.Key, g => g.First().Id);
-            ReportMissing(rows, errors, "ProviderName", "*Proveedor", map, n => $"No existe el proveedor \"{n}\". Verifique que este registrado en el sistema.");
             return map;
         }
 

@@ -39,8 +39,6 @@ namespace SMART.ERP.Domain.Entities
         public List<ProductSubcategory>? ProductSubcategories { get; set; }
         public int StatusId { get; set; }
         public virtual Status? Status { get; set; }
-        public int ProviderId { get; set; }
-        public virtual Provider? Provider { get; set; }
         public bool IsActive { get; set; }
         public bool ShowInEcommerce { get; set; }
         public DateTime CreationDate { get; set; }

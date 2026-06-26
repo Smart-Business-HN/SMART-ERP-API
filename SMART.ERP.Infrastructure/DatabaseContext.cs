@@ -548,12 +548,6 @@ namespace SMART.ERP.Infrastructure
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Product>()
-                .HasOne(x => x.Provider)
-                .WithMany()
-                .HasForeignKey(x => x.ProviderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Product>()
                 .HasOne(x => x.Status)
                 .WithMany()
                 .HasForeignKey(x => x.StatusId)

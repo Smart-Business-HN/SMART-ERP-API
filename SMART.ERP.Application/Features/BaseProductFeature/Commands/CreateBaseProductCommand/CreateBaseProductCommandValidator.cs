@@ -47,10 +47,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.CreateBaseP
                 .NotEmpty().WithMessage("{PropertyName} es requerido")
                 .NotNull().WithMessage("{PropertyName} es requerido");
 
-            RuleFor(p => p.ProviderId)
-                .NotEmpty().WithMessage("{PropertyName} es requerido")
-                .NotNull().WithMessage("{PropertyName} es requerido");
-
             When(x => x.ProductType == ProductType.Combo, () =>
             {
                 RuleFor(x => x.Components)

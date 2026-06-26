@@ -29,7 +29,7 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries.GetProductIm
 
     /// <summary>
     /// Definicion de columnas de la plantilla de importacion de productos. Las llaves foraneas
-    /// (Subcategoria, Marca, Unidad, Estado, Proveedor, Impuesto) se resuelven POR NOMBRE.
+    /// (Subcategoria, Marca, Unidad, Estado, Impuesto) se resuelven POR NOMBRE.
     /// </summary>
     public static class ProductImportColumns
     {
@@ -46,7 +46,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Queries.GetProductIm
             new() { HeaderTitle = "*Marca",            PropertyName = "BrandName",       IsRequired = true,  ExampleValue = "DeWalt" },
             new() { HeaderTitle = "*Unidad de Medida", PropertyName = "UnitName",        IsRequired = true,  ExampleValue = "Unidad" },
             new() { HeaderTitle = "*Estado",           PropertyName = "StatusName",      IsRequired = true,  ExampleValue = "Disponible" },
-            new() { HeaderTitle = "*Proveedor",        PropertyName = "ProviderName",    IsRequired = true,  ExampleValue = "Ferreteria Central" },
             new() { HeaderTitle = "*Impuesto",         PropertyName = "TaxName",         IsRequired = true,  ExampleValue = "ISV 15%" },
         ];
     }

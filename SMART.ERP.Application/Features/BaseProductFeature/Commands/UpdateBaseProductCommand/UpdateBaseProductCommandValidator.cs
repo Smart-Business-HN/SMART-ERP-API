@@ -43,9 +43,6 @@ namespace SMART.ERP.Application.Features.BaseProductFeature.Commands.UpdateBaseP
             RuleFor(p => p.StatusId)
                 .NotNull().WithMessage("{PropertyName} no puede ser nulo");
 
-            RuleFor(p => p.ProviderId)
-                .NotNull().WithMessage("{PropertyName} no puede ser nulo");
-
             When(x => x.ProductType == ProductType.Combo, () =>
             {
                 RuleFor(x => x.Components)
