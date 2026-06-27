@@ -85,8 +85,6 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
                     Name = product.Name,
                     Category = category?.Name ?? string.Empty,
                     SubCategory = product.SubCategory?.Name ?? string.Empty,
-                    ProviderId = product.ProviderId,
-                    SupplierName = product.Provider?.Name ?? string.Empty,
                     UnitOfMeasurement = product.UnitOfMeasurement?.Abreviation ?? string.Empty,
                     UnitsSold = unitsSold,
                     AverageDailySales = Math.Round(averageDailySales, 2),
@@ -102,7 +100,6 @@ namespace SMART.ERP.Application.Features.ReportFeature.Queries
 
             response = response
                 .OrderByDescending(x => x.SuggestedQuantity)
-                .ThenBy(x => x.SupplierName)
                 .ThenByDescending(x => x.UnitsSold)
                 .ToList();
 

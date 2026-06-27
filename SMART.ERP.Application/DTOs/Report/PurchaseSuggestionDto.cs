@@ -7,8 +7,6 @@ namespace SMART.ERP.Application.DTOs.Report
         public string Name { get; set; } = null!;
         public string Category { get; set; } = null!;
         public string SubCategory { get; set; } = null!;
-        public int ProviderId { get; set; }
-        public string SupplierName { get; set; } = null!;
         public string UnitOfMeasurement { get; set; } = null!;
         public decimal UnitsSold { get; set; }
         public decimal AverageDailySales { get; set; }
