@@ -13,5 +13,7 @@ namespace SMART.ERP.Application.DTOs.Product
         public string? Thumbnail { get; set; }
         public string? BrandName { get; set; }
         public decimal Price { get; set; }
+        public string? SubCategorySlug { get; set; }
+        public string? CategorySlug { get; set; }
     }
 }

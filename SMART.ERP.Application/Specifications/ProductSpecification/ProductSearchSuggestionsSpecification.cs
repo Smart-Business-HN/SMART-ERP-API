@@ -14,6 +14,7 @@ namespace SMART.ERP.Application.Specifications.ProductSpecification
             Query.Where(x => x.ShowInEcommerce && x.IsActive)
                 .Include(x => x.Brand)
                 .Include(x => x.ProductImages)
+                .Include(x => x.SubCategory).ThenInclude(s => s!.Category)
                 .AsNoTracking();
 
             ProductSearchPredicate.Apply(Query, searchTerm, useEcommerceFields: true);
