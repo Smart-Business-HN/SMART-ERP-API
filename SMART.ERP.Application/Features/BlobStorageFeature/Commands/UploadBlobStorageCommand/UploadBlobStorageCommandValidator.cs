@@ -16,6 +16,7 @@ namespace SMART.ERP.Application.Features.BlobStorageFeature.Commands.UploadBlobS
                 x.Equals("image/jpeg")
                 || x.Equals("image/jpg")
                 || x.Equals("image/png")
+                || x.Equals("image/webp")
                 || x.Equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
                 || x.Equals("application/pdf")
                 || x.Equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
