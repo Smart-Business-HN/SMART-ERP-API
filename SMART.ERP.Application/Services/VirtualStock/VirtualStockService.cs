@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.OutputCaching;
 using SMART.ERP.Application.DTOs.Product;
+using SMART.ERP.Application.DTOs.VirtualStock;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Features.BaseProductFeature;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Specifications.InventoryDistributionSpecification;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Specifications.ProviderWarehouseSpecification;
+using SMART.ERP.Application.Specifications.VirtualStockImportSpecification;
 using SMART.ERP.Application.Specifications.WarehouseSpecification;
+using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using System.Globalization;
 using System.Text;
@@ -297,6 +300,34 @@ namespace SMART.ERP.Application.Services.VirtualStock
             }
 
             return result;
+        }
+
+        public async Task<PagedResponse<List<VirtualStockImportHistoryItemDto>>> GetImportHistoryAsync(
+            int? providerId,
+            int pageNumber,
+            int pageSize)
+        {
+            if (pageNumber < 0) pageNumber = 0;
+            if (pageSize <= 0) pageSize = 10;
+
+            var spec = new FilterVirtualStockImportHistorySpecification(providerId, pageNumber, pageSize);
+
+            var imports = await _importRepository.ListAsync(spec);
+            var totalItems = await _importRepository.CountAsync(spec);
+
+            var items = imports.Select(x => new VirtualStockImportHistoryItemDto
+            {
+                Id = x.Id,
+                ProviderId = x.ProviderId,
+                ProviderName = x.Provider?.Name,
+                FileName = x.FileName,
+                ImportDate = x.ImportDate,
+                ImportedCount = x.SuccessfulImports,
+                ErrorCount = x.FailedImports,
+                ImportedBy = x.ImportedBy
+            }).ToList();
+
+            return new PagedResponse<List<VirtualStockImportHistoryItemDto>>(items, pageNumber, pageSize, totalItems);
         }
 
         private async Task<VirtualStockImportDetail> ProcessCsvLineAsync(
