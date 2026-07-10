@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMART.ERP.Application.DTOs.VirtualStock;
 using SMART.ERP.Application.Services.VirtualStock;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
@@ -111,12 +112,17 @@ namespace SMART.ERP.API.Controllers.v1
             return new Response<object>(data, message);
         }
 
+        // providerId <= 0 devuelve el historial de todos los proveedores (usado por la pestaña de historial
+        // cuando aún no se ha seleccionado un proveedor).
         [HttpGet("import-history/{providerId}")]
-        [ProducesResponseType(typeof(Response<List<object>>), 200)]
-        public async Task<IActionResult> GetImportHistory(int providerId)
+        [ProducesResponseType(typeof(PagedResponse<List<VirtualStockImportHistoryItemDto>>), 200)]
+        public async Task<IActionResult> GetImportHistory(
+            int providerId,
+            [FromQuery] int pageNumber = 0,
+            [FromQuery] int pageSize = 10)
         {
-            // TODO: Implement GetImportHistory query
-            return Ok(new Response<List<object>>(new List<object>(), "Feature pendiente de implementación"));
+            var history = await _virtualStockService.GetImportHistoryAsync(providerId, pageNumber, pageSize);
+            return Ok(history);
         }
 
         [HttpGet("availability/{productId}")]
