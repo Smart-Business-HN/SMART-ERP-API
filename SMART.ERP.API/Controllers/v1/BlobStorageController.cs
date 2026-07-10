@@ -22,5 +22,14 @@ namespace SMART.ERP.API.Controllers.v1
         {
             return Ok(await Mediator.Send(new DeleteBlobStorageCommand { FileName = fileName }));
         }
+
+        // Borrado por URL/path completo: necesario para blobs en carpetas (el nombre incluye "/",
+        // que no encaja en la ruta de segmento Delete/{fileName}). Acepta la URL absoluta del asset.
+        [HttpDelete("DeleteByUrl")]
+        [Authorize]
+        public async Task<IActionResult> DeleteByUrl([FromQuery] string url)
+        {
+            return Ok(await Mediator.Send(new DeleteBlobStorageCommand { FileName = url }));
+        }
     }
 }

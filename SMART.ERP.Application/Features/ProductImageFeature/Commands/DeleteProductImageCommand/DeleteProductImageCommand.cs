@@ -1,5 +1,6 @@
-﻿using MediatR;
+using MediatR;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.BlobStorageService;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 
@@ -13,10 +14,14 @@ namespace SMART.ERP.Application.Features.ProductImageFeature.Commands.DeleteProd
     public class DeleteProductImageCommandHandler : IRequestHandler<DeleteProductImageCommand, Response<string>>
     {
         private readonly IRepositoryAsync<ProductImage> _repositoryAsync;
+        private readonly IBlobStorageService _blobStorageService;
 
-        public DeleteProductImageCommandHandler(IRepositoryAsync<ProductImage> repositoryAsync)
+        public DeleteProductImageCommandHandler(
+            IRepositoryAsync<ProductImage> repositoryAsync,
+            IBlobStorageService blobStorageService)
         {
             _repositoryAsync = repositoryAsync;
+            _blobStorageService = blobStorageService;
         }
         public async Task<Response<string>> Handle(DeleteProductImageCommand request, CancellationToken cancellationToken)
         {
@@ -27,6 +32,10 @@ namespace SMART.ERP.Application.Features.ProductImageFeature.Commands.DeleteProd
             }
             await _repositoryAsync.DeleteAsync(productImage);
             await _repositoryAsync.SaveChangesAsync();
+
+            // Borrado best-effort del blob para no dejar archivos huérfanos en storage.
+            try { await _blobStorageService.DeleteFileByUrlAsync(productImage.Url); } catch { /* no bloquear el delete */ }
+
             return new Response<string>($"{productImage.FileName} eliminado correctamente", "Eliminado correctamente");
         }
     }

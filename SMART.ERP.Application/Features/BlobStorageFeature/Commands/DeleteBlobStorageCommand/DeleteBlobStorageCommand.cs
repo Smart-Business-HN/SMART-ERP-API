@@ -22,7 +22,16 @@ namespace SMART.ERP.Application.Features.BlobStorageFeature.Commands.DeleteBlobS
         {
             try
             {
-                await _blobStorageService.DeleteFileAsync(request.FileName);
+                // Tolera tanto una URL completa (los assets guardan la URL absoluta) como un nombre/path
+                // de blob con prefijo de carpeta. DeleteFileByUrlAsync conserva el prefijo y evita huérfanos.
+                if (request.FileName.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                {
+                    await _blobStorageService.DeleteFileByUrlAsync(request.FileName);
+                }
+                else
+                {
+                    await _blobStorageService.DeleteFileAsync(request.FileName);
+                }
                 return new Response<string>($"{request.FileName} eliminado correctamente", "Eliminado correctamente");
             }
             catch (Exception ex)

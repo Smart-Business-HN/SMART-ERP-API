@@ -32,9 +32,8 @@ namespace SMART.ERP.Application.Features.ProjectAttachmentFeature.Commands.Delet
                 throw new KeyNotFoundException($"No se encontro ningun registro con el id {request.Id}");
             }
 
-            // Extraer el nombre del archivo de la URL para eliminar el blob de Azure
-            var fileName = Path.GetFileName(new Uri(projectAttachment.Url).LocalPath);
-            await _blobStorageService.DeleteFileAsync(fileName);
+            // Elimina el blob por URL: conserva el prefijo de carpeta (attachments/...) y evita huérfanos.
+            await _blobStorageService.DeleteFileByUrlAsync(projectAttachment.Url);
 
             await _repositoryAsync.DeleteAsync(projectAttachment);
             await _repositoryAsync.SaveChangesAsync();

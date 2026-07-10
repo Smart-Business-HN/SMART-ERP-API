@@ -21,6 +21,7 @@ using SMART.ERP.Application.Services.AssignUserToProspectService;
 using SMART.ERP.Application.Services.BlobStorageService;
 using SMART.ERP.Application.Services.GoogleCalendarService;
 using SMART.ERP.Application.Services.HeaderService;
+using SMART.ERP.Application.Services.ImageOptimizationService;
 using SMART.ERP.Application.Services.JwtService;
 using SMART.ERP.Application.Services.MailService;
 using SMART.ERP.Application.Services.MetaPostService;
@@ -133,6 +134,9 @@ namespace SMART.ERP.Application
             services.AddTransient<ICardEncryptionService, CardEncryptionService>();
             services.AddTransient<IMailService, MailService>();
             services.AddTransient<IBlobStorageService, BlobStorageService>();
+            // Optimización de imágenes (compresión + conversión a WebP antes de subir al blob)
+            services.Configure<ImageOptimizationOptions>(configuration.GetSection(ImageOptimizationOptions.SectionName));
+            services.AddTransient<IImageOptimizationService, ImageOptimizationService>();
             services.AddTransient<IRegisterClientService, RegisterClientService>();
             services.AddTransient<IHeaderService, HeaderService>();
             services.AddTransient<IJwtService, JwtService>();

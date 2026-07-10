@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using SMART.ERP.Application.Repository;
 using SMART.ERP.Application.Services.BlobStorageService;
+using SMART.ERP.Application.Services.ImageOptimizationService;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Domain.Enums;
@@ -16,14 +17,17 @@ public class UpdateEcommerceUserProfilePhotoCommand : IRequest<Response<string>>
 public class UpdateEcommerceUserProfilePhotoCommandHandler : IRequestHandler<UpdateEcommerceUserProfilePhotoCommand, Response<string>>
 {
     private readonly IBlobStorageService _blobStorageService;
+    private readonly IImageOptimizationService _imageOptimizationService;
     private readonly IRepositoryAsync<EcommerceUser> _repositoryAsync;
     private readonly IRepositoryAsync<LogEcommerceUser> _logRepositoryAsync;
     public UpdateEcommerceUserProfilePhotoCommandHandler(
         IBlobStorageService blobStorageService,
+        IImageOptimizationService imageOptimizationService,
         IRepositoryAsync<EcommerceUser> repositoryAsync,
         IRepositoryAsync<LogEcommerceUser> logRepositoryAsync)
     {
         _blobStorageService = blobStorageService;
+        _imageOptimizationService = imageOptimizationService;
         _repositoryAsync = repositoryAsync;
         _logRepositoryAsync = logRepositoryAsync;
     }
@@ -34,8 +38,14 @@ public class UpdateEcommerceUserProfilePhotoCommandHandler : IRequestHandler<Upd
         {
             throw new KeyNotFoundException($"Usuario no encontrado con el id {request.Id}");
         }
-        await _blobStorageService.UploadFileAsync(request.File);
-        var getUrl = _blobStorageService.GetFile(request.File.FileName);
+
+        // Optimiza/convierte a WebP y guarda bajo la carpeta de avatares.
+        var optimization = await _imageOptimizationService.OptimizeAsync(request.File, cancellationToken);
+        var extension = optimization.WasOptimized
+            ? optimization.Extension!
+            : Path.GetExtension(request.File.FileName);
+        var blobName = $"{BlobFolders.Avatars}/{Guid.NewGuid():N}{extension}";
+        var getUrl = await _blobStorageService.UploadOptimizedOrOriginalAsync(request.File, optimization, blobName);
         user.Photo = getUrl;
         await _repositoryAsync.UpdateAsync(user);
         await _repositoryAsync.SaveChangesAsync();

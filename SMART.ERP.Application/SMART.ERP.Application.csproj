@@ -4,6 +4,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- Licencia de SixLabors.ImageSharp (archivo en la raíz de SMART-ERP-API).
+         Forward slash a propósito: funciona en Windows local y en el build Linux de Docker. -->
+    <SixLaborsLicenseFile>$(MSBuildThisFileDirectory)../sixlabors.lic</SixLaborsLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,6 +38,7 @@
     <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.18.1" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.18.1" />
     <PackageReference Include="RestSharp" Version="114.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="4.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.1.7" />
   </ItemGroup>
 
