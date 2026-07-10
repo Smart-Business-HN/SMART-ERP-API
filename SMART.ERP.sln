@@ -19,8 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMART.ERP.Application", "SMART.ERP.Application\SMART.ERP.Application.csproj", "{447A99A1-56CD-40B5-922A-5840DFA23166}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMART.ERP.ImageMigration", "SMART.ERP.ImageMigration\SMART.ERP.ImageMigration.csproj", "{D43CC10C-9360-44B3-B587-D9AB05CFACC4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
