@@ -136,6 +136,13 @@ builder.Services.AddTransient<SMART.ERP.Application.Services.KardexReportService
 builder.Services.AddTransient<SMART.ERP.Application.Services.VirtualStock.IVirtualStockExcelReader, SMART.ERP.Infrastructure.Services.VirtualStock.VirtualStockExcelReader>();
 builder.Services.AddTransient<SMART.ERP.Application.Services.ExcelImportService.IExcelImportService, SMART.ERP.Infrastructure.Services.ExcelImportService.ExcelImportService>();
 
+// Brochures comerciales (catálogo PDF para redes sociales).
+// El servicio de imágenes es Singleton: mantiene una caché acotada de fotos ya
+// reescaladas, que se amortiza cuando el usuario regenera variando un filtro.
+builder.Services.AddSingleton<SMART.ERP.Application.Services.BrochureImageService.IBrochureImageService, SMART.ERP.Application.Services.BrochureImageService.BrochureImageService>();
+builder.Services.AddTransient<SMART.ERP.Application.Services.BrochureDataService.IBrochureDataService, SMART.ERP.Application.Services.BrochureDataService.BrochureDataService>();
+builder.Services.AddTransient<SMART.ERP.Application.Services.BrochurePdfService.IBrochurePdfService, SMART.ERP.Infrastructure.Services.BrochurePdfService.BrochurePdfService>();
+
 builder.WebHost.UseSentry(opts =>
 {
     opts.SetBeforeSend((@event, hint) =>

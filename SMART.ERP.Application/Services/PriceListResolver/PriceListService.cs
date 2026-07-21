@@ -130,6 +130,28 @@ namespace SMART.ERP.Application.Services.PriceListResolver
             return result;
         }
 
+        public async Task<IReadOnlyDictionary<int, decimal>> GetPricesFromListAsync(
+            IEnumerable<int> productIds,
+            int priceListId,
+            CancellationToken ct = default)
+        {
+            var result = new Dictionary<int, decimal>();
+            var productIdsList = productIds?.Distinct().ToList() ?? [];
+            if (productIdsList.Count == 0) return result;
+
+            // Una sola lista, sin respaldo: si no hay fila, el producto no entra al
+            // diccionario y el llamador lo excluye del documento.
+            var items = await _priceListItemRepo.ListAsync(
+                new PriceListItemsByListsAndProductsSpec([priceListId], productIdsList), ct);
+
+            foreach (var item in items)
+            {
+                result[item.ProductId] = item.Price;
+            }
+
+            return result;
+        }
+
         public async Task<int?> GetDefaultPriceListIdAsync(CancellationToken ct = default)
         {
             var defaultList = await _priceListRepo.FirstOrDefaultAsync(new DefaultPriceListSpec(), ct);

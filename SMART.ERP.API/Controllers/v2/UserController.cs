@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.CreateEcommerceUserCommand;
+using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.GoogleLoginEcommerceUserCommand;
 using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.LoginEcommerceUserCommand;
 using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.UpdateEcommerceUserCommand;
 using SMART.ERP.Application.Features.EcommerceUserFeature.Commands.UpdateEcommerceUserProfileePhotoCommand;
@@ -28,6 +29,12 @@ namespace SMART.ERP.API.Controllers.v2
         [HttpPost("Login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginEcommerceUserCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+        [HttpPost("GoogleLogin")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginEcommerceUserCommand command)
         {
             return Ok(await Mediator.Send(command));
         }

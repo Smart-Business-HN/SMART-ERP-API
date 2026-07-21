@@ -1,16 +1,12 @@
 using MediatR;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using SMART.ERP.Application.DTOs.Auth;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.EcommerceTokenService;
 using SMART.ERP.Application.Specifications.EcommerceUserSpecification;
 using SMART.ERP.Application.Wrappers;
 using SMART.ERP.Domain.Entities;
 using SMART.ERP.Domain.Enums;
-using SMART.ERP.Domain.Settings;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -26,13 +22,13 @@ public class LoginEcommerceUserCommandHandler : IRequestHandler<LoginEcommerceUs
 {
     private readonly IRepositoryAsync<EcommerceUser> _repositoryAsync;
     private readonly IRepositoryAsync<LogEcommerceUser> _logRepositoryAsync;
-    private readonly JWTSettings _jwtSettings;
+    private readonly IEcommerceTokenService _tokenService;
     public LoginEcommerceUserCommandHandler(IRepositoryAsync<EcommerceUser> repositoryAsync,
-        IOptions<JWTSettings> jwtSettings,
+        IEcommerceTokenService tokenService,
         IRepositoryAsync<LogEcommerceUser> logRepositoryAsync)
     {
         _repositoryAsync = repositoryAsync;
-        _jwtSettings = jwtSettings.Value;
+        _tokenService = tokenService;
         _logRepositoryAsync = logRepositoryAsync;
     }
     public async Task<Response<SessionEcommerceUserDto>> Handle(LoginEcommerceUserCommand request, CancellationToken cancellationToken)
@@ -65,45 +61,20 @@ public class LoginEcommerceUserCommandHandler : IRequestHandler<LoginEcommerceUs
     }
     private async Task<SessionEcommerceUserDto> Authenticated(EcommerceUser user, LoginEcommerceUserCommand request, CancellationToken cancellationToken)
     {
+        // Las cuentas creadas con un proveedor externo no tienen contraseña.
+        if (user.PasswordHash == null || user.PasswordSalt == null)
+        {
+            throw new ApiException("Esta cuenta fue creada con Google. Inicia sesion con Google.");
+        }
+
         if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
         {
-            if (!VerifyPasswordHash(request.Password, user.MasterPasswordHash, user.MasterPasswordSalt))
+            if (user.MasterPasswordHash == null || user.MasterPasswordSalt == null ||
+                !VerifyPasswordHash(request.Password, user.MasterPasswordHash, user.MasterPasswordSalt))
                 throw new ApiException($"Verifique su contraseña");
         }
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_jwtSettings.Key);
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity([
-                new Claim(JwtRegisteredClaimNames.Sub, user.FullName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id.ToString())
-            ]),
-            //Expires = DateTime.UtcNow.AddMinutes(Int32.Parse(_jwtSettings.DurationInMinutes)),
-            Expires = DateTime.UtcNow.AddDays(7),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-            SecurityAlgorithms.HmacSha256Signature),
-            Issuer = _jwtSettings.Issuer,
-            Audience = _jwtSettings.Audience,
-        };
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        var tokenString = tokenHandler.WriteToken(token);
-        var session = new SessionEcommerceUserDto
-        {
-            Id = user.Id,
-            FullName = user.FullName,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email,
-            Photo = user.Photo,
-            UserName = user.UserName,
-            CustomerType = user.CustomerType,
-            ExpirationDate = tokenDescriptor.Expires.Value,
-            Token = tokenString,
-            ActiveCartId = user.Carts!.Any() ? user.Carts!.First(x=>x.IsActive).Id : null
-        };
+        var session = _tokenService.CreateSession(user);
 
         await _logRepositoryAsync.AddAsync(new LogEcommerceUser
         {

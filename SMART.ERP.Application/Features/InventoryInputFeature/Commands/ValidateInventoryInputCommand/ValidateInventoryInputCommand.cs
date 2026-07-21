@@ -4,6 +4,7 @@ using SMART.ERP.Application.DTOs.InventoryInput;
 using SMART.ERP.Application.DTOs.ProductEntry;
 using SMART.ERP.Application.Exceptions;
 using SMART.ERP.Application.Repository;
+using SMART.ERP.Application.Services.ProductCacheInvalidator;
 using SMART.ERP.Application.Specifications.InventoryDistributionSpecification;
 using SMART.ERP.Application.Specifications.ProductSpecification;
 using SMART.ERP.Application.Wrappers;
@@ -29,8 +30,10 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.Validate
         private readonly IRepositoryAsync<ProductEntry> _productEntryRepositoryAsync;
         private readonly IRepositoryAsync<Product> _productRepositoryAsync;
         private readonly IRepositoryAsync<InventoryDistribution> _inventoryDistributionRepositoryAsync;
-        public ValidateInventoryInputCommandHandler(IMapper mapper, IRepositoryAsync<InventoryInput> repositoryAsync, IRepositoryAsync<InventoryInputType> inventoryInputTypeRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<ProductEntry> productEntryRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync)
+        private readonly IProductCacheInvalidator _cacheInvalidator;
+        public ValidateInventoryInputCommandHandler(IMapper mapper, IRepositoryAsync<InventoryInput> repositoryAsync, IRepositoryAsync<InventoryInputType> inventoryInputTypeRepositoryAsync, IRepositoryAsync<Warehouse> warehouseRepositoryAsync, IRepositoryAsync<ProductEntry> productEntryRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync, IRepositoryAsync<InventoryDistribution> inventoryDistributionRepositoryAsync, IProductCacheInvalidator cacheInvalidator)
         {
+            _cacheInvalidator = cacheInvalidator;
             _mapper = mapper;
             _repositoryAsync = repositoryAsync;
             _inventoryInputTypeRepositoryAsync = inventoryInputTypeRepositoryAsync;
@@ -60,6 +63,11 @@ namespace SMART.ERP.Application.Features.InventoryInputFeature.Commands.Validate
 
             await _repositoryAsync.UpdateAsync(inventoryInputExist);
             await _repositoryAsync.SaveChangesAsync();
+
+            // Este flujo mueve stock (CurrentStock + InventoryDistribution), así que hay que
+            // evictar los tags de producto o el ecommerce sirve disponibilidad rancia hasta 10 días.
+            await _cacheInvalidator.InvalidateAsync(cancellationToken);
+
             var dto = _mapper.Map<InventoryInputDto>(inventoryInputExist);
             return new Response<InventoryInputDto>(dto);
         }

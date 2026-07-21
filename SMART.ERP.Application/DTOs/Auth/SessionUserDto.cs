@@ -29,5 +29,11 @@ namespace SMART.ERP.Application.DTOs.Auth
         public DateTime ExpirationDate { get; set; }
         public CustomerType? CustomerType { get; set; }
         public Guid? ActiveCartId { get; set; }
+
+        /// <summary>
+        /// Proveedor de la cuenta. Permite al frontend ocultar "cambiar contraseña"
+        /// a los usuarios creados con Google, que no tienen una.
+        /// </summary>
+        public int AuthProvider { get; set; }
     }
 }

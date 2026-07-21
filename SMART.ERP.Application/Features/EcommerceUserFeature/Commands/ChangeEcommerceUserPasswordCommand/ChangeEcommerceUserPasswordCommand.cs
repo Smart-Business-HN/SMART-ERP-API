@@ -37,6 +37,10 @@ public class ChangeEcommerceUserPasswordCommandHandler : IRequestHandler<ChangeE
         if (user == null)
             throw new ApiException("Usuario no encontrado");
 
+        // Las cuentas creadas con un proveedor externo no tienen contraseña que cambiar.
+        if (user.PasswordHash == null || user.PasswordSalt == null)
+            throw new ApiException("Esta cuenta fue creada con Google y no tiene contraseña.");
+
         if (!_newEncryption.VerifyPasswordHash(request.CurrentPassword, user.PasswordHash, user.PasswordSalt))
             throw new ApiException("La contraseña actual es incorrecta");
 

@@ -47,6 +47,52 @@ namespace SMART.ERP.Application.Services.BlobStorageService
             return await DeleteFileAsync(blobName);
         }
 
+        public async Task<byte[]?> TryDownloadFileByUrlAsync(string blobUrl, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(blobUrl)) return null;
+
+            if (!Uri.TryCreate(blobUrl, UriKind.Absolute, out var uri)) return null;
+            if (uri.Scheme != Uri.UriSchemeHttps) return null;
+
+            BlobUriBuilder builder;
+            try
+            {
+                builder = new BlobUriBuilder(uri);
+            }
+            catch
+            {
+                return null;
+            }
+
+            // Guarda: solo blobs de NUESTRA cuenta y NUESTRO contenedor. Cualquier otro
+            // host (o un contenedor ajeno) se rechaza y el llamador pinta el placeholder.
+            var expectedHost = _blobServiceClient.Uri.Host;
+            if (!string.Equals(builder.Host, expectedHost, StringComparison.OrdinalIgnoreCase)) return null;
+            if (!string.Equals(builder.BlobContainerName, ContainerName, StringComparison.OrdinalIgnoreCase)) return null;
+            if (string.IsNullOrWhiteSpace(builder.BlobName)) return null;
+
+            try
+            {
+                var blobClient = _blobServiceClient
+                    .GetBlobContainerClient(ContainerName)
+                    .GetBlobClient(builder.BlobName);
+
+                var response = await blobClient.DownloadContentAsync(ct);
+                return response.Value.Content.ToArray();
+            }
+            catch (OperationCanceledException)
+            {
+                // Timeout por imagen o cancelación del cliente: degradar, no romper el PDF.
+                return null;
+            }
+            catch
+            {
+                // Blob inexistente, permisos, red. Una imagen mala no puede tumbar
+                // un brochure de 300 productos.
+                return null;
+            }
+        }
+
         public string GetFile(string imageName)
         {
             var blobContainer = _blobServiceClient.GetBlobContainerClient(ContainerName);

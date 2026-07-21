@@ -122,6 +122,7 @@ namespace SMART.ERP.Application
             services.Configure<MetaSettings>(configuration.GetSection("MetaSettings"));
             services.Configure<MetaAdSettings>(configuration.GetSection("MetaAdSettings"));
             services.Configure<GoogleCalendarSettings>(configuration.GetSection("GoogleCalendar"));
+            services.Configure<GoogleAuthSettings>(configuration.GetSection("GoogleAuth"));
             services.Configure<EncryptionSettings>(configuration.GetSection("EncryptionSettings"));
             services.Configure<MetaCapiSettings>(configuration.GetSection("MetaCapiSettings"));
             services.Configure<RepricingScraperSettings>(configuration.GetSection("RepricingScraper"));
@@ -145,6 +146,8 @@ namespace SMART.ERP.Application
             services.AddTransient<IMetaPostService, MetaPostService>();
             services.AddTransient<Services.MetaConversionsService.IMetaConversionsService, Services.MetaConversionsService.MetaConversionsService>();
             services.AddTransient<IGoogleCalendarService, GoogleCalendarService>();
+            services.AddTransient<Services.GoogleAuthService.IGoogleAuthService, Services.GoogleAuthService.GoogleAuthService>();
+            services.AddTransient<Services.EcommerceTokenService.IEcommerceTokenService, Services.EcommerceTokenService.EcommerceTokenService>();
             services.AddTransient<IPriceListService, PriceListService>();
             services.AddTransient<IProductPricingService, ProductPricingService>();
             services.AddTransient<ICompetitorScraperService, CompetitorScraperService>();

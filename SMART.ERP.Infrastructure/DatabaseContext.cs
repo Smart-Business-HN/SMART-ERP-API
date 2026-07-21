@@ -1720,6 +1720,11 @@ namespace SMART.ERP.Infrastructure
                 .WithOne(y=>y.EcommerceUser)
                 .HasForeignKey(y=>y.EcommerceUserId)
                 .OnDelete(DeleteBehavior.Cascade);
+            // Filtrado: sin el filtro, todas las filas existentes (NULL) colisionarian.
+            modelBuilder.Entity<EcommerceUser>()
+                .HasIndex(x => x.GoogleSubjectId)
+                .IsUnique()
+                .HasFilter("[GoogleSubjectId] IS NOT NULL");
             //LogEcommerceUser
             modelBuilder.Entity<LogEcommerceUser>().ToTable("LogEcommerceUser");
             modelBuilder.Entity<LogEcommerceUser>(o => o.HasKey(x => x.Id));
