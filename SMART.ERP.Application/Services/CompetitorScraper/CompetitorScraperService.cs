@@ -21,6 +21,10 @@ namespace SMART.ERP.Application.Services.CompetitorScraper
     {
         private static readonly Regex PriceTokenRegex = new(@"[\d][\d.,]*", RegexOptions.Compiled);
 
+        // Captura la cookie que fija un shell anti-bot por JS: document.cookie="bxVer=1;..." → "bxVer=1".
+        private static readonly Regex ChallengeCookieRegex =
+            new(@"document\.cookie\s*=\s*[""']([^""';]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         private readonly RepricingScraperSettings _settings;
         private readonly ILogger<CompetitorScraperService> _logger;
 
@@ -65,8 +69,41 @@ namespace SMART.ERP.Application.Services.CompetitorScraper
                 FollowRedirects = true
             };
             using var client = new RestClient(options);
+
             var response = await client.GetAsync(new RestRequest(), ct);
-            return response.IsSuccessful ? response.Content : null;
+            if (!response.IsSuccessful) return null;
+            var content = response.Content;
+
+            // Muro anti-bot tipo bxVerify (Acosa/Bluexpace): la respuesta es un "shell" corto que fija
+            // una cookie por JS y redirige al producto real. El GET estático no ejecuta JS, así que
+            // emulamos el navegador: extraemos la cookie del script y reintentamos una vez con ella.
+            if (LooksLikeCookieChallenge(content))
+            {
+                var match = ChallengeCookieRegex.Match(content!);
+                if (match.Success)
+                {
+                    var request = new RestRequest();
+                    request.AddHeader("Cookie", match.Groups[1].Value.Trim()); // p.ej. "bxVer=1"
+                    var retry = await client.GetAsync(request, ct);
+                    if (retry.IsSuccessful && !string.IsNullOrEmpty(retry.Content))
+                        content = retry.Content;
+                }
+            }
+
+            return content;
+        }
+
+        /// <summary>
+        /// Heurística: shell breve que fija una cookie por JS y no trae datos de producto (sin JSON-LD
+        /// de oferta), típico de una verificación anti-bot (ej. bxVerify de Acosa/Bluexpace).
+        /// </summary>
+        private static bool LooksLikeCookieChallenge(string? html)
+        {
+            if (string.IsNullOrEmpty(html)) return false;
+            return html.Length < 20000
+                && ChallengeCookieRegex.IsMatch(html)
+                && (html.Contains("bxVerify", StringComparison.OrdinalIgnoreCase)
+                    || !html.Contains("application/ld+json", StringComparison.OrdinalIgnoreCase));
         }
 
         private async Task<ScrapeResult> ScrapeHtmlAsync(CompetitorSource source, CancellationToken ct)
